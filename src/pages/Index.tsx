@@ -141,18 +141,23 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Right — Scan screenshot */}
-          <div className="flex-shrink-0 w-64 md:w-72">
+          {/* Right — Real scan screenshot */}
+          <div className="flex-shrink-0 w-64 md:w-80">
             <img
-              src={scanScreenshot}
-              alt="Shen AI scan — real face with vitals detected"
-              width={640}
-              height={960}
+              src={realScan}
+              alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg, measurement complete"
               className="w-full rounded-2xl shadow-lg"
             />
             <p className="text-xs text-muted-foreground text-center mt-3 font-body">
               Real scan · Real face · Real data · 30 seconds
             </p>
+            {/* Cira speech bubble */}
+            <div className="mt-4 bg-primary/10 border border-primary/20 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                "Your blood pressure is elevated at 135/86 and your pulse is 102. Tell me — how are you feeling right now?"
+              </p>
+              <p className="text-xs text-primary font-body mt-1 font-medium">— Cira</p>
+            </div>
           </div>
         </div>
       </main>
