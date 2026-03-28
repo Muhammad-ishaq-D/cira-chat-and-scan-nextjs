@@ -162,28 +162,6 @@ const Index = () => {
         </p>
       </section>
 
-      {/* Three steps */}
-      <section className="max-w-3xl mx-auto px-6 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center md:text-left">
-          <div>
-            <p className="text-sm text-muted-foreground mb-1 font-body">1</p>
-            <p className="text-foreground font-body">You tell Cira<br />what's wrong</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1 font-body">2</p>
-            <p className="text-foreground font-body">She scans your<br />vitals if needed</p>
-            <p className="text-sm text-muted-foreground mt-1 font-body">30 seconds · Real data</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1 font-body">3</p>
-            <p className="text-foreground font-body">Book a doctor<br />or keep talking</p>
-          </div>
-        </div>
-
-        <p className="text-center text-sm text-muted-foreground italic mt-12 font-body">
-          If you need a doctor — connected in under an hour, anywhere in the world.
-        </p>
-      </section>
 
       {/* Footer */}
       <footer className="max-w-xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
