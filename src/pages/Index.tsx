@@ -1,7 +1,7 @@
 import ciraSpark from "@/assets/cira-spark.png";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
-import scanScreenshot from "@/assets/scan-screenshot.jpg";
+import realScan from "@/assets/real-scan.webp";
 import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
