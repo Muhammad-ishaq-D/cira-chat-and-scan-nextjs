@@ -1,7 +1,7 @@
 import ciraSpark from "@/assets/cira-spark.png";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
-import scanScreenshot from "@/assets/scan-screenshot.jpg";
+import realScan from "@/assets/real-scan.webp";
 import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
@@ -141,18 +141,23 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Right — Scan screenshot */}
-          <div className="flex-shrink-0 w-64 md:w-72">
+          {/* Right — Real scan screenshot */}
+          <div className="flex-shrink-0 w-64 md:w-80">
             <img
-              src={scanScreenshot}
-              alt="Shen AI scan — real face with vitals detected"
-              width={640}
-              height={960}
+              src={realScan}
+              alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg, measurement complete"
               className="w-full rounded-2xl shadow-lg"
             />
             <p className="text-xs text-muted-foreground text-center mt-3 font-body">
               Real scan · Real face · Real data · 30 seconds
             </p>
+            {/* Cira speech bubble */}
+            <div className="mt-4 bg-primary/10 border border-primary/20 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                "Your blood pressure is elevated at 135/86 and your pulse is 102. Tell me — how are you feeling right now?"
+              </p>
+              <p className="text-xs text-primary font-body mt-1 font-medium">— Cira</p>
+            </div>
           </div>
         </div>
       </main>
@@ -180,14 +185,14 @@ const Index = () => {
 
         <div className="border-t border-border my-14" />
 
-        {/* Two-panel visual — face vs heatmap */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 max-w-lg mx-auto mb-4">
-          <div className="flex-1">
-            <img src={faceNormal} alt="What you see" width={512} height={640} loading="lazy" className="w-full rounded-xl" />
-          </div>
-          <div className="flex-1">
-            <img src={faceHeatmap} alt="What the AI reads — rPPG blood flow visualization" width={512} height={640} loading="lazy" className="w-full rounded-xl" />
-          </div>
+        {/* Real scan in scan section */}
+        <div className="max-w-md mx-auto mb-4">
+          <img
+            src={realScan}
+            alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg"
+            loading="lazy"
+            className="w-full rounded-xl shadow-md"
+          />
         </div>
         <p className="text-sm text-muted-foreground text-center font-body mb-3">
           What you see vs what the AI reads beneath your skin
