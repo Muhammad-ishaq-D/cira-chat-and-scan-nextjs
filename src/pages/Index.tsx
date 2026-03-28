@@ -185,14 +185,14 @@ const Index = () => {
 
         <div className="border-t border-border my-14" />
 
-        {/* Two-panel visual — face vs heatmap */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 max-w-lg mx-auto mb-4">
-          <div className="flex-1">
-            <img src={faceNormal} alt="What you see" width={512} height={640} loading="lazy" className="w-full rounded-xl" />
-          </div>
-          <div className="flex-1">
-            <img src={faceHeatmap} alt="What the AI reads — rPPG blood flow visualization" width={512} height={640} loading="lazy" className="w-full rounded-xl" />
-          </div>
+        {/* Real scan in scan section */}
+        <div className="max-w-md mx-auto mb-4">
+          <img
+            src={realScan}
+            alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg"
+            loading="lazy"
+            className="w-full rounded-xl shadow-md"
+          />
         </div>
         <p className="text-sm text-muted-foreground text-center font-body mb-3">
           What you see vs what the AI reads beneath your skin
