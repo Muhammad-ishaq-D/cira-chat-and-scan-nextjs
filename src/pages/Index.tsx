@@ -86,6 +86,9 @@ const Index = () => {
           <button onClick={() => scrollTo("doctor")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
             Book a doctor
           </button>
+          <button onClick={() => navigate("/our-story")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
+            Our story
+          </button>
           <button onClick={() => navigate("/dashboard")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
             Log in
           </button>
