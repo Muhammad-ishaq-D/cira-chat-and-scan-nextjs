@@ -108,6 +108,12 @@ const Index = () => {
               Tell me what's wrong.
             </h1>
 
+            <p className="text-xs text-muted-foreground leading-relaxed mb-6 font-body">
+              Trained on peer-reviewed medical data worldwide.<br />
+              Always discuss Cira's findings with a doctor.<br />
+              Cira is an AI health nurse, not a licensed medical professional.
+            </p>
+
             <div className="text-base text-muted-foreground leading-relaxed mb-10 space-y-1">
               <p>I'll ask you questions about what you're feeling.</p>
               <p>I'll scan your vitals through your camera if I need to.</p>
