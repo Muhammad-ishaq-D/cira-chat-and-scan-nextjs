@@ -143,6 +143,11 @@ const Index = () => {
             <p className="text-sm text-muted-foreground">
               🔒 Private · Free · Available 24/7
             </p>
+            <p className="text-xs text-muted-foreground leading-relaxed mt-3 font-body">
+              Trained on peer-reviewed medical data worldwide.<br />
+              Always discuss Cira's findings with a doctor.<br />
+              Cira is an AI health nurse, not a licensed medical professional.
+            </p>
           </div>
 
           {/* Right — Real scan screenshot */}
