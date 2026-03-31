@@ -1,4 +1,5 @@
 import ciraSpark from "@/assets/cira-spark.png";
+import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
 import realScan from "@/assets/real-scan.webp";
