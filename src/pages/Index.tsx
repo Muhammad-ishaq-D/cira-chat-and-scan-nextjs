@@ -163,10 +163,201 @@ const Index = () => {
       </main>
 
       {/* ═══════════════════════════════════════════ */}
+      {/* CIRA'S INTELLIGENCE */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-card py-20">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+            Cira doesn't guess.<br />
+            She thinks.
+          </h2>
+
+          <p className="text-base text-muted-foreground leading-relaxed max-w-[520px] mx-auto mb-14 font-body whitespace-pre-line">
+            {"Cira is trained on hundreds of millions of\nclinical cases, peer-reviewed medical studies,\nand real diagnostic data from around the world.\n\nWhen you describe your symptoms — she doesn't\nsearch for keywords. She thinks through every\npossible combination. Every diagnostic pathway.\nEvery risk factor. Every contraindication.\n\nThen she adds your real vitals from the scan.\n\nAnd she tells you what the combination means.\nNot a list of possibilities.\nA specific assessment. Backed by real data."}
+          </p>
+
+          {/* Four capability lines */}
+          <div className="max-w-[520px] mx-auto space-y-8 text-left mb-14">
+            <div className="flex gap-4">
+              <span className="text-2xl">📚</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                Trained on peer-reviewed medical literature<br />
+                and hundreds of millions of clinical cases
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">🧠</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                Multiple diagnostic pathways evaluated<br />
+                simultaneously — not sequential guessing
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">🔄</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                Cross-references your symptoms with your<br />
+                real clinical vitals from the face scan
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">📋</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                Produces structured health assessments<br />
+                that mirror real clinical consultations
+              </p>
+            </div>
+          </div>
+
+          {/* Cira example — pink card */}
+          <div className="border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-[560px] mx-auto text-left mb-6">
+            <p className="text-sm text-foreground font-body leading-relaxed italic whitespace-pre-line">
+              {"\"Your blood pressure is 138/88 and your heart\nrate is 102. Combined with the chest tightness\nyou're describing and your HRV drop of 22% —\nthis pattern is consistent with acute\ncardiovascular stress.\n\nThis is not something to sleep on.\n\nGo to a clinic or emergency room within the\nnext two hours. I've prepared a complete\nsummary of everything I found for your doctor.\""}
+            </p>
+            <p className="text-xs text-primary font-body mt-3 font-medium">— Cira</p>
+          </div>
+
+          <p className="text-xs text-muted-foreground font-body leading-relaxed">
+            Cira does not replace professional medical advice.<br />
+            All assessments should be reviewed with a qualified physician.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SHEN AI CREDIBILITY */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-background py-20">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+            The scan is not an estimate.<br />
+            It's clinical technology.
+          </h2>
+
+          <p className="text-base text-muted-foreground leading-relaxed max-w-[520px] mx-auto mb-14 font-body whitespace-pre-line">
+            {"The face scan powering Cira is built by Shen AI —\na clinically validated health monitoring company\nfounded in Estonia in 2020.\n\nTheir technology is used by insurers, hospitals,\nand telehealth platforms across 33 countries.\n\nNot a startup experiment.\nProven clinical infrastructure trusted by the\nworld's largest healthcare organisations."}
+          </p>
+
+          {/* Four proof numbers */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-[600px] mx-auto mb-14">
+            <div>
+              <p className="font-heading text-3xl font-semibold text-foreground">7M</p>
+              <div className="border-t border-border mt-2 pt-2">
+                <p className="text-xs text-muted-foreground font-body">Data points<br />in training</p>
+              </div>
+            </div>
+            <div>
+              <p className="font-heading text-3xl font-semibold text-foreground">500K</p>
+              <div className="border-t border-border mt-2 pt-2">
+                <p className="text-xs text-muted-foreground font-body">Individuals<br />in dataset</p>
+              </div>
+            </div>
+            <div>
+              <p className="font-heading text-3xl font-semibold text-foreground">80+</p>
+              <div className="border-t border-border mt-2 pt-2">
+                <p className="text-xs text-muted-foreground font-body">Healthcare<br />partners</p>
+              </div>
+            </div>
+            <div>
+              <p className="font-heading text-3xl font-semibold text-foreground">33</p>
+              <div className="border-t border-border mt-2 pt-2">
+                <p className="text-xs text-muted-foreground font-body">Countries<br />worldwide</p>
+              </div>
+            </div>
+          </div>
+
+          {/* How it works — three points */}
+          <div className="max-w-[520px] mx-auto space-y-8 text-left mb-14">
+            <div className="flex gap-4">
+              <span className="text-2xl">👁</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                Computer vision reads subtle colour changes<br />
+                in your skin caused by blood flow beneath<br />
+                the surface — invisible to the human eye
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">🔬</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                rPPG and rBCG algorithms extract 30+ vital<br />
+                signs from any camera in any lighting<br />
+                across all skin tones
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">🔒</span>
+              <p className="text-sm text-foreground font-body leading-relaxed">
+                100% on-device processing — your camera<br />
+                feed is never recorded, transmitted,<br />
+                or stored anywhere
+              </p>
+            </div>
+          </div>
+
+          {/* Clinical accuracy table */}
+          <div className="text-center mb-8">
+            <h3 className="font-heading text-[28px] font-semibold text-foreground leading-tight">
+              Proven accurate in clinical studies.
+            </h3>
+          </div>
+
+          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-[560px] mx-auto mb-4">
+            <table className="w-full text-sm font-body">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Metric</th>
+                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Time</th>
+                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Accuracy</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accuracyData.map((row) => (
+                  <tr key={row.metric} className="border-b border-border last:border-0">
+                    <td className="px-5 py-3 text-foreground">{row.metric}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{row.time}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{row.accuracy}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center font-body mb-14">
+            Source: Shen AI clinical validation studies
+          </p>
+
+          {/* Trust logos */}
+          <p className="text-sm text-muted-foreground text-center font-body mb-6">
+            Trusted by 60+ healthcare partners in 33 countries
+          </p>
+          <div className="flex flex-wrap justify-center gap-8 mb-14">
+            {["Allianz", "Deutsche Telekom", "Dr.Digital", "Heartery", "CAREMINDr"].map((logo) => (
+              <span key={logo} className="text-sm text-muted-foreground font-body opacity-60">{logo}</span>
+            ))}
+          </div>
+
+          {/* Quote */}
+          <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-[520px] mx-auto text-center mb-6">
+            <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
+              "Integrating Shen AI helped us become the<br />
+              #1 blood pressure app in the US, UK, Canada<br />
+              and Australia."
+            </p>
+            <p className="text-sm text-muted-foreground font-body">
+              — Leo Rosenbaum, Founder of Heartery
+            </p>
+          </div>
+
+          <p className="text-xs text-muted-foreground font-body leading-relaxed">
+            Undergoing EU Medical Device Regulation certification.<br />
+            All processing on your device. Nothing sent to any server. Ever.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
       {/* SCAN YOURSELF */}
       {/* ═══════════════════════════════════════════ */}
       <section id="scan" className="max-w-3xl mx-auto px-6 pb-20 pt-16">
-        {/* Heading + body */}
         <div className="text-center">
           <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
@@ -215,7 +406,6 @@ const Index = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-          {/* Col 1 */}
           <div className="bg-secondary rounded-2xl p-6">
             <p className="text-xs text-muted-foreground font-body mb-4 uppercase tracking-wide">Vital Signs</p>
             <p className="text-[11px] text-muted-foreground font-body mb-4 italic">Measured entirely from the face scan</p>
@@ -225,7 +415,6 @@ const Index = () => {
               ))}
             </ul>
           </div>
-          {/* Col 2 */}
           <div className="bg-secondary rounded-2xl p-6">
             <p className="text-xs text-muted-foreground font-body mb-4 uppercase tracking-wide">Health Indices</p>
             <p className="text-[11px] text-muted-foreground font-body mb-4 italic">Based on scan and user data</p>
@@ -235,7 +424,6 @@ const Index = () => {
               ))}
             </ul>
           </div>
-          {/* Col 3 */}
           <div className="bg-secondary rounded-2xl p-6">
             <p className="text-xs text-muted-foreground font-body mb-4 uppercase tracking-wide">Health Risks</p>
             <p className="text-[11px] text-muted-foreground font-body mb-4 italic">Based on scan and user data</p>
@@ -250,78 +438,6 @@ const Index = () => {
         <p className="text-xs text-muted-foreground text-center font-body">
           Shen AI · Clinically validated · Undergoing EU Medical Device Regulation certification
         </p>
-
-        <div className="border-t border-border my-14" />
-
-        {/* Clinical accuracy table */}
-        <div className="text-center mb-8">
-          <h3 className="font-heading text-[28px] font-semibold text-foreground leading-tight">
-            Proven accurate in clinical studies.
-          </h3>
-        </div>
-
-        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-[600px] mx-auto mb-4">
-          <table className="w-full text-sm font-body">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Metric</th>
-                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Time</th>
-                <th className="text-left px-5 py-3 text-muted-foreground font-medium">Accuracy</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accuracyData.map((row) => (
-                <tr key={row.metric} className="border-b border-border last:border-0">
-                  <td className="px-5 py-3 text-foreground">{row.metric}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{row.time}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{row.accuracy}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-xs text-muted-foreground text-center font-body">
-          Source: Shen AI clinical validation studies · shen.ai
-        </p>
-
-        <div className="border-t border-border my-14" />
-
-        {/* Trust logos */}
-        <p className="text-sm text-muted-foreground text-center font-body mb-6">
-          Trusted by 60+ healthcare partners in 33 countries
-        </p>
-        <div className="flex flex-wrap justify-center gap-8 mb-4">
-          {trustLogos.map((logo) => (
-            <span key={logo} className="text-sm text-muted-foreground font-body opacity-60">{logo}</span>
-          ))}
-        </div>
-
-        <div className="border-t border-border my-14" />
-
-        {/* Quote */}
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-[560px] mx-auto text-center">
-          <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
-            "Integrating Shen AI helped us become the<br />
-            #1 blood pressure app in the US, UK, Canada<br />
-            and Australia."
-          </p>
-          <p className="text-sm text-muted-foreground font-body">
-            — Leo Rosenbaum, Founder of Heartery
-          </p>
-        </div>
-
-        <div className="border-t border-border my-14" />
-
-        {/* Optional history tracking offer */}
-        <div className="text-center">
-          <p className="text-[15px] text-muted-foreground leading-relaxed font-body whitespace-pre-line mb-4">
-            {"Want to keep your results over time?\nSave your 30 vitals to a personal dashboard.\nTrack your patterns. Generate a report\nfor your doctor in one click."}
-          </p>
-          <a href="#" className="text-primary text-sm hover:opacity-80 transition-opacity font-body">
-            Learn about health history tracking →
-          </a>
-        </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
