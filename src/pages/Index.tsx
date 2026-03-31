@@ -670,6 +670,43 @@ const Index = () => {
         </p>
       </section>
 
+      {/* ═══════════════════════════════════════════ */}
+      {/* FOUNDER TEASER */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="bg-background py-20">
+        <div className="max-w-xl mx-auto px-6 text-center">
+          <img
+            src={founderPhoto}
+            alt="Jean-Marc, Founder"
+            className="w-[60px] h-[60px] rounded-full object-cover mx-auto mb-3"
+            loading="lazy"
+            width={60}
+            height={60}
+          />
+          <p className="text-sm text-muted-foreground font-body mb-4">Jean-Marc</p>
+
+          <p className="text-base text-foreground font-body leading-relaxed italic max-w-[420px] mx-auto mb-4">
+            "I built Cira because I have<br />
+            high blood pressure and high cholesterol.<br />
+            Every time I see my doctor<br />
+            I arrived with nothing.<br /><br />
+            Last week my scan showed<br />
+            pulse 102 and BP 135/86.<br />
+            For the first time — I had something<br />
+            real to show my doctor."
+          </p>
+
+          <p className="text-sm text-muted-foreground font-body mb-6">— Jean-Marc, Founder</p>
+
+          <button
+            onClick={() => navigate("/our-story")}
+            className="text-primary text-sm font-body hover:underline transition-colors"
+          >
+            Read the full story →
+          </button>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="max-w-xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
         <p>Cira does not replace professional medical advice.</p>
