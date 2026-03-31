@@ -243,21 +243,21 @@ const Index = () => {
           </h2>
 
           <p className="text-base text-muted-foreground leading-relaxed max-w-[520px] mx-auto mb-14 font-body whitespace-pre-line">
-            {"The face scan powering Cira is built by Shen AI —\na clinically validated health monitoring company\nfounded in Estonia in 2020.\n\nTheir technology is used by insurers, hospitals,\nand telehealth platforms across 33 countries.\n\nNot a startup experiment.\nProven clinical infrastructure trusted by the\nworld's largest healthcare organisations."}
+            {"The face scan powering Cira is built by Shen AI —\na clinically validated health monitoring company\nfounded in Estonia in 2020.\n\nTheir SDK 3.0 uses signal fusion, beat-by-beat\nblending of rPPG and rBCG signals — selecting\nthe strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
           </p>
 
           {/* Four proof numbers */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-[600px] mx-auto mb-14">
             <div>
-              <p className="font-heading text-3xl font-semibold text-foreground">7M</p>
+              <p className="font-heading text-3xl font-semibold text-foreground">7M+</p>
               <div className="border-t border-border mt-2 pt-2">
-                <p className="text-xs text-muted-foreground font-body">Data points<br />in training</p>
+                <p className="text-xs text-muted-foreground font-body">Real-world samples<br />in training data</p>
               </div>
             </div>
             <div>
-              <p className="font-heading text-3xl font-semibold text-foreground">500K</p>
+              <p className="font-heading text-3xl font-semibold text-foreground">20%</p>
               <div className="border-t border-border mt-2 pt-2">
-                <p className="text-xs text-muted-foreground font-body">Individuals<br />in dataset</p>
+                <p className="text-xs text-muted-foreground font-body">BP accuracy gain<br />in elevated range</p>
               </div>
             </div>
             <div>
@@ -274,31 +274,43 @@ const Index = () => {
             </div>
           </div>
 
-          {/* How it works — three points */}
+          {/* How it works — technical detail */}
           <div className="max-w-[520px] mx-auto space-y-8 text-left mb-14">
             <div className="flex gap-4">
-              <span className="text-2xl">👁</span>
-              <p className="text-sm text-foreground font-body leading-relaxed">
-                Computer vision reads subtle colour changes<br />
-                in your skin caused by blood flow beneath<br />
-                the surface — invisible to the human eye
-              </p>
+              <span className="text-2xl">🔬</span>
+              <div>
+                <p className="text-sm font-medium text-foreground font-body mb-1">Signal Fusion — beat by beat</p>
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                  Two parallel signals — rPPG (skin colour changes from blood flow) and rBCG (micro-movements from heartbeats) — are processed simultaneously. The SDK selects the strongest beats from whichever source is best at any given moment.
+                </p>
+              </div>
             </div>
             <div className="flex gap-4">
-              <span className="text-2xl">🔬</span>
-              <p className="text-sm text-foreground font-body leading-relaxed">
-                rPPG and rBCG algorithms extract 30+ vital<br />
-                signs from any camera in any lighting<br />
-                across all skin tones
-              </p>
+              <span className="text-2xl">🧠</span>
+              <div>
+                <p className="text-sm font-medium text-foreground font-body mb-1">Neural 3D face tracking</p>
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                  A neural network builds a 3D face mask and realigns it throughout the scan. A dual-tracker architecture keeps the measurement running even if you shift position, tilt your head, or adjust your grip.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-2xl">📊</span>
+              <div>
+                <p className="text-sm font-medium text-foreground font-body mb-1">Measurement Quality Guidance</p>
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                  Before the scan: coaching on positioning and lighting. During: live quality feedback. After: results with a quality rating and tips for improvement. A 7-component Environmental Quality Index ensures clinical rigour.
+                </p>
+              </div>
             </div>
             <div className="flex gap-4">
               <span className="text-2xl">🔒</span>
-              <p className="text-sm text-foreground font-body leading-relaxed">
-                100% on-device processing — your camera<br />
-                feed is never recorded, transmitted,<br />
-                or stored anywhere
-              </p>
+              <div>
+                <p className="text-sm font-medium text-foreground font-body mb-1">100% on-device processing</p>
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
+                  Your camera feed is never recorded, transmitted, or stored. Everything runs locally on your phone. Nothing leaves your device. Ever.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -307,6 +319,10 @@ const Index = () => {
             <h3 className="font-heading text-[28px] font-semibold text-foreground leading-tight">
               Proven accurate in clinical studies.
             </h3>
+            <p className="text-sm text-muted-foreground font-body mt-2">
+              Blood pressure accuracy improved 20% in the elevated range (140–170 mmHg).<br />
+              Body composition accuracy improved 45% with retrained models on millions of samples.
+            </p>
           </div>
 
           <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-[560px] mx-auto mb-4">
@@ -331,12 +347,12 @@ const Index = () => {
           </div>
 
           <p className="text-xs text-muted-foreground text-center font-body mb-14">
-            Source: Shen AI clinical validation studies
+            Source: Shen AI SDK 3.0 clinical validation studies
           </p>
 
           {/* Trust logos */}
           <p className="text-sm text-muted-foreground text-center font-body mb-6">
-            Trusted by 60+ healthcare partners in 33 countries
+            Trusted by 80+ healthcare partners in 33 countries
           </p>
           <div className="flex flex-wrap justify-center gap-8 mb-14">
             {["Allianz", "Deutsche Telekom", "Dr.Digital", "Heartery", "CAREMINDr"].map((logo) => (
@@ -358,6 +374,7 @@ const Index = () => {
 
           <p className="text-xs text-muted-foreground font-body leading-relaxed">
             Undergoing EU Medical Device Regulation certification.<br />
+            Strict precision mode suppresses results when quality falls below clinical threshold.<br />
             All processing on your device. Nothing sent to any server. Ever.
           </p>
         </div>
