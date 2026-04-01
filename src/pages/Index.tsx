@@ -7,12 +7,7 @@ import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
 
-const chips = [
-  "My heart is racing",
-  "I have pain",
-  "I feel unwell",
-  "I'm worried",
-];
+
 
 const specialties = ["GP", "Pediatrics", "Psychology", "Sexology", "Weight loss", "Cardiology"];
 
