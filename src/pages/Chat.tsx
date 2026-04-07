@@ -321,7 +321,7 @@ const Chat = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0 relative">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
         {/* Hamburger button outside navbar */}
         <button
           onClick={() => setShowHistory(!showHistory)}
@@ -330,7 +330,7 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div className="flex-1 overflow-y-auto pb-4 md:pb-0">
+        <div className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
             <div className="h-full flex flex-col items-center justify-center px-4 md:px-6 pb-20 md:pb-0 relative overflow-hidden">
@@ -450,13 +450,13 @@ const Chat = () => {
                 <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
               </div>
 
-              <div className="relative z-10 max-w-2xl mx-auto p-4 md:p-6 space-y-4 md:space-y-5 pt-14 md:pt-6">
+              <div className="relative z-10 max-w-2xl mx-auto px-3 py-4 md:p-6 space-y-3.5 md:space-y-5 pt-16 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                     {/* Vitals card */}
                     {msg.role === "vitals" && msg.vitalsData ? (
-                      <div className="flex items-start gap-3 max-w-[85%]">
-                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                      <div className="flex items-start gap-2 md:gap-3 max-w-full md:max-w-[85%]">
+                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
                           <ScanFace size={16} className="text-primary" />
                         </div>
                         <div className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full">
@@ -471,17 +471,17 @@ const Chat = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="grid grid-cols-3 gap-0.5 p-2">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 md:gap-0.5 p-2.5 md:p-2">
                             {msg.vitalsData.map((vital) => {
                               const VIcon = vital.icon;
                               return (
-                                <div key={vital.label} className="flex flex-col items-center p-3 rounded-xl hover:bg-accent/30 transition-colors">
-                                  <div className={`w-8 h-8 rounded-lg ${vital.color} flex items-center justify-center mb-1.5`}>
+                                <div key={vital.label} className="flex flex-col items-center p-2.5 md:p-3 rounded-xl hover:bg-accent/30 transition-colors">
+                                  <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg ${vital.color} flex items-center justify-center mb-1.5`}>
                                     <VIcon size={14} />
                                   </div>
-                                  <p className="text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{vital.value}</p>
-                                  <p className="text-[9px] text-muted-foreground text-center leading-tight mt-0.5">{vital.label}</p>
-                                  <p className="text-[8px] text-muted-foreground/60">{vital.unit}</p>
+                                  <p className="text-[13px] md:text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{vital.value}</p>
+                                  <p className="text-[8px] md:text-[9px] text-muted-foreground text-center leading-tight mt-0.5">{vital.label}</p>
+                                  <p className="text-[7px] md:text-[8px] text-muted-foreground/60">{vital.unit}</p>
                                 </div>
                               );
                             })}
@@ -492,18 +492,18 @@ const Chat = () => {
                         </div>
                       </div>
                     ) : (
-                    <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                    <div className={`flex items-start gap-2 md:gap-3 max-w-[90%] md:max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                       {msg.role === "cira" ? (
-                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
                           <img src={ciraLogo} alt="" width={16} height={16} />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold shadow-sm">
+                        <div className="hidden md:flex w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold shadow-sm">
                           JM
                         </div>
                       )}
                       <div
-                        className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                        className={`rounded-[22px] md:rounded-2xl px-3.5 py-3 md:px-4 md:py-3 text-[14px] md:text-sm leading-6 md:leading-relaxed ${
                           msg.role === "user"
                             ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground rounded-tr-sm shadow-md"
                             : "bg-card/90 backdrop-blur-sm border border-border/50 text-foreground rounded-tl-sm shadow-sm"
@@ -527,11 +527,11 @@ const Chat = () => {
                 {showModeSelection && (
                   <div className="animate-fade-in">
                     <div className="flex justify-start">
-                      <div className="flex items-start gap-3 max-w-[92%]">
-                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                      <div className="flex items-start gap-0 md:gap-3 max-w-full md:max-w-[92%]">
+                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
                           <img src={ciraLogo} alt="" width={16} height={16} />
                         </div>
-                        <div className="space-y-3 w-full">
+                        <div className="space-y-2.5 md:space-y-3 w-full">
                           {/* Hero — Vital Scan (compact) */}
                           <button
                             onClick={() => selectMode("vitals")}
@@ -605,21 +605,21 @@ const Chat = () => {
 
         {/* Bottom input — always matches the aesthetic */}
         {messages.length > 0 && (
-          <div className="relative border-t border-border/30 shrink-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+          <div className="relative shrink-0 border-t border-border/30 bg-background/80 backdrop-blur-xl" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
-            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-4">
-              <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
+            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2.5 md:px-4 md:py-4">
+              <div className="bg-card/90 backdrop-blur-md rounded-[24px] md:rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Tell Cira what's going on..."
-                  className="flex-1 py-3 px-4 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground/60"
+                  className="flex-1 py-3.5 px-4 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground/60"
                   style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                 />
                 <button
                   type="submit"
-                  className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-2.5 hover:opacity-80 transition-opacity shrink-0"
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-2.5 hover:opacity-80 transition-opacity shrink-0"
                 >
                   <Send size={13} className="-ml-0.5" />
                 </button>
