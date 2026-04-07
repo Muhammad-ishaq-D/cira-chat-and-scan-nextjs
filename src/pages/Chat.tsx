@@ -63,12 +63,32 @@ const Chat = () => {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+    if (chatMode === "none") setChatMode("chat");
+    const modeResponses: Record<ChatMode, string> = {
+      quick: "I hear you. Let me do a quick assessment.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
+      detailed: "I'll conduct a thorough assessment. Let's start from the beginning.\n\nFirst, can you describe your primary concern in detail? When did it first start, and has it changed over time?",
+      vitals: "I've noted your vitals from the scan. Now let me combine that data with your symptoms.\n\nWhat's been bothering you? I'll cross-reference with your vital readings.",
+      chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
+      none: "",
+    };
     setMessages((prev) => [
       ...prev,
       { role: "user", text: message },
-      { role: "cira", text: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?" },
+      { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
     ]);
     setMessage("");
+  };
+
+  const selectMode = (mode: ChatMode) => {
+    setChatMode(mode);
+    const greetings: Record<ChatMode, string> = {
+      quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
+      detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
+      vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+      chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+      none: "",
+    };
+    setMessages([{ role: "cira", text: greetings[mode] }]);
   };
 
   const startChat = (title: string) => {
