@@ -6,7 +6,7 @@ import realScan from "@/assets/real-scan.webp";
 import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 
@@ -64,6 +64,14 @@ const visitHistory = [
 const Index = () => {
   const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
+  const [heroMessage, setHeroMessage] = useState("");
+
+  const handleAskCira = () => {
+    if (heroMessage.trim()) {
+      sessionStorage.setItem("cira_landing_message", heroMessage.trim());
+    }
+    navigate("/login");
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -129,7 +137,12 @@ const Index = () => {
           {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
             <button
               key={chip}
-              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
+              onClick={() => { setHeroMessage(chip); }}
+              className={`px-5 py-2.5 rounded-full border text-sm font-body transition-all duration-200 hover:scale-105 ${
+                heroMessage === chip
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-card text-foreground hover:border-primary hover:bg-primary/5"
+              }`}
             >
               {chip}
             </button>
@@ -140,13 +153,15 @@ const Index = () => {
         <div className="max-w-2xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: "0.55s" }}>
           <div className="rounded-2xl border border-border bg-card p-5">
             <textarea
+              value={heroMessage}
+              onChange={(e) => setHeroMessage(e.target.value)}
               placeholder="Ask me anything about your health..."
               className="w-full bg-transparent text-foreground font-body text-base resize-none outline-none placeholder:text-muted-foreground min-h-[80px]"
               rows={3}
             />
             <div className="flex items-center justify-end mt-3">
               <button
-                onClick={() => navigate("/login")}
+                onClick={handleAskCira}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>

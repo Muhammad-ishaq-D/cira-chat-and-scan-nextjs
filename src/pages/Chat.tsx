@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -61,6 +61,23 @@ const Chat = () => {
   const [messages, setMessages] = useState<{ role: "user" | "cira"; text: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
+  const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
+  const [showModeSelection, setShowModeSelection] = useState(false);
+
+  // Pick up message from landing page
+  useEffect(() => {
+    const landingMsg = sessionStorage.getItem("cira_landing_message");
+    if (landingMsg) {
+      sessionStorage.removeItem("cira_landing_message");
+      setPendingLandingMessage(landingMsg);
+      // Show the user's message + Cira's response with mode selection
+      setMessages([
+        { role: "user", text: landingMsg },
+        { role: "cira", text: `Thanks for sharing that — "${landingMsg}"\n\nBefore I dive in, I'd love to help you in the best way possible. How would you like to proceed?` },
+      ]);
+      setShowModeSelection(true);
+    }
+  }, []);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,14 +100,33 @@ const Chat = () => {
 
   const selectMode = (mode: ChatMode) => {
     setChatMode(mode);
-    const greetings: Record<ChatMode, string> = {
-      quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
-      detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-      vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
-      chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+    setShowModeSelection(false);
+    
+    const modeConfirmations: Record<ChatMode, string> = {
+      quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
+      detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
+      vitals: "✨ Vital Scan + Assessment activated!\n\nI'll combine your face scan vitals with what you've told me for the most informed analysis possible.\n\nLet me start by scanning your vitals...",
+      chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
-    setMessages([{ role: "cira", text: greetings[mode] }]);
+
+    if (pendingLandingMessage) {
+      // Keep existing messages and append mode confirmation
+      setMessages((prev) => [
+        ...prev,
+        { role: "cira", text: modeConfirmations[mode] },
+      ]);
+      setPendingLandingMessage(null);
+    } else {
+      const greetings: Record<ChatMode, string> = {
+        quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
+        detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
+        vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+        chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+        none: "",
+      };
+      setMessages([{ role: "cira", text: greetings[mode] }]);
+    }
   };
 
   const startChat = (title: string) => {
@@ -334,6 +370,54 @@ const Chat = () => {
                     </div>
                   </div>
                 ))}
+
+                {/* Inline mode selection after landing message */}
+                {showModeSelection && (
+                  <div className="animate-fade-in">
+                    <div className="flex justify-start">
+                      <div className="flex items-start gap-3 max-w-[90%]">
+                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          <img src={ciraLogo} alt="" width={16} height={16} />
+                        </div>
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
+                            {chatModes.map((mode) => {
+                              const Icon = mode.icon;
+                              return (
+                                <button
+                                  key={mode.id}
+                                  onClick={() => selectMode(mode.id)}
+                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl p-4 text-left hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-0.5"
+                                >
+                                  <div className={`w-9 h-9 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2.5`}>
+                                    <Icon size={18} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : mode.gradient.includes("purple") ? "#a855f7" : "#10b981" }} />
+                                  </div>
+                                  <p className="text-xs font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                                  <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">{mode.desc}</p>
+                                  <span className="inline-block text-[8px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
+                                    {mode.badge}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <button
+                            onClick={() => selectMode("chat")}
+                            className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all w-full"
+                          >
+                            <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center">
+                              <MessageCircle size={14} className="text-muted-foreground" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-[11px] font-medium text-foreground">Just Continue Chatting</p>
+                              <p className="text-[9px] text-muted-foreground">No assessment — let's just talk</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
