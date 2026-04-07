@@ -185,14 +185,14 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* CIRA'S INTELLIGENCE */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+      <section className="bg-card py-12 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="scroll-fade font-heading text-[28px] sm:text-[40px] font-semibold text-foreground leading-tight mb-6">
             Cira doesn't guess.<br />
             She thinks.
           </h2>
 
-          <div className="max-w-2xl mx-auto mb-14 font-body text-base text-muted-foreground leading-relaxed space-y-4">
+          <div className="max-w-2xl mx-auto mb-10 sm:mb-14 font-body text-sm sm:text-base text-muted-foreground leading-relaxed space-y-4">
             <p>Cira is trained on hundreds of millions of clinical cases, peer-reviewed medical studies, and real diagnostic data from around the world.</p>
             <p>When you describe your symptoms — she doesn't search for keywords. She thinks through every possible combination. Every diagnostic pathway. Every risk factor. Every contraindication.</p>
             <p>Then she adds your real vitals from the scan.</p>
@@ -249,15 +249,15 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* SHEN AI CREDIBILITY */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-background py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+      <section className="bg-background py-12 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="scroll-fade font-heading text-[28px] sm:text-[40px] font-semibold text-foreground leading-tight mb-6">
             The scan is not an estimate.<br />
             It's clinical technology.
           </h2>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
-            {"The face scan powering Cira uses clinically validated\nhealth monitoring technology with signal fusion —\nbeat-by-beat blending of rPPG and rBCG signals,\nselecting the strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 sm:mb-14 font-body">
+            The face scan powering Cira uses clinically validated health monitoring technology with signal fusion — beat-by-beat blending of rPPG and rBCG signals, selecting the strongest data from each source in real time. The result: consistent accuracy across all skin tones, all lighting conditions, and all devices.
           </p>
 
           {/* Four proof numbers */}
@@ -330,7 +330,7 @@ const Index = () => {
 
           {/* Clinical accuracy table */}
           <div className="text-center mb-8">
-            <h3 className="font-heading text-[28px] font-semibold text-foreground leading-tight">
+            <h3 className="font-heading text-[22px] sm:text-[28px] font-semibold text-foreground leading-tight">
               Proven accurate in clinical studies.
             </h3>
             <p className="text-sm text-muted-foreground font-body mt-2">
@@ -339,21 +339,21 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-x-auto max-w-2xl mx-auto mb-4">
             <table className="w-full text-sm font-body">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Metric</th>
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Time</th>
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Accuracy</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Metric</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Time</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Accuracy</th>
                 </tr>
               </thead>
               <tbody>
                 {accuracyData.map((row) => (
                   <tr key={row.metric} className="border-b border-border last:border-0">
-                    <td className="px-5 py-3 text-foreground">{row.metric}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{row.time}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{row.accuracy}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-foreground text-xs sm:text-sm">{row.metric}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-muted-foreground text-xs sm:text-sm">{row.time}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-muted-foreground text-xs sm:text-sm">{row.accuracy}</td>
                   </tr>
                 ))}
               </tbody>
