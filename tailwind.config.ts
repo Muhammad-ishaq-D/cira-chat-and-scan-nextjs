@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['Fraunces', 'serif'],
+        heading: ['Playfair Display', 'serif'],
         body: ['DM Sans', 'sans-serif'],
       },
       colors: {
