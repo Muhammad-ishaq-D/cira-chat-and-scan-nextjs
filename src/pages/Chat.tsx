@@ -54,14 +54,7 @@ const Chat = () => {
     <div className="h-screen flex bg-background">
       {/* Slim icon sidebar with labels */}
       <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
-        {/* Hamburger for history */}
-        <button
-          onClick={() => setShowHistory(!showHistory)}
-          className="w-10 h-10 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors mb-4"
-          title="Chat History"
-        >
-          <Menu size={20} strokeWidth={1.5} />
-        </button>
+        {/* Logo */}
 
         {/* Logo */}
         <div className="mb-4">
@@ -164,7 +157,15 @@ const Chat = () => {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Hamburger button outside navbar */}
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm"
+          title="Chat History"
+        >
+          <Menu size={18} strokeWidth={1.5} />
+        </button>
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
