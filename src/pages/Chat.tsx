@@ -77,6 +77,7 @@ const Chat = () => {
   const [scanProgress, setScanProgress] = useState(0);
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change
