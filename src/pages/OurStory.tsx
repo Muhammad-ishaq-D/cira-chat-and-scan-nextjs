@@ -10,7 +10,7 @@ const OurStory = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <nav className="flex items-center justify-center gap-3 px-6 py-8">
-        <img src={ciraSpark} alt="Cira" width={28} height={28} />
+        <img src={ciraLogo} alt="Cira" width={28} height={28} />
         <span className="font-heading text-xl font-semibold text-foreground">Our Story</span>
       </nav>
 
