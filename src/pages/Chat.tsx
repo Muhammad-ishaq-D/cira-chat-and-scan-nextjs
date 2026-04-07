@@ -199,60 +199,73 @@ const Chat = () => {
               </div>
             </div>
           ) : (
-            /* Chat messages with AI styling */
-            <div className="max-w-2xl mx-auto p-6 space-y-5">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
-                  <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                    {msg.role === "cira" ? (
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-purple-500/15 flex items-center justify-center shrink-0 mt-0.5 ring-1 ring-primary/10">
-                        <img src={ciraLogo} alt="" width={14} height={14} />
-                      </div>
-                    ) : (
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold">
-                        JM
-                      </div>
-                    )}
-                    <div
-                      className={`rounded-2xl px-4 py-3 text-sm font-body leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground rounded-tr-md shadow-md shadow-primary/10"
-                          : "bg-card border border-border text-foreground rounded-tl-md shadow-sm"
-                      }`}
-                    >
-                      {msg.role === "cira" && (
-                        <div className="flex items-center gap-1.5 mb-1.5">
-                          <Sparkles size={10} className="text-primary" />
-                          <p className="text-[10px] text-primary font-medium">Cira</p>
+            /* Chat messages — keep same gradient bg */
+            <div className="relative min-h-full">
+              {/* Same gradient as welcome */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
+                <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-gradient-to-br from-blue-200/50 to-purple-200/30 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
+              </div>
+
+              <div className="relative z-10 max-w-2xl mx-auto p-6 space-y-5">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                    <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                      {msg.role === "cira" ? (
+                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          <img src={ciraLogo} alt="" width={16} height={16} />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center shrink-0 mt-0.5 text-background text-[10px] font-bold shadow-sm">
+                          JM
                         </div>
                       )}
-                      <p className="whitespace-pre-line">{msg.text}</p>
+                      <div
+                        className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-foreground text-background rounded-tr-sm shadow-md"
+                            : "bg-card/90 backdrop-blur-sm border border-border/50 text-foreground rounded-tl-sm shadow-sm"
+                        }`}
+                        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                      >
+                        {msg.role === "cira" && (
+                          <div className="flex items-center gap-1.5 mb-1.5">
+                            <Sparkles size={10} className="text-primary" />
+                            <p className="text-[10px] text-primary font-medium">Cira</p>
+                          </div>
+                        )}
+                        <p className="whitespace-pre-line">{msg.text}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Bottom input when in conversation */}
+        {/* Bottom input — always matches the aesthetic */}
         {messages.length > 0 && (
-          <div className="border-t border-border p-4 bg-card/80 backdrop-blur-sm shrink-0">
-            <form onSubmit={handleSend} className="max-w-2xl mx-auto flex gap-3 relative group">
-              <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/20 via-purple-500/15 to-blue-500/20 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-[1px]" />
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Tell Cira what's going on..."
-                className="relative flex-1 py-3 px-4 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none placeholder:text-muted-foreground"
-              />
-              <button
-                type="submit"
-                className="relative px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-body text-sm font-medium hover:shadow-lg hover:shadow-primary/20 transition-all"
-              >
-                <Send size={16} />
-              </button>
+          <div className="relative border-t border-border/30 p-4 shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
+            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto">
+              <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Tell Cira what's going on..."
+                  className="flex-1 py-3.5 px-5 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/60"
+                  style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                />
+                <button
+                  type="submit"
+                  className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center mr-3 hover:opacity-80 transition-opacity shrink-0"
+                >
+                  <Send size={14} className="-ml-0.5" />
+                </button>
+              </div>
             </form>
           </div>
         )}
