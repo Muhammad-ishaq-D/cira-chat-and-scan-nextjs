@@ -93,64 +93,69 @@ const Index = () => {
 
       {/* Hero */}
       <main className="max-w-3xl mx-auto px-6 pt-12 pb-20">
-        {/* Avatar cluster */}
-        <div className="flex items-center justify-center mb-8">
-          <img src={doctor1} alt="Doctor" width={36} height={36} className="w-9 h-9 rounded-full object-cover border-2 border-background" />
-          <img src={ciraSpark} alt="Cira" width={44} height={44} className="w-11 h-11 -ml-2 z-10" />
-          <img src={doctor2} alt="Doctor" width={36} height={36} className="w-9 h-9 rounded-full object-cover border-2 border-background -ml-2" />
+        {/* Trust badges */}
+        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground">
+          <span className="font-semibold">🔒 100%-Secure</span>
+          <span>👥 Trusted by thousands</span>
+          <span>⚡ Instant AI answers</span>
         </div>
 
-        <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight text-center mb-4">
-          Hi, I'm Cira.<br />
-          Your personal AI health nurse.
-        </h1>
+        {/* Avatar + H1 */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover" />
+          <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
+            Hi, I'm <span className="text-primary">Cira</span>, your AI Nurse
+          </h1>
+        </div>
 
-        <p className="text-xs text-muted-foreground text-center leading-relaxed mb-10 font-body">
-          Trained on peer-reviewed medical data worldwide.<br />
-          Always discuss Cira's findings with a doctor.
+        {/* Subtitle */}
+        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto">
+          I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation, should you choose to see a doctor.
         </p>
 
-        {/* Two option cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto mb-6">
-          {/* Card 1 — Scan first */}
-          <div className="rounded-2xl p-[2px] bg-gradient-to-br from-primary to-primary/60">
-            <div className="bg-card rounded-[14px] p-6 h-full flex flex-col">
-              <div className="text-3xl mb-4">📷</div>
-              <h3 className="font-heading text-[22px] font-semibold text-foreground mb-2">Scan first</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-5 font-body flex-1">
-                30 seconds. Any camera.<br />
-                I'll read your vitals before we talk.<br />
-                Real data makes my assessment real.
-              </p>
-              <button
-                onClick={() => scrollTo("scan")}
-                className="w-full py-3 rounded-xl text-base font-medium text-primary-foreground font-body bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 transition-opacity"
-              >
-                Scan myself now →
-              </button>
-              <div className="flex items-center justify-center gap-1.5 mt-3">
-                <span className="text-xs text-green-600 font-medium font-body">✓ What makes Cira different</span>
-              </div>
-            </div>
-          </div>
+        <p className="text-base text-foreground font-semibold text-center mb-6 font-body">
+          Let's start with what's been bothering you.
+        </p>
 
-          {/* Card 2 — Talk first */}
-          <div className="rounded-2xl border border-border bg-card p-6 flex flex-col">
-            <div className="text-3xl mb-4 opacity-60">💬</div>
-            <h3 className="font-heading text-[22px] font-semibold text-foreground mb-2">Talk first</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5 font-body flex-1">
-              Tell me what's going on.<br />
-              I'll listen and ask questions.<br />
-              I can scan you later if needed.
-            </p>
-            <button className="w-full py-3 rounded-xl text-base font-medium font-body border-2 border-primary text-primary hover:bg-primary/5 transition-colors">
-              Talk to Cira →
+        {/* Symptom chips */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
+            <button
+              key={chip}
+              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              {chip}
             </button>
+          ))}
+        </div>
+
+        {/* Chat input */}
+        <div className="max-w-2xl mx-auto mb-4">
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <textarea
+              placeholder="Ask me anything about your health..."
+              className="w-full bg-transparent text-foreground font-body text-base resize-none outline-none placeholder:text-muted-foreground min-h-[80px]"
+              rows={3}
+            />
+            <div className="flex items-center justify-end gap-3 mt-3">
+              <button className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm font-body text-foreground hover:bg-accent transition-colors">
+                🕐 Resume Chat
+              </button>
+              <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
+                ✨ New Chat
+              </button>
+            </div>
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground text-center font-body">
-          🔒 Private · Free · Available 24/7
+        {/* Powered by face scan */}
+        <p className="text-xs text-muted-foreground text-center font-body mb-2">
+          📷 Powered by <button onClick={() => scrollTo("scan")} className="text-primary hover:underline font-medium">real-time face scan</button> — 30+ vitals in 30 seconds
+        </p>
+
+        {/* Disclaimer */}
+        <p className="text-xs text-muted-foreground text-center font-body leading-relaxed">
+          Cira is an AI nurse assistant, not a licensed medical professional, and does not provide medical diagnosis, treatment, or professional healthcare advice.
         </p>
       </main>
 
