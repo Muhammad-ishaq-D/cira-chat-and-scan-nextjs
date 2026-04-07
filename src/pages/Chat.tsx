@@ -19,7 +19,6 @@ const quickActions = [
 ];
 
 const navItems = [
-  { icon: Menu, label: "History", id: "history" },
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
   { icon: Activity, label: "Vitals", id: "vitals" },
