@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Home, MessageCircle, Clock, Activity, LogOut, Send, Plus, Sparkles } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const mockHistory = [
@@ -11,25 +12,17 @@ const mockHistory = [
 ];
 
 const quickActions = [
-  { icon: "💬", title: "Describe Symptoms", desc: "Tell Cira how you feel" },
-  { icon: "📷", title: "Scan Vitals", desc: "Camera-based health scan" },
-  { icon: "📋", title: "Review History", desc: "Past consultations" },
-  { icon: "🩺", title: "Book a Doctor", desc: "Connect with a physician" },
+  { icon: <MessageCircle size={18} />, title: "Describe Symptoms", desc: "Tell Cira how you feel" },
+  { icon: <Activity size={18} />, title: "Scan Vitals", desc: "Camera-based health scan" },
+  { icon: <Clock size={18} />, title: "Review History", desc: "Past consultations" },
+  { icon: <Sparkles size={18} />, title: "Health Insights", desc: "AI-powered analysis" },
 ];
 
 const navItems = [
-  { icon: (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-  ), label: "Home", id: "home" },
-  { icon: (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  ), label: "Chat", id: "chat" },
-  { icon: (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-  ), label: "History", id: "history" },
-  { icon: (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-  ), label: "Vitals", id: "vitals" },
+  { icon: Home, label: "Home", id: "home" },
+  { icon: MessageCircle, label: "Chat", id: "chat" },
+  { icon: Clock, label: "History", id: "history" },
+  { icon: Activity, label: "Vitals", id: "vitals" },
 ];
 
 const Chat = () => {
@@ -60,56 +53,50 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Slim icon sidebar */}
-      <div className="w-[60px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
-        {/* Collapse toggle */}
-        <button
-          onClick={() => setShowHistory(!showHistory)}
-          className="p-2 rounded-lg hover:bg-accent transition-colors mb-4"
-          title="Toggle sidebar"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {showHistory ? <><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></> : <><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></>}
-          </svg>
-        </button>
-
-        <div className="w-8 h-[1px] bg-border mb-4" />
-
-        {/* Nav icons */}
-        <div className="flex-1 flex flex-col items-center gap-1">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveNav(item.id);
-                if (item.id === "home") navigate("/");
-                if (item.id === "history") setShowHistory(!showHistory);
-              }}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors group relative ${
-                activeNav === item.id
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              }`}
-              title={item.label}
-            >
-              {item.icon}
-              <span className="absolute left-full ml-2 px-2 py-1 rounded-md bg-foreground text-background text-xs font-body whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                {item.label}
-              </span>
-            </button>
-          ))}
+      {/* Slim icon sidebar with labels */}
+      <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+        {/* Logo */}
+        <div className="mb-6">
+          <img src={ciraLogo} alt="Cira" width={28} height={28} />
         </div>
 
-        {/* Bottom: profile */}
-        <div className="mt-auto flex flex-col items-center gap-3">
+        <div className="w-10 h-[1px] bg-border mb-3" />
+
+        {/* Nav icons with labels */}
+        <div className="flex-1 flex flex-col items-center gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveNav(item.id);
+                  if (item.id === "home") navigate("/");
+                  if (item.id === "history") setShowHistory(!showHistory);
+                }}
+                className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
+                  activeNav === item.id
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}
+              >
+                <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Bottom */}
+        <div className="mt-auto flex flex-col items-center gap-2">
           <button
             onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            title="Back to home"
+            className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <LogOut size={18} strokeWidth={1.5} />
+            <span className="text-[9px] font-body font-medium leading-none">Logout</span>
           </button>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
             JM
           </div>
         </div>
@@ -117,17 +104,21 @@ const Chat = () => {
 
       {/* Expandable chat history panel */}
       <div className={`${showHistory ? "w-56" : "w-0"} transition-all duration-200 border-r border-border bg-card overflow-hidden shrink-0`}>
-        <div className="p-3 border-b border-border">
+        <div className="p-3 border-b border-border flex items-center justify-between">
           <p className="text-xs font-medium text-foreground font-body">Chat History</p>
+          <button
+            onClick={() => { setActiveChat(null); setMessages([]); }}
+            className="p-1 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+            title="New chat"
+          >
+            <Plus size={14} />
+          </button>
         </div>
         <div className="p-2 space-y-0.5 overflow-y-auto">
           {mockHistory.map((chat) => (
             <button
               key={chat.id}
-              onClick={() => {
-                setActiveChat(chat.id);
-                startChat(chat.title);
-              }}
+              onClick={() => { setActiveChat(chat.id); startChat(chat.title); }}
               className={`w-full text-left px-3 py-2 rounded-lg text-xs font-body transition-colors ${
                 activeChat === chat.id
                   ? "bg-accent text-foreground"
@@ -143,80 +134,97 @@ const Chat = () => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Chat messages or welcome */}
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
-            /* Welcome screen like ClickUp Brain */
-            <div className="h-full flex flex-col items-center justify-center px-6">
-              {/* Gradient glow behind logo */}
-              <div className="relative mb-6">
-                <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-pink-400 via-primary to-blue-400 rounded-full scale-150" />
-                <img src={ciraLogo} alt="Cira" width={48} height={48} className="relative" />
+            /* Welcome screen */
+            <div className="h-full flex flex-col items-center justify-center px-6 relative">
+              {/* Ambient gradient background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-primary/8 via-purple-500/6 to-blue-500/8 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] bg-gradient-to-br from-primary/5 to-pink-500/5 rounded-full blur-3xl" />
               </div>
 
-              <h1 className="font-heading text-3xl font-semibold text-foreground mb-8">Cira</h1>
-
-              {/* Input box */}
-              <div className="w-full max-w-xl mb-8">
-                <form onSubmit={handleSend} className="relative">
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
-                    placeholder="Tell Cira what's going on — symptoms, concerns, anything."
-                    rows={3}
-                    className="w-full py-4 px-5 pr-24 rounded-2xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground resize-none shadow-sm"
-                  />
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button
-                      type="submit"
-                      className="p-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </button>
+              <div className="relative z-10 flex flex-col items-center">
+                {/* Logo with glow */}
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 blur-2xl opacity-30 bg-gradient-to-r from-primary via-purple-400 to-blue-400 rounded-full scale-[2]" />
+                  <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-purple-500/10 border border-primary/20 flex items-center justify-center backdrop-blur-sm">
+                    <img src={ciraLogo} alt="Cira" width={32} height={32} />
                   </div>
-                </form>
-              </div>
+                </div>
 
-              {/* Quick action cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-xl w-full">
-                {quickActions.map((action) => (
-                  <button
-                    key={action.title}
-                    onClick={() => {
-                      if (action.title === "Describe Symptoms") {
-                        // focus the textarea
-                      } else {
-                        startChat(action.title);
-                      }
-                    }}
-                    className="bg-card border border-border rounded-xl p-4 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
-                  >
-                    <span className="text-lg mb-2 block">{action.icon}</span>
-                    <p className="text-sm font-medium text-foreground font-body group-hover:text-primary transition-colors">{action.title}</p>
-                    <p className="text-xs text-muted-foreground font-body mt-0.5">{action.desc}</p>
-                  </button>
-                ))}
+                <h1 className="font-heading text-2xl font-semibold text-foreground mb-1">Cira</h1>
+                <p className="text-sm text-muted-foreground font-body mb-8">Your AI health assistant</p>
+
+                {/* Input box with gradient border */}
+                <div className="w-full max-w-xl mb-8">
+                  <form onSubmit={handleSend} className="relative group">
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/40 via-purple-500/30 to-blue-500/40 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-[1px]" />
+                    <div className="relative">
+                      <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
+                        placeholder="Tell Cira what's going on — symptoms, concerns, anything."
+                        rows={3}
+                        className="w-full py-4 px-5 pr-14 rounded-2xl border border-border bg-card/80 backdrop-blur-sm text-foreground font-body text-sm outline-none placeholder:text-muted-foreground resize-none shadow-sm"
+                      />
+                      <button
+                        type="submit"
+                        className="absolute bottom-3 right-3 p-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/20 transition-all"
+                      >
+                        <Send size={15} />
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Quick action cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-xl w-full">
+                  {quickActions.map((action) => (
+                    <button
+                      key={action.title}
+                      onClick={() => startChat(action.title)}
+                      className="group bg-card/60 backdrop-blur-sm border border-border rounded-xl p-4 text-left hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 transition-all"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center text-primary mb-2 group-hover:from-primary/20 group-hover:to-purple-500/20 transition-colors">
+                        {action.icon}
+                      </div>
+                      <p className="text-xs font-medium text-foreground font-body group-hover:text-primary transition-colors">{action.title}</p>
+                      <p className="text-[10px] text-muted-foreground font-body mt-0.5">{action.desc}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
-            /* Chat messages */
-            <div className="max-w-2xl mx-auto p-6 space-y-6">
+            /* Chat messages with AI styling */
+            <div className="max-w-2xl mx-auto p-6 space-y-5">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                   <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                    {msg.role === "cira" && (
-                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <img src={ciraLogo} alt="" width={16} height={16} />
+                    {msg.role === "cira" ? (
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-purple-500/15 flex items-center justify-center shrink-0 mt-0.5 ring-1 ring-primary/10">
+                        <img src={ciraLogo} alt="" width={14} height={14} />
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold">
+                        JM
                       </div>
                     )}
                     <div
                       className={`rounded-2xl px-4 py-3 text-sm font-body leading-relaxed ${
                         msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-card border border-border text-foreground rounded-bl-md"
+                          ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground rounded-tr-md shadow-md shadow-primary/10"
+                          : "bg-card border border-border text-foreground rounded-tl-md shadow-sm"
                       }`}
                     >
+                      {msg.role === "cira" && (
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <Sparkles size={10} className="text-primary" />
+                          <p className="text-[10px] text-primary font-medium">Cira</p>
+                        </div>
+                      )}
                       <p className="whitespace-pre-line">{msg.text}</p>
                     </div>
                   </div>
@@ -226,22 +234,23 @@ const Chat = () => {
           )}
         </div>
 
-        {/* Bottom input (shown when in conversation) */}
+        {/* Bottom input when in conversation */}
         {messages.length > 0 && (
-          <div className="border-t border-border p-4 bg-card shrink-0">
-            <form onSubmit={handleSend} className="max-w-2xl mx-auto flex gap-3">
+          <div className="border-t border-border p-4 bg-card/80 backdrop-blur-sm shrink-0">
+            <form onSubmit={handleSend} className="max-w-2xl mx-auto flex gap-3 relative group">
+              <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/20 via-purple-500/15 to-blue-500/20 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-[1px]" />
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Tell Cira what's going on..."
-                className="flex-1 py-3 px-4 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+                className="relative flex-1 py-3 px-4 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none placeholder:text-muted-foreground"
               />
               <button
                 type="submit"
-                className="px-4 py-3 rounded-xl bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
+                className="relative px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-body text-sm font-medium hover:shadow-lg hover:shadow-primary/20 transition-all"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <Send size={16} />
               </button>
             </form>
           </div>
