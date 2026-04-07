@@ -102,35 +102,56 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Expandable chat history panel */}
-      <div className={`${showHistory ? "w-56" : "w-0"} transition-all duration-200 border-r border-border bg-card overflow-hidden shrink-0`}>
-        <div className="p-3 border-b border-border flex items-center justify-between">
-          <p className="text-xs font-medium text-foreground font-body">Chat History</p>
-          <button
-            onClick={() => { setActiveChat(null); setMessages([]); }}
-            className="p-1 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-            title="New chat"
+      {/* Chat history drawer overlay */}
+      {showHistory && (
+        <div className="fixed inset-0 z-50 flex" onClick={() => setShowHistory(false)}>
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] animate-fade-in" />
+          
+          {/* Drawer panel */}
+          <div
+            className="relative w-72 h-full bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]"
+            style={{ marginLeft: 72 }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Plus size={14} />
-          </button>
+            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setActiveChat(null); setMessages([]); setShowHistory(false); }}
+                  className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                  title="New chat"
+                >
+                  <Plus size={16} />
+                </button>
+                <button
+                  onClick={() => setShowHistory(false)}
+                  className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
+              {mockHistory.map((chat) => (
+                <button
+                  key={chat.id}
+                  onClick={() => { setActiveChat(chat.id); startChat(chat.title); setShowHistory(false); }}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all ${
+                    activeChat === chat.id
+                      ? "bg-primary/10 text-foreground border border-primary/20"
+                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                  }`}
+                >
+                  <p className="truncate font-medium">{chat.title}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date}</p>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="p-2 space-y-0.5 overflow-y-auto">
-          {mockHistory.map((chat) => (
-            <button
-              key={chat.id}
-              onClick={() => { setActiveChat(chat.id); startChat(chat.title); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-body transition-colors ${
-                activeChat === chat.id
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              }`}
-            >
-              <p className="truncate">{chat.title}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date}</p>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
