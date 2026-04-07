@@ -217,7 +217,7 @@ const Index = () => {
           </div>
 
           {/* Cira example — pink card */}
-          <div className="border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-2xl mx-auto text-left mb-6">
+          <div className="scroll-fade border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-2xl mx-auto text-left mb-6">
             <p className="text-sm text-foreground font-body leading-relaxed italic whitespace-pre-line">
               {"\"Your blood pressure is 138/88 and your heart\nrate is 102. Combined with the chest tightness\nyou're describing and your HRV drop of 22% —\nthis pattern is consistent with acute\ncardiovascular stress.\n\nThis is not something to sleep on.\n\nGo to a clinic or emergency room within the\nnext two hours. I've prepared a complete\nsummary of everything I found for your doctor.\""}
             </p>
@@ -246,7 +246,7 @@ const Index = () => {
           </p>
 
           {/* Four proof numbers */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-14">
+          <div className="scroll-fade grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-14">
             <div>
               <p className="font-heading text-3xl font-semibold text-foreground">7M+</p>
               <div className="border-t border-border mt-2 pt-2">
@@ -324,7 +324,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
             <table className="w-full text-sm font-body">
               <thead>
                 <tr className="border-b border-border">
@@ -360,7 +360,7 @@ const Index = () => {
           </div>
 
           {/* Quote */}
-          <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
             <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
               "Integrating Shen AI helped us become the<br />
               #1 blood pressure app in the US, UK, Canada<br />
@@ -485,7 +485,7 @@ const Index = () => {
         </p>
 
         {/* Browser chrome mockup */}
-        <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-3xl mx-auto text-left relative">
+        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-3xl mx-auto text-left relative">
           {/* Browser bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary">
             <div className="flex gap-1.5">
@@ -556,7 +556,7 @@ const Index = () => {
               </div>
 
               {/* Cira observation */}
-              <div className="border-l-4 border-primary bg-secondary rounded-r-lg p-4">
+              <div className="scroll-fade border-l-4 border-primary bg-secondary rounded-r-lg p-4">
                 <p className="text-xs text-muted-foreground font-body mb-1">Cira noticed</p>
                 <p className="text-sm text-foreground font-body italic leading-relaxed">
                   "I've seen this pattern before.<br />
@@ -591,7 +591,7 @@ const Index = () => {
         </p>
 
         {/* Report card */}
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
+        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
           <div className="border-t-2 border-b-2 border-foreground py-2 mb-4 text-center">
             <p className="text-foreground font-semibold tracking-widest text-xs uppercase">Cira Health Summary</p>
           </div>
