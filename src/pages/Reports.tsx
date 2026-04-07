@@ -47,17 +47,6 @@ const mockReports = [
   },
 ];
 
-const typeColor = (type: string) => {
-  if (type === "Detailed Assessment") return "text-purple-600 bg-purple-50";
-  if (type === "Quick Assessment") return "text-blue-600 bg-blue-50";
-  return "text-emerald-600 bg-emerald-50";
-};
-
-const typeIcon = (type: string) => {
-  if (type === "Detailed Assessment") return "📋";
-  if (type === "Quick Assessment") return "⚡";
-  return "🔬";
-};
 
 const Reports = () => {
   const navigate = useNavigate();
