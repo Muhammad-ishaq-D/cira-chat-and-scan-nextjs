@@ -93,7 +93,7 @@ const Index = () => {
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
-        <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
+        <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
           Login
         </button>
       </nav>
@@ -147,7 +147,7 @@ const Index = () => {
             <div className="flex items-center justify-end mt-3">
               <button
                 onClick={() => navigate("/login")}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
                 Ask Cira
