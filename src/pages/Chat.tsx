@@ -110,8 +110,8 @@ const Chat = () => {
           
           {/* Drawer panel */}
           <div
-            className="relative w-72 h-full bg-card border-r border-border shadow-2xl animate-slide-in-right flex flex-col"
-            style={{ marginLeft: 72, animationName: 'slideInLeft' }}
+            className="relative w-72 h-full bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]"
+            style={{ marginLeft: 72 }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
