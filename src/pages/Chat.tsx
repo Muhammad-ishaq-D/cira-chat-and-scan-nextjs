@@ -71,7 +71,7 @@ const Chat = () => {
                 key={item.id}
                 onClick={() => {
                   setActiveNav(item.id);
-                  if (item.id === "home") navigate("/");
+                  if (item.id === "home") navigate("/dashboard");
                   if (item.id === "history") setShowHistory(!showHistory);
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
