@@ -1,10 +1,39 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
+
+// Typewriter component — streams text character by character
+const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
+  const [displayed, setDisplayed] = useState("");
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    setDisplayed("");
+    indexRef.current = 0;
+    const interval = setInterval(() => {
+      indexRef.current += 1;
+      setDisplayed(text.slice(0, indexRef.current));
+      if (indexRef.current >= text.length) {
+        clearInterval(interval);
+        onComplete?.();
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return (
+    <span className="whitespace-pre-line">
+      {displayed}
+      {displayed.length < text.length && (
+        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
+      )}
+    </span>
+  );
+};
 
 const mockHistory = [
   { id: "1", title: "Chest tightness and fatigue", date: "Today" },
@@ -78,6 +107,7 @@ const Chat = () => {
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change or typing starts
@@ -123,13 +153,17 @@ const Chat = () => {
     setMessage("");
     setIsTyping(true);
 
-    // Simulate Cira typing delay, then add response
+    // Simulate Cira typing delay, then add response with typewriter
     setTimeout(() => {
       setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
-      ]);
+      setMessages((prev) => {
+        const newMessages = [
+          ...prev,
+          { role: "cira" as const, text: modeResponses[chatMode] || modeResponses.chat },
+        ];
+        setTypingMsgIndex(newMessages.length - 1);
+        return newMessages;
+      });
     }, 1200);
   };
 
@@ -524,7 +558,17 @@ const Chat = () => {
                           className="text-foreground"
                           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                         >
-                          <p className="text-[14px] md:text-[15px] leading-7 whitespace-pre-line">{msg.text}</p>
+                          <p className="text-[14px] md:text-[15px] leading-7">
+                            {typingMsgIndex === i ? (
+                              <TypewriterText
+                                text={msg.text}
+                                speed={15}
+                                onComplete={() => setTypingMsgIndex(null)}
+                              />
+                            ) : (
+                              <span className="whitespace-pre-line">{msg.text}</span>
+                            )}
+                          </p>
                         </div>
                       </div>
                     )}
