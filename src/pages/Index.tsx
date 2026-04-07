@@ -6,6 +6,7 @@ import realScan from "@/assets/real-scan.webp";
 import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 
 
