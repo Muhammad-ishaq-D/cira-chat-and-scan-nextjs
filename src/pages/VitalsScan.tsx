@@ -70,6 +70,7 @@ const VitalsScan = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "reports") navigate("/reports");
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   item.id === "scan"
