@@ -599,6 +599,22 @@ const Chat = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Typing indicator */}
+                {isTyping && (
+                  <div className="flex justify-start animate-fade-in">
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2">
+                        <AiSparkleIcon size={20} active />
+                      </div>
+                      <div className="flex items-center gap-1.5 py-1">
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
