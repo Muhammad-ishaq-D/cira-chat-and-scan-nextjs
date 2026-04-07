@@ -44,13 +44,41 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+    /* Fix Safari 100vh issue */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+
+  html {
+    height: -webkit-fill-available;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+  }
+
+  /* Prevent Safari input zoom on focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 768px) {
+    input, textarea, select {
+      font-size: inherit !important;
+    }
   }
 }
 
@@ -58,6 +86,24 @@
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
   }
+}
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix momentum scrolling */
+  .overflow-y-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix backdrop-filter */
+  .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-xl {
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Smooth scrolling containers */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Scroll-triggered fade-in */

@@ -119,7 +119,7 @@ const Doctor = () => {
   };
 
   return (
-    <div className="h-screen flex bg-background">
+    <div className="flex bg-background" style={{ height: '100dvh' }}>
       {/* Sidebar — hidden on mobile */}
       <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
         <div className="mb-6">
