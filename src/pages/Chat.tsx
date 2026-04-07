@@ -558,7 +558,17 @@ const Chat = () => {
                           className="text-foreground"
                           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                         >
-                          <p className="text-[14px] md:text-[15px] leading-7 whitespace-pre-line">{msg.text}</p>
+                          <p className="text-[14px] md:text-[15px] leading-7">
+                            {typingMsgIndex === i ? (
+                              <TypewriterText
+                                text={msg.text}
+                                speed={15}
+                                onComplete={() => setTypingMsgIndex(null)}
+                              />
+                            ) : (
+                              <span className="whitespace-pre-line">{msg.text}</span>
+                            )}
+                          </p>
                         </div>
                       </div>
                     )}
