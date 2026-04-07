@@ -3,6 +3,7 @@ import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, Shield
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -55,8 +56,8 @@ const Dashboard = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Slim icon sidebar */}
-      <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+      {/* Slim icon sidebar — hidden on mobile */}
+      <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
         <div className="mb-6">
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
         </div>
@@ -109,13 +110,13 @@ const Dashboard = () => {
       {/* Main content */}
       <div className="flex-1 overflow-y-auto relative">
         {/* Gradient background */}
-        <div className="fixed inset-0 pointer-events-none" style={{ left: 72 }}>
+        <div className="fixed inset-0 pointer-events-none md:left-[72px]">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
           <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />
           <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 py-8">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           {/* Header */}
           <div className="mb-8">
             <p className="text-sm text-muted-foreground font-body mb-1">Welcome back</p>
