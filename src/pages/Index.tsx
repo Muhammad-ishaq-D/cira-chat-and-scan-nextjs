@@ -107,38 +107,38 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-6xl mx-auto px-6 pt-12 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground animate-fade-in">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8 sm:mb-10 text-xs sm:text-sm font-body text-foreground animate-fade-in">
           <span className="font-semibold">🔒 100%-Secure</span>
           <span>👥 Trusted by thousands</span>
           <span>⚡ Instant AI answers</span>
         </div>
 
         {/* Avatar + H1 */}
-        <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
-          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover animate-float" />
-          <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
+        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
+          <img src={doctor1} alt="Cira avatar" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover animate-float" />
+          <h1 className="font-heading text-2xl sm:text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
             Hi, I'm <span className="text-primary">Cira</span>, your AI Nurse
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation, should you choose to see a doctor.
+        <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in px-2" style={{ animationDelay: "0.3s" }}>
+          I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation.
         </p>
 
-        <p className="text-base text-foreground font-semibold text-center mb-6 font-body">
+        <p className="text-sm sm:text-base text-foreground font-semibold text-center mb-5 sm:mb-6 font-body">
           Let's start with what's been bothering you.
         </p>
 
         {/* Symptom chips */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.45s" }}>
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-5 sm:mb-6 animate-fade-in px-2" style={{ animationDelay: "0.45s" }}>
           {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
             <button
               key={chip}
               onClick={() => { setHeroMessage(chip); }}
-              className={`px-5 py-2.5 rounded-full border text-sm font-body transition-all duration-200 hover:scale-105 ${
+              className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border text-xs sm:text-sm font-body transition-all duration-200 active:scale-95 sm:hover:scale-105 ${
                 heroMessage === chip
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-card text-foreground hover:border-primary hover:bg-primary/5"
@@ -150,19 +150,19 @@ const Index = () => {
         </div>
 
         {/* Chat input */}
-        <div className="max-w-2xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: "0.55s" }}>
-          <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="max-w-2xl mx-auto mb-4 animate-slide-up px-1" style={{ animationDelay: "0.55s" }}>
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <textarea
               value={heroMessage}
               onChange={(e) => setHeroMessage(e.target.value)}
               placeholder="Ask me anything about your health..."
-              className="w-full bg-transparent text-foreground font-body text-base resize-none outline-none placeholder:text-muted-foreground min-h-[80px]"
+              className="w-full bg-transparent text-foreground font-body text-sm sm:text-base resize-none outline-none placeholder:text-muted-foreground min-h-[60px] sm:min-h-[80px]"
               rows={3}
             />
-            <div className="flex items-center justify-end mt-3">
+            <div className="flex items-center justify-end mt-2 sm:mt-3">
               <button
                 onClick={handleAskCira}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
+                className="flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
                 Ask Cira
