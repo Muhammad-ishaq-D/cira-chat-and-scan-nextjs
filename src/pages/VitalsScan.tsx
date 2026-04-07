@@ -22,6 +22,7 @@ const VitalsScan = () => {
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
 
   const startScan = () => {
     setScanning(true);
