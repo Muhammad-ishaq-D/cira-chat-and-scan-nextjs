@@ -77,7 +77,7 @@ const VitalsScan = () => {
                 }`}
               >
                 {item.id === "chat" ? (
-                  <AiSparkleIcon size={18} active={item.id === "scan"} />
+                  <AiSparkleIcon size={18} />
                 ) : (
                   <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />
                 )}
