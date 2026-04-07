@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace, Sparkles } from "lucide-react";
+import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace, Sparkles, FileText } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -16,6 +16,7 @@ const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
+  { icon: FileText, label: "Reports", id: "reports" },
 ];
 
 const VitalsScan = () => {
@@ -69,6 +70,7 @@ const VitalsScan = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "reports") navigate("/reports");
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   item.id === "scan"
