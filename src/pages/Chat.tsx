@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Clock, Activity, LogOut, Send, Plus, Sparkles } from "lucide-react";
+import { Home, MessageCircle, Menu, Activity, LogOut, Send, Plus, Sparkles, Clock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const mockHistory = [
@@ -19,9 +19,9 @@ const quickActions = [
 ];
 
 const navItems = [
+  { icon: Menu, label: "History", id: "history" },
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Clock, label: "History", id: "history" },
   { icon: Activity, label: "Vitals", id: "vitals" },
 ];
 
