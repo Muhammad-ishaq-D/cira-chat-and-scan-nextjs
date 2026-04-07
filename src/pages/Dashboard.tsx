@@ -5,8 +5,6 @@ import ciraLogo from "@/assets/cira-logo.svg";
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Clock, label: "History", id: "history" },
-  { icon: Activity, label: "Vitals", id: "vitals" },
 ];
 
 const vitals = [
