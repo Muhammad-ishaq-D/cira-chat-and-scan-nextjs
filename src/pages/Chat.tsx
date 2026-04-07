@@ -340,7 +340,7 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
             <div className="h-full flex flex-col items-center justify-center px-4 md:px-6 pb-20 md:pb-0 relative overflow-hidden">
