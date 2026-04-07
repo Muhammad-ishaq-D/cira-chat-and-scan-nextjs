@@ -118,37 +118,51 @@ const Doctor = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
-      {/* Sidebar */}
-      <aside className="w-16 bg-white border-r border-gray-100 flex flex-col items-center py-6 gap-2 shadow-sm">
-        <img src={ciraLogo} alt="Cira" className="w-9 h-9 mb-4" />
-        {navItems.map((item) => (
+    <div className="h-screen flex bg-background">
+      {/* Slim icon sidebar */}
+      <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+        <div className="mb-6">
+          <img src={ciraLogo} alt="Cira" width={28} height={28} />
+        </div>
+        <div className="w-10 h-[1px] bg-border mb-3" />
+        <div className="flex-1 flex flex-col items-center gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNav(item.id)}
+                className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
+                  item.id === "doctor"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}
+              >
+                {item.id === "chat" ? (
+                  <AiSparkleIcon size={18} />
+                ) : (
+                  <Icon size={18} strokeWidth={item.id === "doctor" ? 2 : 1.5} />
+                )}
+                <span className="text-[9px] font-medium leading-none">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-auto flex flex-col items-center gap-2">
           <button
-            key={item.id}
-            onClick={() => handleNav(item.id)}
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all text-[10px] font-medium gap-0.5
-              ${item.id === "doctor"
-                ? "bg-gradient-to-br from-blue-500 to-cyan-400 text-white shadow-lg shadow-blue-200"
-                : "text-gray-400 hover:bg-gray-50 hover:text-gray-700"}`}
+            onClick={() => navigate("/")}
+            className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
-            {item.id === "chat" ? (
-              <AiSparkleIcon size={20} />
-            ) : (
-              <item.icon size={20} />
-            )}
-            <span className="truncate">{item.label}</span>
+            <LogOut size={18} strokeWidth={1.5} />
+            <span className="text-[9px] font-medium leading-none">Logout</span>
           </button>
-        ))}
-        <div className="flex-1" />
-        <ProfilePopover>
-          <button className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
-            JD
-          </button>
-        </ProfilePopover>
-        <button onClick={() => navigate("/login")} className="text-gray-300 hover:text-red-400 transition-colors mt-1">
-          <LogOut size={18} />
-        </button>
-      </aside>
+          <ProfilePopover>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium cursor-pointer ring-2 ring-primary/20">
+              AX
+            </div>
+          </ProfilePopover>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
