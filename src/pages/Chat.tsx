@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -45,6 +45,15 @@ const chatModes = [
   },
 ];
 
+const scanVitals = [
+  { label: "Heart Rate", value: "72", unit: "bpm", icon: Heart, color: "text-red-500 bg-red-50" },
+  { label: "Blood Pressure", value: "118/76", unit: "mmHg", icon: Activity, color: "text-pink-500 bg-pink-50" },
+  { label: "Breathing Rate", value: "16", unit: "/min", icon: Wind, color: "text-cyan-500 bg-cyan-50" },
+  { label: "Stress Index", value: "32", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
+  { label: "HRV", value: "54", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
+  { label: "BMI", value: "22.4", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
+];
+
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
@@ -58,11 +67,15 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira"; text: string }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals"; text: string; vitalsData?: typeof scanVitals }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
+  const [showScanModal, setShowScanModal] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanning, setScanning] = useState(false);
+  const [scanComplete, setScanComplete] = useState(false);
 
   // Pick up message from landing page
   useEffect(() => {
@@ -98,20 +111,76 @@ const Chat = () => {
     setMessage("");
   };
 
+  const startScan = () => {
+    setScanning(true);
+    setScanComplete(false);
+    setScanProgress(0);
+    const interval = setInterval(() => {
+      setScanProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setScanning(false);
+          setScanComplete(true);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 80);
+  };
+
+  const completeScanAndChat = () => {
+    setShowScanModal(false);
+    setScanComplete(false);
+    setScanProgress(0);
+    
+    // Build vitals summary text for Cira context
+    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join("\n");
+    
+    const ciraResponse = "✨ Scan complete! I've captured all your vitals. Here's what I'm working with:\n\nNow I have a full picture of your body's current state. Combined with what you've told me, I can give you a much more informed assessment.\n\nWhat would you like help with today?";
+
+    if (pendingLandingMessage) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+        { role: "cira", text: ciraResponse },
+      ]);
+      setPendingLandingMessage(null);
+    } else {
+      setMessages([
+        { role: "cira", text: "📸 Starting your vital scan..." },
+        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+        { role: "cira", text: ciraResponse },
+      ]);
+    }
+  };
+
   const selectMode = (mode: ChatMode) => {
+    if (mode === "vitals") {
+      setChatMode(mode);
+      setShowModeSelection(false);
+      // Open scan modal instead of going straight to chat
+      setShowScanModal(true);
+      if (pendingLandingMessage) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "cira", text: "✨ Vital Scan + Assessment activated!\n\nLet me capture your vitals first — this will only take 30 seconds..." },
+        ]);
+      }
+      return;
+    }
+
     setChatMode(mode);
     setShowModeSelection(false);
     
     const modeConfirmations: Record<ChatMode, string> = {
       quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
       detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
-      vitals: "✨ Vital Scan + Assessment activated!\n\nI'll combine your face scan vitals with what you've told me for the most informed analysis possible.\n\nLet me start by scanning your vitals...",
+      vitals: "",
       chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
 
     if (pendingLandingMessage) {
-      // Keep existing messages and append mode confirmation
       setMessages((prev) => [
         ...prev,
         { role: "cira", text: modeConfirmations[mode] },
@@ -121,7 +190,7 @@ const Chat = () => {
       const greetings: Record<ChatMode, string> = {
         quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
         detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-        vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+        vitals: "",
         chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
         none: "",
       };
@@ -341,6 +410,45 @@ const Chat = () => {
               <div className="relative z-10 max-w-2xl mx-auto p-6 space-y-5">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                    {/* Vitals card */}
+                    {msg.role === "vitals" && msg.vitalsData ? (
+                      <div className="flex items-start gap-3 max-w-[85%]">
+                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          <ScanFace size={16} className="text-primary" />
+                        </div>
+                        <div className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full">
+                          <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
+                                <Activity size={12} className="text-white" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Your Vitals</p>
+                                <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-0.5 p-2">
+                            {msg.vitalsData.map((vital) => {
+                              const VIcon = vital.icon;
+                              return (
+                                <div key={vital.label} className="flex flex-col items-center p-3 rounded-xl hover:bg-accent/30 transition-colors">
+                                  <div className={`w-8 h-8 rounded-lg ${vital.color} flex items-center justify-center mb-1.5`}>
+                                    <VIcon size={14} />
+                                  </div>
+                                  <p className="text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{vital.value}</p>
+                                  <p className="text-[9px] text-muted-foreground text-center leading-tight mt-0.5">{vital.label}</p>
+                                  <p className="text-[8px] text-muted-foreground/60">{vital.unit}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="px-4 py-2 border-t border-border/20">
+                            <p className="text-[9px] text-emerald-600 font-medium text-center">✓ All vitals within healthy range</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
                     <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                       {msg.role === "cira" ? (
                         <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -368,6 +476,7 @@ const Chat = () => {
                         <p className="whitespace-pre-line">{msg.text}</p>
                       </div>
                     </div>
+                    )}
                   </div>
                 ))}
 
@@ -448,6 +557,142 @@ const Chat = () => {
           </div>
         )}
       </div>
+
+      {/* Face Scan Modal */}
+      {showScanModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { if (!scanning) { setShowScanModal(false); setScanComplete(false); setScanProgress(0); } }} />
+          <div className="relative z-10 bg-card rounded-3xl shadow-2xl border border-border/50 w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                  <ScanFace size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Face Vital Scan</p>
+                  <p className="text-[10px] text-muted-foreground">30 seconds · 100% on-device</p>
+                </div>
+              </div>
+              {!scanning && (
+                <button onClick={() => { setShowScanModal(false); setScanComplete(false); setScanProgress(0); }} className="w-8 h-8 rounded-lg hover:bg-accent flex items-center justify-center text-muted-foreground transition-colors">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {/* Camera Area */}
+            <div className="px-6 pb-4">
+              <div className="relative aspect-[4/3] rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex items-center justify-center">
+                {!scanning && !scanComplete && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 to-teal-900/20" />
+                    <div className="relative z-10 flex flex-col items-center gap-4">
+                      <div className="w-24 h-24 rounded-full border-2 border-dashed border-emerald-400/50 flex items-center justify-center">
+                        <Camera size={32} className="text-emerald-400/70" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-white/80 font-medium">Position your face in the frame</p>
+                        <p className="text-[10px] text-white/50 mt-1">Ensure good lighting · Hold still</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {scanning && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/30 to-teal-900/30" />
+                    {/* Animated scan lines */}
+                    <div className="absolute inset-4 border-2 border-emerald-400/40 rounded-2xl">
+                      <div
+                        className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+                        style={{ top: `${scanProgress}%`, transition: "top 0.08s linear" }}
+                      />
+                    </div>
+                    {/* Face outline */}
+                    <div className="relative z-10 w-28 h-36 border-2 border-emerald-400/60 rounded-[50%] flex items-center justify-center">
+                      <ScanFace size={40} className="text-emerald-400/60 animate-pulse" />
+                    </div>
+                    {/* Pulsing corners */}
+                    <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-emerald-400 rounded-tl-lg animate-pulse" />
+                    <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-emerald-400 rounded-tr-lg animate-pulse" />
+                    <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-emerald-400 rounded-bl-lg animate-pulse" />
+                    <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-emerald-400 rounded-br-lg animate-pulse" />
+                    {/* Progress text */}
+                    <div className="absolute bottom-6 left-0 right-0 text-center">
+                      <p className="text-emerald-400 text-xs font-medium">Scanning... {scanProgress}%</p>
+                    </div>
+                  </>
+                )}
+
+                {scanComplete && (
+                  <div className="relative z-10 flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-fade-in">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <p className="text-white text-sm font-semibold">Scan Complete!</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              {scanning && (
+                <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-100"
+                    style={{ width: `${scanProgress}%` }}
+                  />
+                </div>
+              )}
+
+              {/* Vitals Preview (after scan) */}
+              {scanComplete && (
+                <div className="mt-4 animate-fade-in">
+                  <div className="grid grid-cols-3 gap-2">
+                    {scanVitals.map((vital) => {
+                      const VIcon = vital.icon;
+                      return (
+                        <div key={vital.label} className="bg-accent/30 rounded-xl p-2.5 text-center">
+                          <div className={`w-7 h-7 rounded-lg ${vital.color} flex items-center justify-center mx-auto mb-1`}>
+                            <VIcon size={13} />
+                          </div>
+                          <p className="text-xs font-bold text-foreground">{vital.value}</p>
+                          <p className="text-[8px] text-muted-foreground leading-tight">{vital.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Button */}
+            <div className="px-6 pb-5">
+              {!scanning && !scanComplete && (
+                <button
+                  onClick={startScan}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Camera size={16} />
+                  Start Face Scan
+                </button>
+              )}
+              {scanComplete && (
+                <button
+                  onClick={completeScanAndChat}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={16} />
+                  Continue to Assessment
+                </button>
+              )}
+              <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
+                🔒 Camera feed is never recorded or transmitted. 100% on-device processing.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
