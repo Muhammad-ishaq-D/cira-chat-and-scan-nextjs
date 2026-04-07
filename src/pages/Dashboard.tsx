@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Clock, Activity, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Home, MessageCircle, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Activity, label: "Scan", id: "scan" },
+  { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 
 const vitals = [
