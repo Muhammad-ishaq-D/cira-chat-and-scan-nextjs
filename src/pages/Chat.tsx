@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -61,6 +61,23 @@ const Chat = () => {
   const [messages, setMessages] = useState<{ role: "user" | "cira"; text: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
+  const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
+  const [showModeSelection, setShowModeSelection] = useState(false);
+
+  // Pick up message from landing page
+  useEffect(() => {
+    const landingMsg = sessionStorage.getItem("cira_landing_message");
+    if (landingMsg) {
+      sessionStorage.removeItem("cira_landing_message");
+      setPendingLandingMessage(landingMsg);
+      // Show the user's message + Cira's response with mode selection
+      setMessages([
+        { role: "user", text: landingMsg },
+        { role: "cira", text: `Thanks for sharing that — "${landingMsg}"\n\nBefore I dive in, I'd love to help you in the best way possible. How would you like to proceed?` },
+      ]);
+      setShowModeSelection(true);
+    }
+  }, []);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
