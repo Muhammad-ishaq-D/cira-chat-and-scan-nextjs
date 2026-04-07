@@ -9,6 +9,7 @@ import OurStory from "./pages/OurStory.tsx";
 import Login from "./pages/Login.tsx";
 import Chat from "./pages/Chat.tsx";
 import Upgrade from "./pages/Upgrade.tsx";
+import VitalsScan from "./pages/VitalsScan.tsx";
 import PaymentHistory from "./pages/PaymentHistory.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/chat" element={<Chat />} />
           <Route path="/our-story" element={<OurStory />} />
           <Route path="/upgrade" element={<Upgrade />} />
+          <Route path="/vitals-scan" element={<VitalsScan />} />
           <Route path="/payment-history" element={<PaymentHistory />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

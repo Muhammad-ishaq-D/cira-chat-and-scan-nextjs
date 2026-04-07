@@ -6,6 +6,7 @@ import ProfilePopover from "@/components/ProfilePopover";
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
+  { icon: Activity, label: "Scan", id: "scan" },
 ];
 
 const vitals = [
@@ -66,6 +67,7 @@ const Dashboard = () => {
                 onClick={() => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
+                  if (item.id === "scan") navigate("/vitals-scan");
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   activeNav === item.id
