@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, BotMessageSquare, MessageCircle } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -13,11 +13,36 @@ const mockHistory = [
   { id: "5", title: "Sleep issues and stress", date: "Mar 25" },
 ];
 
-const quickActions = [
-  { icon: <MessageCircle size={18} />, title: "Describe Symptoms", desc: "Tell Cira how you feel" },
-  { icon: <Activity size={18} />, title: "Scan Vitals", desc: "Camera-based health scan" },
-  { icon: <Clock size={18} />, title: "Review History", desc: "Past consultations" },
-  { icon: <Sparkles size={18} />, title: "Health Insights", desc: "AI-powered analysis" },
+type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
+
+const chatModes = [
+  {
+    id: "quick" as ChatMode,
+    icon: Stethoscope,
+    title: "Quick Assessment",
+    desc: "Cira asks focused questions and gives you fast health advice with good accuracy.",
+    badge: "~2 min",
+    gradient: "from-blue-500 to-cyan-400",
+    bgGlow: "bg-blue-100",
+  },
+  {
+    id: "detailed" as ChatMode,
+    icon: FileText,
+    title: "Detailed Assessment",
+    desc: "Cira asks in-depth questions, gathers full insight, and generates a comprehensive health report.",
+    badge: "~8 min · Highest Accuracy",
+    gradient: "from-purple-500 to-pink-400",
+    bgGlow: "bg-purple-100",
+  },
+  {
+    id: "vitals" as ChatMode,
+    icon: ScanFace,
+    title: "Vital Scan + Assessment",
+    desc: "Quick face scan captures your vitals first, then Cira uses that data for a more informed consultation.",
+    badge: "~4 min · Scan Powered",
+    gradient: "from-emerald-500 to-teal-400",
+    bgGlow: "bg-emerald-100",
+  },
 ];
 
 const navItems = [
@@ -33,16 +58,37 @@ const Chat = () => {
   const [activeNav, setActiveNav] = useState("chat");
   const [messages, setMessages] = useState<{ role: "user" | "cira"; text: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [chatMode, setChatMode] = useState<ChatMode>("none");
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+    if (chatMode === "none") setChatMode("chat");
+    const modeResponses: Record<ChatMode, string> = {
+      quick: "I hear you. Let me do a quick assessment.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
+      detailed: "I'll conduct a thorough assessment. Let's start from the beginning.\n\nFirst, can you describe your primary concern in detail? When did it first start, and has it changed over time?",
+      vitals: "I've noted your vitals from the scan. Now let me combine that data with your symptoms.\n\nWhat's been bothering you? I'll cross-reference with your vital readings.",
+      chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
+      none: "",
+    };
     setMessages((prev) => [
       ...prev,
       { role: "user", text: message },
-      { role: "cira", text: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?" },
+      { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
     ]);
     setMessage("");
+  };
+
+  const selectMode = (mode: ChatMode) => {
+    setChatMode(mode);
+    const greetings: Record<ChatMode, string> = {
+      quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
+      detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
+      vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+      chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+      none: "",
+    };
+    setMessages([{ role: "cira", text: greetings[mode] }]);
   };
 
   const startChat = (title: string) => {
@@ -189,55 +235,57 @@ const Chat = () => {
               </div>
 
               <div className="relative z-10 flex flex-col items-center w-full max-w-2xl">
-                <h1 className="text-[36px] font-semibold text-foreground mb-10 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  What's on your mind?
+                <div className="w-14 h-14 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/40 flex items-center justify-center mb-5 shadow-sm">
+                  <img src={ciraLogo} alt="Cira" width={28} height={28} />
+                </div>
+                <h1 className="text-[32px] font-semibold text-foreground mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  How can Cira help you?
                 </h1>
+                <p className="text-sm text-muted-foreground mb-10 text-center max-w-md">
+                  Choose a consultation type below, or just start chatting with your AI health nurse.
+                </p>
 
-                {/* Input box — warm, rounded, minimal */}
-                <div className="w-full max-w-xl mb-10">
-                  <form onSubmit={handleSend} className="relative">
-                    <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 overflow-hidden">
-                      <input
-                        type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Tell Cira your symptoms, concerns, anything..."
-                        className="w-full py-4 px-5 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/60"
-                        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-                      />
-                      <div className="flex items-center justify-between px-4 pb-3">
-                        <button type="button" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">
-                          <Plus size={18} />
-                        </button>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="submit"
-                            className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-80 transition-opacity"
-                          >
-                            <Send size={14} className="-ml-0.5" />
-                          </button>
+                {/* Mode selection cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
+                  {chatModes.map((mode) => {
+                    const Icon = mode.icon;
+                    return (
+                      <button
+                        key={mode.id}
+                        onClick={() => selectMode(mode.id)}
+                        className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-5 text-left hover:shadow-lg hover:border-border/80 transition-all hover:-translate-y-0.5"
+                      >
+                        <div className={`w-10 h-10 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-3`}>
+                          <Icon size={20} className={`bg-gradient-to-r ${mode.gradient} bg-clip-text`} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : mode.gradient.includes("purple") ? "#a855f7" : "#10b981" }} />
                         </div>
-                      </div>
-                    </div>
-                  </form>
+                        <p className="text-sm font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">{mode.desc}</p>
+                        <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
+                          {mode.badge}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Quick action cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-xl">
-                  {quickActions.map((action) => (
-                    <button
-                      key={action.title}
-                      onClick={() => startChat(action.title)}
-                      className="group bg-card/70 backdrop-blur-sm border border-border/40 rounded-xl p-4 text-left hover:bg-card/90 hover:shadow-md hover:border-border transition-all"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center text-muted-foreground mb-2 group-hover:text-foreground transition-colors">
-                        {action.icon}
-                      </div>
-                      <p className="text-xs font-medium text-foreground font-body">{action.title}</p>
-                      <p className="text-[10px] text-muted-foreground font-body mt-0.5">{action.desc}</p>
-                    </button>
-                  ))}
-                </div>
+                {/* Just chat option */}
+                <button
+                  onClick={() => selectMode("chat")}
+                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
+                    <MessageCircle size={16} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-medium text-foreground">Just Chat with Cira</p>
+                    <p className="text-[10px] text-muted-foreground">No assessment — ask anything, get guided advice</p>
+                  </div>
+                </button>
+
+                {/* Disclaimer */}
+                <p className="text-[9px] text-muted-foreground/60 mt-8 text-center max-w-sm leading-relaxed">
+                  ⚕️ Cira is an AI health nurse, not a licensed medical professional. Always discuss Cira's findings with a doctor.
+                </p>
               </div>
             </div>
           ) : (
