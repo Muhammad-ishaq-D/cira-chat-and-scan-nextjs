@@ -101,22 +101,22 @@ const Index = () => {
       {/* Hero */}
       <main className="max-w-6xl mx-auto px-6 pt-12 pb-20">
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground">
+        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground animate-fade-in">
           <span className="font-semibold">🔒 100%-Secure</span>
           <span>👥 Trusted by thousands</span>
           <span>⚡ Instant AI answers</span>
         </div>
 
         {/* Avatar + H1 */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover" />
+        <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
+          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover animate-float" />
           <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
             Hi, I'm <span className="text-primary">Cira</span>, your AI Nurse
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto">
+        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
           I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation, should you choose to see a doctor.
         </p>
 
@@ -125,11 +125,11 @@ const Index = () => {
         </p>
 
         {/* Symptom chips */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
+        <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.45s" }}>
           {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
             <button
               key={chip}
-              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-colors"
+              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
             >
               {chip}
             </button>
@@ -137,7 +137,7 @@ const Index = () => {
         </div>
 
         {/* Chat input */}
-        <div className="max-w-2xl mx-auto mb-4">
+        <div className="max-w-2xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: "0.55s" }}>
           <div className="rounded-2xl border border-border bg-card p-5">
             <textarea
               placeholder="Ask me anything about your health..."
