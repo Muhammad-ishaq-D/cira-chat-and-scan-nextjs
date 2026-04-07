@@ -172,7 +172,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-card py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             Cira doesn't guess.<br />
             She thinks.
           </h2>
@@ -236,7 +236,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-background py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             The scan is not an estimate.<br />
             It's clinical technology.
           </h2>
@@ -384,7 +384,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section id="scan" className="max-w-6xl mx-auto px-6 pb-20 pt-16">
         <div className="text-center">
-          <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
           </h2>
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
@@ -423,7 +423,7 @@ const Index = () => {
 
         {/* 30+ markers — 3 columns */}
         <div className="text-center mb-10">
-          <h3 className="font-heading text-[32px] font-semibold text-foreground leading-tight">
+          <h3 className="scroll-fade font-heading text-[32px] font-semibold text-foreground leading-tight">
             30+ health markers.<br />
             From your face.<br />
             In 30 seconds.
@@ -469,7 +469,7 @@ const Index = () => {
       {/* DASHBOARD PREVIEW */}
       {/* ═══════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           Every scan saved.<br />
           Your health history<br />
           built automatically.
@@ -580,7 +580,7 @@ const Index = () => {
       {/* DOCTOR REPORT */}
       {/* ═══════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           One click.<br />
           Your doctor gets everything.
         </h2>
@@ -651,7 +651,7 @@ const Index = () => {
       {/* BOOK A DOCTOR */}
       {/* ═══════════════════════════════════════════ */}
       <section id="doctor" className="max-w-4xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
           See a real doctor.<br />
           Today. Anywhere.
         </h2>
