@@ -132,7 +132,7 @@ const Doctor = () => {
                 : "text-gray-400 hover:bg-gray-50 hover:text-gray-700"}`}
           >
             {item.id === "chat" ? (
-              <AiSparkleIcon size={20} glowColor={item.id === "doctor" ? "white" : undefined} />
+              <AiSparkleIcon size={20} />
             ) : (
               <item.icon size={20} />
             )}
@@ -140,7 +140,11 @@ const Doctor = () => {
           </button>
         ))}
         <div className="flex-1" />
-        <ProfilePopover />
+        <ProfilePopover>
+          <button className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+            JD
+          </button>
+        </ProfilePopover>
         <button onClick={() => navigate("/login")} className="text-gray-300 hover:text-red-400 transition-colors mt-1">
           <LogOut size={18} />
         </button>
