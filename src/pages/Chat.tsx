@@ -107,6 +107,7 @@ const Chat = () => {
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change or typing starts
