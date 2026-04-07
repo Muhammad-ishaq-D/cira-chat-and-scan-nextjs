@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, BotMessageSquare, MessageCircle } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -13,11 +13,36 @@ const mockHistory = [
   { id: "5", title: "Sleep issues and stress", date: "Mar 25" },
 ];
 
-const quickActions = [
-  { icon: <MessageCircle size={18} />, title: "Describe Symptoms", desc: "Tell Cira how you feel" },
-  { icon: <Activity size={18} />, title: "Scan Vitals", desc: "Camera-based health scan" },
-  { icon: <Clock size={18} />, title: "Review History", desc: "Past consultations" },
-  { icon: <Sparkles size={18} />, title: "Health Insights", desc: "AI-powered analysis" },
+type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
+
+const chatModes = [
+  {
+    id: "quick" as ChatMode,
+    icon: Stethoscope,
+    title: "Quick Assessment",
+    desc: "Cira asks focused questions and gives you fast health advice with good accuracy.",
+    badge: "~2 min",
+    gradient: "from-blue-500 to-cyan-400",
+    bgGlow: "bg-blue-100",
+  },
+  {
+    id: "detailed" as ChatMode,
+    icon: FileText,
+    title: "Detailed Assessment",
+    desc: "Cira asks in-depth questions, gathers full insight, and generates a comprehensive health report.",
+    badge: "~8 min · Highest Accuracy",
+    gradient: "from-purple-500 to-pink-400",
+    bgGlow: "bg-purple-100",
+  },
+  {
+    id: "vitals" as ChatMode,
+    icon: ScanFace,
+    title: "Vital Scan + Assessment",
+    desc: "Quick face scan captures your vitals first, then Cira uses that data for a more informed consultation.",
+    badge: "~4 min · Scan Powered",
+    gradient: "from-emerald-500 to-teal-400",
+    bgGlow: "bg-emerald-100",
+  },
 ];
 
 const navItems = [
