@@ -333,7 +333,7 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto pb-4 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
-            <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden">
+            <div className="h-full flex flex-col items-center justify-center px-4 md:px-6 pb-20 md:pb-0 relative overflow-hidden">
               {/* Full-screen pastel gradient background */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
