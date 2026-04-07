@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, BotMessageSquare, MessageCircle } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 const mockHistory = [
   { id: "1", title: "Chest tightness and fatigue", date: "Today" },
@@ -83,7 +84,11 @@ const Chat = () => {
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                {item.id === "chat" ? (
+                  <AiSparkleIcon size={18} active={activeNav === item.id} />
+                ) : (
+                  <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                )}
                 <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
               </button>
             );

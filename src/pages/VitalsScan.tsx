@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace, Sparkles } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 const mockScanHistory = [
   { id: "1", date: "Today, 10:32 AM", status: "Completed", hr: "72 bpm" },
@@ -75,7 +76,11 @@ const VitalsScan = () => {
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />
+                {item.id === "chat" ? (
+                  <AiSparkleIcon size={18} />
+                ) : (
+                  <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />
+                )}
                 <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
               </button>
             );
