@@ -16,56 +16,34 @@ const mockReports = [
   {
     id: "RPT-001",
     title: "Detailed Health Assessment Report",
-    type: "Detailed Assessment",
     date: "Mar 29, 2026",
     size: "2.4 MB",
     status: "Ready",
-    summary: "Comprehensive health evaluation based on 28 questions and vital scan data.",
+    summary: "Comprehensive health evaluation based on 28 questions and vital scan data. Covers cardiovascular, metabolic, and mental health indicators.",
   },
   {
     id: "RPT-002",
-    title: "Quick Assessment — Chest Tightness",
-    type: "Quick Assessment",
-    date: "Mar 27, 2026",
-    size: "1.1 MB",
+    title: "Detailed Assessment — Chronic Fatigue",
+    date: "Mar 15, 2026",
+    size: "3.1 MB",
     status: "Ready",
-    summary: "Focused assessment on chest tightness and fatigue symptoms.",
+    summary: "In-depth analysis of chronic fatigue symptoms with lifestyle, sleep, and stress correlation report.",
   },
   {
     id: "RPT-003",
-    title: "Vital Scan Report — Full Body",
-    type: "Vital Scan",
-    date: "Mar 25, 2026",
-    size: "3.8 MB",
-    status: "Ready",
-    summary: "Complete vital signs report from face scan including BP, HR, HRV, stress index, and more.",
-  },
-  {
-    id: "RPT-004",
-    title: "Quick Assessment — Headache",
-    type: "Quick Assessment",
-    date: "Mar 20, 2026",
-    size: "0.9 MB",
-    status: "Ready",
-    summary: "Assessment of recurring headaches over 3 days with potential triggers.",
-  },
-  {
-    id: "RPT-005",
-    title: "Vital Scan Report — Baseline",
-    type: "Vital Scan",
-    date: "Mar 15, 2026",
-    size: "3.2 MB",
-    status: "Ready",
-    summary: "Initial baseline vital scan for health monitoring.",
-  },
-  {
-    id: "RPT-006",
-    title: "Detailed Health Assessment — Annual",
-    type: "Detailed Assessment",
+    title: "Detailed Assessment — Annual Review",
     date: "Feb 28, 2026",
     size: "4.1 MB",
     status: "Ready",
-    summary: "Annual comprehensive health review with trend analysis and recommendations.",
+    summary: "Annual comprehensive health review with year-over-year trend analysis and personalized recommendations.",
+  },
+  {
+    id: "RPT-004",
+    title: "Detailed Assessment — Digestive Health",
+    date: "Jan 20, 2026",
+    size: "2.8 MB",
+    status: "Ready",
+    summary: "Thorough digestive health evaluation covering diet, symptoms, and gut health indicators.",
   },
 ];
 
@@ -84,15 +62,11 @@ const typeIcon = (type: string) => {
 const Reports = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState("All");
-  const [showFilter, setShowFilter] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  const filteredReports = mockReports.filter((r) => {
-    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === "All" || r.type === filterType;
-    return matchesSearch && matchesType;
-  });
+  const filteredReports = mockReports.filter((r) =>
+    r.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleDownload = (report: typeof mockReports[0]) => {
     // Mock download - in production this would fetch the actual PDF
