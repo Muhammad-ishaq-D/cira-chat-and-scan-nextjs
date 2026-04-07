@@ -441,8 +441,12 @@ const Chat = () => {
                </div>
             </div>
           ) : (
-            /* Chat messages — Gemini-style clean layout */
-            <div className="relative min-h-full bg-background">
+            /* Chat messages — white bg with soft gradients */
+            <div className="relative min-h-full bg-white">
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
+              </div>
               <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
@@ -581,7 +585,7 @@ const Chat = () => {
 
         {/* Bottom input — Gemini-style clean pill */}
         {messages.length > 0 && (
-          <div className="relative shrink-0 bg-background" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+          <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
               <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
                 <button type="button" className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 ml-1">
