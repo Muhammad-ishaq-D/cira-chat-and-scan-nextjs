@@ -136,61 +136,62 @@ const Chat = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
-            /* Welcome screen */
-            <div className="h-full flex flex-col items-center justify-center px-6 relative">
-              {/* Ambient gradient background */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-primary/8 via-purple-500/6 to-blue-500/8 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] bg-gradient-to-br from-primary/5 to-pink-500/5 rounded-full blur-3xl" />
+            /* Welcome screen — Lovable-style soft gradient */
+            <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden">
+              {/* Full-screen pastel gradient background */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
+                <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-gradient-to-br from-blue-200/50 to-purple-200/30 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-gradient-to-r from-pink-200/30 to-purple-200/20 rounded-full blur-[100px]" />
               </div>
 
-              <div className="relative z-10 flex flex-col items-center">
-                {/* Logo with glow */}
-                <div className="relative mb-4">
-                  <div className="absolute inset-0 blur-2xl opacity-30 bg-gradient-to-r from-primary via-purple-400 to-blue-400 rounded-full scale-[2]" />
-                  <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-purple-500/10 border border-primary/20 flex items-center justify-center backdrop-blur-sm">
-                    <img src={ciraLogo} alt="Cira" width={32} height={32} />
-                  </div>
-                </div>
+              <div className="relative z-10 flex flex-col items-center w-full max-w-2xl">
+                <h1 className="text-[36px] font-semibold text-foreground mb-10 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  What's on your mind?
+                </h1>
 
-                <h1 className="font-heading text-2xl font-semibold text-foreground mb-1">Cira</h1>
-                <p className="text-sm text-muted-foreground font-body mb-8">Your AI health assistant</p>
-
-                {/* Input box with gradient border */}
-                <div className="w-full max-w-xl mb-8">
-                  <form onSubmit={handleSend} className="relative group">
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/40 via-purple-500/30 to-blue-500/40 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-[1px]" />
-                    <div className="relative">
-                      <textarea
+                {/* Input box — warm, rounded, minimal */}
+                <div className="w-full max-w-xl mb-10">
+                  <form onSubmit={handleSend} className="relative">
+                    <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 overflow-hidden">
+                      <input
+                        type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
-                        placeholder="Tell Cira what's going on — symptoms, concerns, anything."
-                        rows={3}
-                        className="w-full py-4 px-5 pr-14 rounded-2xl border border-border bg-card/80 backdrop-blur-sm text-foreground font-body text-sm outline-none placeholder:text-muted-foreground resize-none shadow-sm"
+                        placeholder="Tell Cira your symptoms, concerns, anything..."
+                        className="w-full py-4 px-5 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/60"
+                        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                       />
-                      <button
-                        type="submit"
-                        className="absolute bottom-3 right-3 p-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/20 transition-all"
-                      >
-                        <Send size={15} />
-                      </button>
+                      <div className="flex items-center justify-between px-4 pb-3">
+                        <button type="button" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">
+                          <Plus size={18} />
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="submit"
+                            className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-80 transition-opacity"
+                          >
+                            <Send size={14} className="-ml-0.5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </form>
                 </div>
 
                 {/* Quick action cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-xl w-full">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-xl">
                   {quickActions.map((action) => (
                     <button
                       key={action.title}
                       onClick={() => startChat(action.title)}
-                      className="group bg-card/60 backdrop-blur-sm border border-border rounded-xl p-4 text-left hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 transition-all"
+                      className="group bg-card/70 backdrop-blur-sm border border-border/40 rounded-xl p-4 text-left hover:bg-card/90 hover:shadow-md hover:border-border transition-all"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center text-primary mb-2 group-hover:from-primary/20 group-hover:to-purple-500/20 transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center text-muted-foreground mb-2 group-hover:text-foreground transition-colors">
                         {action.icon}
                       </div>
-                      <p className="text-xs font-medium text-foreground font-body group-hover:text-primary transition-colors">{action.title}</p>
+                      <p className="text-xs font-medium text-foreground font-body">{action.title}</p>
                       <p className="text-[10px] text-muted-foreground font-body mt-0.5">{action.desc}</p>
                     </button>
                   ))}
