@@ -70,7 +70,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-3xl mx-auto">
+      <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
           <img src={ciraSpark} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
@@ -92,7 +92,7 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-3xl mx-auto px-6 pt-12 pb-20">
+      <main className="max-w-5xl mx-auto px-6 pt-12 pb-20">
         {/* Trust badges */}
         <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground">
           <span className="font-semibold">🔒 100%-Secure</span>
@@ -163,7 +163,7 @@ const Index = () => {
       {/* CIRA'S INTELLIGENCE */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-card py-20">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             Cira doesn't guess.<br />
             She thinks.
@@ -224,7 +224,7 @@ const Index = () => {
       {/* SHEN AI CREDIBILITY */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-background py-20">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             The scan is not an estimate.<br />
             It's clinical technology.
@@ -371,7 +371,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* SCAN YOURSELF */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="scan" className="max-w-3xl mx-auto px-6 pb-20 pt-16">
+      <section id="scan" className="max-w-5xl mx-auto px-6 pb-20 pt-16">
         <div className="text-center">
           <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
@@ -457,7 +457,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* DASHBOARD PREVIEW */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="max-w-3xl mx-auto px-6 pb-20 pt-16 text-center">
+      <section className="max-w-5xl mx-auto px-6 pb-20 pt-16 text-center">
         <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           Every scan saved.<br />
           Your health history<br />
@@ -568,7 +568,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* DOCTOR REPORT */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="max-w-3xl mx-auto px-6 pb-20 pt-16 text-center">
+      <section className="max-w-5xl mx-auto px-6 pb-20 pt-16 text-center">
         <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           One click.<br />
           Your doctor gets everything.
