@@ -24,8 +24,8 @@ const MobileBottomNav = () => {
   const activeId = routeToId[location.pathname] || "";
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/50 px-2 pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around py-1.5">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 px-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)', backgroundColor: 'rgba(255,255,255,0.95)', WebkitBackdropFilter: 'blur(20px)', backdropFilter: 'blur(20px)' }}>
+      <div className="flex items-center justify-around py-2">
         {navItems.map((item) => {
           const isActive = activeId === item.id;
           const Icon = item.icon;
