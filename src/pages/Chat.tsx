@@ -410,6 +410,45 @@ const Chat = () => {
               <div className="relative z-10 max-w-2xl mx-auto p-6 space-y-5">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                    {/* Vitals card */}
+                    {msg.role === "vitals" && msg.vitalsData ? (
+                      <div className="flex items-start gap-3 max-w-[85%]">
+                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          <ScanFace size={16} className="text-primary" />
+                        </div>
+                        <div className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full">
+                          <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
+                                <Activity size={12} className="text-white" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Your Vitals</p>
+                                <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-0.5 p-2">
+                            {msg.vitalsData.map((vital) => {
+                              const VIcon = vital.icon;
+                              return (
+                                <div key={vital.label} className="flex flex-col items-center p-3 rounded-xl hover:bg-accent/30 transition-colors">
+                                  <div className={`w-8 h-8 rounded-lg ${vital.color} flex items-center justify-center mb-1.5`}>
+                                    <VIcon size={14} />
+                                  </div>
+                                  <p className="text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{vital.value}</p>
+                                  <p className="text-[9px] text-muted-foreground text-center leading-tight mt-0.5">{vital.label}</p>
+                                  <p className="text-[8px] text-muted-foreground/60">{vital.unit}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="px-4 py-2 border-t border-border/20">
+                            <p className="text-[9px] text-emerald-600 font-medium text-center">✓ All vitals within healthy range</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
                     <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                       {msg.role === "cira" ? (
                         <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -437,6 +476,7 @@ const Chat = () => {
                         <p className="whitespace-pre-line">{msg.text}</p>
                       </div>
                     </div>
+                    )}
                   </div>
                 ))}
 
