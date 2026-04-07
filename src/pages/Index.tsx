@@ -158,12 +158,12 @@ const Index = () => {
             She thinks.
           </h2>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-[520px] mx-auto mb-14 font-body whitespace-pre-line">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
             {"Cira is trained on hundreds of millions of\nclinical cases, peer-reviewed medical studies,\nand real diagnostic data from around the world.\n\nWhen you describe your symptoms — she doesn't\nsearch for keywords. She thinks through every\npossible combination. Every diagnostic pathway.\nEvery risk factor. Every contraindication.\n\nThen she adds your real vitals from the scan.\n\nAnd she tells you what the combination means.\nNot a list of possibilities.\nA specific assessment. Backed by real data."}
           </p>
 
           {/* Four capability lines */}
-          <div className="max-w-[520px] mx-auto space-y-8 text-left mb-14">
+          <div className="max-w-2xl mx-auto space-y-8 text-left mb-14">
             <div className="flex gap-4">
               <span className="text-2xl">📚</span>
               <p className="text-sm text-foreground font-body leading-relaxed">
@@ -195,7 +195,7 @@ const Index = () => {
           </div>
 
           {/* Cira example — pink card */}
-          <div className="border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-[560px] mx-auto text-left mb-6">
+          <div className="border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-2xl mx-auto text-left mb-6">
             <p className="text-sm text-foreground font-body leading-relaxed italic whitespace-pre-line">
               {"\"Your blood pressure is 138/88 and your heart\nrate is 102. Combined with the chest tightness\nyou're describing and your HRV drop of 22% —\nthis pattern is consistent with acute\ncardiovascular stress.\n\nThis is not something to sleep on.\n\nGo to a clinic or emergency room within the\nnext two hours. I've prepared a complete\nsummary of everything I found for your doctor.\""}
             </p>
@@ -219,12 +219,12 @@ const Index = () => {
             It's clinical technology.
           </h2>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-[520px] mx-auto mb-14 font-body whitespace-pre-line">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
             {"The face scan powering Cira is built by Shen AI —\na clinically validated health monitoring company\nfounded in Estonia in 2020.\n\nTheir SDK 3.0 uses signal fusion, beat-by-beat\nblending of rPPG and rBCG signals — selecting\nthe strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
           </p>
 
           {/* Four proof numbers */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-[600px] mx-auto mb-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-14">
             <div>
               <p className="font-heading text-3xl font-semibold text-foreground">7M+</p>
               <div className="border-t border-border mt-2 pt-2">
@@ -252,7 +252,7 @@ const Index = () => {
           </div>
 
           {/* How it works — technical detail */}
-          <div className="max-w-[520px] mx-auto space-y-8 text-left mb-14">
+          <div className="max-w-2xl mx-auto space-y-8 text-left mb-14">
             <div className="flex gap-4">
               <span className="text-2xl">🔬</span>
               <div>
@@ -302,7 +302,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-[560px] mx-auto mb-4">
+          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
             <table className="w-full text-sm font-body">
               <thead>
                 <tr className="border-b border-border">
@@ -338,7 +338,7 @@ const Index = () => {
           </div>
 
           {/* Quote */}
-          <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-[520px] mx-auto text-center mb-6">
+          <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
             <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
               "Integrating Shen AI helped us become the<br />
               #1 blood pressure app in the US, UK, Canada<br />
@@ -365,7 +365,7 @@ const Index = () => {
           <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
           </h2>
-          <p className="text-base text-muted-foreground leading-relaxed max-w-[480px] mx-auto mb-8 font-body whitespace-pre-line">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
             {"Cira uses Shen AI — clinically validated\ncamera technology — to read 30+ vital signs\nfrom your face in 30 seconds.\n\nBlood pressure. Heart rate. HRV.\nStress index. Breathing rate.\nNo hardware. No wearables.\nJust your camera."}
           </p>
           <button className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3">
@@ -380,7 +380,7 @@ const Index = () => {
         <div className="border-t border-border my-14" />
 
         {/* Real scan in scan section */}
-        <div className="max-w-md mx-auto mb-4">
+        <div className="max-w-lg mx-auto mb-4">
           <img
             src={realScan}
             alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg"
@@ -391,7 +391,7 @@ const Index = () => {
         <p className="text-sm text-muted-foreground text-center font-body mb-3">
           What you see vs what the AI reads beneath your skin
         </p>
-        <p className="text-xs text-muted-foreground text-center font-body max-w-md mx-auto leading-relaxed">
+        <p className="text-xs text-muted-foreground text-center font-body max-w-lg mx-auto leading-relaxed">
           rPPG analyzes subtle color changes in your skin caused by blood flow.<br />
           rBCG detects micro-movements generated by your heartbeat.<br />
           Both running simultaneously. All from your camera.
@@ -453,7 +453,7 @@ const Index = () => {
           built automatically.
         </h2>
 
-        <p className="text-base text-muted-foreground leading-relaxed max-w-[460px] mx-auto mb-10 font-body">
+        <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
           Every time you use Cira —<br />
           the conversation, the scan, the result —<br />
           saved to your personal dashboard.<br /><br />
@@ -463,7 +463,7 @@ const Index = () => {
         </p>
 
         {/* Browser chrome mockup */}
-        <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-[680px] mx-auto text-left relative">
+        <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-3xl mx-auto text-left relative">
           {/* Browser bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary">
             <div className="flex gap-1.5">
@@ -563,13 +563,13 @@ const Index = () => {
           Your doctor gets everything.
         </h2>
 
-        <p className="text-base text-muted-foreground leading-relaxed max-w-[440px] mx-auto mb-10 font-body">
+        <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
           Every visit. Every scan. Every result.<br />
           One page. Ready in 30 seconds.
         </p>
 
         {/* Report card */}
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-[500px] mx-auto text-left font-body text-sm">
+        <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
           <div className="border-t-2 border-b-2 border-foreground py-2 mb-4 text-center">
             <p className="text-foreground font-semibold tracking-widest text-xs uppercase">Cira Health Summary</p>
           </div>
@@ -628,13 +628,13 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* BOOK A DOCTOR */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="doctor" className="max-w-xl mx-auto px-6 pb-20 pt-16 text-center">
+      <section id="doctor" className="max-w-4xl mx-auto px-6 pb-20 pt-16 text-center">
         <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
           See a real doctor.<br />
           Today. Anywhere.
         </h2>
 
-        <p className="text-base text-muted-foreground leading-relaxed max-w-[480px] mx-auto mb-8 font-body">
+        <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body">
           Choose the specialist you need.<br />
           A licensed doctor will take care of you.
         </p>
@@ -668,7 +668,7 @@ const Index = () => {
       {/* FOUNDER TEASER */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-background py-20">
-        <div className="max-w-xl mx-auto px-6 text-center">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <img
             src={founderPhoto}
             alt="Jean-Marc, Founder"
@@ -679,7 +679,7 @@ const Index = () => {
           />
           <p className="text-sm text-muted-foreground font-body mb-4">Jean-Marc</p>
 
-          <p className="text-base text-foreground font-body leading-relaxed italic max-w-[420px] mx-auto mb-4">
+          <p className="text-base text-foreground font-body leading-relaxed italic max-w-2xl mx-auto mb-4">
             "I built Cira because I have<br />
             high blood pressure and high cholesterol.<br />
             Every time I see my doctor<br />
@@ -702,7 +702,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="max-w-xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
+      <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
         <p>Cira does not replace professional medical advice.</p>
         <p>Vitals: Shen AI · Doctors: Air Doctor</p>
         <p>
