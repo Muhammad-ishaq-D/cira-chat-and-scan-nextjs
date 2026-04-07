@@ -170,7 +170,7 @@ const Chat = () => {
                         <div className="flex items-center gap-2">
                           <button
                             type="submit"
-                            className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-80 transition-opacity"
+                            className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-80 transition-opacity"
                           >
                             <Send size={14} className="-ml-0.5" />
                           </button>
@@ -217,14 +217,14 @@ const Chat = () => {
                           <img src={ciraLogo} alt="" width={16} height={16} />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center shrink-0 mt-0.5 text-background text-[10px] font-bold shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold shadow-sm">
                           JM
                         </div>
                       )}
                       <div
                         className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                           msg.role === "user"
-                            ? "bg-foreground text-background rounded-tr-sm shadow-md"
+                            ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground rounded-tr-sm shadow-md"
                             : "bg-card/90 backdrop-blur-sm border border-border/50 text-foreground rounded-tl-sm shadow-sm"
                         }`}
                         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
@@ -261,7 +261,7 @@ const Chat = () => {
                 />
                 <button
                   type="submit"
-                  className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center mr-3 hover:opacity-80 transition-opacity shrink-0"
+                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-3 hover:opacity-80 transition-opacity shrink-0"
                 >
                   <Send size={14} className="-ml-0.5" />
                 </button>
