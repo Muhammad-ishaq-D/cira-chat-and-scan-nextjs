@@ -58,6 +58,7 @@ const Chat = () => {
   const [activeNav, setActiveNav] = useState("chat");
   const [messages, setMessages] = useState<{ role: "user" | "cira"; text: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [chatMode, setChatMode] = useState<ChatMode>("none");
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
