@@ -1,4 +1,4 @@
-import ciraSpark from "@/assets/cira-spark.png";
+import ciraLogo from "@/assets/cira-logo.svg";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import realScan from "@/assets/real-scan.webp";
 import { useNavigate } from "react-router-dom";

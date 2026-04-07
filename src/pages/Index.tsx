@@ -1,4 +1,4 @@
-import ciraSpark from "@/assets/cira-spark.png";
+import ciraLogo from "@/assets/cira-logo.svg";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
