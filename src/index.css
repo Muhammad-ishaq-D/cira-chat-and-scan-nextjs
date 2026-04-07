@@ -70,3 +70,18 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* AI Sparkle gradient icon */
+.icon-ai-gradient {
+  background: linear-gradient(135deg, #a855f7, #ec4899, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.5)) drop-shadow(0 0 12px rgba(236, 72, 153, 0.3));
+}
+.icon-ai-gradient svg {
+  stroke: url(#ai-gradient);
+}
+.icon-ai-glow {
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.5)) drop-shadow(0 0 14px rgba(236, 72, 153, 0.35));
+}
