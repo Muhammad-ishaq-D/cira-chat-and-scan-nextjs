@@ -158,9 +158,12 @@ const Index = () => {
             She thinks.
           </h2>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
-            {"Cira is trained on hundreds of millions of\nclinical cases, peer-reviewed medical studies,\nand real diagnostic data from around the world.\n\nWhen you describe your symptoms — she doesn't\nsearch for keywords. She thinks through every\npossible combination. Every diagnostic pathway.\nEvery risk factor. Every contraindication.\n\nThen she adds your real vitals from the scan.\n\nAnd she tells you what the combination means.\nNot a list of possibilities.\nA specific assessment. Backed by real data."}
-          </p>
+          <div className="max-w-2xl mx-auto mb-14 font-body text-base text-muted-foreground leading-relaxed space-y-4">
+            <p>Cira is trained on hundreds of millions of clinical cases, peer-reviewed medical studies, and real diagnostic data from around the world.</p>
+            <p>When you describe your symptoms — she doesn't search for keywords. She thinks through every possible combination. Every diagnostic pathway. Every risk factor. Every contraindication.</p>
+            <p>Then she adds your real vitals from the scan.</p>
+            <p>And she tells you what the combination means. Not a list of possibilities. <strong className="text-foreground">A specific assessment. Backed by real data.</strong></p>
+          </div>
 
           {/* Four capability lines */}
           <div className="max-w-2xl mx-auto space-y-8 text-left mb-14">
