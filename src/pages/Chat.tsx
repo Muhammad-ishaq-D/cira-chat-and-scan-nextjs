@@ -49,6 +49,7 @@ const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
+  { icon: FileText, label: "Reports", id: "reports" },
 ];
 
 const Chat = () => {
