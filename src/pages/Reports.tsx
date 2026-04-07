@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, Filter, ChevronDown } from "lucide-react";
+import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -16,83 +16,46 @@ const mockReports = [
   {
     id: "RPT-001",
     title: "Detailed Health Assessment Report",
-    type: "Detailed Assessment",
     date: "Mar 29, 2026",
     size: "2.4 MB",
     status: "Ready",
-    summary: "Comprehensive health evaluation based on 28 questions and vital scan data.",
+    summary: "Comprehensive health evaluation based on 28 questions and vital scan data. Covers cardiovascular, metabolic, and mental health indicators.",
   },
   {
     id: "RPT-002",
-    title: "Quick Assessment — Chest Tightness",
-    type: "Quick Assessment",
-    date: "Mar 27, 2026",
-    size: "1.1 MB",
+    title: "Detailed Assessment — Chronic Fatigue",
+    date: "Mar 15, 2026",
+    size: "3.1 MB",
     status: "Ready",
-    summary: "Focused assessment on chest tightness and fatigue symptoms.",
+    summary: "In-depth analysis of chronic fatigue symptoms with lifestyle, sleep, and stress correlation report.",
   },
   {
     id: "RPT-003",
-    title: "Vital Scan Report — Full Body",
-    type: "Vital Scan",
-    date: "Mar 25, 2026",
-    size: "3.8 MB",
-    status: "Ready",
-    summary: "Complete vital signs report from face scan including BP, HR, HRV, stress index, and more.",
-  },
-  {
-    id: "RPT-004",
-    title: "Quick Assessment — Headache",
-    type: "Quick Assessment",
-    date: "Mar 20, 2026",
-    size: "0.9 MB",
-    status: "Ready",
-    summary: "Assessment of recurring headaches over 3 days with potential triggers.",
-  },
-  {
-    id: "RPT-005",
-    title: "Vital Scan Report — Baseline",
-    type: "Vital Scan",
-    date: "Mar 15, 2026",
-    size: "3.2 MB",
-    status: "Ready",
-    summary: "Initial baseline vital scan for health monitoring.",
-  },
-  {
-    id: "RPT-006",
-    title: "Detailed Health Assessment — Annual",
-    type: "Detailed Assessment",
+    title: "Detailed Assessment — Annual Review",
     date: "Feb 28, 2026",
     size: "4.1 MB",
     status: "Ready",
-    summary: "Annual comprehensive health review with trend analysis and recommendations.",
+    summary: "Annual comprehensive health review with year-over-year trend analysis and personalized recommendations.",
+  },
+  {
+    id: "RPT-004",
+    title: "Detailed Assessment — Digestive Health",
+    date: "Jan 20, 2026",
+    size: "2.8 MB",
+    status: "Ready",
+    summary: "Thorough digestive health evaluation covering diet, symptoms, and gut health indicators.",
   },
 ];
 
-const typeColor = (type: string) => {
-  if (type === "Detailed Assessment") return "text-purple-600 bg-purple-50";
-  if (type === "Quick Assessment") return "text-blue-600 bg-blue-50";
-  return "text-emerald-600 bg-emerald-50";
-};
-
-const typeIcon = (type: string) => {
-  if (type === "Detailed Assessment") return "📋";
-  if (type === "Quick Assessment") return "⚡";
-  return "🔬";
-};
 
 const Reports = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState("All");
-  const [showFilter, setShowFilter] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  const filteredReports = mockReports.filter((r) => {
-    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === "All" || r.type === filterType;
-    return matchesSearch && matchesType;
-  });
+  const filteredReports = mockReports.filter((r) =>
+    r.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleDownload = (report: typeof mockReports[0]) => {
     // Mock download - in production this would fetch the actual PDF
@@ -179,9 +142,9 @@ const Reports = () => {
             </div>
           </div>
 
-          {/* Search & Filter Bar */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 relative">
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
@@ -191,29 +154,6 @@ const Reports = () => {
                 className="w-full h-10 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                 style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
               />
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => setShowFilter(!showFilter)}
-                className="h-10 px-4 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm flex items-center gap-2 text-sm text-foreground hover:bg-accent transition-all"
-              >
-                <Filter size={14} />
-                <span>{filterType}</span>
-                <ChevronDown size={14} className="text-muted-foreground" />
-              </button>
-              {showFilter && (
-                <div className="absolute top-12 right-0 w-48 bg-card border border-border rounded-xl shadow-xl z-20 py-1 overflow-hidden">
-                  {["All", "Detailed Assessment", "Quick Assessment", "Vital Scan"].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => { setFilterType(type); setShowFilter(false); }}
-                      className={`w-full text-left px-4 py-2.5 text-xs hover:bg-accent transition-colors ${filterType === type ? "text-primary font-medium" : "text-foreground"}`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
@@ -226,8 +166,8 @@ const Reports = () => {
               >
                 <div className="flex items-start gap-4">
                   {/* Icon */}
-                  <div className="w-12 h-12 rounded-xl bg-secondary/60 flex items-center justify-center text-lg shrink-0">
-                    {typeIcon(report.type)}
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-lg shrink-0">
+                    📋
                   </div>
 
                   {/* Content */}
@@ -236,8 +176,8 @@ const Reports = () => {
                       <h3 className="text-sm font-semibold text-foreground truncate" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                         {report.title}
                       </h3>
-                      <span className={`shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full ${typeColor(report.type)}`}>
-                        {report.type}
+                      <span className="shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full text-purple-600 bg-purple-50">
+                        Detailed Assessment
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{report.summary}</p>
@@ -280,7 +220,7 @@ const Reports = () => {
                       </div>
                       <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
                         <p><span className="font-medium text-foreground">Report ID:</span> {report.id}</p>
-                        <p><span className="font-medium text-foreground">Type:</span> {report.type}</p>
+                        <p><span className="font-medium text-foreground">Type:</span> Detailed Assessment</p>
                         <p><span className="font-medium text-foreground">Generated:</span> {report.date}</p>
                         <p><span className="font-medium text-foreground">Summary:</span> {report.summary}</p>
                         <p className="pt-2 text-[10px] text-muted-foreground/60">
