@@ -354,9 +354,71 @@ const Chat = () => {
                   Choose a consultation type below, or just start chatting with your AI health nurse.
                 </p>
 
-                {/* Mode selection cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mb-8">
-                  {chatModes.map((mode) => {
+                {/* ✦ HERO — Vital Scan + Assessment */}
+                <button
+                  onClick={() => selectMode("vitals")}
+                  className="group w-full max-w-2xl mb-5 relative overflow-hidden rounded-2xl text-left transition-all hover:-translate-y-1 hover:shadow-2xl"
+                >
+                  {/* Animated gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                  <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+                  <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-300/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
+                  
+                  {/* Floating particles */}
+                  <div className="absolute top-4 right-12 w-1.5 h-1.5 bg-white/40 rounded-full animate-pulse" />
+                  <div className="absolute top-8 right-24 w-1 h-1 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+                  <div className="absolute bottom-6 right-16 w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+                  
+                  <div className="relative z-10 p-6 flex items-center gap-5">
+                    {/* AI Icon */}
+                    <div className="shrink-0">
+                      <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg relative">
+                        <ScanFace size={30} className="text-white" />
+                        {/* Orbiting ring */}
+                        <div className="absolute inset-[-4px] rounded-2xl border border-white/10 animate-[spin_8s_linear_infinite]" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                          <Sparkles size={8} className="text-white" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-lg font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                        <span className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-[9px] font-semibold text-white uppercase tracking-wider">
+                          AI Powered
+                        </span>
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed mb-3">
+                        30-second face scan captures 30+ vitals — then Cira cross-references your symptoms with real clinical data for the most accurate assessment.
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/60 flex items-center gap-1">
+                          <Camera size={10} /> Face Scan
+                        </span>
+                        <span className="text-[10px] text-white/60">•</span>
+                        <span className="text-[10px] text-white/60 flex items-center gap-1">
+                          <Activity size={10} /> 30+ Vitals
+                        </span>
+                        <span className="text-[10px] text-white/60">•</span>
+                        <span className="text-[10px] text-white/60 flex items-center gap-1">
+                          <Brain size={10} /> AI Analysis
+                        </span>
+                        <span className="text-[10px] text-white/60">•</span>
+                        <span className="text-[10px] text-white/60">~4 min</span>
+                      </div>
+                    </div>
+                    {/* Arrow */}
+                    <div className="shrink-0 w-10 h-10 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Secondary modes — Quick & Detailed */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mb-8">
+                  {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                     const Icon = mode.icon;
                     return (
                       <button
@@ -365,7 +427,7 @@ const Chat = () => {
                         className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-5 text-left hover:shadow-lg hover:border-border/80 transition-all hover:-translate-y-0.5"
                       >
                         <div className={`w-10 h-10 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-3`}>
-                          <Icon size={20} className={`bg-gradient-to-r ${mode.gradient} bg-clip-text`} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : mode.gradient.includes("purple") ? "#a855f7" : "#10b981" }} />
+                          <Icon size={20} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
                         </div>
                         <p className="text-sm font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
                         <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">{mode.desc}</p>
