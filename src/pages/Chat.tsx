@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, MessageCircle, Menu, Activity, LogOut, Send, Plus, Sparkles, Clock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
+import ProfilePopover from "@/components/ProfilePopover";
 
 const mockHistory = [
   { id: "1", title: "Chest tightness and fatigue", date: "Today" },
@@ -103,9 +104,11 @@ const Chat = () => {
             <LogOut size={18} strokeWidth={1.5} />
             <span className="text-[9px] font-body font-medium leading-none">Logout</span>
           </button>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
-            JM
-          </div>
+          <ProfilePopover>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
+              JM
+            </div>
+          </ProfilePopover>
         </div>
       </div>
 
