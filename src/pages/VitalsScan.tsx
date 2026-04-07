@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace, BotMessageSquare } from "lucide-react";
+import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace, Sparkles } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 
@@ -13,7 +13,7 @@ const mockScanHistory = [
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
-  { icon: BotMessageSquare, label: "Ask Cira", id: "chat" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 

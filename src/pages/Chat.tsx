@@ -21,7 +21,7 @@ const quickActions = [
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
-  { icon: BotMessageSquare, label: "Ask Cira", id: "chat" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 
