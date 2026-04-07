@@ -330,7 +330,7 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div className="flex-1 overflow-y-auto pb-16 md:pb-0">
+        <div className="flex-1 overflow-y-auto pb-4 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
             <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden">
@@ -450,7 +450,7 @@ const Chat = () => {
                 <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
               </div>
 
-              <div className="relative z-10 max-w-2xl mx-auto p-6 space-y-5">
+              <div className="relative z-10 max-w-2xl mx-auto p-4 md:p-6 space-y-4 md:space-y-5 pt-14 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                     {/* Vitals card */}
@@ -605,23 +605,23 @@ const Chat = () => {
 
         {/* Bottom input — always matches the aesthetic */}
         {messages.length > 0 && (
-          <div className="relative border-t border-border/30 p-4 pb-20 md:pb-4 shrink-0">
+          <div className="relative border-t border-border/30 shrink-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
             <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
-            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto">
+            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-4">
               <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Tell Cira what's going on..."
-                  className="flex-1 py-3.5 px-5 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/60"
+                  className="flex-1 py-3 px-4 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground/60"
                   style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                 />
                 <button
                   type="submit"
-                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-3 hover:opacity-80 transition-opacity shrink-0"
+                  className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-2.5 hover:opacity-80 transition-opacity shrink-0"
                 >
-                  <Send size={14} className="-ml-0.5" />
+                  <Send size={13} className="-ml-0.5" />
                 </button>
               </div>
             </form>
