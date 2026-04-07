@@ -242,7 +242,7 @@ const Index = () => {
           </h2>
 
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
-            {"The face scan powering Cira is built by Shen AI —\na clinically validated health monitoring company\nfounded in Estonia in 2020.\n\nTheir SDK 3.0 uses signal fusion, beat-by-beat\nblending of rPPG and rBCG signals — selecting\nthe strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
+            {"The face scan powering Cira uses clinically validated\nhealth monitoring technology with signal fusion —\nbeat-by-beat blending of rPPG and rBCG signals,\nselecting the strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
           </p>
 
           {/* Four proof numbers */}
@@ -346,7 +346,7 @@ const Index = () => {
           </div>
 
           <p className="text-xs text-muted-foreground text-center font-body mb-14">
-            Source: Shen AI SDK 3.0 clinical validation studies
+            Source: SDK 3.0 clinical validation studies
           </p>
 
           {/* Trust logos */}
@@ -362,7 +362,7 @@ const Index = () => {
           {/* Quote */}
           <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
             <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
-              "Integrating Shen AI helped us become the<br />
+              "This technology helped us become the<br />
               #1 blood pressure app in the US, UK, Canada<br />
               and Australia."
             </p>
@@ -388,7 +388,7 @@ const Index = () => {
             See what your body is actually saying.
           </h2>
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
-            {"Cira uses Shen AI — clinically validated\ncamera technology — to read 30+ vital signs\nfrom your face in 30 seconds.\n\nBlood pressure. Heart rate. HRV.\nStress index. Breathing rate.\nNo hardware. No wearables.\nJust your camera."}
+            {"Cira uses clinically validated camera technology\nto read 30+ vital signs from your face in 30 seconds.\n\nBlood pressure. Heart rate. HRV.\nStress index. Breathing rate.\nNo hardware. No wearables.\nJust your camera."}
           </p>
           <button className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3">
             Start your scan →
@@ -405,7 +405,7 @@ const Index = () => {
         <div className="max-w-lg mx-auto mb-4">
           <img
             src={realScan}
-            alt="Real Shen AI scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg"
+            alt="Real scan — PULSE 102 bpm, SBP 135 mmHg, DBP 86 mmHg"
             loading="lazy"
             className="w-full rounded-xl shadow-md"
           />
@@ -461,7 +461,7 @@ const Index = () => {
         </div>
 
         <p className="text-xs text-muted-foreground text-center font-body">
-          Shen AI · Clinically validated · Undergoing EU Medical Device Regulation certification
+          Clinically validated · Undergoing EU Medical Device Regulation certification
         </p>
       </section>
 
@@ -638,7 +638,7 @@ const Index = () => {
           </div>
 
           <div className="border-t-2 border-b-2 border-foreground py-2 text-center">
-            <p className="text-muted-foreground text-xs">Powered by Cira · Shen AI SDK</p>
+            <p className="text-muted-foreground text-xs">Powered by Cira</p>
           </div>
         </div>
 
@@ -681,7 +681,6 @@ const Index = () => {
         </button>
 
         <p className="text-xs text-muted-foreground mt-3 font-body">
-          Powered by Air Doctor ·<br />
           Licensed physicians · Available globally 24/7
         </p>
       </section>
@@ -726,7 +725,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
         <p>Cira does not replace professional medical advice.</p>
-        <p>Vitals: Shen AI · Doctors: Air Doctor</p>
+        <p>Clinically validated vitals · Licensed physicians</p>
         <p>
           <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
           {" · "}
