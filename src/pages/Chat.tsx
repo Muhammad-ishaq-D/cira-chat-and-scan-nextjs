@@ -80,14 +80,14 @@ const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
     if (scrollRef.current) {
       setTimeout(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
       }, 100);
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // Pick up message from landing page
   useEffect(() => {
