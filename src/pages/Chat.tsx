@@ -105,16 +105,19 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Chat history drawer overlay */}
+      {/* Chat history drawer - slides from sidebar edge, no full overlay */}
       {showHistory && (
-        <div className="fixed inset-0 z-50 flex" onClick={() => setShowHistory(false)}>
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] animate-fade-in" />
-          
-          {/* Drawer panel */}
+        <>
+          {/* Click-away backdrop over main content only, not sidebar */}
           <div
-            className="relative w-72 h-full bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]"
-            style={{ marginLeft: 72 }}
+            className="fixed inset-0 z-40 bg-black/10"
+            style={{ left: 72 }}
+            onClick={() => setShowHistory(false)}
+          />
+          {/* Drawer panel anchored to sidebar */}
+          <div
+            className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]"
+            style={{ left: 72 }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
@@ -153,7 +156,7 @@ const Chat = () => {
               ))}
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Main content */}
