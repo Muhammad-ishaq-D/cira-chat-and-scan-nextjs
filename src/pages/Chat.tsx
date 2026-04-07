@@ -370,6 +370,54 @@ const Chat = () => {
                     </div>
                   </div>
                 ))}
+
+                {/* Inline mode selection after landing message */}
+                {showModeSelection && (
+                  <div className="animate-fade-in">
+                    <div className="flex justify-start">
+                      <div className="flex items-start gap-3 max-w-[90%]">
+                        <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                          <img src={ciraLogo} alt="" width={16} height={16} />
+                        </div>
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
+                            {chatModes.map((mode) => {
+                              const Icon = mode.icon;
+                              return (
+                                <button
+                                  key={mode.id}
+                                  onClick={() => selectMode(mode.id)}
+                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl p-4 text-left hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-0.5"
+                                >
+                                  <div className={`w-9 h-9 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2.5`}>
+                                    <Icon size={18} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : mode.gradient.includes("purple") ? "#a855f7" : "#10b981" }} />
+                                  </div>
+                                  <p className="text-xs font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                                  <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">{mode.desc}</p>
+                                  <span className="inline-block text-[8px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
+                                    {mode.badge}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <button
+                            onClick={() => selectMode("chat")}
+                            className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all w-full"
+                          >
+                            <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center">
+                              <MessageCircle size={14} className="text-muted-foreground" />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-[11px] font-medium text-foreground">Just Continue Chatting</p>
+                              <p className="text-[9px] text-muted-foreground">No assessment — let's just talk</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
