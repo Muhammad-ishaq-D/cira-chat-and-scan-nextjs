@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText } from "lucide-react";
+import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -9,6 +9,7 @@ const navItems = [
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
   { icon: FileText, label: "Reports", id: "reports" },
+  { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
 const vitals = [
@@ -70,7 +71,8 @@ const Dashboard = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "scan") navigate("/vitals-scan");
-                  if (item.id === "reports") navigate("/reports");
+                   if (item.id === "reports") navigate("/reports");
+                   if (item.id === "doctor") navigate("/doctor");
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   activeNav === item.id
