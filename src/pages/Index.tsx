@@ -107,38 +107,38 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-6xl mx-auto px-6 pt-12 pb-20">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20">
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground animate-fade-in">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8 sm:mb-10 text-xs sm:text-sm font-body text-foreground animate-fade-in">
           <span className="font-semibold">🔒 100%-Secure</span>
           <span>👥 Trusted by thousands</span>
           <span>⚡ Instant AI answers</span>
         </div>
 
         {/* Avatar + H1 */}
-        <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
-          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover animate-float" />
-          <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
+        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
+          <img src={doctor1} alt="Cira avatar" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover animate-float" />
+          <h1 className="font-heading text-2xl sm:text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
             Hi, I'm <span className="text-primary">Cira</span>, your AI Nurse
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation, should you choose to see a doctor.
+        <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in px-2" style={{ animationDelay: "0.3s" }}>
+          I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation.
         </p>
 
-        <p className="text-base text-foreground font-semibold text-center mb-6 font-body">
+        <p className="text-sm sm:text-base text-foreground font-semibold text-center mb-5 sm:mb-6 font-body">
           Let's start with what's been bothering you.
         </p>
 
         {/* Symptom chips */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.45s" }}>
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-5 sm:mb-6 animate-fade-in px-2" style={{ animationDelay: "0.45s" }}>
           {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
             <button
               key={chip}
               onClick={() => { setHeroMessage(chip); }}
-              className={`px-5 py-2.5 rounded-full border text-sm font-body transition-all duration-200 hover:scale-105 ${
+              className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border text-xs sm:text-sm font-body transition-all duration-200 active:scale-95 sm:hover:scale-105 ${
                 heroMessage === chip
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-card text-foreground hover:border-primary hover:bg-primary/5"
@@ -150,19 +150,19 @@ const Index = () => {
         </div>
 
         {/* Chat input */}
-        <div className="max-w-2xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: "0.55s" }}>
-          <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="max-w-2xl mx-auto mb-4 animate-slide-up px-1" style={{ animationDelay: "0.55s" }}>
+          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <textarea
               value={heroMessage}
               onChange={(e) => setHeroMessage(e.target.value)}
               placeholder="Ask me anything about your health..."
-              className="w-full bg-transparent text-foreground font-body text-base resize-none outline-none placeholder:text-muted-foreground min-h-[80px]"
+              className="w-full bg-transparent text-foreground font-body text-sm sm:text-base resize-none outline-none placeholder:text-muted-foreground min-h-[60px] sm:min-h-[80px]"
               rows={3}
             />
-            <div className="flex items-center justify-end mt-3">
+            <div className="flex items-center justify-end mt-2 sm:mt-3">
               <button
                 onClick={handleAskCira}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
+                className="flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
                 Ask Cira
@@ -185,14 +185,14 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* CIRA'S INTELLIGENCE */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-card py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+      <section className="bg-card py-12 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="scroll-fade font-heading text-[28px] sm:text-[40px] font-semibold text-foreground leading-tight mb-6">
             Cira doesn't guess.<br />
             She thinks.
           </h2>
 
-          <div className="max-w-2xl mx-auto mb-14 font-body text-base text-muted-foreground leading-relaxed space-y-4">
+          <div className="max-w-2xl mx-auto mb-10 sm:mb-14 font-body text-sm sm:text-base text-muted-foreground leading-relaxed space-y-4">
             <p>Cira is trained on hundreds of millions of clinical cases, peer-reviewed medical studies, and real diagnostic data from around the world.</p>
             <p>When you describe your symptoms — she doesn't search for keywords. She thinks through every possible combination. Every diagnostic pathway. Every risk factor. Every contraindication.</p>
             <p>Then she adds your real vitals from the scan.</p>
@@ -249,15 +249,15 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* SHEN AI CREDIBILITY */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-background py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+      <section className="bg-background py-12 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="scroll-fade font-heading text-[28px] sm:text-[40px] font-semibold text-foreground leading-tight mb-6">
             The scan is not an estimate.<br />
             It's clinical technology.
           </h2>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-14 font-body whitespace-pre-line">
-            {"The face scan powering Cira uses clinically validated\nhealth monitoring technology with signal fusion —\nbeat-by-beat blending of rPPG and rBCG signals,\nselecting the strongest data from each source in real time.\n\nThe result: consistent accuracy across all skin tones,\nall lighting conditions, and all devices."}
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 sm:mb-14 font-body">
+            The face scan powering Cira uses clinically validated health monitoring technology with signal fusion — beat-by-beat blending of rPPG and rBCG signals, selecting the strongest data from each source in real time. The result: consistent accuracy across all skin tones, all lighting conditions, and all devices.
           </p>
 
           {/* Four proof numbers */}
@@ -330,7 +330,7 @@ const Index = () => {
 
           {/* Clinical accuracy table */}
           <div className="text-center mb-8">
-            <h3 className="font-heading text-[28px] font-semibold text-foreground leading-tight">
+            <h3 className="font-heading text-[22px] sm:text-[28px] font-semibold text-foreground leading-tight">
               Proven accurate in clinical studies.
             </h3>
             <p className="text-sm text-muted-foreground font-body mt-2">
@@ -339,21 +339,21 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-x-auto max-w-2xl mx-auto mb-4">
             <table className="w-full text-sm font-body">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Metric</th>
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Time</th>
-                  <th className="text-left px-5 py-3 text-muted-foreground font-medium">Accuracy</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Metric</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Time</th>
+                  <th className="text-left px-3 sm:px-5 py-3 text-muted-foreground font-medium text-xs sm:text-sm">Accuracy</th>
                 </tr>
               </thead>
               <tbody>
                 {accuracyData.map((row) => (
                   <tr key={row.metric} className="border-b border-border last:border-0">
-                    <td className="px-5 py-3 text-foreground">{row.metric}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{row.time}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{row.accuracy}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-foreground text-xs sm:text-sm">{row.metric}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-muted-foreground text-xs sm:text-sm">{row.time}</td>
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-muted-foreground text-xs sm:text-sm">{row.accuracy}</td>
                   </tr>
                 ))}
               </tbody>
@@ -397,9 +397,9 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* SCAN YOURSELF */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="scan" className="max-w-6xl mx-auto px-6 pb-20 pt-16">
+      <section id="scan" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16">
         <div className="text-center">
-          <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
           </h2>
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
@@ -438,10 +438,8 @@ const Index = () => {
 
         {/* 30+ markers — 3 columns */}
         <div className="text-center mb-10">
-          <h3 className="scroll-fade font-heading text-[32px] font-semibold text-foreground leading-tight">
-            30+ health markers.<br />
-            From your face.<br />
-            In 30 seconds.
+          <h3 className="scroll-fade font-heading text-[24px] sm:text-[32px] font-semibold text-foreground leading-tight">
+            30+ health markers. From your face. In 30 seconds.
           </h3>
         </div>
 
@@ -483,11 +481,9 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* DASHBOARD PREVIEW */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
-          Every scan saved.<br />
-          Your health history<br />
-          built automatically.
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16 text-center">
+        <h2 className="scroll-fade font-heading text-[26px] sm:text-[36px] font-semibold text-foreground leading-tight mb-6">
+          Every scan saved. Your health history built automatically.
         </h2>
 
         <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
@@ -594,10 +590,9 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* DOCTOR REPORT */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
-          One click.<br />
-          Your doctor gets everything.
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16 text-center">
+        <h2 className="scroll-fade font-heading text-[26px] sm:text-[36px] font-semibold text-foreground leading-tight mb-6">
+          One click. Your doctor gets everything.
         </h2>
 
         <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
@@ -606,7 +601,7 @@ const Index = () => {
         </p>
 
         {/* Report card */}
-        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
+        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-8 max-w-2xl mx-auto text-left font-body text-sm">
           <div className="border-t-2 border-b-2 border-foreground py-2 mb-4 text-center">
             <p className="text-foreground font-semibold tracking-widest text-xs uppercase">Cira Health Summary</p>
           </div>
@@ -665,10 +660,9 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* BOOK A DOCTOR */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="doctor" className="max-w-4xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
-          See a real doctor.<br />
-          Today. Anywhere.
+      <section id="doctor" className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16 text-center">
+        <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-6">
+          See a real doctor. Today. Anywhere.
         </h2>
 
         <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body">
@@ -703,8 +697,8 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* FOUNDER TEASER */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-background py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      <section className="bg-background py-12 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <img
             src={founderPhoto}
             alt="Jean-Marc, Founder"
