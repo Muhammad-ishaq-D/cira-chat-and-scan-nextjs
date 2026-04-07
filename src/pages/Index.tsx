@@ -126,12 +126,13 @@ const Index = () => {
               className="w-full bg-transparent text-foreground font-body text-base resize-none outline-none placeholder:text-muted-foreground min-h-[80px]"
               rows={3}
             />
-            <div className="flex items-center justify-end gap-3 mt-3">
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm font-body text-foreground hover:bg-accent transition-colors">
-                🕐 Resume Chat
-              </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
-                ✨ New Chat
+            <div className="flex items-center justify-end mt-3">
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                Ask Cira
               </button>
             </div>
           </div>
