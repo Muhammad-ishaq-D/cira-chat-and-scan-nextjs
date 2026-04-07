@@ -75,20 +75,9 @@ const Index = () => {
           <img src={ciraSpark} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
-        <div className="flex items-center gap-6">
-          <button onClick={() => scrollTo("scan")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
-            Scan yourself
-          </button>
-          <button onClick={() => scrollTo("doctor")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
-            Book a doctor
-          </button>
-          <button onClick={() => navigate("/our-story")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
-            Our story
-          </button>
-          <button onClick={() => navigate("/dashboard")} className="text-muted-foreground text-sm hover:text-foreground transition-colors font-body">
-            Log in
-          </button>
-        </div>
+        <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
+          Login
+        </button>
       </nav>
 
       {/* Hero */}
