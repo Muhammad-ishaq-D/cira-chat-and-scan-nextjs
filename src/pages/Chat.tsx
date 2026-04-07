@@ -111,20 +111,76 @@ const Chat = () => {
     setMessage("");
   };
 
+  const startScan = () => {
+    setScanning(true);
+    setScanComplete(false);
+    setScanProgress(0);
+    const interval = setInterval(() => {
+      setScanProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setScanning(false);
+          setScanComplete(true);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 80);
+  };
+
+  const completeScanAndChat = () => {
+    setShowScanModal(false);
+    setScanComplete(false);
+    setScanProgress(0);
+    
+    // Build vitals summary text for Cira context
+    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join("\n");
+    
+    const ciraResponse = "✨ Scan complete! I've captured all your vitals. Here's what I'm working with:\n\nNow I have a full picture of your body's current state. Combined with what you've told me, I can give you a much more informed assessment.\n\nWhat would you like help with today?";
+
+    if (pendingLandingMessage) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+        { role: "cira", text: ciraResponse },
+      ]);
+      setPendingLandingMessage(null);
+    } else {
+      setMessages([
+        { role: "cira", text: "📸 Starting your vital scan..." },
+        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+        { role: "cira", text: ciraResponse },
+      ]);
+    }
+  };
+
   const selectMode = (mode: ChatMode) => {
+    if (mode === "vitals") {
+      setChatMode(mode);
+      setShowModeSelection(false);
+      // Open scan modal instead of going straight to chat
+      setShowScanModal(true);
+      if (pendingLandingMessage) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "cira", text: "✨ Vital Scan + Assessment activated!\n\nLet me capture your vitals first — this will only take 30 seconds..." },
+        ]);
+      }
+      return;
+    }
+
     setChatMode(mode);
     setShowModeSelection(false);
     
     const modeConfirmations: Record<ChatMode, string> = {
       quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
       detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
-      vitals: "✨ Vital Scan + Assessment activated!\n\nI'll combine your face scan vitals with what you've told me for the most informed analysis possible.\n\nLet me start by scanning your vitals...",
+      vitals: "",
       chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
 
     if (pendingLandingMessage) {
-      // Keep existing messages and append mode confirmation
       setMessages((prev) => [
         ...prev,
         { role: "cira", text: modeConfirmations[mode] },
@@ -134,7 +190,7 @@ const Chat = () => {
       const greetings: Record<ChatMode, string> = {
         quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
         detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-        vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+        vitals: "",
         chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
         none: "",
       };
