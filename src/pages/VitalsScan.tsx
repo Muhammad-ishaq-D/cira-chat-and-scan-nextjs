@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Activity, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle } from "lucide-react";
+import { Home, MessageCircle, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
+
+const mockScanHistory = [
+  { id: "1", date: "Today, 10:32 AM", status: "Completed", hr: "72 bpm" },
+  { id: "2", date: "Mar 28, 4:15 PM", status: "Completed", hr: "68 bpm" },
+  { id: "3", date: "Mar 25, 9:00 AM", status: "Completed", hr: "75 bpm" },
+  { id: "4", date: "Mar 20, 11:45 AM", status: "Completed", hr: "70 bpm" },
+];
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Activity, label: "Scan", id: "scan" },
+  { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 
 const VitalsScan = () => {
@@ -15,6 +22,7 @@ const VitalsScan = () => {
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
 
   const startScan = () => {
     setScanning(true);
@@ -89,8 +97,59 @@ const VitalsScan = () => {
         </div>
       </div>
 
+      {/* Scan history drawer */}
+      {showHistory && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/10"
+            style={{ left: 72 }}
+            onClick={() => setShowHistory(false)}
+          />
+          <div
+            className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]"
+            style={{ left: 72 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Scan History</p>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent Scans</p>
+              {mockScanHistory.map((scan) => (
+                <button
+                  key={scan.id}
+                  className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                >
+                  <div className="flex items-center gap-2">
+                    <ScanFace size={14} className="text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-foreground">{scan.date}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{scan.hr} · {scan.status}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto relative">
+        {/* Hamburger for scan history */}
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm"
+          title="Scan History"
+        >
+          <Menu size={18} strokeWidth={1.5} />
+        </button>
         <div className="fixed inset-0 pointer-events-none" style={{ left: 72 }}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
           <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />

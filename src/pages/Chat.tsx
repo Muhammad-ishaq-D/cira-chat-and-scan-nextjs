@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Menu, Activity, LogOut, Send, Plus, Sparkles, Clock } from "lucide-react";
+import { Home, MessageCircle, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 
@@ -22,7 +22,7 @@ const quickActions = [
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Activity, label: "Scan", id: "scan" },
+  { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 
 const Chat = () => {
