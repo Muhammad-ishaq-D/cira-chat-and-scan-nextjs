@@ -6,6 +6,7 @@ import realScan from "@/assets/real-scan.webp";
 import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 
 
@@ -62,20 +63,37 @@ const visitHistory = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    const els = pageRef.current?.querySelectorAll(".scroll-fade");
+    els?.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={pageRef} className="min-h-screen bg-background">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
-        <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
+        <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
           Login
         </button>
       </nav>
@@ -83,22 +101,22 @@ const Index = () => {
       {/* Hero */}
       <main className="max-w-6xl mx-auto px-6 pt-12 pb-20">
         {/* Trust badges */}
-        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground">
+        <div className="flex items-center justify-center gap-6 mb-10 text-sm font-body text-foreground animate-fade-in">
           <span className="font-semibold">🔒 100%-Secure</span>
           <span>👥 Trusted by thousands</span>
           <span>⚡ Instant AI answers</span>
         </div>
 
         {/* Avatar + H1 */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover" />
+        <div className="flex items-center justify-center gap-4 mb-6 animate-fade-in-slow" style={{ animationDelay: "0.15s" }}>
+          <img src={doctor1} alt="Cira avatar" className="w-12 h-12 rounded-full object-cover animate-float" />
           <h1 className="font-heading text-4xl md:text-[48px] font-semibold text-foreground leading-tight">
             Hi, I'm <span className="text-primary">Cira</span>, your AI Nurse
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto">
+        <p className="text-base text-muted-foreground text-center leading-relaxed mb-2 font-body max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
           I'll ask a few structured questions <span className="font-medium text-foreground">(about 3–5 minutes)</span> to help understand your symptoms and prepare your medical consultation, should you choose to see a doctor.
         </p>
 
@@ -107,11 +125,11 @@ const Index = () => {
         </p>
 
         {/* Symptom chips */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
+        <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.45s" }}>
           {["Fatigue & Energy", "Weight Management", "Hair & Skin", "Hormones"].map((chip) => (
             <button
               key={chip}
-              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-colors"
+              className="px-5 py-2.5 rounded-full border border-border bg-card text-sm font-body text-foreground hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:scale-105"
             >
               {chip}
             </button>
@@ -119,7 +137,7 @@ const Index = () => {
         </div>
 
         {/* Chat input */}
-        <div className="max-w-2xl mx-auto mb-4">
+        <div className="max-w-2xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: "0.55s" }}>
           <div className="rounded-2xl border border-border bg-card p-5">
             <textarea
               placeholder="Ask me anything about your health..."
@@ -129,7 +147,7 @@ const Index = () => {
             <div className="flex items-center justify-end mt-3">
               <button
                 onClick={() => navigate("/login")}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
                 Ask Cira
@@ -154,7 +172,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-card py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             Cira doesn't guess.<br />
             She thinks.
           </h2>
@@ -199,7 +217,7 @@ const Index = () => {
           </div>
 
           {/* Cira example — pink card */}
-          <div className="border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-2xl mx-auto text-left mb-6">
+          <div className="scroll-fade border-l-4 border-primary bg-primary/5 rounded-r-2xl p-6 max-w-2xl mx-auto text-left mb-6">
             <p className="text-sm text-foreground font-body leading-relaxed italic whitespace-pre-line">
               {"\"Your blood pressure is 138/88 and your heart\nrate is 102. Combined with the chest tightness\nyou're describing and your HRV drop of 22% —\nthis pattern is consistent with acute\ncardiovascular stress.\n\nThis is not something to sleep on.\n\nGo to a clinic or emergency room within the\nnext two hours. I've prepared a complete\nsummary of everything I found for your doctor.\""}
             </p>
@@ -218,7 +236,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-background py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[40px] font-semibold text-foreground leading-tight mb-6">
             The scan is not an estimate.<br />
             It's clinical technology.
           </h2>
@@ -228,7 +246,7 @@ const Index = () => {
           </p>
 
           {/* Four proof numbers */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-14">
+          <div className="scroll-fade grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-14">
             <div>
               <p className="font-heading text-3xl font-semibold text-foreground">7M+</p>
               <div className="border-t border-border mt-2 pt-2">
@@ -306,7 +324,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm overflow-hidden max-w-2xl mx-auto mb-4">
             <table className="w-full text-sm font-body">
               <thead>
                 <tr className="border-b border-border">
@@ -342,7 +360,7 @@ const Index = () => {
           </div>
 
           {/* Quote */}
-          <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
+          <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-center mb-6">
             <p className="text-base text-foreground font-body leading-relaxed mb-4 italic">
               "Integrating Shen AI helped us become the<br />
               #1 blood pressure app in the US, UK, Canada<br />
@@ -366,7 +384,7 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       <section id="scan" className="max-w-6xl mx-auto px-6 pb-20 pt-16">
         <div className="text-center">
-          <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
+          <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
             See what your body is actually saying.
           </h2>
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
@@ -405,7 +423,7 @@ const Index = () => {
 
         {/* 30+ markers — 3 columns */}
         <div className="text-center mb-10">
-          <h3 className="font-heading text-[32px] font-semibold text-foreground leading-tight">
+          <h3 className="scroll-fade font-heading text-[32px] font-semibold text-foreground leading-tight">
             30+ health markers.<br />
             From your face.<br />
             In 30 seconds.
@@ -451,7 +469,7 @@ const Index = () => {
       {/* DASHBOARD PREVIEW */}
       {/* ═══════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           Every scan saved.<br />
           Your health history<br />
           built automatically.
@@ -467,7 +485,7 @@ const Index = () => {
         </p>
 
         {/* Browser chrome mockup */}
-        <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-3xl mx-auto text-left relative">
+        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-w-3xl mx-auto text-left relative">
           {/* Browser bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary">
             <div className="flex gap-1.5">
@@ -538,7 +556,7 @@ const Index = () => {
               </div>
 
               {/* Cira observation */}
-              <div className="border-l-4 border-primary bg-secondary rounded-r-lg p-4">
+              <div className="scroll-fade border-l-4 border-primary bg-secondary rounded-r-lg p-4">
                 <p className="text-xs text-muted-foreground font-body mb-1">Cira noticed</p>
                 <p className="text-sm text-foreground font-body italic leading-relaxed">
                   "I've seen this pattern before.<br />
@@ -562,7 +580,7 @@ const Index = () => {
       {/* DOCTOR REPORT */}
       {/* ═══════════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[36px] font-semibold text-foreground leading-tight mb-6">
           One click.<br />
           Your doctor gets everything.
         </h2>
@@ -573,7 +591,7 @@ const Index = () => {
         </p>
 
         {/* Report card */}
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
+        <div className="scroll-fade bg-card rounded-2xl border border-border shadow-sm p-8 max-w-2xl mx-auto text-left font-body text-sm">
           <div className="border-t-2 border-b-2 border-foreground py-2 mb-4 text-center">
             <p className="text-foreground font-semibold tracking-widest text-xs uppercase">Cira Health Summary</p>
           </div>
@@ -633,7 +651,7 @@ const Index = () => {
       {/* BOOK A DOCTOR */}
       {/* ═══════════════════════════════════════════ */}
       <section id="doctor" className="max-w-4xl mx-auto px-6 pb-20 pt-16 text-center">
-        <h2 className="font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
+        <h2 className="scroll-fade font-heading text-[38px] font-semibold text-foreground leading-tight mb-6">
           See a real doctor.<br />
           Today. Anywhere.
         </h2>
