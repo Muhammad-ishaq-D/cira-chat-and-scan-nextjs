@@ -4,6 +4,7 @@ import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, Me
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const mockHistory = [
   { id: "1", title: "Chest tightness and fatigue", date: "Today" },
@@ -207,8 +208,8 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Slim icon sidebar with labels */}
-      <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+      {/* Slim icon sidebar — hidden on mobile */}
+      <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
         {/* Logo */}
 
         {/* Logo */}
@@ -785,6 +786,7 @@ const Chat = () => {
           </div>
         </div>
       )}
+      <MobileBottomNav />
     </div>
   );
 };
