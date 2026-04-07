@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -75,7 +76,11 @@ const Dashboard = () => {
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                {item.id === "chat" ? (
+                  <AiSparkleIcon size={18} active={activeNav === item.id} />
+                ) : (
+                  <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                )}
                 <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
               </button>
             );
