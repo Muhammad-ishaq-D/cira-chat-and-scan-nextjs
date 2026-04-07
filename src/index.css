@@ -88,6 +88,24 @@
   }
 }
 
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix momentum scrolling */
+  .overflow-y-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix backdrop-filter */
+  .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-xl {
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Smooth scrolling containers */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Scroll-triggered fade-in */
 .scroll-fade {
   opacity: 0;
