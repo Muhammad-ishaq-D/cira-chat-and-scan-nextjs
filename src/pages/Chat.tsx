@@ -342,95 +342,78 @@ const Chat = () => {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-gradient-to-r from-pink-200/30 to-purple-200/20 rounded-full blur-[100px]" />
               </div>
 
-              <div className="relative z-10 flex flex-col items-center w-full max-w-2xl">
-                <div className="w-14 h-14 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/40 flex items-center justify-center mb-5 shadow-sm">
-                  <img src={ciraLogo} alt="Cira" width={28} height={28} />
+               <div className="relative z-10 flex flex-col items-center w-full max-w-2xl px-1">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/40 flex items-center justify-center mb-4 md:mb-5 shadow-sm">
+                  <img src={ciraLogo} alt="Cira" width={24} height={24} className="md:w-7 md:h-7" />
                 </div>
-                <h1 className="text-[32px] font-semibold text-foreground mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  How can Cira help you?
+                <h1 className="text-xl md:text-[32px] font-semibold text-foreground mb-1.5 md:mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  How can Cira help?
                 </h1>
-                <p className="text-sm text-muted-foreground mb-10 text-center max-w-md">
-                  Choose a consultation type below, or just start chatting with your AI health nurse.
+                <p className="text-xs md:text-sm text-muted-foreground mb-5 md:mb-10 text-center max-w-md">
+                  Choose a consultation type or just start chatting.
                 </p>
 
-                {/* ✦ HERO — Vital Scan + Assessment */}
+                {/* ✦ HERO — Vital Scan — compact on mobile */}
                 <button
                   onClick={() => selectMode("vitals")}
-                  className="group w-full max-w-2xl mb-5 relative overflow-hidden rounded-2xl text-left transition-all hover:-translate-y-1 hover:shadow-2xl"
+                  className="group w-full max-w-2xl mb-3 md:mb-5 relative overflow-hidden rounded-xl md:rounded-2xl text-left transition-all active:scale-[0.98] hover:-translate-y-1 hover:shadow-2xl"
                 >
-                  {/* Animated gradient background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                  <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-                  <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-300/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                  <div className="absolute top-3 right-8 w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+                  <div className="absolute top-5 right-16 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
                   
-                  {/* Floating particles */}
-                  <div className="absolute top-4 right-12 w-1.5 h-1.5 bg-white/40 rounded-full animate-pulse" />
-                  <div className="absolute top-8 right-24 w-1 h-1 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-                  <div className="absolute bottom-6 right-16 w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
-                  
-                  <div className="relative z-10 p-6 flex items-center gap-5">
-                    {/* AI Icon */}
+                  <div className="relative z-10 p-3.5 md:p-6 flex items-center gap-3 md:gap-5">
                     <div className="shrink-0">
-                      <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg relative">
-                        <ScanFace size={30} className="text-white" />
-                        {/* Orbiting ring */}
-                        <div className="absolute inset-[-4px] rounded-2xl border border-white/10 animate-[spin_8s_linear_infinite]" />
-                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                          <Sparkles size={8} className="text-white" />
+                      <div className="w-11 h-11 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg relative">
+                        <ScanFace size={20} className="text-white md:hidden" />
+                        <ScanFace size={30} className="text-white hidden md:block" />
+                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                          <Sparkles size={7} className="text-white" />
                         </div>
                       </div>
                     </div>
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-lg font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
-                        <span className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-[9px] font-semibold text-white uppercase tracking-wider">
-                          AI Powered
-                        </span>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <p className="text-[13px] md:text-lg font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                        <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[7px] font-semibold text-white uppercase tracking-wider">AI</span>
                       </div>
-                      <p className="text-sm text-white/80 leading-relaxed mb-3">
-                        30-second face scan captures 30+ vitals — then Cira cross-references your symptoms with real clinical data for the most accurate assessment.
+                      <p className="text-[10px] md:text-sm text-white/75 leading-relaxed hidden md:block">
+                        30-second face scan captures 30+ vitals — then Cira cross-references your symptoms with real clinical data.
                       </p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-white/60 flex items-center gap-1">
-                          <Camera size={10} /> Face Scan
-                        </span>
-                        <span className="text-[10px] text-white/60">•</span>
-                        <span className="text-[10px] text-white/60 flex items-center gap-1">
-                          <Activity size={10} /> 30+ Vitals
-                        </span>
-                        <span className="text-[10px] text-white/60">•</span>
-                        <span className="text-[10px] text-white/60 flex items-center gap-1">
-                          <Brain size={10} /> AI Analysis
-                        </span>
-                        <span className="text-[10px] text-white/60">•</span>
-                        <span className="text-[10px] text-white/60">~4 min</span>
+                      <p className="text-[9px] text-white/70 leading-snug md:hidden">Face scan → 30+ vitals → AI analysis</p>
+                      <div className="flex items-center gap-2 mt-1.5 md:mt-3">
+                        <span className="text-[8px] md:text-[10px] text-white/60 flex items-center gap-0.5"><Camera size={8} /> Scan</span>
+                        <span className="text-white/30">·</span>
+                        <span className="text-[8px] md:text-[10px] text-white/60 flex items-center gap-0.5"><Activity size={8} /> 30+ Vitals</span>
+                        <span className="text-white/30">·</span>
+                        <span className="text-[8px] md:text-[10px] text-white/60">~4 min</span>
                       </div>
                     </div>
-                    {/* Arrow */}
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </div>
                   </div>
                 </button>
 
-                {/* Secondary modes — Quick & Detailed */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mb-8">
+                {/* Secondary modes — compact tiles */}
+                <div className="grid grid-cols-2 gap-2 md:gap-3 w-full max-w-2xl mb-4 md:mb-8">
                   {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                     const Icon = mode.icon;
                     return (
                       <button
                         key={mode.id}
                         onClick={() => selectMode(mode.id)}
-                        className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-5 text-left hover:shadow-lg hover:border-border/80 transition-all hover:-translate-y-0.5"
+                        className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
                       >
-                        <div className={`w-10 h-10 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-3`}>
-                          <Icon size={20} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2 md:mb-3`}>
+                          <Icon size={15} className="md:hidden" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                          <Icon size={20} className="hidden md:block" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
                         </div>
-                        <p className="text-sm font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">{mode.desc}</p>
-                        <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
+                        <p className="text-[11px] md:text-sm font-semibold text-foreground mb-0.5 md:mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-none mb-2 md:mb-3">{mode.desc}</p>
+                        <span className="inline-block text-[8px] md:text-[9px] font-medium px-1.5 md:px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
                           {mode.badge}
                         </span>
                       </button>
@@ -441,22 +424,21 @@ const Chat = () => {
                 {/* Just chat option */}
                 <button
                   onClick={() => selectMode("chat")}
-                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-card/60 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all group"
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/60 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all active:scale-[0.98]"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
-                    <MessageCircle size={16} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                  <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center">
+                    <MessageCircle size={14} className="text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <p className="text-xs font-medium text-foreground">Just Chat with Cira</p>
-                    <p className="text-[10px] text-muted-foreground">No assessment — ask anything, get guided advice</p>
+                    <p className="text-[11px] font-medium text-foreground">Just Chat with Cira</p>
+                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything</p>
                   </div>
                 </button>
 
-                {/* Disclaimer */}
-                <p className="text-[9px] text-muted-foreground/60 mt-8 text-center max-w-sm leading-relaxed">
-                  ⚕️ Cira is an AI health nurse, not a licensed medical professional. Always discuss Cira's findings with a doctor.
+                <p className="text-[8px] md:text-[9px] text-muted-foreground/60 mt-5 md:mt-8 text-center max-w-sm leading-relaxed">
+                  ⚕️ Cira is an AI health nurse. Always discuss findings with a doctor.
                 </p>
-              </div>
+               </div>
             </div>
           ) : (
             /* Chat messages — keep same gradient bg */
@@ -550,37 +532,35 @@ const Chat = () => {
                           <img src={ciraLogo} alt="" width={16} height={16} />
                         </div>
                         <div className="space-y-3 w-full">
-                          {/* Hero — Vital Scan */}
+                          {/* Hero — Vital Scan (compact) */}
                           <button
                             onClick={() => selectMode("vitals")}
-                            className="group w-full relative overflow-hidden rounded-2xl text-left transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                            className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]"
                           >
                             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
-                            <div className="absolute top-3 right-8 w-1 h-1 bg-white/40 rounded-full animate-pulse" />
-                            <div className="absolute top-5 right-16 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-                            <div className="relative z-10 p-4 flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 relative">
-                                <ScanFace size={22} className="text-white" />
-                                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center">
-                                  <Sparkles size={7} className="text-white" />
+                            <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+                            <div className="relative z-10 p-3 flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
+                                <ScanFace size={18} className="text-white" />
+                                <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 flex items-center justify-center">
+                                  <Sparkles size={6} className="text-white" />
                                 </div>
                               </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-1.5 mb-0.5">
-                                  <p className="text-sm font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
-                                  <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[7px] font-semibold text-white uppercase tracking-wider">AI</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                                  <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
                                 </div>
-                                <p className="text-[10px] text-white/75 leading-relaxed">30-second face scan → 30+ vitals → AI cross-references with your symptoms</p>
+                                <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
                               </div>
-                              <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                              <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                               </div>
                             </div>
                           </button>
 
-                          {/* Secondary — Quick & Detailed */}
+                          {/* Secondary — Quick & Detailed (compact tiles) */}
                           <div className="grid grid-cols-2 gap-2">
                             {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                               const Icon = mode.icon;
@@ -588,13 +568,13 @@ const Chat = () => {
                                 <button
                                   key={mode.id}
                                   onClick={() => selectMode(mode.id)}
-                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-xl p-3.5 text-left hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-0.5"
+                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
                                 >
-                                  <div className={`w-8 h-8 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-2`}>
-                                    <Icon size={16} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                                  <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                                    <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
                                   </div>
-                                  <p className="text-[11px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                                  <p className="text-[9px] text-muted-foreground leading-relaxed">{mode.desc}</p>
+                                  <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                                  <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
                                 </button>
                               );
                             })}
@@ -603,14 +583,14 @@ const Chat = () => {
                           {/* Just chat */}
                           <button
                             onClick={() => selectMode("chat")}
-                            className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all w-full"
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 active:scale-[0.98] transition-all w-full"
                           >
-                            <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center">
-                              <MessageCircle size={14} className="text-muted-foreground" />
+                            <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+                              <MessageCircle size={12} className="text-muted-foreground" />
                             </div>
                             <div className="text-left">
-                              <p className="text-[11px] font-medium text-foreground">Just Continue Chatting</p>
-                              <p className="text-[9px] text-muted-foreground">No assessment — let's just talk</p>
+                              <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
+                              <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
                             </div>
                           </button>
                         </div>
