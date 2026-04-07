@@ -333,7 +333,7 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto pb-16 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
-            <div className="h-full flex flex-col items-center justify-center px-3 md:px-6 relative overflow-hidden">
+            <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden">
               {/* Full-screen pastel gradient background */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
@@ -442,7 +442,7 @@ const Chat = () => {
             </div>
           ) : (
             /* Chat messages — keep same gradient bg */
-            <div className="relative min-h-full flex flex-col">
+            <div className="relative min-h-full">
               {/* Same gradient as welcome */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
@@ -450,10 +450,7 @@ const Chat = () => {
                 <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
               </div>
 
-              {/* Spacer pushes chat down on mobile */}
-              <div className="flex-1 min-h-[30vh] md:min-h-0 md:flex-none" />
-
-              <div className="relative z-10 max-w-2xl mx-auto px-3 py-4 md:p-6 space-y-4 md:space-y-5">
+              <div className="relative z-10 max-w-2xl mx-auto p-6 space-y-5">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                     {/* Vitals card */}
@@ -608,7 +605,7 @@ const Chat = () => {
 
         {/* Bottom input — always matches the aesthetic */}
         {messages.length > 0 && (
-          <div className="relative border-t border-border/30 px-2 py-3 pb-20 md:p-4 md:pb-4 shrink-0">
+          <div className="relative border-t border-border/30 p-4 pb-20 md:pb-4 shrink-0">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto">
               <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
