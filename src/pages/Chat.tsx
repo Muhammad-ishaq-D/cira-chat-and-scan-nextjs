@@ -156,7 +156,7 @@ const Chat = () => {
               ))}
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Main content */}
