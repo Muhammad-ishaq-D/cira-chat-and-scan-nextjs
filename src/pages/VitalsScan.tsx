@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Activity, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle } from "lucide-react";
+import { Home, MessageCircle, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, Plus, ScanFace } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
+
+const mockScanHistory = [
+  { id: "1", date: "Today, 10:32 AM", status: "Completed", hr: "72 bpm" },
+  { id: "2", date: "Mar 28, 4:15 PM", status: "Completed", hr: "68 bpm" },
+  { id: "3", date: "Mar 25, 9:00 AM", status: "Completed", hr: "75 bpm" },
+  { id: "4", date: "Mar 20, 11:45 AM", status: "Completed", hr: "70 bpm" },
+];
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
-  { icon: Activity, label: "Scan", id: "scan" },
+  { icon: ScanFace, label: "Scan", id: "scan" },
 ];
 
 const VitalsScan = () => {
