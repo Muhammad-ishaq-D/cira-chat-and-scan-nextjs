@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -77,6 +77,17 @@ const Chat = () => {
   const [scanProgress, setScanProgress] = useState(0);
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change or typing starts
+  useEffect(() => {
+    if (scrollRef.current) {
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      }, 100);
+    }
+  }, [messages, isTyping]);
 
   // Pick up message from landing page
   useEffect(() => {
@@ -104,12 +115,22 @@ const Chat = () => {
       chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
       none: "",
     };
+    // Add user message immediately
     setMessages((prev) => [
       ...prev,
       { role: "user", text: message },
-      { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
     ]);
     setMessage("");
+    setIsTyping(true);
+
+    // Simulate Cira typing delay, then add response
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
+      ]);
+    }, 1200);
   };
 
   const startScan = () => {
@@ -330,7 +351,7 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
             <div className="h-full flex flex-col items-center justify-center px-4 md:px-6 pb-20 md:pb-0 relative overflow-hidden">
@@ -575,6 +596,22 @@ const Chat = () => {
                           <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
                         </div>
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Typing indicator */}
+                {isTyping && (
+                  <div className="flex justify-start animate-fade-in">
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2">
+                        <AiSparkleIcon size={20} active />
+                      </div>
+                      <div className="flex items-center gap-1.5 py-1">
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
                     </div>
                   </div>
                 )}
