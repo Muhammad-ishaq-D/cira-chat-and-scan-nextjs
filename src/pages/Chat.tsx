@@ -114,12 +114,21 @@ const Chat = () => {
       chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
       none: "",
     };
+    // Add user message immediately
     setMessages((prev) => [
       ...prev,
       { role: "user", text: message },
-      { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
     ]);
+    const userMsg = message;
     setMessage("");
+
+    // Simulate Cira typing delay, then add response
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
+      ]);
+    }, 800);
   };
 
   const startScan = () => {
