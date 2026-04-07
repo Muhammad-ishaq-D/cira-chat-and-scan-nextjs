@@ -442,13 +442,16 @@ const Chat = () => {
             </div>
           ) : (
             /* Chat messages — keep same gradient bg */
-            <div className="relative min-h-full">
+            <div className="relative min-h-full flex flex-col">
               {/* Same gradient as welcome */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
                 <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-gradient-to-br from-blue-200/50 to-purple-200/30 rounded-full blur-[120px]" />
                 <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
               </div>
+
+              {/* Spacer pushes chat down on mobile */}
+              <div className="flex-1 min-h-[30vh] md:min-h-0 md:flex-none" />
 
               <div className="relative z-10 max-w-2xl mx-auto px-3 py-4 md:p-6 space-y-4 md:space-y-5">
                 {messages.map((msg, i) => (
