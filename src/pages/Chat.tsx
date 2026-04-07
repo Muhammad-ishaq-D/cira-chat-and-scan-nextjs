@@ -557,6 +557,142 @@ const Chat = () => {
           </div>
         )}
       </div>
+
+      {/* Face Scan Modal */}
+      {showScanModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { if (!scanning) { setShowScanModal(false); setScanComplete(false); setScanProgress(0); } }} />
+          <div className="relative z-10 bg-card rounded-3xl shadow-2xl border border-border/50 w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                  <ScanFace size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Face Vital Scan</p>
+                  <p className="text-[10px] text-muted-foreground">30 seconds · 100% on-device</p>
+                </div>
+              </div>
+              {!scanning && (
+                <button onClick={() => { setShowScanModal(false); setScanComplete(false); setScanProgress(0); }} className="w-8 h-8 rounded-lg hover:bg-accent flex items-center justify-center text-muted-foreground transition-colors">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {/* Camera Area */}
+            <div className="px-6 pb-4">
+              <div className="relative aspect-[4/3] rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex items-center justify-center">
+                {!scanning && !scanComplete && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 to-teal-900/20" />
+                    <div className="relative z-10 flex flex-col items-center gap-4">
+                      <div className="w-24 h-24 rounded-full border-2 border-dashed border-emerald-400/50 flex items-center justify-center">
+                        <Camera size={32} className="text-emerald-400/70" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-white/80 font-medium">Position your face in the frame</p>
+                        <p className="text-[10px] text-white/50 mt-1">Ensure good lighting · Hold still</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {scanning && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/30 to-teal-900/30" />
+                    {/* Animated scan lines */}
+                    <div className="absolute inset-4 border-2 border-emerald-400/40 rounded-2xl">
+                      <div
+                        className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+                        style={{ top: `${scanProgress}%`, transition: "top 0.08s linear" }}
+                      />
+                    </div>
+                    {/* Face outline */}
+                    <div className="relative z-10 w-28 h-36 border-2 border-emerald-400/60 rounded-[50%] flex items-center justify-center">
+                      <ScanFace size={40} className="text-emerald-400/60 animate-pulse" />
+                    </div>
+                    {/* Pulsing corners */}
+                    <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-emerald-400 rounded-tl-lg animate-pulse" />
+                    <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-emerald-400 rounded-tr-lg animate-pulse" />
+                    <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-emerald-400 rounded-bl-lg animate-pulse" />
+                    <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-emerald-400 rounded-br-lg animate-pulse" />
+                    {/* Progress text */}
+                    <div className="absolute bottom-6 left-0 right-0 text-center">
+                      <p className="text-emerald-400 text-xs font-medium">Scanning... {scanProgress}%</p>
+                    </div>
+                  </>
+                )}
+
+                {scanComplete && (
+                  <div className="relative z-10 flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-fade-in">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <p className="text-white text-sm font-semibold">Scan Complete!</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              {scanning && (
+                <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-100"
+                    style={{ width: `${scanProgress}%` }}
+                  />
+                </div>
+              )}
+
+              {/* Vitals Preview (after scan) */}
+              {scanComplete && (
+                <div className="mt-4 animate-fade-in">
+                  <div className="grid grid-cols-3 gap-2">
+                    {scanVitals.map((vital) => {
+                      const VIcon = vital.icon;
+                      return (
+                        <div key={vital.label} className="bg-accent/30 rounded-xl p-2.5 text-center">
+                          <div className={`w-7 h-7 rounded-lg ${vital.color} flex items-center justify-center mx-auto mb-1`}>
+                            <VIcon size={13} />
+                          </div>
+                          <p className="text-xs font-bold text-foreground">{vital.value}</p>
+                          <p className="text-[8px] text-muted-foreground leading-tight">{vital.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Button */}
+            <div className="px-6 pb-5">
+              {!scanning && !scanComplete && (
+                <button
+                  onClick={startScan}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Camera size={16} />
+                  Start Face Scan
+                </button>
+              )}
+              {scanComplete && (
+                <button
+                  onClick={completeScanAndChat}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={16} />
+                  Continue to Assessment
+                </button>
+              )}
+              <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
+                🔒 Camera feed is never recorded or transmitted. 100% on-device processing.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
