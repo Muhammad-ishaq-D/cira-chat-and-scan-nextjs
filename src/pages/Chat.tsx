@@ -153,13 +153,17 @@ const Chat = () => {
     setMessage("");
     setIsTyping(true);
 
-    // Simulate Cira typing delay, then add response
+    // Simulate Cira typing delay, then add response with typewriter
     setTimeout(() => {
       setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
-      ]);
+      setMessages((prev) => {
+        const newMessages = [
+          ...prev,
+          { role: "cira" as const, text: modeResponses[chatMode] || modeResponses.chat },
+        ];
+        setTypingMsgIndex(newMessages.length - 1);
+        return newMessages;
+      });
     }, 1200);
   };
 
