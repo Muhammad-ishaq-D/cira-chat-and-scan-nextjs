@@ -49,7 +49,7 @@ const riskColor = (level: string) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const activeNav = "home";
+  const activeNav: string = "home";
 
   return (
     <div className="h-screen flex bg-background">

@@ -84,7 +84,11 @@ const Chat = () => {
                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
-                <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                {item.id === "chat" ? (
+                  <AiSparkleIcon size={18} active={activeNav === item.id} />
+                ) : (
+                  <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
+                )}
                 <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
               </button>
             );
