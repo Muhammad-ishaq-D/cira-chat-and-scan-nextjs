@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, MessageCircle, Menu, Activity, LogOut, Send, Plus, Sparkles } from "lucide-react";
+import { Home, MessageCircle, Menu, Activity, LogOut, Send, Plus, Sparkles, Clock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const mockHistory = [
