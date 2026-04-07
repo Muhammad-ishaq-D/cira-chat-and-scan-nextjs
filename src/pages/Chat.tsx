@@ -100,14 +100,33 @@ const Chat = () => {
 
   const selectMode = (mode: ChatMode) => {
     setChatMode(mode);
-    const greetings: Record<ChatMode, string> = {
-      quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
-      detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-      vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
-      chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+    setShowModeSelection(false);
+    
+    const modeConfirmations: Record<ChatMode, string> = {
+      quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
+      detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
+      vitals: "✨ Vital Scan + Assessment activated!\n\nI'll combine your face scan vitals with what you've told me for the most informed analysis possible.\n\nLet me start by scanning your vitals...",
+      chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
-    setMessages([{ role: "cira", text: greetings[mode] }]);
+
+    if (pendingLandingMessage) {
+      // Keep existing messages and append mode confirmation
+      setMessages((prev) => [
+        ...prev,
+        { role: "cira", text: modeConfirmations[mode] },
+      ]);
+      setPendingLandingMessage(null);
+    } else {
+      const greetings: Record<ChatMode, string> = {
+        quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
+        detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
+        vitals: "👋 Vital Scan + Assessment mode!\n\nI'll use your latest face scan data to inform my analysis. Combined with your symptoms, this gives me the most complete picture.\n\nFirst, tell me — what would you like help with today?",
+        chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
+        none: "",
+      };
+      setMessages([{ role: "cira", text: greetings[mode] }]);
+    }
   };
 
   const startChat = (title: string) => {
