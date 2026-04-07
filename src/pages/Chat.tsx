@@ -330,7 +330,7 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-16 md:pb-0">
           {messages.length === 0 ? (
             /* Welcome screen — Lovable-style soft gradient */
             <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden">
@@ -625,7 +625,7 @@ const Chat = () => {
 
         {/* Bottom input — always matches the aesthetic */}
         {messages.length > 0 && (
-          <div className="relative border-t border-border/30 p-4 shrink-0">
+          <div className="relative border-t border-border/30 p-4 pb-20 md:pb-4 shrink-0">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto">
               <div className="bg-card/90 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
