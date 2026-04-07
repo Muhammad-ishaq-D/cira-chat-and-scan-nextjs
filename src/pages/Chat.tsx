@@ -45,6 +45,15 @@ const chatModes = [
   },
 ];
 
+const scanVitals = [
+  { label: "Heart Rate", value: "72", unit: "bpm", icon: Heart, color: "text-red-500 bg-red-50" },
+  { label: "Blood Pressure", value: "118/76", unit: "mmHg", icon: Activity, color: "text-pink-500 bg-pink-50" },
+  { label: "Breathing Rate", value: "16", unit: "/min", icon: Wind, color: "text-cyan-500 bg-cyan-50" },
+  { label: "Stress Index", value: "32", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
+  { label: "HRV", value: "54", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
+  { label: "BMI", value: "22.4", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
+];
+
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
