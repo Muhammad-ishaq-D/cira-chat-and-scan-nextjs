@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search } from "lucide-react";
+import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -10,6 +10,7 @@ const navItems = [
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
   { icon: FileText, label: "Reports", id: "reports" },
+  { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
 const mockReports = [
