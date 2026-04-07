@@ -6,6 +6,35 @@ import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 
+// Typewriter component — streams text character by character
+const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
+  const [displayed, setDisplayed] = useState("");
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    setDisplayed("");
+    indexRef.current = 0;
+    const interval = setInterval(() => {
+      indexRef.current += 1;
+      setDisplayed(text.slice(0, indexRef.current));
+      if (indexRef.current >= text.length) {
+        clearInterval(interval);
+        onComplete?.();
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return (
+    <span className="whitespace-pre-line">
+      {displayed}
+      {displayed.length < text.length && (
+        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
+      )}
+    </span>
+  );
+};
+
 const mockHistory = [
   { id: "1", title: "Chest tightness and fatigue", date: "Today" },
   { id: "2", title: "Headache for 3 days", date: "Yesterday" },
