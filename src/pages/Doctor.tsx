@@ -4,6 +4,7 @@ import { Home, LogOut, ScanFace, Sparkles, FileText, UserRound, Star, MapPin, Cl
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
