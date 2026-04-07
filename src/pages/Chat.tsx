@@ -19,7 +19,6 @@ const quickActions = [
 ];
 
 const navItems = [
-  { icon: Menu, label: "History", id: "history" },
   { icon: Home, label: "Home", id: "home" },
   { icon: MessageCircle, label: "Chat", id: "chat" },
   { icon: Activity, label: "Vitals", id: "vitals" },
@@ -55,8 +54,17 @@ const Chat = () => {
     <div className="h-screen flex bg-background">
       {/* Slim icon sidebar with labels */}
       <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+        {/* Hamburger for history */}
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="w-10 h-10 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors mb-4"
+          title="Chat History"
+        >
+          <Menu size={20} strokeWidth={1.5} />
+        </button>
+
         {/* Logo */}
-        <div className="mb-6">
+        <div className="mb-4">
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
         </div>
 
@@ -72,7 +80,7 @@ const Chat = () => {
                 onClick={() => {
                   setActiveNav(item.id);
                   if (item.id === "home") navigate("/dashboard");
-                  if (item.id === "history") setShowHistory(!showHistory);
+                  
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   activeNav === item.id
