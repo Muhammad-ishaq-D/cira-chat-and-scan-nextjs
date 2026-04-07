@@ -56,8 +56,8 @@ const VitalsScan = () => {
 
   return (
     <div className="h-screen flex bg-background">
-      {/* Sidebar */}
-      <div className="w-[72px] border-r border-border bg-card flex flex-col items-center py-4 shrink-0">
+      {/* Sidebar — hidden on mobile */}
+      <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
         <div className="mb-4">
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
         </div>
@@ -284,6 +284,7 @@ const VitalsScan = () => {
           )}
         </div>
       </div>
+      <MobileBottomNav />
     </div>
   );
 };
