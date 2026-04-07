@@ -546,32 +546,62 @@ const Chat = () => {
                 {showModeSelection && (
                   <div className="animate-fade-in">
                     <div className="flex justify-start">
-                      <div className="flex items-start gap-3 max-w-[90%]">
+                      <div className="flex items-start gap-3 max-w-[92%]">
                         <div className="w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                           <img src={ciraLogo} alt="" width={16} height={16} />
                         </div>
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
-                            {chatModes.map((mode) => {
+                        <div className="space-y-3 w-full">
+                          {/* Hero — Vital Scan */}
+                          <button
+                            onClick={() => selectMode("vitals")}
+                            className="group w-full relative overflow-hidden rounded-2xl text-left transition-all hover:-translate-y-0.5 hover:shadow-xl"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
+                            <div className="absolute top-3 right-8 w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+                            <div className="absolute top-5 right-16 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+                            <div className="relative z-10 p-4 flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 relative">
+                                <ScanFace size={22} className="text-white" />
+                                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center">
+                                  <Sparkles size={7} className="text-white" />
+                                </div>
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                  <p className="text-sm font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                                  <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[7px] font-semibold text-white uppercase tracking-wider">AI</span>
+                                </div>
+                                <p className="text-[10px] text-white/75 leading-relaxed">30-second face scan → 30+ vitals → AI cross-references with your symptoms</p>
+                              </div>
+                              <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                              </div>
+                            </div>
+                          </button>
+
+                          {/* Secondary — Quick & Detailed */}
+                          <div className="grid grid-cols-2 gap-2">
+                            {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                               const Icon = mode.icon;
                               return (
                                 <button
                                   key={mode.id}
                                   onClick={() => selectMode(mode.id)}
-                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl p-4 text-left hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-0.5"
+                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-xl p-3.5 text-left hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-0.5"
                                 >
-                                  <div className={`w-9 h-9 rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2.5`}>
-                                    <Icon size={18} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : mode.gradient.includes("purple") ? "#a855f7" : "#10b981" }} />
+                                  <div className={`w-8 h-8 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-2`}>
+                                    <Icon size={16} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
                                   </div>
-                                  <p className="text-xs font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                                  <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">{mode.desc}</p>
-                                  <span className="inline-block text-[8px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
-                                    {mode.badge}
-                                  </span>
+                                  <p className="text-[11px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                                  <p className="text-[9px] text-muted-foreground leading-relaxed">{mode.desc}</p>
                                 </button>
                               );
                             })}
                           </div>
+
+                          {/* Just chat */}
                           <button
                             onClick={() => selectMode("chat")}
                             className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all w-full"
