@@ -120,16 +120,17 @@ const Chat = () => {
       ...prev,
       { role: "user", text: message },
     ]);
-    const userMsg = message;
     setMessage("");
+    setIsTyping(true);
 
     // Simulate Cira typing delay, then add response
     setTimeout(() => {
+      setIsTyping(false);
       setMessages((prev) => [
         ...prev,
         { role: "cira", text: modeResponses[chatMode] || modeResponses.chat },
       ]);
-    }, 800);
+    }, 1200);
   };
 
   const startScan = () => {
