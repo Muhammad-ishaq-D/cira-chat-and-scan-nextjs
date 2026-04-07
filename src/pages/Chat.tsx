@@ -441,25 +441,15 @@ const Chat = () => {
                </div>
             </div>
           ) : (
-            /* Chat messages — keep same gradient bg */
-            <div className="relative min-h-full">
-              {/* Same gradient as welcome */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
-                <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-gradient-to-br from-blue-200/50 to-purple-200/30 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
-              </div>
-
-              <div className="relative z-10 max-w-2xl mx-auto px-3 py-4 md:p-6 space-y-3.5 md:space-y-5 pt-16 md:pt-6">
+            /* Chat messages — Gemini-style clean layout */
+            <div className="relative min-h-full bg-background">
+              <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                     {/* Vitals card */}
                     {msg.role === "vitals" && msg.vitalsData ? (
-                      <div className="flex items-start gap-2 md:gap-3 max-w-full md:max-w-[85%]">
-                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                          <ScanFace size={16} className="text-primary" />
-                        </div>
-                        <div className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl rounded-tl-sm shadow-sm overflow-hidden w-full">
+                      <div className="w-full max-w-sm md:max-w-md">
+                        <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
                           <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
                             <div className="flex items-center gap-2">
                               <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
@@ -471,17 +461,17 @@ const Chat = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 md:gap-0.5 p-2.5 md:p-2">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
                             {msg.vitalsData.map((vital) => {
                               const VIcon = vital.icon;
                               return (
-                                <div key={vital.label} className="flex flex-col items-center p-2.5 md:p-3 rounded-xl hover:bg-accent/30 transition-colors">
-                                  <div className={`w-7 h-7 md:w-8 md:h-8 rounded-lg ${vital.color} flex items-center justify-center mb-1.5`}>
-                                    <VIcon size={14} />
+                                <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
+                                  <div className={`w-7 h-7 rounded-lg ${vital.color} flex items-center justify-center mb-1`}>
+                                    <VIcon size={13} />
                                   </div>
-                                  <p className="text-[13px] md:text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{vital.value}</p>
-                                  <p className="text-[8px] md:text-[9px] text-muted-foreground text-center leading-tight mt-0.5">{vital.label}</p>
-                                  <p className="text-[7px] md:text-[8px] text-muted-foreground/60">{vital.unit}</p>
+                                  <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
+                                  <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
+                                  <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
                                 </div>
                               );
                             })}
@@ -491,34 +481,27 @@ const Chat = () => {
                           </div>
                         </div>
                       </div>
-                    ) : (
-                    <div className={`flex items-start gap-2 md:gap-3 max-w-[90%] md:max-w-[80%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                      {msg.role === "cira" ? (
-                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                          <img src={ciraLogo} alt="" width={16} height={16} />
-                        </div>
-                      ) : (
-                        <div className="hidden md:flex w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 items-center justify-center shrink-0 mt-0.5 text-primary-foreground text-[10px] font-bold shadow-sm">
-                          JM
-                        </div>
-                      )}
+                    ) : msg.role === "user" ? (
+                      /* User bubble — light gray pill, right-aligned */
                       <div
-                        className={`rounded-[22px] md:rounded-2xl px-3.5 py-3 md:px-4 md:py-3 text-[14px] md:text-sm leading-6 md:leading-relaxed ${
-                          msg.role === "user"
-                            ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground rounded-tr-sm shadow-md"
-                            : "bg-card/90 backdrop-blur-sm border border-border/50 text-foreground rounded-tl-sm shadow-sm"
-                        }`}
+                        className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]"
                         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                       >
-                        {msg.role === "cira" && (
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <Sparkles size={10} className="text-primary" />
-                            <p className="text-[10px] text-primary font-medium">Cira</p>
-                          </div>
-                        )}
-                        <p className="whitespace-pre-line">{msg.text}</p>
+                        <p className="text-[14px] leading-6 whitespace-pre-line">{msg.text}</p>
                       </div>
-                    </div>
+                    ) : (
+                      /* Cira response — no bubble, just text with sparkle icon */
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2">
+                          <AiSparkleIcon size={20} active />
+                        </div>
+                        <div
+                          className="text-foreground"
+                          style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                        >
+                          <p className="text-[14px] md:text-[15px] leading-7 whitespace-pre-line">{msg.text}</p>
+                        </div>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -526,75 +509,68 @@ const Chat = () => {
                 {/* Inline mode selection after landing message */}
                 {showModeSelection && (
                   <div className="animate-fade-in">
-                    <div className="flex justify-start">
-                      <div className="flex items-start gap-0 md:gap-3 max-w-full md:max-w-[92%]">
-                        <div className="hidden md:flex w-8 h-8 rounded-full bg-card/90 backdrop-blur-sm border border-border/50 items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                          <img src={ciraLogo} alt="" width={16} height={16} />
-                        </div>
-                        <div className="space-y-2.5 md:space-y-3 w-full">
-                          {/* Hero — Vital Scan (compact) */}
-                          <button
-                            onClick={() => selectMode("vitals")}
-                            className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                            <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
-                            <div className="relative z-10 p-3 flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
-                                <ScanFace size={18} className="text-white" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 flex items-center justify-center">
-                                  <Sparkles size={6} className="text-white" />
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
-                                  <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
-                                </div>
-                                <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
-                              </div>
-                              <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                              </div>
+                    <div className="space-y-2.5 w-full">
+                      {/* Hero — Vital Scan (compact) */}
+                      <button
+                        onClick={() => selectMode("vitals")}
+                        className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                        <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+                        <div className="relative z-10 p-3 flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
+                            <ScanFace size={18} className="text-white" />
+                            <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 flex items-center justify-center">
+                              <Sparkles size={6} className="text-white" />
                             </div>
-                          </button>
-
-                          {/* Secondary — Quick & Detailed (compact tiles) */}
-                          <div className="grid grid-cols-2 gap-2">
-                            {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                              const Icon = mode.icon;
-                              return (
-                                <button
-                                  key={mode.id}
-                                  onClick={() => selectMode(mode.id)}
-                                  className="group bg-card/90 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
-                                >
-                                  <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
-                                    <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                                  </div>
-                                  <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                                  <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
-                                </button>
-                              );
-                            })}
                           </div>
-
-                          {/* Just chat */}
-                          <button
-                            onClick={() => selectMode("chat")}
-                            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card/70 backdrop-blur-sm border border-border/30 active:scale-[0.98] transition-all w-full"
-                          >
-                            <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
-                              <MessageCircle size={12} className="text-muted-foreground" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                              <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
                             </div>
-                            <div className="text-left">
-                              <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
-                              <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
-                            </div>
-                          </button>
+                            <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
+                          </div>
+                          <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                          </div>
                         </div>
+                      </button>
+
+                      {/* Secondary — Quick & Detailed (compact tiles) */}
+                      <div className="grid grid-cols-2 gap-2">
+                        {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                          const Icon = mode.icon;
+                          return (
+                            <button
+                              key={mode.id}
+                              onClick={() => selectMode(mode.id)}
+                              className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
+                            >
+                              <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                                <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                              </div>
+                              <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                              <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
+                            </button>
+                          );
+                        })}
                       </div>
+
+                      {/* Just chat */}
+                      <button
+                        onClick={() => selectMode("chat")}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full"
+                      >
+                        <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+                          <MessageCircle size={12} className="text-muted-foreground" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
+                          <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
+                        </div>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -603,25 +579,27 @@ const Chat = () => {
           )}
         </div>
 
-        {/* Bottom input — always matches the aesthetic */}
+        {/* Bottom input — Gemini-style clean pill */}
         {messages.length > 0 && (
-          <div className="relative shrink-0 border-t border-border/30 bg-background/80 backdrop-blur-xl" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-50/80 via-pink-50/40 to-transparent pointer-events-none" />
-            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2.5 md:px-4 md:py-4">
-              <div className="bg-card/90 backdrop-blur-md rounded-[24px] md:rounded-2xl shadow-lg border border-border/50 flex items-center overflow-hidden">
+          <div className="relative shrink-0 bg-background" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
+              <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
+                <button type="button" className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 ml-1">
+                  <Plus size={20} strokeWidth={1.5} />
+                </button>
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Tell Cira what's going on..."
-                  className="flex-1 py-3.5 px-4 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground/60"
+                  placeholder="Ask Cira"
+                  className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50"
                   style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                 />
                 <button
                   type="submit"
-                  className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center mr-2.5 hover:opacity-80 transition-opacity shrink-0"
+                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors"
                 >
-                  <Send size={13} className="-ml-0.5" />
+                  <Send size={18} strokeWidth={1.5} />
                 </button>
               </div>
             </form>
