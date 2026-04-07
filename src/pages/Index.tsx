@@ -1,4 +1,4 @@
-import ciraSpark from "@/assets/cira-spark.png";
+import ciraLogo from "@/assets/cira-logo.svg";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
@@ -72,7 +72,7 @@ const Index = () => {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
-          <img src={ciraSpark} alt="Cira" width={28} height={28} />
+          <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
         <button onClick={() => navigate("/dashboard")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity">
@@ -483,7 +483,7 @@ const Index = () => {
             {/* Sidebar */}
             <div className="w-44 border-r border-border bg-secondary p-4 hidden sm:block">
               <div className="flex items-center gap-2 mb-6">
-                <img src={ciraSpark} alt="Cira" width={20} height={20} />
+                <img src={ciraLogo} alt="Cira" width={20} height={20} />
                 <span className="font-heading text-sm font-semibold text-foreground">Cira</span>
               </div>
               <ul className="space-y-3 text-sm font-body">
