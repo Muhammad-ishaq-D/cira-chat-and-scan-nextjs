@@ -112,6 +112,8 @@ const Chat = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
+  // Keep ref in sync with state so async callbacks always read latest value
+  useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
