@@ -447,7 +447,7 @@ const Chat = () => {
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setActiveChat(null); setMessages([]); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(null); setMessages([]); setConversationHistory([]); setCurrentSessionId(null); setChatMode("none"); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                   title="New chat"
                 >
