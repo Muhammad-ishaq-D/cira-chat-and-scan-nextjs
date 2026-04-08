@@ -17,6 +17,13 @@ export interface VitalResults {
   raw: MeasurementResults;
 }
 
+export interface UserProfileData {
+  age?: number;
+  height?: number; // cm
+  weight?: number; // kg
+  gender?: 'male' | 'female' | 'other';
+}
+
 export function useShenAI() {
   const [status, setStatus] = useState<ShenAIStatus>("idle");
   const [progress, setProgress] = useState(0);
@@ -40,7 +47,7 @@ export function useShenAI() {
 
   useEffect(() => cleanup, [cleanup]);
 
-  const initialize = useCallback(async (canvasId: string) => {
+  const initialize = useCallback(async (canvasId: string, userProfile?: UserProfileData) => {
     cleanup();
     setStatus("loading");
     setError(null);
@@ -80,7 +87,13 @@ export function useShenAI() {
         showStartStopButton: false,
         showInfoButton: false,
         showDisclaimer: false,
-        enableHealthRisks: false,
+        enableHealthRisks: true,
+        risksFactors: {
+          ...(userProfile?.age ? { age: userProfile.age } : {}),
+          ...(userProfile?.height ? { bodyHeight: userProfile.height } : {}),
+          ...(userProfile?.weight ? { bodyWeight: userProfile.weight } : {}),
+          ...(userProfile?.gender ? { gender: sdk.Gender[userProfile.gender === 'male' ? 'MALE' : userProfile.gender === 'female' ? 'FEMALE' : 'OTHER'] } : {}),
+        },
       };
 
       // Use CSS selector format as per Shen AI docs
