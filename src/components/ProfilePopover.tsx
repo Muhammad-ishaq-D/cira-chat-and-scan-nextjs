@@ -16,7 +16,6 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const [loading, setLoading] = useState(false);
 
   const loadProfile = async () => {
-    if (profile) return;
     setLoading(true);
     try {
       const data = await userApi.getProfile();
