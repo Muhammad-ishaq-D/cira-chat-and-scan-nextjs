@@ -90,6 +90,18 @@ const navItems = [
   { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
+const FREE_CHAT_WELCOME = "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — I'm here to help.";
+
+const buildFreeChatPrompt = (userText: string) => [
+  userText,
+  "",
+  "Just Chat mode selected.",
+  "Reply conversationally as Cira.",
+  "Do not ask the user to choose Quick Assessment, Detailed Assessment, or Vital Scan.",
+  "Do not call the openModal tool unless the user explicitly asks for an assessment or scan.",
+  "Do not begin a structured intake unless the user asks for one.",
+].join("\n");
+
 const Chat = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -112,10 +124,22 @@ const Chat = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
+  const currentSessionIdRef = useRef<string | null>(null);
   // Keep ref in sync with state so async callbacks always read latest value
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
+  useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+
+  const syncChatMode = (mode: ChatMode) => {
+    chatModeRef.current = mode;
+    setChatMode(mode);
+  };
+
+  const syncCurrentSessionId = (sessionId: string | null) => {
+    currentSessionIdRef.current = sessionId;
+    setCurrentSessionId(sessionId);
+  };
 
   // Load chat history from API
   const loadChatHistory = useCallback(async () => {
@@ -177,7 +201,7 @@ const Chat = () => {
         case "disconnectAgent":
           if (tool.input.disconnect_now) {
             toast.info("Session ended. Start a new chat to continue.");
-            setChatMode("none");
+            syncChatMode("none");
           }
           break;
         // Doctor_report_data_pdf, prepare_consultation_payload, soap_note_payload
@@ -195,6 +219,10 @@ const Chat = () => {
   const callClaude = async (userText: string, image?: string) => {
     const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
     const updatedHistory = [...conversationHistory, newUserMsg];
+    const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current
+      ? buildFreeChatPrompt(userText)
+      : userText;
+
     setConversationHistory(updatedHistory);
     setIsTyping(true);
     setIsApiLoading(true);
@@ -209,8 +237,8 @@ const Chat = () => {
         method: "POST",
         headers,
         body: JSON.stringify({
-          message: userText,
-          sessionId: currentSessionId || undefined,
+          message: outboundText,
+          sessionId: currentSessionIdRef.current || undefined,
         }),
       });
 
@@ -226,11 +254,9 @@ const Chat = () => {
       console.log("[Claude Response]", responseData);
 
       // Extract sessionId from response — backend returns it on first message
-      if (responseData.sessionId && !currentSessionId) {
-        setCurrentSessionId(responseData.sessionId);
-        loadChatHistory(); // refresh sidebar
-      } else if (Array.isArray(responseData) && responseData.length > 0 && responseData[0]?.sessionId) {
-        setCurrentSessionId(responseData[0].sessionId);
+      const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
+      if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
+        syncCurrentSessionId(nextSessionId);
         loadChatHistory();
       }
 
@@ -274,7 +300,7 @@ const Chat = () => {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || isApiLoading) return;
-    if (chatMode === "none") setChatMode("chat");
+    if (chatModeRef.current === "none") syncChatMode("chat");
 
     const userText = message.trim();
     setMessages((prev) => [...prev, { role: "user", text: userText }]);
@@ -322,7 +348,7 @@ const Chat = () => {
 
   const selectMode = (mode: ChatMode) => {
     if (mode === "vitals") {
-      setChatMode(mode);
+      syncChatMode(mode);
       setShowModeSelection(false);
       setShowScanModal(true);
       if (pendingLandingMessage) {
@@ -334,8 +360,33 @@ const Chat = () => {
       return;
     }
 
-    setChatMode(mode);
+    syncChatMode(mode);
     setShowModeSelection(false);
+
+    if (mode === "chat") {
+      setActiveChat(null);
+      syncCurrentSessionId(null);
+      setConversationHistory([]);
+
+      if (pendingLandingMessage) {
+        setMessages([{ role: "user", text: pendingLandingMessage }]);
+        setPendingLandingMessage(null);
+        void callClaude(pendingLandingMessage);
+        return;
+      }
+
+      setMessages((prev) => {
+        const lastMessage = prev[prev.length - 1];
+        if (lastMessage?.role === "cira" && lastMessage.text === FREE_CHAT_WELCOME) {
+          return prev;
+        }
+
+        return [...prev, { role: "cira", text: FREE_CHAT_WELCOME }];
+      });
+      return;
+    }
+
+    setPendingLandingMessage(null);
 
     // Map mode selection to the text Claude expects
     const pathwayMessages: Record<ChatMode, string> = {
@@ -351,19 +402,16 @@ const Chat = () => {
       // Send pathway selection to Claude as a user message
       setMessages((prev) => [...prev, { role: "user", text: pathwayText }]);
       callClaude(pathwayText);
-    } else if (mode === "chat") {
-      // Free chat mode — show a welcome message so the user knows they can type
-      setMessages((prev) => [...prev, { role: "cira", text: "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — I'm here to help." }]);
     }
   };
 
   const startChat = async (title: string, sessionId?: string) => {
     if (sessionId) {
       // Load existing session messages via GET /api/chat/:chatId
-      setCurrentSessionId(sessionId);
+      syncCurrentSessionId(sessionId);
       setConversationHistory([]);
       setMessages([]);
-      setChatMode("chat");
+      syncChatMode("chat");
       try {
         const data = await chatApi.getSession(sessionId);
         console.log("[Load Session] Raw response:", data);
@@ -386,10 +434,10 @@ const Chat = () => {
         toast.error("Failed to load messages: " + (e.message || "Unknown error"));
       }
     } else {
-      setCurrentSessionId(null);
+      syncCurrentSessionId(null);
       setMessages([{ role: "user", text: title }]);
       setConversationHistory([]);
-      setChatMode("chat");
+      syncChatMode("chat");
       callClaude(title);
     }
   };
@@ -399,10 +447,10 @@ const Chat = () => {
       await chatApi.deleteSession(chatId);
       setChatHistory((prev) => prev.filter((c: any) => c.id !== chatId));
       if (currentSessionId === chatId) {
-        setCurrentSessionId(null);
+        syncCurrentSessionId(null);
         setMessages([]);
         setConversationHistory([]);
-        setChatMode("none");
+        syncChatMode("none");
         setActiveChat(null);
       }
       toast.success("Chat deleted");
@@ -491,7 +539,7 @@ const Chat = () => {
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setActiveChat(null); setMessages([]); setConversationHistory([]); setCurrentSessionId(null); setChatMode("none"); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(null); setMessages([]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                   title="New chat"
                 >
