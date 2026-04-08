@@ -7,6 +7,8 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import { sendChatMessage, extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse } from "@/lib/chatApi";
+import { chatApi } from "@/lib/apiClient";
+import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
@@ -37,13 +39,7 @@ const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?
   );
 };
 
-const mockHistory = [
-  { id: "1", title: "Chest tightness and fatigue", date: "Today" },
-  { id: "2", title: "Headache for 3 days", date: "Yesterday" },
-  { id: "3", title: "High blood pressure check", date: "Mar 30" },
-  { id: "4", title: "Skin rash on arms", date: "Mar 28" },
-  { id: "5", title: "Sleep issues and stress", date: "Mar 25" },
-];
+const [chatHistory, setChatHistory] = useState<any[]>([]);
 
 type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
 
