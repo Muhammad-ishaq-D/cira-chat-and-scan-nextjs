@@ -14,6 +14,11 @@ import Reports from "./pages/Reports.tsx";
 import PaymentHistory from "./pages/PaymentHistory.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AdminLogin from "./admin/AdminLogin.tsx";
+import AdminLayout from "./admin/AdminLayout.tsx";
+import AdminOverview from "./admin/AdminOverview.tsx";
+import AdminUsers from "./admin/AdminUsers.tsx";
+import AdminBilling from "./admin/AdminBilling.tsx";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +39,13 @@ const App = () => (
           <Route path="/reports" element={<Reports />} />
           <Route path="/payment-history" element={<PaymentHistory />} />
           <Route path="/doctor" element={<Doctor />} />
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminOverview />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/billing" element={<AdminBilling />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
