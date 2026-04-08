@@ -138,37 +138,93 @@ const Chat = () => {
     }
   }, []);
 
+  // Process Claude tool calls and render UI elements
+  const processToolCalls = (toolCalls: ToolUse[]) => {
+    for (const tool of toolCalls) {
+      switch (tool.name) {
+        case "openModal":
+          if (tool.input.select_care_pathway) {
+            setShowModeSelection(true);
+          }
+          break;
+        case "render_ai_consult_summary":
+          setMessages((prev) => [
+            ...prev,
+            { role: "summary" as const, text: "", summaryData: tool.input as ConsultSummary },
+          ]);
+          break;
+        case "disconnectAgent":
+          if (tool.input.disconnect_now) {
+            toast.info("Session ended. Start a new chat to continue.");
+            setChatMode("none");
+          }
+          break;
+        // Doctor_report_data_pdf, prepare_consultation_payload, soap_note_payload
+        // are data-only tools — their payloads can be stored/sent to your backend
+        case "Doctor_report_data_pdf":
+        case "prepare_consultation_payload":
+        case "soap_note_payload":
+          console.log(`[Tool: ${tool.name}]`, tool.input);
+          break;
+      }
+    }
+  };
+
+  // Call Claude API via your Node.js backend
+  const callClaude = async (userText: string, image?: string) => {
+    const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
+    const updatedHistory = [...conversationHistory, newUserMsg];
+    setConversationHistory(updatedHistory);
+    setIsTyping(true);
+    setIsApiLoading(true);
+
+    try {
+      const response = await sendChatMessage(updatedHistory);
+      const textContent = extractText(response);
+      const toolCalls = extractToolCalls(response);
+
+      // Add assistant text to conversation history
+      if (textContent) {
+        setConversationHistory((prev) => [...prev, { role: "assistant", text: textContent }]);
+        setMessages((prev) => {
+          const newMessages = [...prev, { role: "cira" as const, text: textContent }];
+          setTypingMsgIndex(newMessages.length - 1);
+          return newMessages;
+        });
+      }
+
+      // Process any tool calls
+      if (toolCalls.length > 0) {
+        processToolCalls(toolCalls);
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Something went wrong";
+      if (msg.startsWith("BILLING_ERROR")) {
+        toast.error("Claude API credit balance too low. Please top up your Anthropic credits.");
+      } else if (msg.startsWith("OVERLOADED")) {
+        toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
+          action: { label: "Retry", onClick: () => callClaude(userText, image) },
+        });
+      } else {
+        toast.error("Failed to get response: " + msg);
+      }
+      console.error("[Claude Error]", err);
+    } finally {
+      setIsTyping(false);
+      setIsApiLoading(false);
+    }
+  };
+
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isApiLoading) return;
     if (chatMode === "none") setChatMode("chat");
-    const modeResponses: Record<ChatMode, string> = {
-      quick: "I hear you. Let me do a quick assessment.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
-      detailed: "I'll conduct a thorough assessment. Let's start from the beginning.\n\nFirst, can you describe your primary concern in detail? When did it first start, and has it changed over time?",
-      vitals: "I've noted your vitals from the scan. Now let me combine that data with your symptoms.\n\nWhat's been bothering you? I'll cross-reference with your vital readings.",
-      chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
-      none: "",
-    };
-    // Add user message immediately
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", text: message },
-    ]);
-    setMessage("");
-    setIsTyping(true);
 
-    // Simulate Cira typing delay, then add response with typewriter
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages((prev) => {
-        const newMessages = [
-          ...prev,
-          { role: "cira" as const, text: modeResponses[chatMode] || modeResponses.chat },
-        ];
-        setTypingMsgIndex(newMessages.length - 1);
-        return newMessages;
-      });
-    }, 1200);
+    const userText = message.trim();
+    setMessages((prev) => [...prev, { role: "user", text: userText }]);
+    setMessage("");
+
+    callClaude(userText);
   };
 
   const startScan = () => {
