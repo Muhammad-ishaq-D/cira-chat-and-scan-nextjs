@@ -1,26 +1,63 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
+import { login, sendOtp, verifyOtp } from "@/lib/auth";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [useOtp, setUseOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigate("/chat");
+    } catch (err: any) {
+      toast.error(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await sendOtp(email);
+      setOtpSent(true);
+      toast.success("Verification code sent!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await verifyOtp(email, otp);
+      navigate("/chat");
+    } catch (err: any) {
+      toast.error(err.message || "Invalid code");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleLogin = () => {
-    navigate("/chat");
-  };
-
-  const handleSendOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) setOtpSent(true);
-  };
-
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp) navigate("/chat");
+    // TODO: Integrate Google OAuth SDK → call googleLogin(idToken)
+    toast.info("Google login coming soon");
   };
 
   return (
@@ -60,7 +97,7 @@ const Login = () => {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Email OTP */}
+        {/* Email Login */}
         {!showEmailForm ? (
           <button
             onClick={() => setShowEmailForm(true)}
@@ -68,49 +105,95 @@ const Login = () => {
           >
             Continue with Email
           </button>
-        ) : !otpSent ? (
-          <form onSubmit={handleSendOtp} className="space-y-3">
+        ) : useOtp ? (
+          // OTP flow
+          !otpSent ? (
+            <form onSubmit={handleSendOtp} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? "Sending..." : "Send verification code"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setUseOtp(false)}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
+              >
+                Use password instead
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-3">
+              <p className="text-xs text-muted-foreground font-body text-center">
+                We sent a code to <strong className="text-foreground">{email}</strong>
+              </p>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter 6-digit code"
+                maxLength={6}
+                className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? "Verifying..." : "Verify & Sign in"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOtpSent(false)}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
+              >
+                Use a different email
+              </button>
+            </form>
+          )
+        ) : (
+          // Email + Password flow
+          <form onSubmit={handleEmailLogin} className="space-y-3">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Email"
+              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
               className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
               required
             />
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Send verification code
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOtp} className="space-y-3">
-            <p className="text-xs text-muted-foreground font-body text-center">
-              We sent a code to <strong className="text-foreground">{email}</strong>
-            </p>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter 6-digit code"
-              maxLength={6}
-              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity"
-            >
-              Verify & Sign in
+              {loading ? "Signing in..." : "Sign in"}
             </button>
             <button
               type="button"
-              onClick={() => setOtpSent(false)}
+              onClick={() => setUseOtp(true)}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Use a different email
+              Use OTP instead
             </button>
           </form>
         )}

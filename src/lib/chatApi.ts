@@ -5,6 +5,8 @@
  * when your backend is deployed.
  */
 
+import { getToken } from "./auth";
+
 const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
 export type ChatRole = "user" | "assistant";
@@ -87,9 +89,17 @@ export async function sendChatMessage(
     temperature?: number;
   }
 ): Promise<ClaudeResponse> {
+  const token = getToken();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_BASE}/api/anthropic/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({
       messages: messages.map((m) => ({
         role: m.role === "user" ? "user" : "assistant",
