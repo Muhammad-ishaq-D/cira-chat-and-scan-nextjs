@@ -170,8 +170,6 @@ const VitalsScan = () => {
                 <canvas
                   id={CANVAS_ID}
                   ref={canvasRef}
-                  width={640}
-                  height={480}
                   style={{ display: "block", width: "100%", height: "100%" }}
                 />
                 {status === "idle" && (
