@@ -89,9 +89,11 @@ const Dashboard = () => {
                 "Blood Pressure": v.systolic_bp && v.diastolic_bp ? `${Math.round(v.systolic_bp)}/${Math.round(v.diastolic_bp)}` : "--",
                 "Heart Rate": v.heart_rate ? String(Math.round(v.heart_rate)) : "--",
                 "Heart Rate Variability": v.hrv_sdnn ? String(Math.round(v.hrv_sdnn)) : "--",
+                "Cardiac Workload": v.cardiac_workload != null ? String(Math.round(v.cardiac_workload)) : "--",
                 "Breathing Rate": v.breathing_rate ? String(Math.round(v.breathing_rate)) : "--",
                 "Stress Index": v.stress_index != null ? String(Math.round(v.stress_index)) : "--",
                 "Body Mass Index": v.bmi != null ? Number(v.bmi).toFixed(1) : "--",
+                "Parasympathetic Activity": v.parasympathetic_activity != null ? String(Math.round(v.parasympathetic_activity)) : "--",
               };
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
