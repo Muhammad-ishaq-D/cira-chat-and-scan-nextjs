@@ -444,10 +444,10 @@ const Chat = () => {
                   <img src={ciraLogo} alt="Cira" width={24} height={24} className="md:w-7 md:h-7" />
                 </div>
                 <h1 className="text-xl md:text-[32px] font-semibold text-foreground mb-1.5 md:mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  How can Cira help?
+                  Hi, I'm Cira 👋
                 </h1>
                 <p className="text-xs md:text-sm text-muted-foreground mb-5 md:mb-10 text-center max-w-md">
-                  Choose a consultation type or just start chatting.
+                  Your AI health nurse. Choose a care pathway to get started.
                 </p>
 
                 {/* ✦ HERO — Vital Scan — compact on mobile */}
@@ -527,13 +527,13 @@ const Chat = () => {
                     <MessageCircle size={14} className="text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <p className="text-[11px] font-medium text-foreground">Just Chat with Cira</p>
-                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything</p>
+                <p className="text-[11px] font-medium text-foreground">💬 Just Chat with Cira</p>
+                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything health-related</p>
                   </div>
                 </button>
 
                 <p className="text-[8px] md:text-[9px] text-muted-foreground/60 mt-5 md:mt-8 text-center max-w-sm leading-relaxed">
-                  ⚕️ Cira is an AI health nurse. Always discuss findings with a doctor.
+                  ⚕️ Cira is an AI nurse — not a doctor. Always discuss findings with a licensed medical professional.
                 </p>
                </div>
             </div>
