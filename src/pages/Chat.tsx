@@ -741,10 +741,12 @@ const Chat = () => {
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
                             {msg.vitalsData.map((vital) => {
-                              const VIcon = vital.icon;
+                              // Map icon from label for vitals coming from sessionStorage (no icon property)
+                              const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
+                              const VIcon = vital.icon || iconMap[vital.label] || Activity;
                               return (
                                 <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
-                                  <div className={`w-7 h-7 rounded-lg ${vital.color} flex items-center justify-center mb-1`}>
+                                  <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
                                     <VIcon size={13} />
                                   </div>
                                   <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
