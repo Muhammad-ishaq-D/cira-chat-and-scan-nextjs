@@ -36,7 +36,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/chat");
+      await redirectAfterAuth();
     } catch (err: any) {
       toast.error(err.message || "Login failed");
     } finally {
@@ -63,7 +63,7 @@ const Login = () => {
     setLoading(true);
     try {
       await verifyOtp(email, otp);
-      navigate("/chat");
+      await redirectAfterAuth();
     } catch (err: any) {
       toast.error(err.message || "Invalid code");
     } finally {
@@ -85,7 +85,7 @@ const Login = () => {
           setLoading(true);
           try {
             await googleLogin(response.credential);
-            navigate("/chat");
+            await redirectAfterAuth();
           } catch (err: any) {
             toast.error(err.message || "Google login failed");
           } finally {
