@@ -352,14 +352,14 @@ const Chat = () => {
 
   const startChat = async (title: string, sessionId?: string) => {
     if (sessionId) {
-      // Load existing session messages from API
+      // Load existing session messages via GET /api/chat/:chatId
       setCurrentSessionId(sessionId);
       setConversationHistory([]);
       setMessages([]);
       setChatMode("chat");
       try {
-        const data = await chatApi.getMessages(sessionId);
-        console.log("[Load Messages] Raw response:", data);
+        const data = await chatApi.getSession(sessionId);
+        console.log("[Load Session] Raw response:", data);
         const msgs = Array.isArray(data) ? data : data.messages || data.data || [];
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
@@ -384,6 +384,24 @@ const Chat = () => {
       setConversationHistory([]);
       setChatMode("chat");
       callClaude(title);
+    }
+  };
+
+  const deleteChat = async (chatId: string) => {
+    try {
+      await chatApi.deleteSession(chatId);
+      setChatHistory((prev) => prev.filter((c: any) => c.id !== chatId));
+      if (currentSessionId === chatId) {
+        setCurrentSessionId(null);
+        setMessages([]);
+        setConversationHistory([]);
+        setChatMode("none");
+        setActiveChat(null);
+      }
+      toast.success("Chat deleted");
+    } catch (e: any) {
+      console.error("[Delete chat failed]", e);
+      toast.error("Failed to delete chat");
     }
   };
 
