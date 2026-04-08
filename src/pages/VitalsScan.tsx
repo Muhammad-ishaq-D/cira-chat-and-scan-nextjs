@@ -229,8 +229,8 @@ const VitalsScan = () => {
                   </button>
                 )}
                 {status === "idle" && (
-                  <button onClick={() => initialize(CANVAS_ID)} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
-                    Initialize Camera
+                  <button onClick={() => initialize(CANVAS_ID)} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                    <ScanFace size={18} /> Start Camera
                   </button>
                 )}
               </div>
