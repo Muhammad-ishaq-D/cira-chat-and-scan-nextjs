@@ -553,7 +553,10 @@ const Chat = () => {
               <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
-                    {/* Vitals card */}
+                    {/* Summary card */}
+                    {msg.role === "summary" && msg.summaryData ? (
+                      <ConsultSummaryCard data={msg.summaryData} />
+                    ) : /* Vitals card */
                     {msg.role === "vitals" && msg.vitalsData ? (
                       <div className="w-full max-w-sm md:max-w-md">
                         <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
