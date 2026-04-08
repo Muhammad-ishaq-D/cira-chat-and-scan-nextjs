@@ -183,7 +183,7 @@ const VitalsScan = () => {
           {status !== "finished" ? (
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm flex flex-col items-center">
               {/* Camera canvas — explicit height required for WASM renderer */}
-              <div className="w-full max-w-md rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative" style={{ height: 360 }}>
+              <div className="w-full max-w-xl rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative" style={{ height: 480 }}>
                 <canvas
                   id={CANVAS_ID}
                   ref={canvasRef}
