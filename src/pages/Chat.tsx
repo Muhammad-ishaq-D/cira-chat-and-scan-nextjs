@@ -468,7 +468,7 @@ const Chat = () => {
               ) : chatHistory.map((chat: any) => (
                 <button
                   key={chat.id}
-                  onClick={() => { setActiveChat(chat.id); startChat(chat.title); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(chat.id); startChat(chat.title, chat.id); setShowHistory(false); }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all ${
                     activeChat === chat.id
                       ? "bg-primary/10 text-foreground border border-primary/20"
