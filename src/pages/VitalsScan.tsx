@@ -72,8 +72,14 @@ const VitalsScan = () => {
 
   const handleAnalyzeWithCira = () => {
     if (!results) return;
-    // Store vitals in sessionStorage for Chat to pick up
-    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(displayVitals));
+    // Store vitals as plain serializable data (icons can't be JSON-serialized)
+    const serializableVitals = displayVitals.map(v => ({
+      label: v.label,
+      value: v.value,
+      unit: v.unit,
+      color: v.color,
+    }));
+    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
     navigate("/chat");
   };
 
