@@ -337,7 +337,7 @@ const Chat = () => {
     const pathwayMessages: Record<ChatMode, string> = {
       quick: "⚡ I'd like a quick assessment",
       detailed: "🩺 I'd like a detailed assessment",
-      chat: "💬 Just continue chatting",
+      chat: "",
       vitals: "",
       none: "",
     };
