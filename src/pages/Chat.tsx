@@ -278,6 +278,13 @@ const Chat = () => {
       // Process any tool calls
       if (toolCalls.length > 0) {
         processToolCalls(toolCalls);
+        // If Claude returned only tool calls with no text, show a fallback message
+        if (!textContent) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "cira" as const, text: "I'm processing your information... Let me continue with my assessment. 💙" },
+          ]);
+        }
       }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
@@ -340,8 +347,8 @@ const Chat = () => {
       { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
     ]);
 
-    // Send vitals data + pathway selection to Claude
-    const vitalsMessage = `🧬 I'd like a Vital Scan + Assessment. Here are my scan results: ${vitalsText}`;
+    // Send vitals data with explicit instructions for Claude to analyze
+    const vitalsMessage = `Here are my face scan vitals results:\n${scanVitals.map(v => `- ${v.label}: ${v.value} ${v.unit}`).join("\n")}\n\nPlease analyze these vitals and tell me what they mean for my health. Provide professional insights on each metric. Do NOT call any tools yet — just analyze and respond with your assessment of these numbers.`;
     callClaude(vitalsMessage);
     setPendingLandingMessage(null);
   };
