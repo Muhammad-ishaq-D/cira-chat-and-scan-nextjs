@@ -178,12 +178,6 @@ const VitalsScan = () => {
                     <p className="text-sm text-white/70 font-body">Tap below to start camera</p>
                   </div>
                 )}
-                {status === "loading" && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-                    <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-                    <p className="text-sm text-white/70 font-body">Loading SDK... {progress > 0 ? `${progress}%` : ""}</p>
-                  </div>
-                )}
                 {status === "measuring" && (
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <div className="bg-card/90 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center gap-3">
