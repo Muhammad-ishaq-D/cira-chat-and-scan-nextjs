@@ -404,7 +404,9 @@ const Chat = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
-              {mockHistory.map((chat) => (
+              {chatHistory.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
+              ) : chatHistory.map((chat: any) => (
                 <button
                   key={chat.id}
                   onClick={() => { setActiveChat(chat.id); startChat(chat.title); setShowHistory(false); }}
@@ -415,7 +417,7 @@ const Chat = () => {
                   }`}
                 >
                   <p className="truncate font-medium">{chat.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
                 </button>
               ))}
             </div>
