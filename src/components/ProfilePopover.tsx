@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History } from "lucide-react";
+import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { userApi } from "@/lib/apiClient";
+import { getUser } from "@/lib/auth";
 
 interface ProfilePopoverProps {
   children: React.ReactNode;
@@ -8,54 +11,84 @@ interface ProfilePopoverProps {
 
 const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const navigate = useNavigate();
+  const localUser = getUser();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const loadProfile = async () => {
+    if (profile) return;
+    setLoading(true);
+    try {
+      const data = await userApi.getProfile();
+      setProfile(data);
+    } catch {
+      // fallback to local user
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const name = profile?.name || localUser?.name || "User";
+  const email = profile?.email || localUser?.email || "";
+  const plan = profile?.plan || "Basic";
+  const initials = name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const faceScans = profile?.credits?.face_scans ?? 2;
+  const chatCredits = profile?.credits?.chat_credits ?? 100000;
+  const chatDisplay = chatCredits >= 1000 ? `${Math.round(chatCredits / 1000)}K` : chatCredits;
 
   return (
-    <Popover>
+    <Popover onOpenChange={(open) => open && loadProfile()}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent side="top" align="end" sideOffset={12} className="w-72 p-0 rounded-2xl border-border/60 shadow-xl bg-card/95 backdrop-blur-md">
         {/* User Info */}
         <div className="p-4 border-b border-border/40">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-sm font-semibold">
-              AX
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground truncate" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Alex Johnson</p>
-              <p className="text-xs text-muted-foreground truncate">alex.johnson@email.com</p>
+              <p className="text-sm font-semibold text-foreground truncate" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{name}</p>
+              <p className="text-xs text-muted-foreground truncate">{email}</p>
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">Basic Plan</span>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">{plan} Plan</span>
           </div>
         </div>
 
         {/* Credits */}
         <div className="p-4 space-y-3 border-b border-border/40">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Credits</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Scan size={14} className="text-blue-600" />
+          {loading ? (
+            <div className="flex justify-center py-2"><Loader2 size={16} className="animate-spin text-muted-foreground" /></div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Scan size={14} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-foreground">Face Scans</p>
+                    <p className="text-[10px] text-muted-foreground">{faceScans === "Unlimited" ? "Unlimited" : `${faceScans} scans remaining`}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{faceScans}</span>
               </div>
-              <div>
-                <p className="text-xs font-medium text-foreground">Face Scans</p>
-                <p className="text-[10px] text-muted-foreground">2 free scans included</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <MessageCircle size={14} className="text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-foreground">Chat Credits</p>
+                    <p className="text-[10px] text-muted-foreground">{chatCredits >= 1000 ? `${chatDisplay} credits remaining` : `${chatCredits} credits remaining`}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{chatDisplay}</span>
               </div>
-            </div>
-            <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>2</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-                <MessageCircle size={14} className="text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-foreground">Chat Credits</p>
-                <p className="text-[10px] text-muted-foreground">100,000 free credits</p>
-              </div>
-            </div>
-            <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>100K</span>
-          </div>
+            </>
+          )}
         </div>
 
         {/* Actions */}
