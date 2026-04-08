@@ -76,10 +76,26 @@ const Dashboard = () => {
         if (profileData.status === "fulfilled") setProfile(profileData.value);
         if (vitalsData.status === "fulfilled" && vitalsData.value) {
           const v = vitalsData.value;
-          if (v.vitals) setVitals(prev => prev.map(item => {
-            const match = v.vitals?.find((vi: any) => vi.label === item.label);
-            return match ? { ...item, value: match.value } : item;
-          }));
+          // Support both structured response ({vitals: [...]}) and flat scan response ({heart_rate, ...})
+          if (v.vitals) {
+            setVitals(prev => prev.map(item => {
+              const match = v.vitals?.find((vi: any) => vi.label === item.label);
+              return match ? { ...item, value: match.value } : item;
+            }));
+          } else if (v.heart_rate !== undefined) {
+            // Map flat scan data to dashboard vitals
+            setVitals(prev => prev.map(item => {
+              const map: Record<string, string> = {
+                "Blood Pressure": v.systolic_bp && v.diastolic_bp ? `${Math.round(v.systolic_bp)}/${Math.round(v.diastolic_bp)}` : "--",
+                "Heart Rate": v.heart_rate ? String(Math.round(v.heart_rate)) : "--",
+                "Heart Rate Variability": v.hrv_sdnn ? String(Math.round(v.hrv_sdnn)) : "--",
+                "Breathing Rate": v.breathing_rate ? String(Math.round(v.breathing_rate)) : "--",
+                "Stress Index": v.stress_index != null ? String(Math.round(v.stress_index)) : "--",
+                "Body Mass Index": v.bmi != null ? Number(v.bmi).toFixed(1) : "--",
+              };
+              return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
+            }));
+          }
           if (v.healthIndices) setHealthIndices(prev => prev.map(item => {
             const match = v.healthIndices?.find((hi: any) => hi.label === item.label);
             return match ? { ...item, value: match.value } : item;
