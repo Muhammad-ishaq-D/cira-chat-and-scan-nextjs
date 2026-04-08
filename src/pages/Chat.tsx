@@ -160,7 +160,8 @@ const Chat = () => {
     for (const tool of toolCalls) {
       switch (tool.name) {
         case "openModal":
-          if (tool.input.select_care_pathway) {
+          // Only show mode selection if user hasn't already picked one
+          if (tool.input.select_care_pathway && chatMode === "none") {
             setShowModeSelection(true);
           }
           break;
