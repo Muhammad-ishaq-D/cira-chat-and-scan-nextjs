@@ -357,7 +357,7 @@ const Chat = () => {
         {/* Bottom */}
         <div className="mt-auto flex flex-col items-center gap-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => { logout(); navigate("/login"); }}}
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
