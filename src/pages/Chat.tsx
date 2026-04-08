@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-
+import ConsultSummaryCard from "@/components/ConsultSummaryCard";
+import { sendChatMessage, extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse } from "@/lib/chatApi";
+import { toast } from "sonner";
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
@@ -97,7 +99,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals"; text: string; vitalsData?: typeof scanVitals }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -108,6 +110,8 @@ const Chat = () => {
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
+  const [isApiLoading, setIsApiLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change or typing starts
@@ -119,52 +123,106 @@ const Chat = () => {
     }
   }, [messages, isTyping]);
 
-  // Pick up message from landing page
+  // Pick up message from landing page — send to Claude
   useEffect(() => {
     const landingMsg = sessionStorage.getItem("cira_landing_message");
     if (landingMsg) {
       sessionStorage.removeItem("cira_landing_message");
       setPendingLandingMessage(landingMsg);
-      // Show the user's message + Cira's response with mode selection
-      setMessages([
-        { role: "user", text: landingMsg },
-        { role: "cira", text: `Thanks for sharing that — "${landingMsg}"\n\nBefore I dive in, I'd love to help you in the best way possible. How would you like to proceed?` },
-      ]);
-      setShowModeSelection(true);
+      setMessages([{ role: "user", text: landingMsg }]);
+      // Send the initial symptom to Claude — it will trigger TRIGGER 2 + openModal
+      callClaude(landingMsg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Process Claude tool calls and render UI elements
+  const processToolCalls = (toolCalls: ToolUse[]) => {
+    for (const tool of toolCalls) {
+      switch (tool.name) {
+        case "openModal":
+          if (tool.input.select_care_pathway) {
+            setShowModeSelection(true);
+          }
+          break;
+        case "render_ai_consult_summary":
+          setMessages((prev) => [
+            ...prev,
+            { role: "summary" as const, text: "", summaryData: tool.input as ConsultSummary },
+          ]);
+          break;
+        case "disconnectAgent":
+          if (tool.input.disconnect_now) {
+            toast.info("Session ended. Start a new chat to continue.");
+            setChatMode("none");
+          }
+          break;
+        // Doctor_report_data_pdf, prepare_consultation_payload, soap_note_payload
+        // are data-only tools — their payloads can be stored/sent to your backend
+        case "Doctor_report_data_pdf":
+        case "prepare_consultation_payload":
+        case "soap_note_payload":
+          console.log(`[Tool: ${tool.name}]`, tool.input);
+          break;
+      }
+    }
+  };
+
+  // Call Claude API via your Node.js backend
+  const callClaude = async (userText: string, image?: string) => {
+    const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
+    const updatedHistory = [...conversationHistory, newUserMsg];
+    setConversationHistory(updatedHistory);
+    setIsTyping(true);
+    setIsApiLoading(true);
+
+    try {
+      const response = await sendChatMessage(updatedHistory);
+      const textContent = extractText(response);
+      const toolCalls = extractToolCalls(response);
+
+      // Add assistant text to conversation history
+      if (textContent) {
+        setConversationHistory((prev) => [...prev, { role: "assistant", text: textContent }]);
+        setMessages((prev) => {
+          const newMessages = [...prev, { role: "cira" as const, text: textContent }];
+          setTypingMsgIndex(newMessages.length - 1);
+          return newMessages;
+        });
+      }
+
+      // Process any tool calls
+      if (toolCalls.length > 0) {
+        processToolCalls(toolCalls);
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Something went wrong";
+      if (msg.startsWith("BILLING_ERROR")) {
+        toast.error("Claude API credit balance too low. Please top up your Anthropic credits.");
+      } else if (msg.startsWith("OVERLOADED")) {
+        toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
+          action: { label: "Retry", onClick: () => callClaude(userText, image) },
+        });
+      } else {
+        toast.error("Failed to get response: " + msg);
+      }
+      console.error("[Claude Error]", err);
+    } finally {
+      setIsTyping(false);
+      setIsApiLoading(false);
+    }
+  };
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isApiLoading) return;
     if (chatMode === "none") setChatMode("chat");
-    const modeResponses: Record<ChatMode, string> = {
-      quick: "I hear you. Let me do a quick assessment.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
-      detailed: "I'll conduct a thorough assessment. Let's start from the beginning.\n\nFirst, can you describe your primary concern in detail? When did it first start, and has it changed over time?",
-      vitals: "I've noted your vitals from the scan. Now let me combine that data with your symptoms.\n\nWhat's been bothering you? I'll cross-reference with your vital readings.",
-      chat: "I hear you. Let me ask a few follow-up questions to better understand what's going on.\n\nHow long have you been experiencing this? And on a scale of 1–10, how would you rate the severity?",
-      none: "",
-    };
-    // Add user message immediately
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", text: message },
-    ]);
-    setMessage("");
-    setIsTyping(true);
 
-    // Simulate Cira typing delay, then add response with typewriter
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages((prev) => {
-        const newMessages = [
-          ...prev,
-          { role: "cira" as const, text: modeResponses[chatMode] || modeResponses.chat },
-        ];
-        setTypingMsgIndex(newMessages.length - 1);
-        return newMessages;
-      });
-    }, 1200);
+    const userText = message.trim();
+    setMessages((prev) => [...prev, { role: "user", text: userText }]);
+    setMessage("");
+
+    callClaude(userText);
   };
 
   const startScan = () => {
@@ -214,7 +272,6 @@ const Chat = () => {
     if (mode === "vitals") {
       setChatMode(mode);
       setShowModeSelection(false);
-      // Open scan modal instead of going straight to chat
       setShowScanModal(true);
       if (pendingLandingMessage) {
         setMessages((prev) => [
@@ -227,30 +284,21 @@ const Chat = () => {
 
     setChatMode(mode);
     setShowModeSelection(false);
-    
-    const modeConfirmations: Record<ChatMode, string> = {
-      quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
-      detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
+
+    // Map mode selection to the text Claude expects
+    const pathwayMessages: Record<ChatMode, string> = {
+      quick: "⚡ I'd like a quick assessment",
+      detailed: "🩺 I'd like a detailed assessment",
+      chat: "💬 Just continue chatting",
       vitals: "",
-      chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
 
-    if (pendingLandingMessage) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "cira", text: modeConfirmations[mode] },
-      ]);
-      setPendingLandingMessage(null);
-    } else {
-      const greetings: Record<ChatMode, string> = {
-        quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
-        detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-        vitals: "",
-        chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
-        none: "",
-      };
-      setMessages([{ role: "cira", text: greetings[mode] }]);
+    const pathwayText = pathwayMessages[mode];
+    if (pathwayText) {
+      // Send pathway selection to Claude as a user message
+      setMessages((prev) => [...prev, { role: "user", text: pathwayText }]);
+      callClaude(pathwayText);
     }
   };
 
@@ -505,8 +553,10 @@ const Chat = () => {
               <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
-                    {/* Vitals card */}
-                    {msg.role === "vitals" && msg.vitalsData ? (
+                    {/* Summary card */}
+                    {msg.role === "summary" && msg.summaryData ? (
+                      <ConsultSummaryCard data={msg.summaryData} />
+                    ) : msg.role === "vitals" && msg.vitalsData ? (
                       <div className="w-full max-w-sm md:max-w-md">
                         <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
                           <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
@@ -677,12 +727,14 @@ const Chat = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Ask Cira"
-                  className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50"
+                  className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50"
                   style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                  disabled={isApiLoading}
                 />
                 <button
                   type="submit"
-                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors"
+                  disabled={isApiLoading || !message.trim()}
+                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
                 >
                   <Send size={18} strokeWidth={1.5} />
                 </button>
