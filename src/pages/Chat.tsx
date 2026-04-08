@@ -39,7 +39,7 @@ const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?
   );
 };
 
-const [chatHistory, setChatHistory] = useState<any[]>([]);
+
 
 type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
 
