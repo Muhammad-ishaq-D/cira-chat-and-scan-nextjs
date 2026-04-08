@@ -87,7 +87,7 @@ export async function sendChatMessage(
     temperature?: number;
   }
 ): Promise<ClaudeResponse> {
-  const response = await fetch(`${API_BASE}/api/chat`, {
+  const response = await fetch(`${API_BASE}/api/anthropic/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
