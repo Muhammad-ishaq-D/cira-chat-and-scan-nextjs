@@ -5,7 +5,13 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
-const defaultPlans = [
+interface Plan {
+  id: string; name: string; price: string; period: string; desc: string;
+  icon: any; color: string; iconColor: string; current?: boolean; popular?: boolean;
+  features: string[];
+}
+
+const defaultPlans: Plan[] = [
   {
     id: "basic", name: "Basic", price: "Free", period: "", desc: "Get started with essential health insights",
     icon: Shield, color: "from-slate-100 to-slate-200", iconColor: "text-slate-600", current: true,
