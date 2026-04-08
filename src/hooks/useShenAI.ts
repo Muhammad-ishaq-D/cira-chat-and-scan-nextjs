@@ -13,6 +13,8 @@ export interface VitalResults {
   stressIndex: number | null;
   hrvSdnn: number | null;
   bmi: number | null;
+  cardiacWorkload: number | null;
+  parasympatheticActivity: number | null;
   signalQuality: number;
   raw: MeasurementResults;
 }
@@ -166,6 +168,8 @@ export function useShenAI() {
               stressIndex: raw.stress_index,
               hrvSdnn: raw.hrv_sdnn_ms,
               bmi: raw.bmi_kg_per_m2,
+              cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
+              parasympatheticActivity: raw.parasympathetic_activity,
               signalQuality: raw.average_signal_quality,
               raw,
             });
