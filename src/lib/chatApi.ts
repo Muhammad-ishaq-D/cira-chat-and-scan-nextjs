@@ -5,7 +5,7 @@
  * when your backend is deployed.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
 export type ChatRole = "user" | "assistant";
 
@@ -87,7 +87,7 @@ export async function sendChatMessage(
     temperature?: number;
   }
 ): Promise<ClaudeResponse> {
-  const response = await fetch(`${API_BASE}/api/chat`, {
+  const response = await fetch(`${API_BASE}/api/anthropic/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
