@@ -82,13 +82,12 @@ export const userApi = {
 
 // ─── Chat Sessions ──────────────────────────────────────────────
 export const chatApi = {
-  getSessions: () => get("/api/chat/sessions"),
-  getSession: (id: string) => get(`/api/chat/sessions/${id}`),
-  getMessages: (sessionId: string) => get(`/api/chat/sessions/${sessionId}/messages`),
-  createSession: (data?: any) => post("/api/chat/sessions", data),
-  saveMessage: (sessionId: string, data: { role: string; content: string; tool_calls?: any }) =>
-    post(`/api/chat/sessions/${sessionId}/messages`, data),
-  deleteSession: (id: string) => del(`/api/chat/sessions/${id}`),
+  /** GET /api/chat/history — all user sessions for sidebar */
+  getHistory: () => get("/api/chat/history"),
+  /** GET /api/chat/:chatId — load all messages for a session */
+  getSession: (chatId: string) => get(`/api/chat/${chatId}`),
+  /** DELETE /api/api/chat/:chatId — delete a session */
+  deleteSession: (chatId: string) => del(`/api/api/chat/${chatId}`),
 };
 
 // ─── Vitals & Scans ─────────────────────────────────────────────

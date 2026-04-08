@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
-import { sendChatMessage, extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse } from "@/lib/chatApi";
+import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
-import { getUser, logout } from "@/lib/auth";
+import { getUser, getToken, logout } from "@/lib/auth";
 import { toast } from "sonner";
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
@@ -117,13 +117,12 @@ const Chat = () => {
   // Load chat history from API
   const loadChatHistory = useCallback(async () => {
     try {
-      const data = await chatApi.getSessions();
+      const data = await chatApi.getHistory();
       console.log("[Chat History] Raw response:", data);
       const sessions = Array.isArray(data) ? data : data.sessions || data.data || [];
       setChatHistory(sessions);
     } catch (err: any) {
       console.error("[Chat History] Failed to load:", err);
-      // Don't show toast on initial load if it's just empty
       if (err.message !== "Session expired") {
         toast.error("Failed to load chat history");
       }
@@ -188,7 +187,7 @@ const Chat = () => {
     }
   };
 
-  // Call Claude API via your Node.js backend
+  // Call Claude API via POST /api/anthropic/chat — backend manages sessions
   const callClaude = async (userText: string, image?: string) => {
     const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
     const updatedHistory = [...conversationHistory, newUserMsg];
@@ -197,30 +196,44 @@ const Chat = () => {
     setIsApiLoading(true);
 
     try {
-      // Create session on first message if none exists
-      let sessionId = currentSessionId;
-      if (!sessionId) {
-        try {
-          const session = await chatApi.createSession({ title: userText.slice(0, 80) });
-          sessionId = session.id || session.session_id;
-          setCurrentSessionId(sessionId);
-          // Refresh sidebar history
-          loadChatHistory();
-        } catch (e) {
-          console.warn("[Session create failed]", e);
-        }
+      const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+      const token = getToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/api/anthropic/chat`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          message: userText,
+          sessionId: currentSessionId || undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
+        if (res.status === 402) throw new Error("BILLING_ERROR: " + errorMsg);
+        if (res.status === 529) throw new Error("OVERLOADED: " + errorMsg);
+        throw new Error(errorMsg);
       }
 
-      // Save user message to backend
-      if (sessionId) {
-        chatApi.saveMessage(sessionId, { role: "user", content: userText }).catch((e) =>
-          console.warn("[Save user msg failed]", e)
-        );
+      const responseData = await res.json();
+      console.log("[Claude Response]", responseData);
+
+      // Extract sessionId from response — backend returns it on first message
+      if (responseData.sessionId && !currentSessionId) {
+        setCurrentSessionId(responseData.sessionId);
+        loadChatHistory(); // refresh sidebar
+      } else if (Array.isArray(responseData) && responseData.length > 0 && responseData[0]?.sessionId) {
+        setCurrentSessionId(responseData[0].sessionId);
+        loadChatHistory();
       }
 
-      const response = await sendChatMessage(updatedHistory);
-      const textContent = extractText(response);
-      const toolCalls = extractToolCalls(response);
+      // The response may be a Claude-format response or a wrapper
+      const claudeResponse: ClaudeResponse = responseData.response || responseData;
+      const textContent = extractText(claudeResponse);
+      const toolCalls = extractToolCalls(claudeResponse);
 
       // Add assistant text to conversation history
       if (textContent) {
@@ -230,15 +243,6 @@ const Chat = () => {
           setTypingMsgIndex(newMessages.length - 1);
           return newMessages;
         });
-
-        // Save assistant message to backend
-        if (sessionId) {
-          chatApi.saveMessage(sessionId, {
-            role: "assistant",
-            content: textContent,
-            tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-          }).catch((e) => console.warn("[Save assistant msg failed]", e));
-        }
       }
 
       // Process any tool calls
@@ -348,14 +352,14 @@ const Chat = () => {
 
   const startChat = async (title: string, sessionId?: string) => {
     if (sessionId) {
-      // Load existing session messages from API
+      // Load existing session messages via GET /api/chat/:chatId
       setCurrentSessionId(sessionId);
       setConversationHistory([]);
       setMessages([]);
       setChatMode("chat");
       try {
-        const data = await chatApi.getMessages(sessionId);
-        console.log("[Load Messages] Raw response:", data);
+        const data = await chatApi.getSession(sessionId);
+        console.log("[Load Session] Raw response:", data);
         const msgs = Array.isArray(data) ? data : data.messages || data.data || [];
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
@@ -380,6 +384,24 @@ const Chat = () => {
       setConversationHistory([]);
       setChatMode("chat");
       callClaude(title);
+    }
+  };
+
+  const deleteChat = async (chatId: string) => {
+    try {
+      await chatApi.deleteSession(chatId);
+      setChatHistory((prev) => prev.filter((c: any) => c.id !== chatId));
+      if (currentSessionId === chatId) {
+        setCurrentSessionId(null);
+        setMessages([]);
+        setConversationHistory([]);
+        setChatMode("none");
+        setActiveChat(null);
+      }
+      toast.success("Chat deleted");
+    } catch (e: any) {
+      console.error("[Delete chat failed]", e);
+      toast.error("Failed to delete chat");
     }
   };
 
@@ -481,18 +503,27 @@ const Chat = () => {
               {chatHistory.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
               ) : chatHistory.map((chat: any) => (
-                <button
+                <div
                   key={chat.id}
-                  onClick={() => { setActiveChat(chat.id); startChat(chat.title, chat.id); setShowHistory(false); }}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all ${
+                  className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${
                     activeChat === chat.id
                       ? "bg-primary/10 text-foreground border border-primary/20"
                       : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                   }`}
+                  onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
                 >
-                  <p className="truncate font-medium">{chat.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
-                </button>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="truncate font-medium">{chat.title || "Untitled chat"}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
+                    title="Delete chat"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               ))}
             </div>
           </div>
