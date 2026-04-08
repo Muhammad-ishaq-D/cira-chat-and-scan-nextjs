@@ -64,9 +64,20 @@ const VitalsScan = () => {
         hrv_sdnn: results.hrvSdnn,
         bmi: results.bmi,
         signal_quality: results.signalQuality,
-      }).catch(() => {});
+      }).then(() => {
+        toast.success("Scan saved · 1 scan credit used");
+      }).catch((err: any) => {
+        if (err?.message?.includes("insufficient") || err?.message?.includes("credits")) {
+          toast.error("No scan credits remaining. Upgrade your plan.", {
+            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            duration: 8000,
+          });
+        } else {
+          console.error("[Scan] Submit error:", err);
+        }
+      });
     }
-  }, [results]);
+  }, [results, navigate]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
 
