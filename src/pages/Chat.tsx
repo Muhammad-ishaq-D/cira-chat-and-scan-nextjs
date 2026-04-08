@@ -355,20 +355,24 @@ const Chat = () => {
       setChatMode("chat");
       try {
         const data = await chatApi.getMessages(sessionId);
-        const msgs = Array.isArray(data) ? data : data.messages || [];
+        console.log("[Load Messages] Raw response:", data);
+        const msgs = Array.isArray(data) ? data : data.messages || data.data || [];
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
         for (const m of msgs) {
+          const content = m.content || m.text || "";
           const role = m.role === "user" ? "user" : "assistant";
-          apiHistory.push({ role, text: m.content });
-          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: m.content });
+          apiHistory.push({ role, text: content });
+          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: content });
         }
         setConversationHistory(apiHistory);
         setMessages(uiMessages);
-      } catch (e) {
-        console.warn("[Load session messages failed]", e);
-        setMessages([{ role: "user", text: title }]);
-        callClaude(title);
+        if (uiMessages.length === 0) {
+          toast.info("No messages found in this session");
+        }
+      } catch (e: any) {
+        console.error("[Load session messages failed]", e);
+        toast.error("Failed to load messages: " + (e.message || "Unknown error"));
       }
     } else {
       setCurrentSessionId(null);
