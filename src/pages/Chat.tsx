@@ -161,8 +161,8 @@ const Chat = () => {
     for (const tool of toolCalls) {
       switch (tool.name) {
         case "openModal":
-          // Only show mode selection if user hasn't already picked one
-          if (tool.input.select_care_pathway && chatMode === "none") {
+          // Only show mode selection if user hasn't already picked one (use ref for latest value)
+          if (tool.input.select_care_pathway && chatModeRef.current === "none") {
             setShowModeSelection(true);
           }
           break;
