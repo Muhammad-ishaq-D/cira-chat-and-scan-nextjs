@@ -120,9 +120,9 @@ export function useShenAI() {
         let prog = 0;
         if (typeof sdk.getMeasurementProgressPercentage === "function") {
           prog = sdk.getMeasurementProgressPercentage();
-        } else if (typeof sdk.getMeasurementRemainingTime === "function") {
-          const remaining = sdk.getMeasurementRemainingTime();
-          const total = 30; // 30-second preset
+        } else if (typeof (sdk as any).getMeasurementRemainingTime === "function") {
+          const remaining = (sdk as any).getMeasurementRemainingTime();
+          const total = 30;
           prog = Math.max(0, Math.min(100, ((total - remaining) / total) * 100));
         }
         if (typeof prog === "number" && prog > 0) setProgress(Math.round(prog));
