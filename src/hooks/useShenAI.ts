@@ -83,10 +83,16 @@ export function useShenAI() {
         enableHealthRisks: false,
       };
 
+      // Use CSS selector format as per Shen AI docs
+      const canvasSelector = `#${canvasId}`;
+
       sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
+        console.log("[ShenAI] init result:", result.value);
         if (result.value === 0) {
           setStatus("ready");
-          sdk.attachToCanvas(canvasId, true);
+          // Attach using CSS selector format
+          sdk.attachToCanvas(canvasSelector, true);
+          console.log("[ShenAI] attached to canvas:", canvasSelector);
         } else {
           const errors: Record<number, string> = {
             1: "Invalid API key",
@@ -98,6 +104,7 @@ export function useShenAI() {
         }
       });
     } catch (err: any) {
+      console.error("[ShenAI] init error:", err);
       setError(err.message || "Failed to load Shen AI SDK");
       setStatus("error");
     }
