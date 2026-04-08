@@ -46,10 +46,21 @@ async function post<T = any>(endpoint: string, body?: any): Promise<T> {
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
+    const errText = await res.text();
+    const err = errText ? JSON.parse(errText) : {};
     throw new Error(err.error || err.message || `Request failed (${res.status})`);
   }
-  return res.json();
+
+  if (res.status === 204) return {} as T;
+
+  const text = await res.text();
+  if (!text) return {} as T;
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return { message: text } as T;
+  }
 }
 
 async function put<T = any>(endpoint: string, body?: any): Promise<T> {
