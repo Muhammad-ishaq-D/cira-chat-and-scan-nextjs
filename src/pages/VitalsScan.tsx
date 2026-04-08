@@ -6,7 +6,7 @@ import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useShenAI, type VitalResults } from "@/hooks/useShenAI";
-import { vitalsApi } from "@/lib/apiClient";
+import { vitalsApi, userApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
 
@@ -39,9 +39,14 @@ const VitalsScan = () => {
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
+  const [userProfile, setUserProfile] = useState<any>(null);
+
   useEffect(() => {
     vitalsApi.getHistory()
       .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
+      .catch(() => {});
+    userApi.getProfile()
+      .then((data) => setUserProfile(data))
       .catch(() => {});
   }, []);
 
