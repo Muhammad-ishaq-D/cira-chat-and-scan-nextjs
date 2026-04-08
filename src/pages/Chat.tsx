@@ -115,11 +115,24 @@ const Chat = () => {
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
   // Load chat history from API
-  useEffect(() => {
-    chatApi.getSessions()
-      .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
-      .catch(() => {});
+  const loadChatHistory = useCallback(async () => {
+    try {
+      const data = await chatApi.getSessions();
+      console.log("[Chat History] Raw response:", data);
+      const sessions = Array.isArray(data) ? data : data.sessions || data.data || [];
+      setChatHistory(sessions);
+    } catch (err: any) {
+      console.error("[Chat History] Failed to load:", err);
+      // Don't show toast on initial load if it's just empty
+      if (err.message !== "Session expired") {
+        toast.error("Failed to load chat history");
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    loadChatHistory();
+  }, [loadChatHistory]);
 
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
@@ -192,9 +205,7 @@ const Chat = () => {
           sessionId = session.id || session.session_id;
           setCurrentSessionId(sessionId);
           // Refresh sidebar history
-          chatApi.getSessions()
-            .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
-            .catch(() => {});
+          loadChatHistory();
         } catch (e) {
           console.warn("[Session create failed]", e);
         }
@@ -344,20 +355,24 @@ const Chat = () => {
       setChatMode("chat");
       try {
         const data = await chatApi.getMessages(sessionId);
-        const msgs = Array.isArray(data) ? data : data.messages || [];
+        console.log("[Load Messages] Raw response:", data);
+        const msgs = Array.isArray(data) ? data : data.messages || data.data || [];
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
         for (const m of msgs) {
+          const content = m.content || m.text || "";
           const role = m.role === "user" ? "user" : "assistant";
-          apiHistory.push({ role, text: m.content });
-          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: m.content });
+          apiHistory.push({ role, text: content });
+          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: content });
         }
         setConversationHistory(apiHistory);
         setMessages(uiMessages);
-      } catch (e) {
-        console.warn("[Load session messages failed]", e);
-        setMessages([{ role: "user", text: title }]);
-        callClaude(title);
+        if (uiMessages.length === 0) {
+          toast.info("No messages found in this session");
+        }
+      } catch (e: any) {
+        console.error("[Load session messages failed]", e);
+        toast.error("Failed to load messages: " + (e.message || "Unknown error"));
       }
     } else {
       setCurrentSessionId(null);
