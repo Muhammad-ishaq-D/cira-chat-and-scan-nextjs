@@ -72,8 +72,14 @@ const VitalsScan = () => {
 
   const handleAnalyzeWithCira = () => {
     if (!results) return;
-    // Store vitals in sessionStorage for Chat to pick up
-    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(displayVitals));
+    // Store vitals as plain serializable data (icons can't be JSON-serialized)
+    const serializableVitals = displayVitals.map(v => ({
+      label: v.label,
+      value: v.value,
+      unit: v.unit,
+      color: v.color,
+    }));
+    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
     navigate("/chat");
   };
 
@@ -176,12 +182,6 @@ const VitalsScan = () => {
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
                     <ScanFace size={48} className="text-primary mb-3 opacity-60" />
                     <p className="text-sm text-white/70 font-body">Tap below to start camera</p>
-                  </div>
-                )}
-                {status === "loading" && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-                    <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-                    <p className="text-sm text-white/70 font-body">Loading SDK... {progress > 0 ? `${progress}%` : ""}</p>
                   </div>
                 )}
                 {status === "measuring" && (

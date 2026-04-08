@@ -178,13 +178,17 @@ const Chat = () => {
       try {
         const realVitals = JSON.parse(scanVitalsJson);
         syncChatMode("vitals");
+        setShowModeSelection(false);
         setMessages([
           { role: "vitals", text: "Face Scan Results", vitalsData: realVitals },
         ]);
         const vitalsText = realVitals.map((v: any) => `- ${v.label}: ${v.value} ${v.unit}`).join("\n");
         const vitalsMessage = `Here are my face scan vitals results:\n${vitalsText}\n\nPlease analyze these vitals and tell me what they mean for my health. Provide professional insights on each metric. Do NOT call any tools yet — just analyze and respond with your assessment of these numbers.`;
         callClaude(vitalsMessage);
-      } catch {}
+      } catch (e) {
+        console.error("[Chat] Error processing scan vitals:", e);
+        toast.error("Failed to process scan vitals");
+      }
       return;
     }
 
