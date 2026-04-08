@@ -338,53 +338,22 @@ const Chat = () => {
   };
 
   const startScan = () => {
-    setScanning(true);
-    setScanComplete(false);
-    setScanProgress(0);
-    const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setScanning(false);
-          setScanComplete(true);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 80);
+    // Close the mock modal and navigate to real Shen AI scan page
+    setShowScanModal(false);
+    navigate("/vitals-scan");
   };
 
   const completeScanAndChat = () => {
     setShowScanModal(false);
-    setScanComplete(false);
-    setScanProgress(0);
-    
-    // Build vitals summary for Claude context
-    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join(", ");
-
-    // Show vitals card in chat
-    setMessages((prev) => [
-      ...prev,
-      { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-    ]);
-
-    // Send vitals data with explicit instructions for Claude to analyze
-    const vitalsMessage = `Here are my face scan vitals results:\n${scanVitals.map(v => `- ${v.label}: ${v.value} ${v.unit}`).join("\n")}\n\nPlease analyze these vitals and tell me what they mean for my health. Provide professional insights on each metric. Do NOT call any tools yet — just analyze and respond with your assessment of these numbers.`;
-    callClaude(vitalsMessage);
-    setPendingLandingMessage(null);
+    navigate("/vitals-scan");
   };
 
   const selectMode = (mode: ChatMode) => {
     if (mode === "vitals") {
       syncChatMode(mode);
       setShowModeSelection(false);
-      setShowScanModal(true);
-      if (pendingLandingMessage) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "cira", text: "✨ Vital Scan + Assessment activated!\n\nLet me capture your vitals first — this will only take 30 seconds..." },
-        ]);
-      }
+      // Navigate directly to the real Shen AI vitals scan page
+      navigate("/vitals-scan");
       return;
     }
 
