@@ -184,6 +184,29 @@ const Chat = () => {
     setIsApiLoading(true);
 
     try {
+      // Create session on first message if none exists
+      let sessionId = currentSessionId;
+      if (!sessionId) {
+        try {
+          const session = await chatApi.createSession({ title: userText.slice(0, 80) });
+          sessionId = session.id || session.session_id;
+          setCurrentSessionId(sessionId);
+          // Refresh sidebar history
+          chatApi.getSessions()
+            .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
+            .catch(() => {});
+        } catch (e) {
+          console.warn("[Session create failed]", e);
+        }
+      }
+
+      // Save user message to backend
+      if (sessionId) {
+        chatApi.saveMessage(sessionId, { role: "user", content: userText }).catch((e) =>
+          console.warn("[Save user msg failed]", e)
+        );
+      }
+
       const response = await sendChatMessage(updatedHistory);
       const textContent = extractText(response);
       const toolCalls = extractToolCalls(response);
@@ -196,6 +219,15 @@ const Chat = () => {
           setTypingMsgIndex(newMessages.length - 1);
           return newMessages;
         });
+
+        // Save assistant message to backend
+        if (sessionId) {
+          chatApi.saveMessage(sessionId, {
+            role: "assistant",
+            content: textContent,
+            tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+          }).catch((e) => console.warn("[Save assistant msg failed]", e));
+        }
       }
 
       // Process any tool calls
