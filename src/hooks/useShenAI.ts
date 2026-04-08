@@ -13,8 +13,17 @@ export interface VitalResults {
   stressIndex: number | null;
   hrvSdnn: number | null;
   bmi: number | null;
+  cardiacWorkload: number | null;
+  parasympatheticActivity: number | null;
   signalQuality: number;
   raw: MeasurementResults;
+}
+
+export interface UserProfileData {
+  age?: number;
+  height?: number; // cm
+  weight?: number; // kg
+  gender?: 'male' | 'female' | 'other';
 }
 
 export function useShenAI() {
@@ -40,7 +49,7 @@ export function useShenAI() {
 
   useEffect(() => cleanup, [cleanup]);
 
-  const initialize = useCallback(async (canvasId: string) => {
+  const initialize = useCallback(async (canvasId: string, userProfile?: UserProfileData) => {
     cleanup();
     setStatus("loading");
     setError(null);
@@ -80,7 +89,13 @@ export function useShenAI() {
         showStartStopButton: false,
         showInfoButton: false,
         showDisclaimer: false,
-        enableHealthRisks: false,
+        enableHealthRisks: true,
+        risksFactors: {
+          ...(userProfile?.age ? { age: userProfile.age } : {}),
+          ...(userProfile?.height ? { bodyHeight: userProfile.height } : {}),
+          ...(userProfile?.weight ? { bodyWeight: userProfile.weight } : {}),
+          ...(userProfile?.gender ? { gender: sdk.Gender[userProfile.gender === 'male' ? 'MALE' : userProfile.gender === 'female' ? 'FEMALE' : 'OTHER'] } : {}),
+        },
       };
 
       // Use CSS selector format as per Shen AI docs
@@ -153,6 +168,8 @@ export function useShenAI() {
               stressIndex: raw.stress_index,
               hrvSdnn: raw.hrv_sdnn_ms,
               bmi: raw.bmi_kg_per_m2,
+              cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
+              parasympatheticActivity: raw.parasympathetic_activity,
               signalQuality: raw.average_signal_quality,
               raw,
             });
