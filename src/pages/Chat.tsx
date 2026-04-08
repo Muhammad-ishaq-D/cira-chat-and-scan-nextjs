@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-
+import ConsultSummaryCard from "@/components/ConsultSummaryCard";
+import { sendChatMessage, extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse } from "@/lib/chatApi";
+import { toast } from "sonner";
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
