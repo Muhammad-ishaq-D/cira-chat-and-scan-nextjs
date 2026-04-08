@@ -52,8 +52,8 @@ const chatModes = [
     id: "quick" as ChatMode,
     icon: Stethoscope,
     title: "Quick Assessment",
-    desc: "Cira asks focused questions and gives you fast health advice with good accuracy.",
-    badge: "~2 min",
+    desc: "Cira screens for red flags with focused questions — fast, accurate triage in minutes.",
+    badge: "~2 min · Fast Triage",
     gradient: "from-blue-500 to-cyan-400",
     bgGlow: "bg-blue-100",
   },
@@ -61,8 +61,8 @@ const chatModes = [
     id: "detailed" as ChatMode,
     icon: FileText,
     title: "Detailed Assessment",
-    desc: "Cira asks in-depth questions, gathers full insight, and generates a comprehensive health report.",
-    badge: "~8 min · Highest Accuracy",
+    desc: "Full clinical-style intake — Cira collects history, vitals, ROS & generates a doctor-ready report.",
+    badge: "~8 min · Doctor-Ready Report",
     gradient: "from-purple-500 to-pink-400",
     bgGlow: "bg-purple-100",
   },
@@ -70,7 +70,7 @@ const chatModes = [
     id: "vitals" as ChatMode,
     icon: ScanFace,
     title: "Vital Scan + Assessment",
-    desc: "Quick face scan captures your vitals first, then Cira uses that data for a more informed consultation.",
+    desc: "30-second face scan captures real vitals — then Cira cross-references with your symptoms for a data-driven consultation.",
     badge: "~4 min · Scan Powered",
     gradient: "from-emerald-500 to-teal-400",
     bgGlow: "bg-emerald-100",
@@ -247,25 +247,19 @@ const Chat = () => {
     setScanComplete(false);
     setScanProgress(0);
     
-    // Build vitals summary text for Cira context
-    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join("\n");
-    
-    const ciraResponse = "✨ Scan complete! I've captured all your vitals. Here's what I'm working with:\n\nNow I have a full picture of your body's current state. Combined with what you've told me, I can give you a much more informed assessment.\n\nWhat would you like help with today?";
+    // Build vitals summary for Claude context
+    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join(", ");
 
-    if (pendingLandingMessage) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-        { role: "cira", text: ciraResponse },
-      ]);
-      setPendingLandingMessage(null);
-    } else {
-      setMessages([
-        { role: "cira", text: "📸 Starting your vital scan..." },
-        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-        { role: "cira", text: ciraResponse },
-      ]);
-    }
+    // Show vitals card in chat
+    setMessages((prev) => [
+      ...prev,
+      { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+    ]);
+
+    // Send vitals data + pathway selection to Claude
+    const vitalsMessage = `🧬 I'd like a Vital Scan + Assessment. Here are my scan results: ${vitalsText}`;
+    callClaude(vitalsMessage);
+    setPendingLandingMessage(null);
   };
 
   const selectMode = (mode: ChatMode) => {
@@ -303,10 +297,10 @@ const Chat = () => {
   };
 
   const startChat = (title: string) => {
-    setMessages([
-      { role: "user", text: title },
-      { role: "cira", text: "I understand. Let me look into this for you. Can you tell me more about when this started?" },
-    ]);
+    setMessages([{ role: "user", text: title }]);
+    setConversationHistory([]);
+    setChatMode("chat");
+    callClaude(title);
   };
 
   return (
@@ -450,10 +444,10 @@ const Chat = () => {
                   <img src={ciraLogo} alt="Cira" width={24} height={24} className="md:w-7 md:h-7" />
                 </div>
                 <h1 className="text-xl md:text-[32px] font-semibold text-foreground mb-1.5 md:mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  How can Cira help?
+                  Hi, I'm Cira 👋
                 </h1>
                 <p className="text-xs md:text-sm text-muted-foreground mb-5 md:mb-10 text-center max-w-md">
-                  Choose a consultation type or just start chatting.
+                  Your AI health nurse. Choose a care pathway to get started.
                 </p>
 
                 {/* ✦ HERO — Vital Scan — compact on mobile */}
@@ -533,13 +527,13 @@ const Chat = () => {
                     <MessageCircle size={14} className="text-muted-foreground" />
                   </div>
                   <div className="text-left">
-                    <p className="text-[11px] font-medium text-foreground">Just Chat with Cira</p>
-                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything</p>
+                <p className="text-[11px] font-medium text-foreground">💬 Just Chat with Cira</p>
+                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything health-related</p>
                   </div>
                 </button>
 
                 <p className="text-[8px] md:text-[9px] text-muted-foreground/60 mt-5 md:mt-8 text-center max-w-sm leading-relaxed">
-                  ⚕️ Cira is an AI health nurse. Always discuss findings with a doctor.
+                  ⚕️ Cira is an AI nurse — not a doctor. Always discuss findings with a licensed medical professional.
                 </p>
                </div>
             </div>
