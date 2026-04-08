@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { login, sendOtp, verifyOtp, googleLogin } from "@/lib/auth";
+import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
 const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.googleusercontent.com";
