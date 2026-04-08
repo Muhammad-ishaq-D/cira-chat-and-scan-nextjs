@@ -335,11 +335,37 @@ const Chat = () => {
     }
   };
 
-  const startChat = (title: string) => {
-    setMessages([{ role: "user", text: title }]);
-    setConversationHistory([]);
-    setChatMode("chat");
-    callClaude(title);
+  const startChat = async (title: string, sessionId?: string) => {
+    if (sessionId) {
+      // Load existing session messages from API
+      setCurrentSessionId(sessionId);
+      setConversationHistory([]);
+      setMessages([]);
+      setChatMode("chat");
+      try {
+        const data = await chatApi.getMessages(sessionId);
+        const msgs = Array.isArray(data) ? data : data.messages || [];
+        const uiMessages: typeof messages = [];
+        const apiHistory: ApiMessage[] = [];
+        for (const m of msgs) {
+          const role = m.role === "user" ? "user" : "assistant";
+          apiHistory.push({ role, text: m.content });
+          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: m.content });
+        }
+        setConversationHistory(apiHistory);
+        setMessages(uiMessages);
+      } catch (e) {
+        console.warn("[Load session messages failed]", e);
+        setMessages([{ role: "user", text: title }]);
+        callClaude(title);
+      }
+    } else {
+      setCurrentSessionId(null);
+      setMessages([{ role: "user", text: title }]);
+      setConversationHistory([]);
+      setChatMode("chat");
+      callClaude(title);
+    }
   };
 
   return (
