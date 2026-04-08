@@ -29,7 +29,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
 
   const name = profile?.name || localUser?.name || "User";
   const email = profile?.email || localUser?.email || "";
-  const plan = profile?.plan || localUser?.plan || "Basic";
+  const plan = profile?.plan || "Basic";
   const initials = name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
   const faceScans = profile?.credits?.face_scans ?? (loading ? "—" : "—");
   const chatCredits = profile?.credits?.chat_credits ?? (loading ? 0 : 0);
