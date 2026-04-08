@@ -503,18 +503,27 @@ const Chat = () => {
               {chatHistory.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
               ) : chatHistory.map((chat: any) => (
-                <button
+                <div
                   key={chat.id}
-                  onClick={() => { setActiveChat(chat.id); startChat(chat.title, chat.id); setShowHistory(false); }}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all ${
+                  className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${
                     activeChat === chat.id
                       ? "bg-primary/10 text-foreground border border-primary/20"
                       : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                   }`}
+                  onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
                 >
-                  <p className="truncate font-medium">{chat.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
-                </button>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="truncate font-medium">{chat.title || "Untitled chat"}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
+                    title="Delete chat"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               ))}
             </div>
           </div>
