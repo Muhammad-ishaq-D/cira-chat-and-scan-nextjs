@@ -16,13 +16,14 @@ const AdminLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (localStorage.getItem("cira_admin") !== "true") {
+    if (localStorage.getItem("cira_admin") !== "true" || !localStorage.getItem("cira_admin_token")) {
       navigate("/admin");
     }
   }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("cira_admin");
+    localStorage.removeItem("cira_admin_token");
     navigate("/admin");
   };
 
