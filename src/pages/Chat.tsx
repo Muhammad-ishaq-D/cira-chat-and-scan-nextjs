@@ -187,7 +187,7 @@ const Chat = () => {
     }
   };
 
-  // Call Claude API via your Node.js backend
+  // Call Claude API via POST /api/anthropic/chat — backend manages sessions
   const callClaude = async (userText: string, image?: string) => {
     const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
     const updatedHistory = [...conversationHistory, newUserMsg];
@@ -196,30 +196,44 @@ const Chat = () => {
     setIsApiLoading(true);
 
     try {
-      // Create session on first message if none exists
-      let sessionId = currentSessionId;
-      if (!sessionId) {
-        try {
-          const session = await chatApi.createSession({ title: userText.slice(0, 80) });
-          sessionId = session.id || session.session_id;
-          setCurrentSessionId(sessionId);
-          // Refresh sidebar history
-          loadChatHistory();
-        } catch (e) {
-          console.warn("[Session create failed]", e);
-        }
+      const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+      const token = getToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/api/anthropic/chat`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          message: userText,
+          sessionId: currentSessionId || undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
+        if (res.status === 402) throw new Error("BILLING_ERROR: " + errorMsg);
+        if (res.status === 529) throw new Error("OVERLOADED: " + errorMsg);
+        throw new Error(errorMsg);
       }
 
-      // Save user message to backend
-      if (sessionId) {
-        chatApi.saveMessage(sessionId, { role: "user", content: userText }).catch((e) =>
-          console.warn("[Save user msg failed]", e)
-        );
+      const responseData = await res.json();
+      console.log("[Claude Response]", responseData);
+
+      // Extract sessionId from response — backend returns it on first message
+      if (responseData.sessionId && !currentSessionId) {
+        setCurrentSessionId(responseData.sessionId);
+        loadChatHistory(); // refresh sidebar
+      } else if (Array.isArray(responseData) && responseData.length > 0 && responseData[0]?.sessionId) {
+        setCurrentSessionId(responseData[0].sessionId);
+        loadChatHistory();
       }
 
-      const response = await sendChatMessage(updatedHistory);
-      const textContent = extractText(response);
-      const toolCalls = extractToolCalls(response);
+      // The response may be a Claude-format response or a wrapper
+      const claudeResponse: ClaudeResponse = responseData.response || responseData;
+      const textContent = extractText(claudeResponse);
+      const toolCalls = extractToolCalls(claudeResponse);
 
       // Add assistant text to conversation history
       if (textContent) {
@@ -229,15 +243,6 @@ const Chat = () => {
           setTypingMsgIndex(newMessages.length - 1);
           return newMessages;
         });
-
-        // Save assistant message to backend
-        if (sessionId) {
-          chatApi.saveMessage(sessionId, {
-            role: "assistant",
-            content: textContent,
-            tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-          }).catch((e) => console.warn("[Save assistant msg failed]", e));
-        }
       }
 
       // Process any tool calls
