@@ -7,6 +7,8 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import { sendChatMessage, extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse } from "@/lib/chatApi";
+import { chatApi } from "@/lib/apiClient";
+import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
@@ -37,13 +39,7 @@ const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?
   );
 };
 
-const mockHistory = [
-  { id: "1", title: "Chest tightness and fatigue", date: "Today" },
-  { id: "2", title: "Headache for 3 days", date: "Yesterday" },
-  { id: "3", title: "High blood pressure check", date: "Mar 30" },
-  { id: "4", title: "Skin rash on arms", date: "Mar 28" },
-  { id: "5", title: "Sleep issues and stress", date: "Mar 25" },
-];
+
 
 type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
 
@@ -112,7 +108,17 @@ const Chat = () => {
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const localUser = getUser();
+  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+
+  // Load chat history from API
+  useEffect(() => {
+    chatApi.getSessions()
+      .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
+      .catch(() => {});
+  }, []);
 
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
@@ -351,7 +357,7 @@ const Chat = () => {
         {/* Bottom */}
         <div className="mt-auto flex flex-col items-center gap-2">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => { logout(); navigate("/login"); }}
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
@@ -359,7 +365,7 @@ const Chat = () => {
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
-              JM
+              {initials}
             </div>
           </ProfilePopover>
         </div>
@@ -398,7 +404,9 @@ const Chat = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
-              {mockHistory.map((chat) => (
+              {chatHistory.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
+              ) : chatHistory.map((chat: any) => (
                 <button
                   key={chat.id}
                   onClick={() => { setActiveChat(chat.id); startChat(chat.title); setShowHistory(false); }}
@@ -409,7 +417,7 @@ const Chat = () => {
                   }`}
                 >
                   <p className="truncate font-medium">{chat.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
                 </button>
               ))}
             </div>

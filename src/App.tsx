@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import Index from "./pages/Index.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import OurStory from "./pages/OurStory.tsx";
@@ -32,15 +33,16 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/our-story" element={<OurStory />} />
-          <Route path="/upgrade" element={<Upgrade />} />
-          <Route path="/vitals-scan" element={<VitalsScan />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/payment-history" element={<PaymentHistory />} />
-          <Route path="/doctor" element={<Doctor />} />
+          {/* Protected user routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
+          <Route path="/vitals-scan" element={<ProtectedRoute><VitalsScan /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+          <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
+          <Route path="/doctor" element={<ProtectedRoute><Doctor /></ProtectedRoute>} />
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route element={<AdminLayout />}>
