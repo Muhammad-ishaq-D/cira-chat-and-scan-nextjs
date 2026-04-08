@@ -9,6 +9,19 @@ const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.goo
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const redirectAfterAuth = async () => {
+    try {
+      const profile = await userApi.getProfile();
+      if (!profile.age || !profile.height || !profile.weight || !profile.biological_sex) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch {
+      navigate("/onboarding");
+    }
+  };
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
