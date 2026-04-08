@@ -243,7 +243,12 @@ const VitalsScan = () => {
                   </button>
                 )}
                 {status === "idle" && (
-                  <button onClick={() => initialize(CANVAS_ID)} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                  <button onClick={() => initialize(CANVAS_ID, {
+                    age: userProfile?.age || undefined,
+                    height: userProfile?.height || undefined,
+                    weight: userProfile?.weight || undefined,
+                    gender: userProfile?.biological_sex || undefined,
+                  })} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
                     <ScanFace size={18} /> Start Camera
                   </button>
                 )}
