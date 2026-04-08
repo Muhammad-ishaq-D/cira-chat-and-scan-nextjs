@@ -68,7 +68,7 @@ export function useShenAI() {
         precisionMode: sdk.PrecisionMode.RELAXED,
         cameraMode: sdk.CameraMode.FACING_USER,
         onboardingMode: sdk.OnboardingMode.HIDDEN,
-        showUserInterface: false,
+        showUserInterface: true,
         showFacePositioningOverlay: true,
         showVisualWarnings: true,
         enableCameraSwap: false,

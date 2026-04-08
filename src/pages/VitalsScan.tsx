@@ -170,12 +170,14 @@ const VitalsScan = () => {
           {status !== "finished" ? (
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm flex flex-col items-center">
               {/* Camera canvas */}
-              <div className="w-full max-w-md aspect-[4/3] rounded-2xl overflow-hidden bg-black/5 border border-border/30 mb-6 relative">
+              <div className="w-full max-w-md aspect-[4/3] rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative">
                 <canvas
                   id={CANVAS_ID}
                   ref={canvasRef}
-                  className="w-full h-full object-cover"
-                  style={{ display: "block" }}
+                  width={640}
+                  height={480}
+                  className="w-full h-full"
+                  style={{ display: "block", objectFit: "contain" }}
                 />
                 {(status === "loading") && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
