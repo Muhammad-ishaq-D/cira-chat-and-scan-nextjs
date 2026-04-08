@@ -109,6 +109,7 @@ const Chat = () => {
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
