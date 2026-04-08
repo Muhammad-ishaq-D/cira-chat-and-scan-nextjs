@@ -267,6 +267,9 @@ const Chat = () => {
         const errorData = await res.json().catch(() => ({}));
         const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
         if (res.status === 402) throw new Error("BILLING_ERROR: " + errorMsg);
+        if (res.status === 403 && (errorData?.code === "insufficient_credits" || errorMsg.includes("insufficient"))) {
+          throw new Error("CREDITS_EXHAUSTED: " + errorMsg);
+        }
         if (res.status === 529) throw new Error("OVERLOADED: " + errorMsg);
         throw new Error(errorMsg);
       }
@@ -309,8 +312,15 @@ const Chat = () => {
       }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("BILLING_ERROR")) {
-        toast.error("Claude API credit balance too low. Please top up your Anthropic credits.");
+      if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
+        toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
+          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+          duration: 8000,
+        });
+        setMessages((prev) => [
+          ...prev,
+          { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
+        ]);
       } else if (msg.startsWith("OVERLOADED")) {
         toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
           action: { label: "Retry", onClick: () => callClaude(userText, image) },
@@ -338,53 +348,22 @@ const Chat = () => {
   };
 
   const startScan = () => {
-    setScanning(true);
-    setScanComplete(false);
-    setScanProgress(0);
-    const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setScanning(false);
-          setScanComplete(true);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 80);
+    // Close the mock modal and navigate to real Shen AI scan page
+    setShowScanModal(false);
+    navigate("/vitals-scan");
   };
 
   const completeScanAndChat = () => {
     setShowScanModal(false);
-    setScanComplete(false);
-    setScanProgress(0);
-    
-    // Build vitals summary for Claude context
-    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join(", ");
-
-    // Show vitals card in chat
-    setMessages((prev) => [
-      ...prev,
-      { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-    ]);
-
-    // Send vitals data with explicit instructions for Claude to analyze
-    const vitalsMessage = `Here are my face scan vitals results:\n${scanVitals.map(v => `- ${v.label}: ${v.value} ${v.unit}`).join("\n")}\n\nPlease analyze these vitals and tell me what they mean for my health. Provide professional insights on each metric. Do NOT call any tools yet — just analyze and respond with your assessment of these numbers.`;
-    callClaude(vitalsMessage);
-    setPendingLandingMessage(null);
+    navigate("/vitals-scan");
   };
 
   const selectMode = (mode: ChatMode) => {
     if (mode === "vitals") {
       syncChatMode(mode);
       setShowModeSelection(false);
-      setShowScanModal(true);
-      if (pendingLandingMessage) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "cira", text: "✨ Vital Scan + Assessment activated!\n\nLet me capture your vitals first — this will only take 30 seconds..." },
-        ]);
-      }
+      // Navigate directly to the real Shen AI vitals scan page
+      navigate("/vitals-scan");
       return;
     }
 
