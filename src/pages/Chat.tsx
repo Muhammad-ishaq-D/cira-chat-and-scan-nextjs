@@ -117,13 +117,12 @@ const Chat = () => {
   // Load chat history from API
   const loadChatHistory = useCallback(async () => {
     try {
-      const data = await chatApi.getSessions();
+      const data = await chatApi.getHistory();
       console.log("[Chat History] Raw response:", data);
       const sessions = Array.isArray(data) ? data : data.sessions || data.data || [];
       setChatHistory(sessions);
     } catch (err: any) {
       console.error("[Chat History] Failed to load:", err);
-      // Don't show toast on initial load if it's just empty
       if (err.message !== "Session expired") {
         toast.error("Failed to load chat history");
       }
