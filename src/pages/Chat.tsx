@@ -357,7 +357,7 @@ const Chat = () => {
         {/* Bottom */}
         <div className="mt-auto flex flex-col items-center gap-2">
           <button
-            onClick={() => { logout(); navigate("/login"); }}}
+            onClick={() => { logout(); navigate("/login"); }}
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
@@ -365,7 +365,7 @@ const Chat = () => {
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
-              JM
+              {initials}
             </div>
           </ProfilePopover>
         </div>
