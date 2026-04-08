@@ -29,7 +29,13 @@ export function getToken(): string | null {
 /** Get stored user */
 export function getUser(): AuthUser | null {
   const raw = localStorage.getItem(USER_KEY);
-  return raw ? JSON.parse(raw) : null;
+  if (!raw || raw === "undefined") return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    localStorage.removeItem(USER_KEY);
+    return null;
+  }
 }
 
 /** Check if user is authenticated */
