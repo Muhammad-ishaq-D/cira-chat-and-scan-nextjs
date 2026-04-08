@@ -205,9 +205,7 @@ const Chat = () => {
           sessionId = session.id || session.session_id;
           setCurrentSessionId(sessionId);
           // Refresh sidebar history
-          chatApi.getSessions()
-            .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
-            .catch(() => {});
+          loadChatHistory();
         } catch (e) {
           console.warn("[Session create failed]", e);
         }
