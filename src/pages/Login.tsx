@@ -57,10 +57,41 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // TODO: Integrate Google OAuth SDK → call googleLogin(idToken)
-    toast.info("Google login coming soon");
-  };
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const initGoogle = () => {
+      if (!(window as any).google?.accounts?.id) {
+        setTimeout(initGoogle, 200);
+        return;
+      }
+      (window as any).google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async (response: any) => {
+          setLoading(true);
+          try {
+            await googleLogin(response.credential);
+            navigate("/chat");
+          } catch (err: any) {
+            toast.error(err.message || "Google login failed");
+          } finally {
+            setLoading(false);
+          }
+        },
+      });
+      if (googleButtonRef.current) {
+        (window as any).google.accounts.id.renderButton(googleButtonRef.current, {
+          type: "standard",
+          theme: "outline",
+          size: "large",
+          width: googleButtonRef.current.offsetWidth,
+          text: "continue_with",
+          shape: "pill",
+        });
+      }
+    };
+    initGoogle();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
