@@ -111,6 +111,7 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatModeRef = useRef<ChatMode>("none");
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
