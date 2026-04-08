@@ -108,7 +108,17 @@ const Chat = () => {
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const localUser = getUser();
+  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+
+  // Load chat history from API
+  useEffect(() => {
+    chatApi.getSessions()
+      .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
+      .catch(() => {});
+  }, []);
 
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
