@@ -47,7 +47,13 @@ async function post<T = any>(endpoint: string, body?: any): Promise<T> {
   });
   if (!res.ok) {
     const errText = await res.text();
-    const err = errText ? JSON.parse(errText) : {};
+    const err = errText ? (() => {
+      try {
+        return JSON.parse(errText);
+      } catch {
+        return { message: errText };
+      }
+    })() : {};
     throw new Error(err.error || err.message || `Request failed (${res.status})`);
   }
 
