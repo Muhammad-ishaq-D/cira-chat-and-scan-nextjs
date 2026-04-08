@@ -31,9 +31,9 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const email = profile?.email || localUser?.email || "";
   const plan = profile?.plan || "Basic";
   const initials = name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
-  const faceScans = profile?.credits?.face_scans ?? 2;
-  const chatCredits = profile?.credits?.chat_credits ?? 100000;
-  const chatDisplay = chatCredits >= 1000 ? `${Math.round(chatCredits / 1000)}K` : chatCredits;
+  const faceScans = profile?.credits?.face_scans ?? (loading ? "—" : "—");
+  const chatCredits = profile?.credits?.chat_credits ?? (loading ? 0 : 0);
+  const chatDisplay = typeof chatCredits === "number" && chatCredits >= 1000 ? `${Math.round(chatCredits / 1000)}K` : chatCredits;
 
   return (
     <Popover onOpenChange={(open) => open && loadProfile()}>
