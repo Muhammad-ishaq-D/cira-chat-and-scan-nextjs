@@ -119,7 +119,7 @@ const Chat = () => {
     try {
       const data = await chatApi.getHistory();
       console.log("[Chat History] Raw response:", data);
-      const sessions = Array.isArray(data) ? data : data.sessions || data.data || [];
+      const sessions = Array.isArray(data) ? data : data.history || data.sessions || data.data || [];
       setChatHistory(sessions);
     } catch (err: any) {
       console.error("[Chat History] Failed to load:", err);
