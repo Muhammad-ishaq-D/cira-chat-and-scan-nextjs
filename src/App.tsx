@@ -19,6 +19,8 @@ import AdminLayout from "./admin/AdminLayout.tsx";
 import AdminOverview from "./admin/AdminOverview.tsx";
 import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminBilling from "./admin/AdminBilling.tsx";
+import AdminAnalytics from "./admin/AdminAnalytics.tsx";
+import AdminSettings from "./admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +46,9 @@ const App = () => (
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminOverview />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/billing" element={<AdminBilling />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
