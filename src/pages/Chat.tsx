@@ -267,6 +267,9 @@ const Chat = () => {
         const errorData = await res.json().catch(() => ({}));
         const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
         if (res.status === 402) throw new Error("BILLING_ERROR: " + errorMsg);
+        if (res.status === 403 && (errorData?.code === "insufficient_credits" || errorMsg.includes("insufficient"))) {
+          throw new Error("CREDITS_EXHAUSTED: " + errorMsg);
+        }
         if (res.status === 529) throw new Error("OVERLOADED: " + errorMsg);
         throw new Error(errorMsg);
       }
@@ -309,8 +312,15 @@ const Chat = () => {
       }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("BILLING_ERROR")) {
-        toast.error("Claude API credit balance too low. Please top up your Anthropic credits.");
+      if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
+        toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
+          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+          duration: 8000,
+        });
+        setMessages((prev) => [
+          ...prev,
+          { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
+        ]);
       } else if (msg.startsWith("OVERLOADED")) {
         toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
           action: { label: "Retry", onClick: () => callClaude(userText, image) },
