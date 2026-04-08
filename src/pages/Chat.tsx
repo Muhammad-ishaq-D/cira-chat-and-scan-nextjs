@@ -115,11 +115,24 @@ const Chat = () => {
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
   // Load chat history from API
-  useEffect(() => {
-    chatApi.getSessions()
-      .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
-      .catch(() => {});
+  const loadChatHistory = useCallback(async () => {
+    try {
+      const data = await chatApi.getSessions();
+      console.log("[Chat History] Raw response:", data);
+      const sessions = Array.isArray(data) ? data : data.sessions || data.data || [];
+      setChatHistory(sessions);
+    } catch (err: any) {
+      console.error("[Chat History] Failed to load:", err);
+      // Don't show toast on initial load if it's just empty
+      if (err.message !== "Session expired") {
+        toast.error("Failed to load chat history");
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    loadChatHistory();
+  }, [loadChatHistory]);
 
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
