@@ -46,7 +46,10 @@ const PaymentHistory = () => {
   }, []);
 
   const totalSpent = payments
-    .filter((p: any) => (p.status || "").toLowerCase() === "paid" || (p.status || "").toLowerCase() === "success")
+    .filter((p: any) => {
+      const s = (p.status || "").toLowerCase();
+      return s === "paid" || s === "success" || s === "" || s === "completed";
+    })
     .reduce((sum: number, p: any) => sum + (parseFloat(String(p.amount).replace(/[^0-9.]/g, "")) || 0), 0);
 
   return (
