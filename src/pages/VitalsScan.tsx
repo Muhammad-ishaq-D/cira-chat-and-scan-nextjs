@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Camera, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Loader2 } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { useShenAI, type VitalResults } from "@/hooks/useShenAI";
 import { vitalsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
@@ -17,14 +18,24 @@ const navItems = [
   { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
+const CANVAS_ID = "shenai-canvas";
+
+const formatVitalsForDisplay = (r: VitalResults) => [
+  { label: "Heart Rate", value: String(Math.round(r.heartRate)), unit: "bpm", icon: Heart, color: "text-red-500 bg-red-50" },
+  { label: "Blood Pressure", value: r.systolicBP && r.diastolicBP ? `${Math.round(r.systolicBP)}/${Math.round(r.diastolicBP)}` : "--", unit: "mmHg", icon: Activity, color: "text-pink-500 bg-pink-50" },
+  { label: "Breathing Rate", value: r.breathingRate ? String(Math.round(r.breathingRate)) : "--", unit: "/min", icon: Wind, color: "text-cyan-500 bg-cyan-50" },
+  { label: "Stress Index", value: r.stressIndex != null ? String(Math.round(r.stressIndex)) : "--", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
+  { label: "HRV", value: r.hrvSdnn != null ? String(Math.round(r.hrvSdnn)) : "--", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
+  { label: "BMI", value: r.bmi != null ? r.bmi.toFixed(1) : "--", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
+];
+
 const VitalsScan = () => {
   const navigate = useNavigate();
-  const [scanning, setScanning] = useState(false);
-  const [scanComplete, setScanComplete] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
-  const [scanResults, setScanResults] = useState<any[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -34,53 +45,41 @@ const VitalsScan = () => {
       .catch(() => {});
   }, []);
 
-  const startScan = () => {
-    setScanning(true);
-    setScanComplete(false);
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setScanning(false);
-          // Submit scan to API
-          vitalsApi.submitScan({ timestamp: new Date().toISOString() })
-            .then((data) => {
-              if (data.results) {
-                setScanResults(data.results);
-              } else {
-                setScanResults([
-                  { label: "Heart Rate", value: "72", unit: "bpm", icon: "Heart", color: "text-red-500 bg-red-50" },
-                  { label: "Blood Pressure", value: "118/76", unit: "mmHg", icon: "Heart", color: "text-pink-500 bg-pink-50" },
-                  { label: "Breathing Rate", value: "16", unit: "/min", icon: "Wind", color: "text-cyan-500 bg-cyan-50" },
-                  { label: "Stress Index", value: "32", unit: "/100", icon: "Brain", color: "text-purple-500 bg-purple-50" },
-                  { label: "HRV", value: "54", unit: "ms", icon: "Zap", color: "text-amber-500 bg-amber-50" },
-                  { label: "BMI", value: "22.4", unit: "kg/m²", icon: "Scale", color: "text-emerald-500 bg-emerald-50" },
-                ]);
-              }
-              setScanComplete(true);
-            })
-            .catch((e) => {
-              toast.error(e.message || "Scan failed");
-              setScanResults([
-                { label: "Heart Rate", value: "72", unit: "bpm", icon: "Heart", color: "text-red-500 bg-red-50" },
-                { label: "Blood Pressure", value: "118/76", unit: "mmHg", icon: "Heart", color: "text-pink-500 bg-pink-50" },
-                { label: "Breathing Rate", value: "16", unit: "/min", icon: "Wind", color: "text-cyan-500 bg-cyan-50" },
-                { label: "Stress Index", value: "32", unit: "/100", icon: "Brain", color: "text-purple-500 bg-purple-50" },
-                { label: "HRV", value: "54", unit: "ms", icon: "Zap", color: "text-amber-500 bg-amber-50" },
-                { label: "BMI", value: "22.4", unit: "kg/m²", icon: "Scale", color: "text-emerald-500 bg-emerald-50" },
-              ]);
-              setScanComplete(true);
-            });
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 80);
-  };
+  // Initialize SDK when component mounts
+  useEffect(() => {
+    if (!hasInitRef.current) {
+      hasInitRef.current = true;
+      initialize(CANVAS_ID);
+    }
+    return () => { cleanup(); hasInitRef.current = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const iconMap: Record<string, any> = { Heart, Wind, Brain, Zap, Scale };
-  const getIcon = (name: string) => iconMap[name] || Heart;
+  // Save results to API when scan completes
+  useEffect(() => {
+    if (results) {
+      vitalsApi.submitScan({
+        timestamp: new Date().toISOString(),
+        heart_rate: results.heartRate,
+        systolic_bp: results.systolicBP,
+        diastolic_bp: results.diastolicBP,
+        breathing_rate: results.breathingRate,
+        stress_index: results.stressIndex,
+        hrv_sdnn: results.hrvSdnn,
+        bmi: results.bmi,
+        signal_quality: results.signalQuality,
+      }).catch(() => {});
+    }
+  }, [results]);
+
+  const displayVitals = results ? formatVitalsForDisplay(results) : [];
+
+  const handleAnalyzeWithCira = () => {
+    if (!results) return;
+    // Store vitals in sessionStorage for Chat to pick up
+    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(displayVitals));
+    navigate("/chat");
+  };
 
   return (
     <div className="flex bg-background" style={{ height: '100dvh' }}>
@@ -124,7 +123,7 @@ const VitalsScan = () => {
           <div className="fixed inset-0 z-40 bg-black/10" style={{ left: 72 }} onClick={() => setShowHistory(false)} />
           <div className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]" style={{ left: 72 }} onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
-              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Scan History</p>
+              <p className="text-sm font-semibold text-foreground font-heading">Scan History</p>
               <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
               </button>
@@ -164,46 +163,87 @@ const VitalsScan = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 py-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vitals Scan</h1>
+            <h1 className="text-2xl font-semibold text-foreground mb-1 font-heading">Vitals Scan</h1>
             <p className="text-sm text-muted-foreground font-body">AI-powered face scan to measure your vitals in 30 seconds</p>
           </div>
 
-          {!scanComplete ? (
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 mb-8 shadow-sm flex flex-col items-center">
-              <div className="w-56 h-56 rounded-full border-4 border-dashed border-border/60 flex items-center justify-center mb-6 relative overflow-hidden">
-                {scanning ? (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 animate-pulse" />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/20 to-transparent transition-all duration-300" style={{ height: `${progress}%` }} />
-                    <div className="relative z-10 text-center">
-                      <p className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{progress}%</p>
-                      <p className="text-xs text-muted-foreground mt-1">Scanning...</p>
+          {status !== "finished" ? (
+            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm flex flex-col items-center">
+              {/* Camera canvas */}
+              <div className="w-full max-w-md aspect-[4/3] rounded-2xl overflow-hidden bg-black/5 border border-border/30 mb-6 relative">
+                <canvas
+                  id={CANVAS_ID}
+                  ref={canvasRef}
+                  className="w-full h-full object-cover"
+                  style={{ display: "block" }}
+                />
+                {(status === "loading") && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+                    <p className="text-sm text-muted-foreground font-body">Loading SDK... {progress > 0 ? `${progress}%` : ""}</p>
+                  </div>
+                )}
+                {status === "measuring" && (
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <div className="bg-card/90 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center gap-3">
+                      <div className="flex-1">
+                        <div className="h-1.5 bg-border rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                        </div>
+                      </div>
+                      <span className="text-xs font-semibold text-foreground font-heading">{progress}%</span>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center">
-                    <Camera size={40} className="text-muted-foreground/40 mx-auto mb-3" />
-                    <p className="text-xs text-muted-foreground">Position your face</p>
                   </div>
                 )}
               </div>
+
+              {error && (
+                <div className="flex items-center gap-2 mb-4 text-destructive">
+                  <AlertCircle size={14} />
+                  <p className="text-xs">{error}</p>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 mb-5">
                 <AlertCircle size={14} className="text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">Credits will be deducted upon scan</p>
+                <p className="text-xs text-muted-foreground">Credits will be deducted upon scan · 100% on-device processing</p>
               </div>
-              <button onClick={startScan} disabled={scanning} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-60">
-                {scanning ? "Scanning..." : "Start Face Scan"}
-              </button>
-              <div className="mt-6 grid grid-cols-3 gap-4 w-full max-w-md">
-                {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face the camera" }, { step: "3", text: "Stay still 30s" }].map((s) => (
-                  <div key={s.step} className="text-center">
-                    <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center mx-auto mb-1.5">
-                      <span className="text-[10px] font-semibold text-muted-foreground">{s.step}</span>
+
+              <div className="flex gap-3">
+                {status === "ready" && (
+                  <button onClick={startMeasurement} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                    Start Face Scan
+                  </button>
+                )}
+                {status === "measuring" && (
+                  <button disabled className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm opacity-60 cursor-not-allowed">
+                    Scanning...
+                  </button>
+                )}
+                {status === "error" && (
+                  <button onClick={reset} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                    <RefreshCw size={16} /> Try Again
+                  </button>
+                )}
+                {status === "idle" && (
+                  <button onClick={() => initialize(CANVAS_ID)} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
+                    Initialize Camera
+                  </button>
+                )}
+              </div>
+
+              {(status === "ready" || status === "idle") && (
+                <div className="mt-6 grid grid-cols-3 gap-4 w-full max-w-md">
+                  {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face the camera" }, { step: "3", text: "Stay still 30s" }].map((s) => (
+                    <div key={s.step} className="text-center">
+                      <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center mx-auto mb-1.5">
+                        <span className="text-[10px] font-semibold text-muted-foreground">{s.step}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">{s.text}</p>
                     </div>
-                    <p className="text-[10px] text-muted-foreground">{s.text}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div>
@@ -213,23 +253,23 @@ const VitalsScan = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Scan Complete</p>
-                    <p className="text-xs text-muted-foreground">All vitals measured successfully</p>
+                    <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
+                    <p className="text-xs text-muted-foreground">All vitals measured successfully · Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                {scanResults.map((v: any) => {
-                  const Icon = getIcon(v.icon);
+                {displayVitals.map((v) => {
+                  const Icon = v.icon;
                   return (
                     <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${(v.color || "").split(" ")[1] || "bg-primary/10"}`}>
-                          <Icon size={14} className={(v.color || "").split(" ")[0] || "text-primary"} />
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                          <Icon size={14} className={v.color.split(" ")[0]} />
                         </div>
                         <p className="text-[11px] text-muted-foreground font-body">{v.label}</p>
                       </div>
-                      <p className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                      <p className="text-xl font-semibold text-foreground font-heading">
                         {v.value}<span className="text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
                       </p>
                     </div>
@@ -237,8 +277,10 @@ const VitalsScan = () => {
                 })}
               </div>
               <div className="flex gap-3">
-                <button onClick={() => { setScanComplete(false); setProgress(0); }} className="h-11 px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
-                <button onClick={() => navigate("/dashboard")} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">View Full Report</button>
+                <button onClick={reset} className="h-11 px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
+                <button onClick={handleAnalyzeWithCira} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
+                  Analyze with Cira
+                </button>
               </div>
             </div>
           )}
