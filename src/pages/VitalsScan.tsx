@@ -26,6 +26,8 @@ const formatVitalsForDisplay = (r: VitalResults) => [
   { label: "Breathing Rate", value: r.breathingRate ? String(Math.round(r.breathingRate)) : "--", unit: "/min", icon: Wind, color: "text-cyan-500 bg-cyan-50" },
   { label: "Stress Index", value: r.stressIndex != null ? String(Math.round(r.stressIndex)) : "--", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
   { label: "HRV", value: r.hrvSdnn != null ? String(Math.round(r.hrvSdnn)) : "--", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
+  { label: "Cardiac Workload", value: r.cardiacWorkload != null ? String(Math.round(r.cardiacWorkload)) : "--", unit: "", icon: Heart, color: "text-orange-500 bg-orange-50" },
+  { label: "Parasympathetic Activity", value: r.parasympatheticActivity != null ? String(Math.round(r.parasympatheticActivity)) : "--", unit: "", icon: Zap, color: "text-teal-500 bg-teal-50" },
   { label: "BMI", value: r.bmi != null ? r.bmi.toFixed(1) : "--", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
 ];
 
@@ -68,6 +70,8 @@ const VitalsScan = () => {
         stress_index: results.stressIndex,
         hrv_sdnn: results.hrvSdnn,
         bmi: results.bmi,
+        cardiac_workload: results.cardiacWorkload,
+        parasympathetic_activity: results.parasympatheticActivity,
         signal_quality: results.signalQuality,
       }).then(() => {
         toast.success("Scan saved · 1 scan credit used");
