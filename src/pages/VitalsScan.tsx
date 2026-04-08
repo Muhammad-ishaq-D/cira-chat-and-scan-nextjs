@@ -45,12 +45,8 @@ const VitalsScan = () => {
       .catch(() => {});
   }, []);
 
-  // Initialize SDK when component mounts
+  // Clean up SDK on unmount only — don't auto-init (needs user gesture for camera)
   useEffect(() => {
-    if (!hasInitRef.current) {
-      hasInitRef.current = true;
-      initialize(CANVAS_ID);
-    }
     return () => { cleanup(); hasInitRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -169,20 +165,25 @@ const VitalsScan = () => {
 
           {status !== "finished" ? (
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm flex flex-col items-center">
-              {/* Camera canvas */}
-              <div className="w-full max-w-md aspect-[4/3] rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative">
+              {/* Camera canvas — explicit height required for WASM renderer */}
+              <div className="w-full max-w-md rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative" style={{ height: 360 }}>
                 <canvas
                   id={CANVAS_ID}
                   ref={canvasRef}
                   width={640}
                   height={480}
-                  className="w-full h-full"
-                  style={{ display: "block", objectFit: "contain" }}
+                  style={{ display: "block", width: "100%", height: "100%" }}
                 />
-                {(status === "loading") && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+                {status === "idle" && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
+                    <ScanFace size={48} className="text-primary mb-3 opacity-60" />
+                    <p className="text-sm text-white/70 font-body">Tap below to start camera</p>
+                  </div>
+                )}
+                {status === "loading" && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
                     <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-                    <p className="text-sm text-muted-foreground font-body">Loading SDK... {progress > 0 ? `${progress}%` : ""}</p>
+                    <p className="text-sm text-white/70 font-body">Loading SDK... {progress > 0 ? `${progress}%` : ""}</p>
                   </div>
                 )}
                 {status === "measuring" && (
