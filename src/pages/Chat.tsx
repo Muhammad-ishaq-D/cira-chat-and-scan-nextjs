@@ -171,6 +171,23 @@ const Chat = () => {
 
   // Pick up message from landing page — send to Claude
   useEffect(() => {
+    // Check for real scan vitals from VitalsScan page (Shen AI)
+    const scanVitalsJson = sessionStorage.getItem("cira_scan_vitals");
+    if (scanVitalsJson) {
+      sessionStorage.removeItem("cira_scan_vitals");
+      try {
+        const realVitals = JSON.parse(scanVitalsJson);
+        syncChatMode("vitals");
+        setMessages([
+          { role: "vitals", text: "Face Scan Results", vitalsData: realVitals },
+        ]);
+        const vitalsText = realVitals.map((v: any) => `- ${v.label}: ${v.value} ${v.unit}`).join("\n");
+        const vitalsMessage = `Here are my face scan vitals results:\n${vitalsText}\n\nPlease analyze these vitals and tell me what they mean for my health. Provide professional insights on each metric. Do NOT call any tools yet — just analyze and respond with your assessment of these numbers.`;
+        callClaude(vitalsMessage);
+      } catch {}
+      return;
+    }
+
     const landingMsg = sessionStorage.getItem("cira_landing_message");
     if (landingMsg) {
       sessionStorage.removeItem("cira_landing_message");
