@@ -274,7 +274,6 @@ const Chat = () => {
     if (mode === "vitals") {
       setChatMode(mode);
       setShowModeSelection(false);
-      // Open scan modal instead of going straight to chat
       setShowScanModal(true);
       if (pendingLandingMessage) {
         setMessages((prev) => [
@@ -287,30 +286,21 @@ const Chat = () => {
 
     setChatMode(mode);
     setShowModeSelection(false);
-    
-    const modeConfirmations: Record<ChatMode, string> = {
-      quick: "✨ Quick Assessment activated!\n\nI already know what's on your mind. Let me ask you a few focused follow-up questions to give you a fast, accurate assessment.",
-      detailed: "✨ Detailed Assessment activated!\n\nI'll build a complete picture around what you've shared. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet me start with some deeper questions...",
+
+    // Map mode selection to the text Claude expects
+    const pathwayMessages: Record<ChatMode, string> = {
+      quick: "⚡ I'd like a quick assessment",
+      detailed: "🩺 I'd like a detailed assessment",
+      chat: "💬 Just continue chatting",
       vitals: "",
-      chat: "✨ Got it — let's just chat!\n\nI've noted what you shared. I'm here to help guide you with anything health-related.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nTell me more about what's going on.",
       none: "",
     };
 
-    if (pendingLandingMessage) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "cira", text: modeConfirmations[mode] },
-      ]);
-      setPendingLandingMessage(null);
-    } else {
-      const greetings: Record<ChatMode, string> = {
-        quick: "👋 Quick Assessment mode activated!\n\nI'll ask you a few focused questions and give you a health assessment as quickly as possible. Tell me — what's bothering you today?",
-        detailed: "👋 Detailed Assessment mode activated!\n\nI'll be asking you thorough questions to build a complete picture of your health concern. At the end, I'll generate a comprehensive report for you and your doctor.\n\nLet's start — what's your primary health concern right now?",
-        vitals: "",
-        chat: "👋 Hey there! I'm Cira, your AI health nurse.\n\nYou can ask me anything about your health — symptoms, medications, lifestyle, or general wellness. I'm here to help guide you.\n\n⚕️ *Remember: Always discuss my findings with a licensed medical professional.*\n\nWhat would you like to talk about?",
-        none: "",
-      };
-      setMessages([{ role: "cira", text: greetings[mode] }]);
+    const pathwayText = pathwayMessages[mode];
+    if (pathwayText) {
+      // Send pathway selection to Claude as a user message
+      setMessages((prev) => [...prev, { role: "user", text: pathwayText }]);
+      callClaude(pathwayText);
     }
   };
 
