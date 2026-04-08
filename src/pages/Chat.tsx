@@ -123,19 +123,17 @@ const Chat = () => {
     }
   }, [messages, isTyping]);
 
-  // Pick up message from landing page
+  // Pick up message from landing page — send to Claude
   useEffect(() => {
     const landingMsg = sessionStorage.getItem("cira_landing_message");
     if (landingMsg) {
       sessionStorage.removeItem("cira_landing_message");
       setPendingLandingMessage(landingMsg);
-      // Show the user's message + Cira's response with mode selection
-      setMessages([
-        { role: "user", text: landingMsg },
-        { role: "cira", text: `Thanks for sharing that — "${landingMsg}"\n\nBefore I dive in, I'd love to help you in the best way possible. How would you like to proceed?` },
-      ]);
-      setShowModeSelection(true);
+      setMessages([{ role: "user", text: landingMsg }]);
+      // Send the initial symptom to Claude — it will trigger TRIGGER 2 + openModal
+      callClaude(landingMsg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Process Claude tool calls and render UI elements
