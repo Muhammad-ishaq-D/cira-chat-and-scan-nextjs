@@ -109,6 +109,7 @@ const Chat = () => {
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
@@ -183,6 +184,29 @@ const Chat = () => {
     setIsApiLoading(true);
 
     try {
+      // Create session on first message if none exists
+      let sessionId = currentSessionId;
+      if (!sessionId) {
+        try {
+          const session = await chatApi.createSession({ title: userText.slice(0, 80) });
+          sessionId = session.id || session.session_id;
+          setCurrentSessionId(sessionId);
+          // Refresh sidebar history
+          chatApi.getSessions()
+            .then((data) => setChatHistory(Array.isArray(data) ? data : data.sessions || []))
+            .catch(() => {});
+        } catch (e) {
+          console.warn("[Session create failed]", e);
+        }
+      }
+
+      // Save user message to backend
+      if (sessionId) {
+        chatApi.saveMessage(sessionId, { role: "user", content: userText }).catch((e) =>
+          console.warn("[Save user msg failed]", e)
+        );
+      }
+
       const response = await sendChatMessage(updatedHistory);
       const textContent = extractText(response);
       const toolCalls = extractToolCalls(response);
@@ -195,6 +219,15 @@ const Chat = () => {
           setTypingMsgIndex(newMessages.length - 1);
           return newMessages;
         });
+
+        // Save assistant message to backend
+        if (sessionId) {
+          chatApi.saveMessage(sessionId, {
+            role: "assistant",
+            content: textContent,
+            tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+          }).catch((e) => console.warn("[Save assistant msg failed]", e));
+        }
       }
 
       // Process any tool calls
@@ -302,11 +335,37 @@ const Chat = () => {
     }
   };
 
-  const startChat = (title: string) => {
-    setMessages([{ role: "user", text: title }]);
-    setConversationHistory([]);
-    setChatMode("chat");
-    callClaude(title);
+  const startChat = async (title: string, sessionId?: string) => {
+    if (sessionId) {
+      // Load existing session messages from API
+      setCurrentSessionId(sessionId);
+      setConversationHistory([]);
+      setMessages([]);
+      setChatMode("chat");
+      try {
+        const data = await chatApi.getMessages(sessionId);
+        const msgs = Array.isArray(data) ? data : data.messages || [];
+        const uiMessages: typeof messages = [];
+        const apiHistory: ApiMessage[] = [];
+        for (const m of msgs) {
+          const role = m.role === "user" ? "user" : "assistant";
+          apiHistory.push({ role, text: m.content });
+          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: m.content });
+        }
+        setConversationHistory(apiHistory);
+        setMessages(uiMessages);
+      } catch (e) {
+        console.warn("[Load session messages failed]", e);
+        setMessages([{ role: "user", text: title }]);
+        callClaude(title);
+      }
+    } else {
+      setCurrentSessionId(null);
+      setMessages([{ role: "user", text: title }]);
+      setConversationHistory([]);
+      setChatMode("chat");
+      callClaude(title);
+    }
   };
 
   return (
@@ -388,7 +447,7 @@ const Chat = () => {
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setActiveChat(null); setMessages([]); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(null); setMessages([]); setConversationHistory([]); setCurrentSessionId(null); setChatMode("none"); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                   title="New chat"
                 >
@@ -409,7 +468,7 @@ const Chat = () => {
               ) : chatHistory.map((chat: any) => (
                 <button
                   key={chat.id}
-                  onClick={() => { setActiveChat(chat.id); startChat(chat.title); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(chat.id); startChat(chat.title, chat.id); setShowHistory(false); }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-body transition-all ${
                     activeChat === chat.id
                       ? "bg-primary/10 text-foreground border border-primary/20"
