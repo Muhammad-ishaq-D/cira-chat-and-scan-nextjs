@@ -58,24 +58,40 @@ const VitalsScan = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Save results to API when scan completes
   useEffect(() => {
-    if (results) {
-      vitalsApi.submitScan({
-        timestamp: new Date().toISOString(),
-        heart_rate: results.heartRate,
-        systolic_bp: results.systolicBP,
-        diastolic_bp: results.diastolicBP,
-        breathing_rate: results.breathingRate,
-        stress_index: results.stressIndex,
-        hrv_sdnn: results.hrvSdnn,
-        bmi: results.bmi,
-        cardiac_workload: results.cardiacWorkload,
-        parasympathetic_activity: results.parasympatheticActivity,
-        signal_quality: results.signalQuality,
-      }).then(() => {
+    if (!results) return;
+
+    let isActive = true;
+
+    const saveScan = async () => {
+      const payload = Object.fromEntries(
+        Object.entries({
+          timestamp: new Date().toISOString(),
+          heart_rate: Number.isFinite(results.heartRate) ? Math.round(results.heartRate) : undefined,
+          systolic_bp: results.systolicBP != null ? Math.round(results.systolicBP) : undefined,
+          diastolic_bp: results.diastolicBP != null ? Math.round(results.diastolicBP) : undefined,
+          breathing_rate: results.breathingRate != null ? Math.round(results.breathingRate) : undefined,
+          stress_index: results.stressIndex != null ? Math.round(results.stressIndex) : undefined,
+          hrv_sdnn: results.hrvSdnn != null ? Math.round(results.hrvSdnn) : undefined,
+          bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
+          signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
+        }).filter(([, value]) => value !== undefined && value !== null && !(typeof value === "number" && Number.isNaN(value)))
+      );
+
+      try {
+        await vitalsApi.submitScan(payload);
+
+        if (!isActive) return;
+
+        const historyData = await vitalsApi.getHistory().catch(() => null);
+        if (isActive && historyData) {
+          setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
+        }
+
         toast.success("Scan saved · 1 scan credit used");
-      }).catch((err: any) => {
+      } catch (err: any) {
+        if (!isActive) return;
+
         if (err?.message?.includes("insufficient") || err?.message?.includes("credits")) {
           toast.error("No scan credits remaining. Upgrade your plan.", {
             action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
@@ -83,9 +99,16 @@ const VitalsScan = () => {
           });
         } else {
           console.error("[Scan] Submit error:", err);
+          toast.error(err?.message || "Failed to save scan to backend");
         }
-      });
-    }
+      }
+    };
+
+    saveScan();
+
+    return () => {
+      isActive = false;
+    };
   }, [results, navigate]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
