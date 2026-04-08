@@ -87,7 +87,7 @@ export const chatApi = {
   /** GET /api/chat/:chatId — load all messages for a session */
   getSession: (chatId: string) => get(`/api/chat/${chatId}`),
   /** DELETE /api/api/chat/:chatId — delete a session */
-  deleteSession: (chatId: string) => del(`/api/api/chat/${chatId}`),
+  deleteSession: (chatId: string) => del(`/api/chat/${chatId}`),
 };
 
 // ─── Vitals & Scans ─────────────────────────────────────────────
