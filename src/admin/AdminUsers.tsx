@@ -171,7 +171,7 @@ const AdminUsers = () => {
                       <td className="px-4 py-3 text-right font-mono text-foreground">{(u.credits || 0).toLocaleString()}</td>
                       <td className="px-4 py-3 text-right text-foreground">{u.scans || 0}</td>
                       <td className="px-4 py-3 text-right text-foreground">{u.chats || 0}</td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">{u.lastActive || u.last_active || "—"}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{u.lastActive || "—"}</td>
                       <td className="px-4 py-3 text-center"><span className={`text-[10px] px-2 py-0.5 rounded-full ${statusBadge[u.status] || "bg-muted text-muted-foreground"}`}>{u.status}</span></td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
