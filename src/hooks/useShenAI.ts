@@ -68,7 +68,7 @@ export function useShenAI() {
         precisionMode: sdk.PrecisionMode.RELAXED,
         cameraMode: sdk.CameraMode.FACING_USER,
         onboardingMode: sdk.OnboardingMode.HIDDEN,
-        showUserInterface: false,
+        showUserInterface: true,
         showFacePositioningOverlay: true,
         showVisualWarnings: true,
         enableCameraSwap: false,
@@ -115,16 +115,28 @@ export function useShenAI() {
     pollRef.current = window.setInterval(() => {
       try {
         const mState = sdk.getMeasurementState();
-        const prog = sdk.getMeasurementProgressPercentage?.();
-        if (typeof prog === "number") setProgress(Math.round(prog));
+        
+        // Try multiple ways to get progress
+        let prog = 0;
+        if (typeof sdk.getMeasurementProgressPercentage === "function") {
+          prog = sdk.getMeasurementProgressPercentage();
+        } else if (typeof (sdk as any).getMeasurementRemainingTime === "function") {
+          const remaining = (sdk as any).getMeasurementRemainingTime();
+          const total = 30;
+          prog = Math.max(0, Math.min(100, ((total - remaining) / total) * 100));
+        }
+        if (typeof prog === "number" && prog > 0) setProgress(Math.round(prog));
 
-        if (mState.value === 6) {
-          // FINISHED
+        console.log("[ShenAI] measurementState:", mState.value, "progress:", prog);
+
+        // FINISHED state
+        if (mState.value === 6 || mState.value === sdk.MeasurementState?.FINISHED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setProgress(100);
 
           const raw = sdk.getMeasurementResults();
+          console.log("[ShenAI] Raw results:", raw);
           if (raw) {
             setResults({
               heartRate: raw.heart_rate_bpm,
@@ -139,15 +151,17 @@ export function useShenAI() {
             });
           }
           setStatus("finished");
-        } else if (mState.value === 7) {
-          // FAILED
+        } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
+          // FAILED state
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setError("Measurement failed — try again with better lighting");
           setStatus("error");
         }
-      } catch {}
-    }, 500);
+      } catch (e) {
+        console.error("[ShenAI] Poll error:", e);
+      }
+    }, 300);
   }, []);
 
   const reset = useCallback(() => {
