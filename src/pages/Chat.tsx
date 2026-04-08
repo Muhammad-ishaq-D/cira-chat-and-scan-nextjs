@@ -351,6 +351,9 @@ const Chat = () => {
       // Send pathway selection to Claude as a user message
       setMessages((prev) => [...prev, { role: "user", text: pathwayText }]);
       callClaude(pathwayText);
+    } else if (mode === "chat") {
+      // Free chat mode — show a welcome message so the user knows they can type
+      setMessages((prev) => [...prev, { role: "cira", text: "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — I'm here to help." }]);
     }
   };
 
