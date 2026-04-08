@@ -99,7 +99,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals"; text: string; vitalsData?: typeof scanVitals }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -110,6 +110,8 @@ const Chat = () => {
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
+  const [isApiLoading, setIsApiLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages change or typing starts
