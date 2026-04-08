@@ -84,7 +84,10 @@ export const userApi = {
 export const chatApi = {
   getSessions: () => get("/api/chat/sessions"),
   getSession: (id: string) => get(`/api/chat/sessions/${id}`),
+  getMessages: (sessionId: string) => get(`/api/chat/sessions/${sessionId}/messages`),
   createSession: (data?: any) => post("/api/chat/sessions", data),
+  saveMessage: (sessionId: string, data: { role: string; content: string; tool_calls?: any }) =>
+    post(`/api/chat/sessions/${sessionId}/messages`, data),
   deleteSession: (id: string) => del(`/api/chat/sessions/${id}`),
 };
 
