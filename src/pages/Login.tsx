@@ -2,12 +2,26 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { login, sendOtp, verifyOtp, googleLogin } from "@/lib/auth";
+import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
 const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.googleusercontent.com";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const redirectAfterAuth = async () => {
+    try {
+      const profile = await userApi.getProfile();
+      if (!profile.age || !profile.height || !profile.weight || !profile.biological_sex) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch {
+      navigate("/onboarding");
+    }
+  };
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -22,7 +36,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/chat");
+      await redirectAfterAuth();
     } catch (err: any) {
       toast.error(err.message || "Login failed");
     } finally {
@@ -49,7 +63,7 @@ const Login = () => {
     setLoading(true);
     try {
       await verifyOtp(email, otp);
-      navigate("/chat");
+      await redirectAfterAuth();
     } catch (err: any) {
       toast.error(err.message || "Invalid code");
     } finally {
@@ -71,7 +85,7 @@ const Login = () => {
           setLoading(true);
           try {
             await googleLogin(response.credential);
-            navigate("/chat");
+            await redirectAfterAuth();
           } catch (err: any) {
             toast.error(err.message || "Google login failed");
           } finally {
