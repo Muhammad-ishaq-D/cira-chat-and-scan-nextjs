@@ -247,25 +247,19 @@ const Chat = () => {
     setScanComplete(false);
     setScanProgress(0);
     
-    // Build vitals summary text for Cira context
-    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join("\n");
-    
-    const ciraResponse = "✨ Scan complete! I've captured all your vitals. Here's what I'm working with:\n\nNow I have a full picture of your body's current state. Combined with what you've told me, I can give you a much more informed assessment.\n\nWhat would you like help with today?";
+    // Build vitals summary for Claude context
+    const vitalsText = scanVitals.map(v => `${v.label}: ${v.value} ${v.unit}`).join(", ");
 
-    if (pendingLandingMessage) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-        { role: "cira", text: ciraResponse },
-      ]);
-      setPendingLandingMessage(null);
-    } else {
-      setMessages([
-        { role: "cira", text: "📸 Starting your vital scan..." },
-        { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
-        { role: "cira", text: ciraResponse },
-      ]);
-    }
+    // Show vitals card in chat
+    setMessages((prev) => [
+      ...prev,
+      { role: "vitals", text: "Face Scan Results", vitalsData: scanVitals },
+    ]);
+
+    // Send vitals data + pathway selection to Claude
+    const vitalsMessage = `🧬 I'd like a Vital Scan + Assessment. Here are my scan results: ${vitalsText}`;
+    callClaude(vitalsMessage);
+    setPendingLandingMessage(null);
   };
 
   const selectMode = (mode: ChatMode) => {
@@ -303,10 +297,10 @@ const Chat = () => {
   };
 
   const startChat = (title: string) => {
-    setMessages([
-      { role: "user", text: title },
-      { role: "cira", text: "I understand. Let me look into this for you. Can you tell me more about when this started?" },
-    ]);
+    setMessages([{ role: "user", text: title }]);
+    setConversationHistory([]);
+    setChatMode("chat");
+    callClaude(title);
   };
 
   return (
