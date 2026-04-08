@@ -111,6 +111,9 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatModeRef = useRef<ChatMode>("none");
+  // Keep ref in sync with state so async callbacks always read latest value
+  useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -160,8 +163,8 @@ const Chat = () => {
     for (const tool of toolCalls) {
       switch (tool.name) {
         case "openModal":
-          // Only show mode selection if user hasn't already picked one
-          if (tool.input.select_care_pathway && chatMode === "none") {
+          // Only show mode selection if user hasn't already picked one (use ref for latest value)
+          if (tool.input.select_care_pathway && chatModeRef.current === "none") {
             setShowModeSelection(true);
           }
           break;
