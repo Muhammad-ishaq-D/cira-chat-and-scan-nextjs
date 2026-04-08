@@ -1,23 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
+import { toast } from "sonner";
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "cira@2024";
+const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Invalid credentials");
+      }
+      const data = await res.json();
+      localStorage.setItem("cira_admin_token", data.token);
       localStorage.setItem("cira_admin", "true");
       navigate("/admin/dashboard");
-    } else {
-      setError("Invalid credentials");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+      toast.error(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,9 +72,10 @@ const AdminLogin = () => {
             {error && <p className="text-xs text-destructive text-center">{error}</p>}
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+              disabled={loading}
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Sign in
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
         </div>
