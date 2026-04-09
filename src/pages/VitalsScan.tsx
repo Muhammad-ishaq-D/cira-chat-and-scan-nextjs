@@ -123,11 +123,11 @@ const VitalsScan = () => {
   }, [results, navigate]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
+  const displayHealthIndexes = results?.healthRisks ? formatHealthIndexes(results.healthRisks) : [];
 
   const handleAnalyzeWithCira = () => {
     if (!results) return;
-    // Store vitals as plain serializable data (icons can't be JSON-serialized)
-    const serializableVitals = displayVitals.map(v => ({
+    const serializableVitals = [...displayVitals, ...displayHealthIndexes].map(v => ({
       label: v.label,
       value: v.value,
       unit: v.unit,
