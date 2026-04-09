@@ -280,7 +280,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <MobileBottomNav active="home" />
+      <MobileBottomNav />
     </div>
   );
 };
