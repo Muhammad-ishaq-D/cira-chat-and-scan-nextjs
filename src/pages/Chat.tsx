@@ -160,6 +160,7 @@ const Chat = () => {
   const syncCurrentSessionId = (sessionId: string | null) => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
+    if (!sessionId) prepPayloadSentRef.current = false;
   };
 
   // Load chat history from API
