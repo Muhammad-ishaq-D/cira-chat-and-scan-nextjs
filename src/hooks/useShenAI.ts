@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks } from "shenai-sdk";
+import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks, RisksFactors } from "shenai-sdk";
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
@@ -36,17 +36,128 @@ export interface HealthRisksData {
   coronaryHeartDiseaseRisk: number | null;
   strokeRisk: number | null;
   heartFailureRisk: number | null;
+  peripheralVascularDiseaseRisk: number | null;
   coronaryDeathRisk: number | null;
   fatalStrokeRisk: number | null;
   totalCVMortality: number | null;
   hardCVEventRisk: number | null;
+  fattyLiverRisk: number | null;
 }
 
 export interface UserProfileData {
-  age?: number;
-  height?: number;
-  weight?: number;
-  gender?: 'male' | 'female' | 'other';
+  age?: number | string | null;
+  height?: number | string | null;
+  weight?: number | string | null;
+  gender?: string | null;
+}
+
+function toFiniteNumber(value: unknown): number | undefined {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : undefined;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+
+  return undefined;
+}
+
+function normalizeGender(value: unknown): "male" | "female" | "other" | undefined {
+  if (typeof value !== "string") return undefined;
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "male" || normalized === "female" || normalized === "other") {
+    return normalized;
+  }
+
+  return undefined;
+}
+
+function normalizeUserProfile(userProfile?: UserProfileData): UserProfileData | undefined {
+  if (!userProfile) return undefined;
+
+  const age = toFiniteNumber(userProfile.age);
+  const height = toFiniteNumber(userProfile.height);
+  const weight = toFiniteNumber(userProfile.weight);
+  const gender = normalizeGender(userProfile.gender);
+
+  if (age == null && height == null && weight == null && !gender) {
+    return undefined;
+  }
+
+  return {
+    ...(age != null ? { age } : {}),
+    ...(height != null ? { height } : {}),
+    ...(weight != null ? { weight } : {}),
+    ...(gender ? { gender } : {}),
+  };
+}
+
+function getEnumValue(value: { value?: number } | number | null | undefined): number | null {
+  if (typeof value === "number") return value;
+
+  if (value && typeof value === "object" && typeof value.value === "number") {
+    return value.value;
+  }
+
+  return null;
+}
+
+function buildRiskFactors(sdk: ShenaiSDK, userProfile?: UserProfileData, raw?: MeasurementResults | null): RisksFactors {
+  const factors: RisksFactors = {};
+  const age = toFiniteNumber(userProfile?.age);
+  const height = toFiniteNumber(userProfile?.height);
+  const weight = toFiniteNumber(userProfile?.weight);
+  const gender = normalizeGender(userProfile?.gender);
+
+  if (age != null) factors.age = age;
+  if (height != null) factors.bodyHeight = height;
+  if (weight != null) factors.bodyWeight = weight;
+  if (gender) {
+    factors.gender = sdk.Gender[
+      gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : "OTHER"
+    ];
+  }
+  if (raw?.systolic_blood_pressure_mmhg != null) factors.sbp = raw.systolic_blood_pressure_mmhg;
+  if (raw?.diastolic_blood_pressure_mmhg != null) factors.dbp = raw.diastolic_blood_pressure_mmhg;
+
+  return factors;
+}
+
+function mergeHealthRisksData(primary: HealthRisksData | null, fallback: HealthRisksData | null): HealthRisksData | null {
+  if (!primary && !fallback) return null;
+
+  const pick = <K extends keyof HealthRisksData>(key: K) =>
+    (primary?.[key] ?? fallback?.[key] ?? null) as HealthRisksData[K];
+
+  return {
+    wellnessScore: pick("wellnessScore"),
+    vascularAge: pick("vascularAge"),
+    bodyFatPercentage: pick("bodyFatPercentage"),
+    waistToHeightRatio: pick("waistToHeightRatio"),
+    basalMetabolicRate: pick("basalMetabolicRate"),
+    totalDailyEnergyExpenditure: pick("totalDailyEnergyExpenditure"),
+    bodyRoundnessIndex: pick("bodyRoundnessIndex"),
+    conicityIndex: pick("conicityIndex"),
+    aBodyShapeIndex: pick("aBodyShapeIndex"),
+    hypertensionRisk: pick("hypertensionRisk"),
+    diabetesRisk: pick("diabetesRisk"),
+    cvOverallRisk: pick("cvOverallRisk"),
+    coronaryHeartDiseaseRisk: pick("coronaryHeartDiseaseRisk"),
+    strokeRisk: pick("strokeRisk"),
+    heartFailureRisk: pick("heartFailureRisk"),
+    peripheralVascularDiseaseRisk: pick("peripheralVascularDiseaseRisk"),
+    coronaryDeathRisk: pick("coronaryDeathRisk"),
+    fatalStrokeRisk: pick("fatalStrokeRisk"),
+    totalCVMortality: pick("totalCVMortality"),
+    hardCVEventRisk: pick("hardCVEventRisk"),
+    fattyLiverRisk: pick("fattyLiverRisk"),
+  };
 }
 
 function extractHealthRisks(risks: HealthRisks): HealthRisksData {
@@ -66,10 +177,12 @@ function extractHealthRisks(risks: HealthRisks): HealthRisksData {
     coronaryHeartDiseaseRisk: risks.cvDiseases?.coronaryHeartDiseaseRisk ?? null,
     strokeRisk: risks.cvDiseases?.strokeRisk ?? null,
     heartFailureRisk: risks.cvDiseases?.heartFailureRisk ?? null,
+    peripheralVascularDiseaseRisk: risks.cvDiseases?.peripheralVascularDiseaseRisk ?? null,
     coronaryDeathRisk: risks.hardAndFatalEvents?.coronaryDeathEventRisk ?? null,
     fatalStrokeRisk: risks.hardAndFatalEvents?.fatalStrokeEventRisk ?? null,
     totalCVMortality: risks.hardAndFatalEvents?.totalCVMortalityRisk ?? null,
     hardCVEventRisk: risks.hardAndFatalEvents?.hardCVEventRisk ?? null,
+    fattyLiverRisk: getEnumValue(risks.nonAlcoholicFattyLiverDiseaseRisk),
   };
 }
 
@@ -80,6 +193,7 @@ export function useShenAI() {
   const [results, setResults] = useState<VitalResults | null>(null);
   const sdkRef = useRef<ShenaiSDK | null>(null);
   const pollRef = useRef<number | null>(null);
+  const riskProfileRef = useRef<UserProfileData | undefined>(undefined);
 
   const cleanup = useCallback(() => {
     if (pollRef.current) {
@@ -90,6 +204,7 @@ export function useShenAI() {
       try { sdkRef.current.deinitialize(); } catch {}
       sdkRef.current = null;
     }
+    riskProfileRef.current = undefined;
   }, []);
 
   useEffect(() => cleanup, [cleanup]);
@@ -115,6 +230,9 @@ export function useShenAI() {
       } as any);
 
       sdkRef.current = sdk;
+      const normalizedProfile = normalizeUserProfile(userProfile);
+      riskProfileRef.current = normalizedProfile;
+      const riskFactors = buildRiskFactors(sdk, normalizedProfile);
 
       const settings: InitializationSettings = {
         operatingMode: sdk.OperatingMode.POSITIONING,
@@ -135,12 +253,7 @@ export function useShenAI() {
         showInfoButton: false,
         showDisclaimer: false,
         enableHealthRisks: true,
-        risksFactors: {
-          ...(userProfile?.age ? { age: userProfile.age } : {}),
-          ...(userProfile?.height ? { bodyHeight: userProfile.height } : {}),
-          ...(userProfile?.weight ? { bodyWeight: userProfile.weight } : {}),
-          ...(userProfile?.gender ? { gender: sdk.Gender[userProfile.gender === 'male' ? 'MALE' : userProfile.gender === 'female' ? 'FEMALE' : 'OTHER'] } : {}),
-        },
+        ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
 
       const canvasSelector = `#${canvasId}`;
@@ -195,11 +308,18 @@ export function useShenAI() {
           let healthRisks: HealthRisksData | null = null;
 
           try {
-            const risks = sdk.getHealthRisks();
-            console.log("[ShenAI] Health risks:", risks);
-            if (risks) {
-              healthRisks = extractHealthRisks(risks);
-            }
+            const directRisks = sdk.getHealthRisks();
+            const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, raw);
+            const computedRisks = Object.keys(computedFactors).length > 0
+              ? sdk.computeHealthRisks(computedFactors)
+              : null;
+
+            console.log("[ShenAI] Health risks:", { directRisks, computedRisks });
+
+            healthRisks = mergeHealthRisksData(
+              directRisks ? extractHealthRisks(directRisks) : null,
+              computedRisks ? extractHealthRisks(computedRisks) : null,
+            );
           } catch (e) {
             console.warn("[ShenAI] Could not get health risks:", e);
           }

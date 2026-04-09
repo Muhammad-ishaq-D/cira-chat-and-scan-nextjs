@@ -54,6 +54,21 @@ const riskColor = (level: string) => {
   return "text-muted-foreground bg-muted";
 };
 
+const toRiskLevel = (val: number | null | undefined): string => {
+  if (val == null) return "—";
+  if (val < 10) return "Low";
+  if (val < 25) return "Moderate";
+  return "High";
+};
+
+const toFattyLiverLevel = (val: number | null | undefined): string => {
+  if (val == null) return "—";
+  if (val === 0) return "Low";
+  if (val === 1) return "Moderate";
+  if (val === 2) return "High";
+  return toRiskLevel(val);
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const activeNav: string = "home";
@@ -124,22 +139,16 @@ const Dashboard = () => {
               const match = v.healthRisks?.find((hr: any) => hr.label === item.label);
               return match ? { ...item, level: match.level } : item;
             }));
-          } else if (v.cv_disease_risk !== undefined || v.hypertension_risk !== undefined) {
-            const toLevel = (val: number | null | undefined): string => {
-              if (val == null) return "—";
-              if (val < 10) return "Low";
-              if (val < 25) return "Moderate";
-              return "High";
-            };
+          } else if (v.cv_disease_risk !== undefined || v.hypertension_risk !== undefined || v.fatty_liver_risk !== undefined) {
             setHealthRisks(prev => prev.map(item => {
               const map: Record<string, string> = {
-                "Cardiovascular Risk": toLevel(v.cv_disease_risk),
-                "Coronary Heart Disease": toLevel(v.coronary_heart_disease_risk),
-                "Stroke Risk": toLevel(v.stroke_risk),
-                "Heart Failure Risk": toLevel(v.heart_failure_risk),
-                "Diabetes Risk": toLevel(v.diabetes_risk),
-                "Fatty Liver Disease": toLevel(v.fatty_liver_risk),
-                "Cardiovascular Event": toLevel(v.hard_cv_event_risk),
+                "Cardiovascular Risk": toRiskLevel(v.cv_disease_risk),
+                "Coronary Heart Disease": toRiskLevel(v.coronary_heart_disease_risk),
+                "Stroke Risk": toRiskLevel(v.stroke_risk),
+                "Heart Failure Risk": toRiskLevel(v.heart_failure_risk),
+                "Diabetes Risk": toRiskLevel(v.diabetes_risk),
+                "Fatty Liver Disease": toFattyLiverLevel(v.fatty_liver_risk),
+                "Cardiovascular Event": toRiskLevel(v.hard_cv_event_risk),
               };
               return map[item.label] !== undefined ? { ...item, level: map[item.label] } : item;
             }));
