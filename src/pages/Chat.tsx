@@ -251,6 +251,7 @@ const Chat = () => {
                   type: "Quick Assessment",
                   summary: summaryData.summary,
                   data: summaryData,
+                  chat_session_id: currentSessionIdRef.current || undefined,
                 }),
               }).catch((e) => console.error("Failed to save report:", e));
             }
@@ -275,6 +276,7 @@ const Chat = () => {
                   type: "Detailed Assessment",
                   summary: detailedData.patient_summary,
                   data: detailedData,
+                  chat_session_id: currentSessionIdRef.current || undefined,
                 }),
               }).catch((e) => console.error("Failed to save report:", e));
             }
