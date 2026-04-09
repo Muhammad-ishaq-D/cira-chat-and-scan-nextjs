@@ -10,8 +10,26 @@ import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type Con
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
 import { toast } from "sonner";
+
+// Render basic markdown: **bold**, *italic*, `code`
+const renderFormattedText = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={i} className="bg-muted px-1 py-0.5 rounded text-[13px]">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+};
+
 // Typewriter component — streams text character by character
-const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
+const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
@@ -31,7 +49,7 @@ const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?
 
   return (
     <span className="whitespace-pre-line">
-      {displayed}
+      {formatted ? renderFormattedText(displayed) : displayed}
       {displayed.length < text.length && (
         <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
       )}
@@ -767,7 +785,7 @@ const Chat = () => {
                         className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]"
                         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                       >
-                        <p className="text-[14px] leading-6 whitespace-pre-line">{msg.text}</p>
+                        <p className="text-[14px] leading-6 whitespace-pre-line">{renderFormattedText(msg.text)}</p>
                       </div>
                     ) : (
                       /* Cira response — no bubble, just text with sparkle icon */
@@ -785,9 +803,10 @@ const Chat = () => {
                                 text={msg.text}
                                 speed={15}
                                 onComplete={() => setTypingMsgIndex(null)}
+                                formatted
                               />
                             ) : (
-                              <span className="whitespace-pre-line">{msg.text}</span>
+                              <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
                             )}
                           </p>
                         </div>
