@@ -297,7 +297,7 @@ const Chat = () => {
             const followUp = pathway === "detailed"
               ? "Tool result received. Now generate the detailed report using render_detailed_report."
               : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
-            callClaude(followUp);
+            callClaude(followUp, undefined, true);
           }, 500);
           break;
       }
