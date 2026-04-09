@@ -8,8 +8,6 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
-import DoctorReportCard from "@/components/DoctorReportCard";
-import type { DoctorReportPayload } from "@/components/DoctorReportCard";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
@@ -235,31 +233,13 @@ const Chat = () => {
             setShowModeSelection(true);
           }
           break;
-        case "render_ai_consult_summary":
+        case "render_ai_consult_summary": {
+          const summaryData = tool.input as ConsultSummary;
           setMessages((prev) => [
             ...prev,
-            { role: "summary" as const, text: "", summaryData: tool.input as ConsultSummary },
+            { role: "summary" as const, text: "", summaryData },
           ]);
-          break;
-        case "render_detailed_report":
-          setMessages((prev) => [
-            ...prev,
-            { role: "detailed_report" as const, text: "", detailedData: tool.input as DetailedReport },
-          ]);
-          break;
-        case "disconnectAgent":
-          if (tool.input.disconnect_now) {
-            toast.info("Session ended. Start a new chat to continue.");
-            syncChatMode("none");
-          }
-          break;
-        case "Doctor_report_data_pdf": {
-          const reportData = tool.input as DoctorReportPayload;
-          setMessages((prev) => [
-            ...prev,
-            { role: "doctor_report" as const, text: "", doctorReportData: reportData },
-          ]);
-          // Save report to backend
+          // Save quick assessment report to backend
           try {
             const token = getToken();
             if (token) {
@@ -267,16 +247,46 @@ const Chat = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                  title: `Health Report — ${reportData.patient_name}`,
-                  type: "Doctor Report",
-                  summary: reportData.summary,
-                  data: reportData,
+                  title: `Quick Assessment — ${summaryData.possible_conditions?.[0]?.name || "Health Check"}`,
+                  type: "Quick Assessment",
+                  summary: summaryData.summary,
+                  data: summaryData,
                 }),
               }).catch((e) => console.error("Failed to save report:", e));
             }
           } catch (e) { console.error("Report save error:", e); }
           break;
         }
+        case "render_detailed_report": {
+          const detailedData = tool.input as DetailedReport;
+          setMessages((prev) => [
+            ...prev,
+            { role: "detailed_report" as const, text: "", detailedData },
+          ]);
+          // Save detailed assessment report to backend
+          try {
+            const token = getToken();
+            if (token) {
+              fetch(`${import.meta.env.VITE_API_URL || "https://askainurse.com"}/api/reports`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                  title: `Detailed Assessment — ${detailedData.assessment?.primary_diagnosis || "Health Report"}`,
+                  type: "Detailed Assessment",
+                  summary: detailedData.patient_summary,
+                  data: detailedData,
+                }),
+              }).catch((e) => console.error("Failed to save report:", e));
+            }
+          } catch (e) { console.error("Report save error:", e); }
+          break;
+        }
+        case "disconnectAgent":
+          if (tool.input.disconnect_now) {
+            toast.info("Session ended. Start a new chat to continue.");
+            syncChatMode("none");
+          }
+          break;
         case "prepare_consultation_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
           break;
