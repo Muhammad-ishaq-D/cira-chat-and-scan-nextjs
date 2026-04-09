@@ -336,6 +336,34 @@ const VitalsScan = () => {
                   );
                 })}
               </div>
+
+              {/* Health Indexes */}
+              {displayHealthIndexes.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 mb-3 mt-2">
+                    <ShieldCheck size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-foreground font-heading">Health Indexes</p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    {displayHealthIndexes.map((v) => {
+                      const Icon = v.icon;
+                      return (
+                        <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                              <Icon size={14} className={v.color.split(" ")[0]} />
+                            </div>
+                            <p className="text-[11px] text-muted-foreground font-body">{v.label}</p>
+                          </div>
+                          <p className="text-xl font-semibold text-foreground font-heading">
+                            {v.value}<span className="text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
               <div className="flex gap-3">
                 <button onClick={reset} className="h-11 px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
                 <button onClick={handleAnalyzeWithCira} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
