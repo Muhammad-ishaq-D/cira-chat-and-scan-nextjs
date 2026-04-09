@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { useShenAI, type VitalResults } from "@/hooks/useShenAI";
+import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
@@ -27,8 +27,19 @@ const formatVitalsForDisplay = (r: VitalResults) => [
   { label: "Stress Index", value: r.stressIndex != null ? String(Math.round(r.stressIndex)) : "--", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
   { label: "HRV", value: r.hrvSdnn != null ? String(Math.round(r.hrvSdnn)) : "--", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
   { label: "Cardiac Workload", value: r.cardiacWorkload != null ? String(Math.round(r.cardiacWorkload)) : "--", unit: "", icon: Heart, color: "text-orange-500 bg-orange-50" },
-  { label: "Parasympathetic Activity", value: r.parasympatheticActivity != null ? String(Math.round(r.parasympatheticActivity)) : "--", unit: "", icon: Zap, color: "text-teal-500 bg-teal-50" },
   { label: "BMI", value: r.bmi != null ? r.bmi.toFixed(1) : "--", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
+];
+
+const formatHealthIndexes = (h: HealthRisksData) => [
+  ...(h.wellnessScore != null ? [{ label: "Wellness Score", value: String(Math.round(h.wellnessScore)), unit: "/10", icon: ShieldCheck, color: "text-emerald-600 bg-emerald-50" }] : []),
+  ...(h.vascularAge != null ? [{ label: "Vascular Age", value: String(Math.round(h.vascularAge)), unit: "yrs", icon: TrendingUp, color: "text-blue-600 bg-blue-50" }] : []),
+  ...(h.bodyFatPercentage != null ? [{ label: "Body Fat", value: h.bodyFatPercentage.toFixed(1), unit: "%", icon: Scale, color: "text-orange-600 bg-orange-50" }] : []),
+  ...(h.basalMetabolicRate != null ? [{ label: "Basal Metabolic Rate", value: String(Math.round(h.basalMetabolicRate)), unit: "kcal", icon: Flame, color: "text-red-600 bg-red-50" }] : []),
+  ...(h.totalDailyEnergyExpenditure != null ? [{ label: "Daily Energy", value: String(Math.round(h.totalDailyEnergyExpenditure)), unit: "kcal", icon: Flame, color: "text-amber-600 bg-amber-50" }] : []),
+  ...(h.waistToHeightRatio != null ? [{ label: "Waist-to-Height", value: h.waistToHeightRatio.toFixed(2), unit: "", icon: Scale, color: "text-violet-600 bg-violet-50" }] : []),
+  ...(h.cvOverallRisk != null ? [{ label: "CV Disease Risk", value: (h.cvOverallRisk * 100).toFixed(1), unit: "%", icon: Heart, color: "text-rose-600 bg-rose-50" }] : []),
+  ...(h.hypertensionRisk != null ? [{ label: "Hypertension Risk", value: (h.hypertensionRisk * 100).toFixed(1), unit: "%", icon: Activity, color: "text-red-600 bg-red-50" }] : []),
+  ...(h.diabetesRisk != null ? [{ label: "Diabetes Risk", value: (h.diabetesRisk * 100).toFixed(1), unit: "%", icon: AlertCircle, color: "text-yellow-600 bg-yellow-50" }] : []),
 ];
 
 const VitalsScan = () => {
@@ -64,6 +75,7 @@ const VitalsScan = () => {
     let isActive = true;
 
     const saveScan = async () => {
+      const hr = results.healthRisks;
       const payload = Object.fromEntries(
         Object.entries({
           timestamp: new Date().toISOString(),
@@ -74,7 +86,18 @@ const VitalsScan = () => {
           stress_index: results.stressIndex != null ? Math.round(results.stressIndex) : undefined,
           hrv_sdnn: results.hrvSdnn != null ? Math.round(results.hrvSdnn) : undefined,
           bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
+          cardiac_workload: results.cardiacWorkload != null ? Math.round(results.cardiacWorkload) : undefined,
           signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
+          // Health indexes
+          wellness_score: hr?.wellnessScore != null ? Math.round(hr.wellnessScore) : undefined,
+          vascular_age: hr?.vascularAge != null ? Math.round(hr.vascularAge) : undefined,
+          body_fat_percentage: hr?.bodyFatPercentage != null ? Number(hr.bodyFatPercentage.toFixed(1)) : undefined,
+          basal_metabolic_rate: hr?.basalMetabolicRate != null ? Math.round(hr.basalMetabolicRate) : undefined,
+          total_daily_energy_expenditure: hr?.totalDailyEnergyExpenditure != null ? Math.round(hr.totalDailyEnergyExpenditure) : undefined,
+          waist_to_height_ratio: hr?.waistToHeightRatio != null ? Number(hr.waistToHeightRatio.toFixed(3)) : undefined,
+          cv_disease_risk: hr?.cvOverallRisk != null ? Number((hr.cvOverallRisk * 100).toFixed(1)) : undefined,
+          hypertension_risk: hr?.hypertensionRisk != null ? Number((hr.hypertensionRisk * 100).toFixed(1)) : undefined,
+          diabetes_risk: hr?.diabetesRisk != null ? Number((hr.diabetesRisk * 100).toFixed(1)) : undefined,
         }).filter(([, value]) => value !== undefined && value !== null && !(typeof value === "number" && Number.isNaN(value)))
       );
 
@@ -112,11 +135,11 @@ const VitalsScan = () => {
   }, [results, navigate]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
+  const displayHealthIndexes = results?.healthRisks ? formatHealthIndexes(results.healthRisks) : [];
 
   const handleAnalyzeWithCira = () => {
     if (!results) return;
-    // Store vitals as plain serializable data (icons can't be JSON-serialized)
-    const serializableVitals = displayVitals.map(v => ({
+    const serializableVitals = [...displayVitals, ...displayHealthIndexes].map(v => ({
       label: v.label,
       value: v.value,
       unit: v.unit,
@@ -325,6 +348,34 @@ const VitalsScan = () => {
                   );
                 })}
               </div>
+
+              {/* Health Indexes */}
+              {displayHealthIndexes.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 mb-3 mt-2">
+                    <ShieldCheck size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-foreground font-heading">Health Indexes</p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    {displayHealthIndexes.map((v) => {
+                      const Icon = v.icon;
+                      return (
+                        <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                              <Icon size={14} className={v.color.split(" ")[0]} />
+                            </div>
+                            <p className="text-[11px] text-muted-foreground font-body">{v.label}</p>
+                          </div>
+                          <p className="text-xl font-semibold text-foreground font-heading">
+                            {v.value}<span className="text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
               <div className="flex gap-3">
                 <button onClick={reset} className="h-11 px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
                 <button onClick={handleAnalyzeWithCira} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">

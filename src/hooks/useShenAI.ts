@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { ShenaiSDK, MeasurementResults, InitializationSettings } from "shenai-sdk";
+import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks } from "shenai-sdk";
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
@@ -17,13 +17,60 @@ export interface VitalResults {
   parasympatheticActivity: number | null;
   signalQuality: number;
   raw: MeasurementResults;
+  healthRisks: HealthRisksData | null;
+}
+
+export interface HealthRisksData {
+  wellnessScore: number | null;
+  vascularAge: number | null;
+  bodyFatPercentage: number | null;
+  waistToHeightRatio: number | null;
+  basalMetabolicRate: number | null;
+  totalDailyEnergyExpenditure: number | null;
+  bodyRoundnessIndex: number | null;
+  conicityIndex: number | null;
+  aBodyShapeIndex: number | null;
+  hypertensionRisk: number | null;
+  diabetesRisk: number | null;
+  cvOverallRisk: number | null;
+  coronaryHeartDiseaseRisk: number | null;
+  strokeRisk: number | null;
+  heartFailureRisk: number | null;
+  coronaryDeathRisk: number | null;
+  fatalStrokeRisk: number | null;
+  totalCVMortality: number | null;
+  hardCVEventRisk: number | null;
 }
 
 export interface UserProfileData {
   age?: number;
-  height?: number; // cm
-  weight?: number; // kg
+  height?: number;
+  weight?: number;
   gender?: 'male' | 'female' | 'other';
+}
+
+function extractHealthRisks(risks: HealthRisks): HealthRisksData {
+  return {
+    wellnessScore: risks.wellnessScore,
+    vascularAge: risks.vascularAge,
+    bodyFatPercentage: risks.bodyFatPercentage,
+    waistToHeightRatio: risks.waistToHeightRatio,
+    basalMetabolicRate: risks.basalMetabolicRate,
+    totalDailyEnergyExpenditure: risks.totalDailyEnergyExpenditure,
+    bodyRoundnessIndex: risks.bodyRoundnessIndex,
+    conicityIndex: risks.conicityIndex,
+    aBodyShapeIndex: risks.aBodyShapeIndex,
+    hypertensionRisk: risks.hypertensionRisk ?? null,
+    diabetesRisk: risks.diabetesRisk ?? null,
+    cvOverallRisk: risks.cvDiseases?.overallRisk ?? null,
+    coronaryHeartDiseaseRisk: risks.cvDiseases?.coronaryHeartDiseaseRisk ?? null,
+    strokeRisk: risks.cvDiseases?.strokeRisk ?? null,
+    heartFailureRisk: risks.cvDiseases?.heartFailureRisk ?? null,
+    coronaryDeathRisk: risks.hardAndFatalEvents?.coronaryDeathEventRisk ?? null,
+    fatalStrokeRisk: risks.hardAndFatalEvents?.fatalStrokeEventRisk ?? null,
+    totalCVMortality: risks.hardAndFatalEvents?.totalCVMortalityRisk ?? null,
+    hardCVEventRisk: risks.hardAndFatalEvents?.hardCVEventRisk ?? null,
+  };
 }
 
 export function useShenAI() {
@@ -40,9 +87,7 @@ export function useShenAI() {
       pollRef.current = null;
     }
     if (sdkRef.current) {
-      try {
-        sdkRef.current.deinitialize();
-      } catch {}
+      try { sdkRef.current.deinitialize(); } catch {}
       sdkRef.current = null;
     }
   }, []);
@@ -98,16 +143,13 @@ export function useShenAI() {
         },
       };
 
-      // Use CSS selector format as per Shen AI docs
       const canvasSelector = `#${canvasId}`;
 
       sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
         console.log("[ShenAI] init result:", result.value);
         if (result.value === 0) {
           setStatus("ready");
-          // Attach using CSS selector format
           sdk.attachToCanvas(canvasSelector, true);
-          console.log("[ShenAI] attached to canvas:", canvasSelector);
         } else {
           const errors: Record<number, string> = {
             1: "Invalid API key",
@@ -137,27 +179,31 @@ export function useShenAI() {
     pollRef.current = window.setInterval(() => {
       try {
         const mState = sdk.getMeasurementState();
-        
-        // Try multiple ways to get progress
         let prog = 0;
         if (typeof sdk.getMeasurementProgressPercentage === "function") {
           prog = sdk.getMeasurementProgressPercentage();
-        } else if (typeof (sdk as any).getMeasurementRemainingTime === "function") {
-          const remaining = (sdk as any).getMeasurementRemainingTime();
-          const total = 30;
-          prog = Math.max(0, Math.min(100, ((total - remaining) / total) * 100));
         }
         if (typeof prog === "number" && prog > 0) setProgress(Math.round(prog));
 
-        console.log("[ShenAI] measurementState:", mState.value, "progress:", prog);
-
-        // FINISHED state
+        // FINISHED
         if (mState.value === 6 || mState.value === sdk.MeasurementState?.FINISHED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setProgress(100);
 
           const raw = sdk.getMeasurementResults();
+          let healthRisks: HealthRisksData | null = null;
+
+          try {
+            const risks = sdk.getHealthRisks();
+            console.log("[ShenAI] Health risks:", risks);
+            if (risks) {
+              healthRisks = extractHealthRisks(risks);
+            }
+          } catch (e) {
+            console.warn("[ShenAI] Could not get health risks:", e);
+          }
+
           console.log("[ShenAI] Raw results:", raw);
           if (raw) {
             setResults({
@@ -172,11 +218,11 @@ export function useShenAI() {
               parasympatheticActivity: raw.parasympathetic_activity,
               signalQuality: raw.average_signal_quality,
               raw,
+              healthRisks,
             });
           }
           setStatus("finished");
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
-          // FAILED state
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setError("Measurement failed — try again with better lighting");
