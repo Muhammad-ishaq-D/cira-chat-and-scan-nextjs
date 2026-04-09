@@ -6,6 +6,20 @@ const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 const TOKEN_KEY = "cira_token";
 const REFRESH_KEY = "cira_refresh_token";
 const USER_KEY = "cira_user";
+const POST_AUTH_REDIRECT_KEY = "cira_post_auth_redirect";
+
+function getStoredValue(key: string): string | null {
+  const value = localStorage.getItem(key);
+
+  if (!value || value === "undefined" || value === "null") {
+    if (value) {
+      localStorage.removeItem(key);
+    }
+    return null;
+  }
+
+  return value;
+}
 
 export interface AuthUser {
   id: string;
@@ -23,13 +37,13 @@ export interface AuthResponse {
 
 /** Get stored JWT token */
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return getStoredValue(TOKEN_KEY);
 }
 
 /** Get stored user */
 export function getUser(): AuthUser | null {
-  const raw = localStorage.getItem(USER_KEY);
-  if (!raw || raw === "undefined") return null;
+  const raw = getStoredValue(USER_KEY);
+  if (!raw) return null;
   try {
     return JSON.parse(raw);
   } catch {
@@ -47,6 +61,7 @@ export function isAuthenticated(): boolean {
 function saveAuth(data: AuthResponse) {
   localStorage.setItem(TOKEN_KEY, data.token);
   if (data.refreshToken) localStorage.setItem(REFRESH_KEY, data.refreshToken);
+  else localStorage.removeItem(REFRESH_KEY);
   localStorage.setItem(USER_KEY, JSON.stringify(data.user));
 }
 
@@ -55,6 +70,7 @@ export function logout() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_KEY);
   localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
 }
 
 /** Register a new user */

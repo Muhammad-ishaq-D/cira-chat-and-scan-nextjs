@@ -7,6 +7,16 @@ import { getToken, logout } from "./auth";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
+function redirectToLogin() {
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const shouldPreservePath = currentPath !== "/login" && currentPath !== "/register";
+  const redirectSuffix = shouldPreservePath
+    ? `?redirect=${encodeURIComponent(currentPath)}`
+    : "";
+
+  window.location.href = `/login${redirectSuffix}`;
+}
+
 async function authFetch(endpoint: string, options: RequestInit = {}): Promise<Response> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -24,7 +34,7 @@ async function authFetch(endpoint: string, options: RequestInit = {}): Promise<R
 
   if (res.status === 401) {
     logout();
-    window.location.href = "/login";
+    redirectToLogin();
     throw new Error("Session expired");
   }
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userApi } from "@/lib/apiClient";
+import { consumePostAuthRedirect } from "@/lib/authFlow";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { toast } from "sonner";
 import { ChevronRight, Ruler, Weight, Calendar, User } from "lucide-react";
@@ -22,6 +23,10 @@ const Onboarding = () => {
     { key: "height", label: "Your height", sub: "Height in centimeters for BMI and body metrics", icon: Ruler },
     { key: "weight", label: "Your weight", sub: "Weight in kilograms for accurate health indices", icon: Weight },
   ];
+
+  const completeOnboarding = () => {
+    navigate(consumePostAuthRedirect() || "/dashboard");
+  };
 
   const canProceed = () => {
     if (step === 0) return sex !== "";
@@ -46,7 +51,7 @@ const Onboarding = () => {
         biological_sex: sex,
       });
       toast.success("Profile updated!");
-      navigate("/dashboard");
+      completeOnboarding();
     } catch (err: any) {
       console.error("Profile save error:", err);
       toast.error(err.message || "Failed to save profile");
@@ -56,7 +61,7 @@ const Onboarding = () => {
   };
 
   const handleSkip = () => {
-    navigate("/dashboard");
+    completeOnboarding();
   };
 
   const currentStep = steps[step];
