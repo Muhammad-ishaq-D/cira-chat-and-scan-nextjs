@@ -53,6 +53,26 @@ export interface ConsultSummary {
   self_care_advice: string;
 }
 
+export interface DetailedReportData {
+  patient_summary: string;
+  chief_complaint: string;
+  history_of_present_illness: string;
+  review_of_systems: { system: string; findings: string }[];
+  assessment: {
+    primary_diagnosis: string;
+    differential_diagnoses: { name: string; likelihood: string }[];
+    severity: "mild" | "moderate" | "severe";
+  };
+  plan: {
+    immediate_actions: string[];
+    medications_suggested: string[];
+    lifestyle_recommendations: string[];
+    follow_up: string;
+  };
+  red_flags: string[];
+  confidence_score: number;
+}
+
 export interface SoapNote {
   subjective: string;
   objective: string;
