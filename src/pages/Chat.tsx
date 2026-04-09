@@ -291,6 +291,14 @@ const Chat = () => {
           break;
         case "prepare_consultation_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
+          // Send a follow-up so the agent continues and generates the actual report
+          setTimeout(() => {
+            const pathway = tool.input?.consultation_payload?.pathway;
+            const followUp = pathway === "detailed"
+              ? "Tool result received. Now generate the detailed report using render_detailed_report."
+              : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
+            callClaude(followUp);
+          }, 500);
           break;
       }
     }
