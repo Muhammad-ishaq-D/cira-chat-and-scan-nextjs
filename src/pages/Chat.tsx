@@ -8,6 +8,8 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
+import DoctorReportCard from "@/components/DoctorReportCard";
+import type { DoctorReportPayload } from "@/components/DoctorReportCard";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
@@ -127,7 +129,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report" | "doctor_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport; doctorReportData?: DoctorReportPayload }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -251,11 +253,31 @@ const Chat = () => {
             syncChatMode("none");
           }
           break;
-        // Doctor_report_data_pdf, prepare_consultation_payload, soap_note_payload
-        // are data-only tools — their payloads can be stored/sent to your backend
-        case "Doctor_report_data_pdf":
+        case "Doctor_report_data_pdf": {
+          const reportData = tool.input as DoctorReportPayload;
+          setMessages((prev) => [
+            ...prev,
+            { role: "doctor_report" as const, text: "", doctorReportData: reportData },
+          ]);
+          // Save report to backend
+          try {
+            const token = getToken();
+            if (token) {
+              fetch(`${import.meta.env.VITE_API_URL || "https://askainurse.com"}/api/reports`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                  title: `Health Report — ${reportData.patient_name}`,
+                  type: "Doctor Report",
+                  summary: reportData.summary,
+                  data: reportData,
+                }),
+              }).catch((e) => console.error("Failed to save report:", e));
+            }
+          } catch (e) { console.error("Report save error:", e); }
+          break;
+        }
         case "prepare_consultation_payload":
-        case "soap_note_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
           break;
       }
@@ -753,6 +775,8 @@ const Chat = () => {
                       <ConsultSummaryCard data={msg.summaryData} />
                     ) : msg.role === "detailed_report" && msg.detailedData ? (
                       <DetailedReportCard data={msg.detailedData} />
+                    ) : msg.role === "doctor_report" && msg.doctorReportData ? (
+                      <DoctorReportCard data={msg.doctorReportData} />
                     ) : msg.role === "vitals" && msg.vitalsData ? (
                       <div className="w-full max-w-sm md:max-w-md">
                         <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
