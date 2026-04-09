@@ -88,14 +88,21 @@ function addHeader(doc: jsPDF, title: string, type: string, date: string) {
   doc.setTextColor(...COLORS.muted);
   doc.text("AI Health Nurse", 42, 18);
 
-  // Report type badge
+  // Format date nicely
+  const formattedDate = (() => {
+    try {
+      const d = new Date(date);
+      if (!isNaN(d.getTime())) return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    } catch {}
+    return date;
+  })();
+
+  // Report type badge + date on separate lines
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.primary);
-  doc.text(type.toUpperCase(), 170, 12, { align: "right" });
-
-  // Date
+  doc.text(type.toUpperCase(), 190, 10, { align: "right" });
   doc.setTextColor(...COLORS.muted);
-  doc.text(date, 190, 12, { align: "right" });
+  doc.text(formattedDate, 190, 15, { align: "right" });
 
   drawLine(doc, 24);
 
