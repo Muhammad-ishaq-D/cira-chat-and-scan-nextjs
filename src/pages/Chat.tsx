@@ -786,7 +786,6 @@ const Chat = () => {
                     ) : msg.role === "detailed_report" && msg.detailedData ? (
                       <DetailedReportCard data={msg.detailedData} />
                     ) : msg.role === "vitals" && msg.vitalsData ? (
-                    ) : msg.role === "vitals" && msg.vitalsData ? (
                       <div className="w-full max-w-sm md:max-w-md">
                         <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
                           <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
