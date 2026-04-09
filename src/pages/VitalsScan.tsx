@@ -5,7 +5,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { useShenAI, type VitalResults } from "@/hooks/useShenAI";
+import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
