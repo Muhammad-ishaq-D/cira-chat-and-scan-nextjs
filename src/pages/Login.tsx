@@ -180,8 +180,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    let cancelled = false;
-
     const initGoogle = () => {
       const google = (window as any).google?.accounts?.id;
       const container = googleButtonRef.current;
@@ -225,7 +223,6 @@ const Login = () => {
     initGoogle();
 
     return () => {
-      cancelled = true;
       if (googleButtonRef.current) {
         googleButtonRef.current.innerHTML = "";
       }
