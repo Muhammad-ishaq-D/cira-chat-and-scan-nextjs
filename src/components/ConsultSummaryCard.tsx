@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Heart, Shield, Sparkles } from "lucide-react";
+import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
 import type { ConsultSummary } from "@/lib/chatApi";
 
 interface Props {
@@ -13,36 +13,49 @@ const ConsultSummaryCard = ({ data }: Props) => {
       ? "text-amber-600 bg-amber-50"
       : "text-red-500 bg-red-50";
 
+  const urgencyLevel = data.confidence_score >= 80 ? "high" : data.confidence_score >= 50 ? "moderate" : "low";
+  const urgencyConfig = {
+    high: { label: "Clear Finding", bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700" },
+    moderate: { label: "Needs Attention", bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
+    low: { label: "Uncertain", bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
+  };
+  const urgency = urgencyConfig[urgencyLevel];
+
   return (
     <div className="w-full max-w-md animate-fade-in">
       <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-purple-50/80 to-pink-50/60">
+        <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-blue-50/80 via-cyan-50/60 to-emerald-50/40">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <Sparkles size={14} className="text-white" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+              <Stethoscope size={15} className="text-white" />
             </div>
-            <div>
-              <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                AI Consultation Summary
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                Quick Assessment
               </p>
-              <p className="text-[9px] text-muted-foreground">Powered by Cira</p>
+              <p className="text-[9px] text-muted-foreground">AI Triage Summary</p>
             </div>
-            <div className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold ${confidenceColor}`}>
-              {data.confidence_score}% confident
+            <div className="flex items-center gap-1.5">
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${urgency.bg} ${urgency.border} ${urgency.text}`}>
+                {urgency.label}
+              </span>
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${confidenceColor}`}>
+                {data.confidence_score}%
+              </span>
             </div>
           </div>
         </div>
 
         {/* Summary */}
-        <div className="px-4 py-3">
-          <p className="text-[13px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div className="px-4 py-3 bg-accent/10">
+          <p className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
             {data.summary}
           </p>
         </div>
 
         {/* Possible Conditions */}
-        <div className="px-4 pb-3">
+        <div className="px-4 pb-3 pt-2">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
             Possible Conditions
           </p>
@@ -67,14 +80,14 @@ const ConsultSummaryCard = ({ data }: Props) => {
         </div>
 
         {/* Self-Care Advice */}
-        <div className="px-4 pb-4 border-t border-border/20 pt-3">
+        <div className="px-4 pb-3 border-t border-border/20 pt-3">
           <div className="flex items-start gap-2">
             <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
               <Shield size={12} className="text-blue-500" />
             </div>
             <div>
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                Self-Care & Red Flags
+                What to Do Next
               </p>
               <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                 {data.self_care_advice}
@@ -83,11 +96,22 @@ const ConsultSummaryCard = ({ data }: Props) => {
           </div>
         </div>
 
+        {/* Upgrade CTA */}
+        <div className="px-4 pb-3">
+          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
+            <div className="flex items-center gap-2">
+              <Sparkles size={12} className="text-purple-500" />
+              <span className="text-[10px] font-medium text-purple-700">Want deeper analysis? Try Detailed Assessment</span>
+            </div>
+            <ChevronRight size={12} className="text-purple-400" />
+          </div>
+        </div>
+
         <div className="px-4 py-2 border-t border-border/20 bg-amber-50/50">
           <div className="flex items-center gap-1.5">
             <AlertTriangle size={10} className="text-amber-500" />
             <p className="text-[9px] text-amber-700">
-              Always discuss these findings with a licensed medical professional.
+              AI triage — not a diagnosis. Always consult a licensed healthcare provider.
             </p>
           </div>
         </div>
