@@ -270,7 +270,7 @@ const Dashboard = () => {
               </div>
 
               {/* Vital Signs */}
-              <div className="mb-8">
+              {vitals.some((v) => v.value !== "--") && <div className="mb-8">
                 <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Signs</h2>
                 <p className="text-xs text-muted-foreground font-body mb-4">Measured entirely from the face scan</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -292,10 +292,10 @@ const Dashboard = () => {
                     );
                   })}
                 </div>
-              </div>
+              </div>}
 
               {/* Health Indices */}
-              <div className="mb-8">
+              {healthIndices.some((h) => h.value !== "--") && <div className="mb-8">
                 <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Health Indices</h2>
                 <p className="text-xs text-muted-foreground font-body mb-4">Based on scan and user data</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -314,10 +314,10 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {/* Health Risks */}
-              <div className="mb-12">
+              {healthRisks.some((r) => r.level !== "—") && <div className="mb-12">
                 <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Health Risks</h2>
                 <p className="text-xs text-muted-foreground font-body mb-4">Based on scan and user data</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -335,7 +335,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
             </>
           )}
         </div>
