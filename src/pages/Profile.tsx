@@ -113,7 +113,7 @@ const Profile = () => {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-lg mx-auto flex items-center gap-3 px-4 py-3">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-accent transition-colors">
+          <button onClick={() => navigate("/dashboard")} className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-accent transition-colors">
             <ArrowLeft size={18} />
           </button>
           <h1 className="font-heading text-lg font-semibold text-foreground">Profile Settings</h1>
