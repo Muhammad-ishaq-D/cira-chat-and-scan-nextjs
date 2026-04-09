@@ -253,11 +253,31 @@ const Chat = () => {
             syncChatMode("none");
           }
           break;
-        // Doctor_report_data_pdf, prepare_consultation_payload, soap_note_payload
-        // are data-only tools — their payloads can be stored/sent to your backend
-        case "Doctor_report_data_pdf":
+        case "Doctor_report_data_pdf": {
+          const reportData = tool.input as DoctorReportPayload;
+          setMessages((prev) => [
+            ...prev,
+            { role: "doctor_report" as const, text: "", doctorReportData: reportData },
+          ]);
+          // Save report to backend
+          try {
+            const token = getToken();
+            if (token) {
+              fetch(`${import.meta.env.VITE_API_URL || "https://askainurse.com"}/api/reports`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                  title: `Health Report — ${reportData.patient_name}`,
+                  type: "Doctor Report",
+                  summary: reportData.summary,
+                  data: reportData,
+                }),
+              }).catch((e) => console.error("Failed to save report:", e));
+            }
+          } catch (e) { console.error("Report save error:", e); }
+          break;
+        }
         case "prepare_consultation_payload":
-        case "soap_note_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
           break;
       }
