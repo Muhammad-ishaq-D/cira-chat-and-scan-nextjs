@@ -98,14 +98,52 @@ const Dashboard = () => {
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
           }
-          if (v.healthIndices) setHealthIndices(prev => prev.map(item => {
-            const match = v.healthIndices?.find((hi: any) => hi.label === item.label);
-            return match ? { ...item, value: match.value } : item;
-          }));
-          if (v.healthRisks) setHealthRisks(prev => prev.map(item => {
-            const match = v.healthRisks?.find((hr: any) => hr.label === item.label);
-            return match ? { ...item, level: match.level } : item;
-          }));
+          // Map flat health indices from API
+          if (v.healthIndices) {
+            setHealthIndices(prev => prev.map(item => {
+              const match = v.healthIndices?.find((hi: any) => hi.label === item.label);
+              return match ? { ...item, value: match.value } : item;
+            }));
+          } else if (v.vascular_age !== undefined || v.wellness_score !== undefined) {
+            setHealthIndices(prev => prev.map(item => {
+              const map: Record<string, string> = {
+                "Vascular Age": v.vascular_age != null ? String(Math.round(v.vascular_age)) : "--",
+                "Wellness Score": v.wellness_score != null ? String(Math.round(v.wellness_score)) : "--",
+                "Waist-to-Height Ratio": v.waist_to_height_ratio != null ? Number(v.waist_to_height_ratio).toFixed(2) : "--",
+                "Body Fat Percentage": v.body_fat_percentage != null ? Number(v.body_fat_percentage).toFixed(1) : "--",
+                "Basal Metabolic Rate": v.basal_metabolic_rate != null ? String(Math.round(v.basal_metabolic_rate)) : "--",
+                "Body Shape Index": v.body_shape_index != null ? Number(v.body_shape_index).toFixed(3) : "--",
+                "Total Daily Energy": v.total_daily_energy_expenditure != null ? String(Math.round(v.total_daily_energy_expenditure)) : "--",
+              };
+              return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
+            }));
+          }
+          // Map flat health risks from API
+          if (v.healthRisks) {
+            setHealthRisks(prev => prev.map(item => {
+              const match = v.healthRisks?.find((hr: any) => hr.label === item.label);
+              return match ? { ...item, level: match.level } : item;
+            }));
+          } else if (v.cv_disease_risk !== undefined || v.hypertension_risk !== undefined) {
+            const toLevel = (val: number | null | undefined): string => {
+              if (val == null) return "—";
+              if (val < 10) return "Low";
+              if (val < 25) return "Moderate";
+              return "High";
+            };
+            setHealthRisks(prev => prev.map(item => {
+              const map: Record<string, string> = {
+                "Cardiovascular Risk": toLevel(v.cv_disease_risk),
+                "Coronary Heart Disease": toLevel(v.coronary_heart_disease_risk),
+                "Stroke Risk": toLevel(v.stroke_risk),
+                "Heart Failure Risk": toLevel(v.heart_failure_risk),
+                "Diabetes Risk": toLevel(v.diabetes_risk),
+                "Fatty Liver Disease": toLevel(v.fatty_liver_risk),
+                "Cardiovascular Event": toLevel(v.hard_cv_event_risk),
+              };
+              return map[item.label] !== undefined ? { ...item, level: map[item.label] } : item;
+            }));
+          }
         }
       } catch (e) {
         console.error("Dashboard load error:", e);
