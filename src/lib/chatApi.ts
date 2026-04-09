@@ -73,12 +73,6 @@ export interface DetailedReportData {
   confidence_score: number;
 }
 
-export interface SoapNote {
-  subjective: string;
-  objective: string;
-  assessment: string;
-  plan: string;
-}
 
 export interface ConsultationPayload {
   consultation_payload: {
