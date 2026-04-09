@@ -7,6 +7,7 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { reportsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
+import { downloadReportPdf } from "@/lib/reportPdf";
 import { toast } from "sonner";
 
 const navItems = [
@@ -46,8 +47,13 @@ const Reports = () => {
   );
 
   const handleDownload = (report: any) => {
-    const url = reportsApi.downloadUrl(report.id);
-    window.open(url, "_blank");
+    try {
+      downloadReportPdf(report);
+      toast.success("PDF downloaded");
+    } catch (e) {
+      console.error("PDF generation failed:", e);
+      toast.error("Failed to generate PDF");
+    }
   };
 
   return (
