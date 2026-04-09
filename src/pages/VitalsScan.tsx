@@ -51,6 +51,7 @@ const VitalsScan = () => {
   const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+  const scanNeedsSecureReload = typeof window !== "undefined" && window.crossOriginIsolated === false;
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
@@ -154,6 +155,20 @@ const VitalsScan = () => {
     }));
     sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
     navigate("/chat");
+  };
+
+  const handleStartCamera = () => {
+    if (scanNeedsSecureReload) {
+      window.location.replace("/vitals-scan");
+      return;
+    }
+
+    initialize(CANVAS_ID, {
+      age: userProfile?.age || undefined,
+      height: userProfile?.height || undefined,
+      weight: userProfile?.weight || undefined,
+      gender: userProfile?.biological_sex || undefined,
+    });
   };
 
   return (
@@ -300,13 +315,8 @@ const VitalsScan = () => {
                   </button>
                 )}
                 {status === "idle" && (
-                  <button onClick={() => initialize(CANVAS_ID, {
-                    age: userProfile?.age || undefined,
-                    height: userProfile?.height || undefined,
-                    weight: userProfile?.weight || undefined,
-                    gender: userProfile?.biological_sex || undefined,
-                  })} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
-                    <ScanFace size={18} /> Start Camera
+                  <button onClick={handleStartCamera} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                    <ScanFace size={18} /> {scanNeedsSecureReload ? "Prepare Camera" : "Start Camera"}
                   </button>
                 )}
               </div>

@@ -60,10 +60,13 @@ if (typeof window === 'undefined') {
 
 } else {
     (() => {
+        const needsCrossOriginIsolation = () =>
+            window.location.pathname === "/vitals-scan" || window.location.pathname.startsWith("/vitals-scan/");
+
         // You can customize the behavior of this script through a global `coi` variable.
         const coi = {
-            shouldRegister: () => true,
-            shouldDeregister: () => false,
+            shouldRegister: () => needsCrossOriginIsolation(),
+            shouldDeregister: () => !needsCrossOriginIsolation(),
             coepCredentialless: () => !(window.chrome || window.netscape),
             doReload: () => window.location.reload(),
             quiet: false,
