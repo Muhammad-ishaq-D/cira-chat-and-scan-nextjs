@@ -291,13 +291,21 @@ const Chat = () => {
           break;
         case "prepare_consultation_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
+          // Send a follow-up so the agent continues and generates the actual report
+          setTimeout(() => {
+            const pathway = tool.input?.consultation_payload?.pathway;
+            const followUp = pathway === "detailed"
+              ? "Tool result received. Now generate the detailed report using render_detailed_report."
+              : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
+            callClaude(followUp, undefined, true);
+          }, 500);
           break;
       }
     }
   };
 
   // Call Claude API via POST /api/anthropic/chat — backend manages sessions
-  const callClaude = async (userText: string, image?: string) => {
+  const callClaude = async (userText: string, image?: string, hidden = false) => {
     const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
     const updatedHistory = [...conversationHistory, newUserMsg];
     const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current
@@ -305,7 +313,9 @@ const Chat = () => {
       : userText;
 
     setConversationHistory(updatedHistory);
-    setIsTyping(true);
+    if (!hidden) {
+      setIsTyping(true);
+    }
     setIsApiLoading(true);
 
     try {
