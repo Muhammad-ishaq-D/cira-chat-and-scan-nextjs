@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2 } from "lucide-react";
+import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { userApi } from "@/lib/apiClient";
 import { getUser } from "@/lib/auth";
@@ -92,6 +92,16 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
 
         {/* Actions */}
         <div className="p-2">
+          <button
+            onClick={() => navigate("/profile")}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-accent transition-colors group"
+          >
+            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Settings size={14} className="text-blue-600" />
+            </div>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">Profile Settings</span>
+            <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+          </button>
           <button
             onClick={() => navigate("/upgrade")}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-accent transition-colors group"

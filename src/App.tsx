@@ -16,6 +16,7 @@ import PaymentHistory from "./pages/PaymentHistory.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import Profile from "./pages/Profile.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
 import AdminOverview from "./admin/AdminOverview.tsx";
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
           <Route path="/doctor" element={<ProtectedRoute><Doctor /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route element={<AdminLayout />}>
