@@ -305,7 +305,7 @@ const Chat = () => {
   };
 
   // Call Claude API via POST /api/anthropic/chat — backend manages sessions
-  const callClaude = async (userText: string, image?: string) => {
+  const callClaude = async (userText: string, image?: string, hidden = false) => {
     const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
     const updatedHistory = [...conversationHistory, newUserMsg];
     const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current
@@ -313,7 +313,9 @@ const Chat = () => {
       : userText;
 
     setConversationHistory(updatedHistory);
-    setIsTyping(true);
+    if (!hidden) {
+      setIsTyping(true);
+    }
     setIsApiLoading(true);
 
     try {
