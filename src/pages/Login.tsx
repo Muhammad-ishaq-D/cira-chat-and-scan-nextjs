@@ -33,6 +33,9 @@ const Login = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [useOtp, setUseOtp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleContextReady, setGoogleContextReady] = useState(() =>
+    typeof window === "undefined" || !("serviceWorker" in navigator) || !navigator.serviceWorker.controller,
+  );
 
   const resetOtpFlow = useCallback(() => {
     setUseOtp(false);
@@ -57,6 +60,28 @@ const Login = () => {
     const query = params.toString();
     return `${mode === "register" ? "/register" : "/login"}${query ? `?${query}` : ""}`;
   }, [location.search]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      setGoogleContextReady(true);
+      return;
+    }
+
+    const controller = navigator.serviceWorker.controller;
+    if (!controller) {
+      sessionStorage.removeItem("cira_google_popup_reset_at");
+      setGoogleContextReady(true);
+      return;
+    }
+
+    setGoogleContextReady(false);
+
+    const lastResetAt = Number(sessionStorage.getItem("cira_google_popup_reset_at") || "0");
+    if (Date.now() - lastResetAt > 3000) {
+      sessionStorage.setItem("cira_google_popup_reset_at", String(Date.now()));
+      controller.postMessage({ type: "deregister" });
+    }
+  }, [location.pathname]);
 
   const redirectAfterAuth = useCallback(async () => {
     const followUpPath = requestedPath || (sessionStorage.getItem("cira_landing_message") ? "/chat" : null);
@@ -180,6 +205,10 @@ const Login = () => {
   };
 
   useEffect(() => {
+    if (!googleContextReady) {
+      return;
+    }
+
     const initGoogle = () => {
       const google = (window as any).google?.accounts?.id;
       const container = googleButtonRef.current;
@@ -227,7 +256,7 @@ const Login = () => {
         googleButtonRef.current.innerHTML = "";
       }
     };
-  }, [redirectAfterAuth]);
+  }, [googleContextReady, redirectAfterAuth]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
@@ -246,8 +275,15 @@ const Login = () => {
             : "Sign in to continue your conversation"}
         </p>
 
-        <div className={`w-full mb-4 flex justify-center ${loading ? "pointer-events-none opacity-70" : ""}`}>
-          <div ref={googleButtonRef} className="w-full min-h-[44px]" />
+        <div className={`w-full mb-4 flex justify-center ${loading || !googleContextReady ? "pointer-events-none opacity-70" : ""}`}>
+          <div className="relative w-full min-h-[44px]">
+            <div ref={googleButtonRef} className="w-full min-h-[44px]" />
+            {!googleContextReady && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-full border border-border bg-card text-xs text-muted-foreground font-body">
+                Preparing Google sign-in...
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3 my-6">
