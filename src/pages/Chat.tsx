@@ -6,7 +6,9 @@ import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
-import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
+import DetailedReportCard from "@/components/DetailedReportCard";
+import type { DetailedReport } from "@/components/DetailedReportCard";
+import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
 import { toast } from "sonner";
@@ -125,7 +127,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -235,6 +237,12 @@ const Chat = () => {
           setMessages((prev) => [
             ...prev,
             { role: "summary" as const, text: "", summaryData: tool.input as ConsultSummary },
+          ]);
+          break;
+        case "render_detailed_report":
+          setMessages((prev) => [
+            ...prev,
+            { role: "detailed_report" as const, text: "", detailedData: tool.input as DetailedReport },
           ]);
           break;
         case "disconnectAgent":
@@ -743,6 +751,8 @@ const Chat = () => {
                     {/* Summary card */}
                     {msg.role === "summary" && msg.summaryData ? (
                       <ConsultSummaryCard data={msg.summaryData} />
+                    ) : msg.role === "detailed_report" && msg.detailedData ? (
+                      <DetailedReportCard data={msg.detailedData} />
                     ) : msg.role === "vitals" && msg.vitalsData ? (
                       <div className="w-full max-w-sm md:max-w-md">
                         <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
