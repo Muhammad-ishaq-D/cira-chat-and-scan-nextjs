@@ -145,6 +145,7 @@ const Chat = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
+  const prepPayloadSentRef = useRef(false);
   // Keep ref in sync with state so async callbacks always read latest value
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
@@ -159,6 +160,7 @@ const Chat = () => {
   const syncCurrentSessionId = (sessionId: string | null) => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
+    if (!sessionId) prepPayloadSentRef.current = false;
   };
 
   // Load chat history from API
@@ -291,14 +293,17 @@ const Chat = () => {
           break;
         case "prepare_consultation_payload":
           console.log(`[Tool: ${tool.name}]`, tool.input);
-          // Send a follow-up so the agent continues and generates the actual report
-          setTimeout(() => {
-            const pathway = tool.input?.consultation_payload?.pathway;
-            const followUp = pathway === "detailed"
-              ? "Tool result received. Now generate the detailed report using render_detailed_report."
-              : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
-            callClaude(followUp, undefined, true);
-          }, 500);
+          // Send a follow-up ONCE so the agent generates the actual report
+          if (!prepPayloadSentRef.current) {
+            prepPayloadSentRef.current = true;
+            setTimeout(() => {
+              const pathway = tool.input?.consultation_payload?.pathway;
+              const followUp = pathway === "detailed"
+                ? "Tool result received. Now generate the detailed report using render_detailed_report."
+                : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
+              callClaude(followUp, undefined, true);
+            }, 500);
+          }
           break;
       }
     }
