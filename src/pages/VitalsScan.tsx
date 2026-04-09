@@ -75,6 +75,7 @@ const VitalsScan = () => {
     let isActive = true;
 
     const saveScan = async () => {
+      const hr = results.healthRisks;
       const payload = Object.fromEntries(
         Object.entries({
           timestamp: new Date().toISOString(),
@@ -85,7 +86,18 @@ const VitalsScan = () => {
           stress_index: results.stressIndex != null ? Math.round(results.stressIndex) : undefined,
           hrv_sdnn: results.hrvSdnn != null ? Math.round(results.hrvSdnn) : undefined,
           bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
+          cardiac_workload: results.cardiacWorkload != null ? Math.round(results.cardiacWorkload) : undefined,
           signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
+          // Health indexes
+          wellness_score: hr?.wellnessScore != null ? Math.round(hr.wellnessScore) : undefined,
+          vascular_age: hr?.vascularAge != null ? Math.round(hr.vascularAge) : undefined,
+          body_fat_percentage: hr?.bodyFatPercentage != null ? Number(hr.bodyFatPercentage.toFixed(1)) : undefined,
+          basal_metabolic_rate: hr?.basalMetabolicRate != null ? Math.round(hr.basalMetabolicRate) : undefined,
+          total_daily_energy_expenditure: hr?.totalDailyEnergyExpenditure != null ? Math.round(hr.totalDailyEnergyExpenditure) : undefined,
+          waist_to_height_ratio: hr?.waistToHeightRatio != null ? Number(hr.waistToHeightRatio.toFixed(3)) : undefined,
+          cv_disease_risk: hr?.cvOverallRisk != null ? Number((hr.cvOverallRisk * 100).toFixed(1)) : undefined,
+          hypertension_risk: hr?.hypertensionRisk != null ? Number((hr.hypertensionRisk * 100).toFixed(1)) : undefined,
+          diabetes_risk: hr?.diabetesRisk != null ? Number((hr.diabetesRisk * 100).toFixed(1)) : undefined,
         }).filter(([, value]) => value !== undefined && value !== null && !(typeof value === "number" && Number.isNaN(value)))
       );
 
