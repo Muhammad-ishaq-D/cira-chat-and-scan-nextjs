@@ -634,18 +634,19 @@ function drawRiskBadge(doc: jsPDF, label: string, level: string, x: number, y: n
   
   // Label
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.setTextColor(...COLORS.muted);
-  doc.text(label, x + 4, y + 5.5);
+  const truncRiskLabel = doc.splitTextToSize(label, w - 8)[0] || label;
+  doc.text(truncRiskLabel, x + 3.5, y + 5);
   
-  // Risk badge
+  // Risk badge pill
   const { text, bg } = riskBadgeColors(level);
-  const badgeW = doc.getTextWidth(level) + 6;
-  drawRoundedRect(doc, x + 4, y + 8, badgeW > 12 ? badgeW : 12, 5.5, 1.5, bg);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.5);
+  doc.setFontSize(7);
+  const badgeW = Math.max(doc.getTextWidth(level) + 5, 14);
+  drawRoundedRect(doc, x + 3.5, y + 7.5, badgeW, 5, 1.5, bg);
   doc.setTextColor(...text);
-  doc.text(level, x + 4 + (badgeW > 12 ? badgeW : 12) / 2, y + 12, { align: "center" });
+  doc.text(level, x + 3.5 + badgeW / 2, y + 11, { align: "center" });
 }
 
 function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = true): number {
@@ -656,7 +657,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(...COLORS.purple);
-    doc.text("📅  " + formatScanDate(scan.created_at || scan.date), 26, y + 2);
+    doc.text(formatScanDate(scan.created_at || scan.date), 26, y + 2);
     y += 10;
   }
 
