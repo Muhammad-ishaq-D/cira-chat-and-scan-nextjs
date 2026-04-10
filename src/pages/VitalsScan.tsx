@@ -198,41 +198,6 @@ const VitalsScan = () => {
     navigate("/chat");
   };
 
-  const handleStartCamera = async () => {
-    // Check credits before allowing scan
-    try {
-      const freshProfile = await userApi.getProfile();
-      setUserProfile(freshProfile);
-      const scansLeft = freshProfile?.credits?.face_scans;
-      if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
-        toast.error("No scan credits remaining. Upgrade your plan.", {
-          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
-          duration: 8000,
-        });
-        return;
-      }
-    } catch {
-      // If profile fetch fails, allow scan attempt — backend will enforce
-    }
-
-    // If not cross-origin isolated, attempt a single reload to activate the service worker.
-    if (scanNeedsSecureReload) {
-      const reloadKey = "coi_reload_attempted";
-      if (!sessionStorage.getItem(reloadKey)) {
-        sessionStorage.setItem(reloadKey, "1");
-        window.location.replace("/vitals-scan");
-        return;
-      }
-      sessionStorage.removeItem(reloadKey);
-    }
-
-    initialize(CANVAS_ID, {
-      age: userProfile?.age || undefined,
-      height: userProfile?.height || undefined,
-      weight: userProfile?.weight || undefined,
-      gender: userProfile?.biological_sex || undefined,
-    });
-  };
 
   // Whether we're in immersive camera mode (not finished / results)
   const isCameraView = status !== "finished";
