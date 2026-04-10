@@ -237,11 +237,15 @@ const Login = () => {
             // Extract Google profile picture from ID token
             try {
               const payload = JSON.parse(atob(response.credential.split(".")[1]));
-              if (payload.picture && !authData.user.avatar) {
+              if (payload.picture) {
                 const { updateUserAvatar } = await import("@/lib/auth");
                 updateUserAvatar(payload.picture);
-                // Persist to backend profile
-                userApi.updateProfile({ avatar: payload.picture }).catch(() => {});
+                // Always persist Google avatar to backend profile
+                try {
+                  await userApi.updateProfile({ avatar: payload.picture });
+                } catch (e) {
+                  console.warn("Failed to save Google avatar to backend:", e);
+                }
               }
             } catch {}
             await redirectAfterAuth();
