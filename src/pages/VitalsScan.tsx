@@ -284,14 +284,14 @@ const VitalsScan = () => {
             style={{ display: "block" }}
           />
 
-          {/* Idle overlay */}
-          {status === "idle" && (
+          {/* Idle/Loading overlay */}
+          {(status === "idle" || status === "loading") && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
-                <ScanFace size={40} className="text-primary opacity-70" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
+                <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               </div>
-              <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Vitals Scan</h2>
-              <p className="text-white/50 text-xs md:text-sm font-body mb-6">AI-powered face scan · 30 seconds</p>
+              <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Initializing Scanner</h2>
+              <p className="text-white/50 text-xs md:text-sm font-body mb-6">Setting up camera · Please wait</p>
 
               {/* Tips row */}
               <div className="grid grid-cols-3 gap-4 max-w-xs mb-8">
