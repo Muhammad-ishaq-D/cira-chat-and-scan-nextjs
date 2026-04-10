@@ -107,7 +107,7 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-8 sm:pb-12">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center" style={{ minHeight: "calc(100vh - 68px)" }}>
         {/* H1 */}
         <div className="text-center mb-3 sm:mb-4 animate-fade-in">
           <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-[1.1] tracking-tight">
