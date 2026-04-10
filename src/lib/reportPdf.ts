@@ -422,14 +422,33 @@ export async function generateDetailedReportPdf(report: any) {
     y += 4;
   }
 
-  // Confidence
+  // Confidence Score — graphical gauge
   if (data.confidence_score != null) {
-    y = checkPage(doc, y, 12);
+    y = checkPage(doc, y, 22);
     y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.muted);
-    doc.text(`Confidence Score: ${data.confidence_score}%`, 20, y);
+    drawRoundedRect(doc, 20, y - 2, 170, 16, 3, COLORS.cardBg, COLORS.border);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.foreground);
+    doc.text("AI Confidence Score", 26, y + 3);
+
+    const score = data.confidence_score;
+    const scoreColor = score >= 80 ? COLORS.emerald : score >= 50 ? COLORS.amber : COLORS.red;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(...scoreColor);
+    doc.text(`${score}%`, 180, y + 4, { align: "right" });
+
+    const gaugeX = 26;
+    const gaugeY = y + 8;
+    const gaugeW = 158;
+    const gaugeH = 3;
+    drawRoundedRect(doc, gaugeX, gaugeY, gaugeW, gaugeH, 1.5, COLORS.background);
+    const fillW = Math.max(3, (score / 100) * gaugeW);
+    drawRoundedRect(doc, gaugeX, gaugeY, fillW, gaugeH, 1.5, scoreColor);
+
+    y += 18;
   }
 
   addFooter(doc);
