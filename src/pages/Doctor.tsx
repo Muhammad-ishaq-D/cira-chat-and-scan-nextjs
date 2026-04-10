@@ -132,8 +132,12 @@ const Doctor = () => {
               {filteredDoctors.map((doc: any) => (
                 <div key={doc.id} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-5 hover:shadow-md hover:border-border transition-all group">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
-                      {doc.avatar || (doc.name || "").split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0 overflow-hidden">
+                      {doc.avatar ? (
+                        <img src={doc.avatar} alt={doc.name} className="w-full h-full object-cover" />
+                      ) : (
+                        (doc.name || "").split(" ").map((n: string) => n[0]).join("").slice(0, 2)
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3 mb-1">
