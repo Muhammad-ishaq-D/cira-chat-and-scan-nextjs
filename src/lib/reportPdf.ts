@@ -838,15 +838,6 @@ export async function generateCombinedScansPdf(scans: VitalScanData[]) {
     y += 6;
   }
 
-  // Detailed per-scan data
-  y = drawSectionTitle(doc, "Individual Scan Details", y);
-  for (let i = 0; i < sorted.length; i++) {
-    y = addScanBlockPro(doc, sorted[i], y, true);
-    if (i < sorted.length - 1) {
-      y += 2;
-      y = checkPage(doc, y, 40);
-    }
-  }
 
   drawScanFooter(doc);
   return doc;
