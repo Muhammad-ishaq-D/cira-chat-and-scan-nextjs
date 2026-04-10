@@ -604,27 +604,22 @@ function drawSectionIcon(doc: jsPDF, type: string, x: number, y: number) {
   doc.text(letters[type] || "+", x + 3, y + 0.2, { align: "center" });
 }
 
-function drawSectionTitle(doc: jsPDF, title: string, y: number, iconType?: string): number {
+function drawSectionTitle(doc: jsPDF, title: string, y: number): number {
   y = checkPage(doc, y, 14);
-  
-  const hasIcon = !!iconType;
-  if (hasIcon) {
-    drawSectionIcon(doc, iconType!, 20, y);
-  }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.setTextColor(...COLORS.primary);
-  doc.text(title, hasIcon ? 29 : 20, y);
+  doc.text(title, 20, y);
   y += 2;
   
   // Thin accent line
   doc.setDrawColor(...COLORS.primary);
   doc.setLineWidth(0.5);
-  doc.line(hasIcon ? 29 : 20, y, 80, y);
+  doc.line(20, y, 70, y);
   doc.setDrawColor(...COLORS.border);
   doc.setLineWidth(0.15);
-  doc.line(80, y, 192, y);
+  doc.line(70, y, 192, y);
   
   return y + 5;
 }
@@ -632,29 +627,25 @@ function drawSectionTitle(doc: jsPDF, title: string, y: number, iconType?: strin
 function drawVitalCard(doc: jsPDF, label: string, value: string, unit: string, x: number, y: number, w: number, h: number): void {
   drawRoundedRect(doc, x, y, w, h, 2.5, COLORS.cardBg, COLORS.border);
   
-  // Label — truncate to fit card
+  // Label
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.5);
   doc.setTextColor(...COLORS.muted);
-  const truncLabel = doc.splitTextToSize(label, w - 8)[0] || label;
-  doc.text(truncLabel, x + 3.5, y + 5);
+  const truncLabel = doc.splitTextToSize(label, w - 6)[0] || label;
+  doc.text(truncLabel, x + 3, y + 5);
   
-  // Value
+  // Value + unit on same baseline but unit smaller — check fit
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(...COLORS.foreground);
-  const truncVal = doc.splitTextToSize(value, w - 8)[0] || value;
-  doc.text(truncVal, x + 3.5, y + 12);
+  doc.text(value, x + 3, y + 12);
   
-  // Unit
+  // Unit below value to avoid overlap
   if (unit && value !== "—") {
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.5);
+    doc.setFontSize(6);
     doc.setTextColor(...COLORS.muted);
-    const valW = doc.getTextWidth(truncVal);
-    if (valW + 10 < w - 4) {
-      doc.text(unit, x + 3.5 + valW + 1.5, y + 12);
-    }
+    doc.text(unit, x + 3, y + 15.5);
   }
 }
 
