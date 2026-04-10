@@ -458,21 +458,19 @@ function drawRoundedRect(doc: jsPDF, x: number, y: number, w: number, h: number,
 }
 
 function drawCiraLogo(doc: jsPDF, x: number, y: number, size: number) {
-  // Draw a simplified Cira star/sparkle icon
   const cx = x + size / 2;
   const cy = y + size / 2;
   const r = size / 2;
   
-  // Pink gradient circle background
+  // Pink circle background
   doc.setFillColor(...COLORS.primary);
   doc.circle(cx, cy, r, "F");
   
-  // White star sparkle in center
-  doc.setFillColor(255, 255, 255);
+  // White "C" letter in center
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(size * 0.7);
+  doc.setFontSize(size * 0.65);
   doc.setTextColor(255, 255, 255);
-  doc.text("✦", cx, cy + size * 0.15, { align: "center" });
+  doc.text("C", cx, cy + size * 0.12, { align: "center" });
 }
 
 function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: string): number {
@@ -535,11 +533,13 @@ function drawScanFooter(doc: jsPDF) {
     const disclaimerY = 276;
     drawRoundedRect(doc, 15, disclaimerY, 180, 12, 2, COLORS.cardBg, COLORS.border);
     
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(6.5);
+    doc.setTextColor(...COLORS.primary);
+    doc.text("MEDICAL DISCLAIMER", 20, disclaimerY + 4);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.muted);
-    doc.text("⚕️  Medical Disclaimer", 20, disclaimerY + 4);
     doc.setFontSize(5.5);
+    doc.setTextColor(...COLORS.muted);
     doc.text("Cira is an AI health nurse, not a licensed medical professional. This report is for informational purposes only.", 20, disclaimerY + 7.5);
     doc.text("Always discuss these findings with your doctor. Trained on peer-reviewed medical data worldwide.", 20, disclaimerY + 10.5);
 
@@ -555,28 +555,44 @@ function drawScanFooter(doc: jsPDF) {
   }
 }
 
-function drawSectionTitle(doc: jsPDF, title: string, y: number, icon?: string): number {
+function drawSectionIcon(doc: jsPDF, type: string, x: number, y: number) {
+  // Draw a small colored circle with a shape inside instead of emoji
+  const colors: Record<string, [number, number, number]> = {
+    vital: COLORS.primary,
+    index: COLORS.emerald,
+    risk: COLORS.amber,
+    compare: COLORS.purple,
+    detail: COLORS.primary,
+  };
+  const color = colors[type] || COLORS.primary;
+  doc.setFillColor(...color);
+  doc.circle(x + 3, y - 1, 3, "F");
+  // White dot/letter inside
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(4.5);
+  doc.setTextColor(255, 255, 255);
+  const letters: Record<string, string> = { vital: "V", index: "I", risk: "R", compare: "C", detail: "D" };
+  doc.text(letters[type] || "+", x + 3, y + 0.2, { align: "center" });
+}
+
+function drawSectionTitle(doc: jsPDF, title: string, y: number, iconType?: string): number {
   y = checkPage(doc, y, 14);
   
-  // Section icon circle
-  if (icon) {
-    drawRoundedRect(doc, 20, y - 4, 6, 6, 1.5, COLORS.purpleLight);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(5);
-    doc.setTextColor(...COLORS.purple);
-    doc.text(icon, 23, y, { align: "center" });
+  const hasIcon = !!iconType;
+  if (hasIcon) {
+    drawSectionIcon(doc, iconType!, 20, y);
   }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.setTextColor(...COLORS.primary);
-  doc.text(title, icon ? 29 : 20, y);
+  doc.text(title, hasIcon ? 29 : 20, y);
   y += 2;
   
   // Thin accent line
   doc.setDrawColor(...COLORS.primary);
   doc.setLineWidth(0.5);
-  doc.line(icon ? 29 : 20, y, 80, y);
+  doc.line(hasIcon ? 29 : 20, y, 80, y);
   doc.setDrawColor(...COLORS.border);
   doc.setLineWidth(0.15);
   doc.line(80, y, 192, y);
