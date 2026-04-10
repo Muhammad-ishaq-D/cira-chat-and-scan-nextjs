@@ -347,24 +347,6 @@ const VitalsScan = () => {
 
           {/* ── Floating Action Button — bottom right ── */}
           <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
-            {(status === "idle" || status === "loading") && (
-              <button 
-                disabled
-                className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center gap-2 ring-4 ring-primary/20 font-semibold text-sm md:text-base opacity-60 cursor-not-allowed"
-              >
-                <div className="w-5 h-5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-                <span>Loading...</span>
-              </button>
-            )}
-            {status === "loading" && (
-              <button 
-                disabled
-                className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center gap-2 ring-4 ring-primary/20 font-semibold text-sm md:text-base opacity-60 cursor-not-allowed"
-              >
-                <div className="w-5 h-5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-                <span>Loading...</span>
-              </button>
-            )}
             {status === "ready" && (
               <button 
                 onClick={startMeasurement}
