@@ -248,9 +248,52 @@ const Dashboard = () => {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="animate-spin text-primary" size={32} />
-            </div>
+            <>
+              {/* Skeleton: Overall Health Card */}
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm animate-pulse">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-muted" />
+                  <div className="flex-1">
+                    <div className="h-3 w-24 bg-muted rounded mb-2" />
+                    <div className="h-5 w-32 bg-muted rounded" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Skeleton: Vital Signs */}
+              <div className="mb-8">
+                <div className="h-5 w-28 bg-muted rounded mb-2 animate-pulse" />
+                <div className="h-3 w-48 bg-muted rounded mb-4 animate-pulse" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 animate-pulse">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-7 h-7 rounded-lg bg-muted" />
+                        <div className="h-3 w-16 bg-muted rounded" />
+                      </div>
+                      <div className="h-6 w-14 bg-muted rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Skeleton: Health Indices */}
+              <div className="mb-8">
+                <div className="h-5 w-28 bg-muted rounded mb-2 animate-pulse" />
+                <div className="h-3 w-40 bg-muted rounded mb-4 animate-pulse" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 animate-pulse">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-7 h-7 rounded-lg bg-muted" />
+                        <div className="h-3 w-16 bg-muted rounded" />
+                      </div>
+                      <div className="h-6 w-14 bg-muted rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           ) : (
             <>
               {/* Overall Health Card */}
