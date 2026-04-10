@@ -182,27 +182,56 @@ export async function generateQuickAssessmentPdf(report: any) {
   y = addParagraph(doc, data.summary || report.summary || "", y);
   y += 4;
 
-  // Possible Conditions
+  // Possible Conditions — with progress bars
   if (data.possible_conditions?.length) {
     y = addSection(doc, "Possible Conditions", y);
     for (const cond of data.possible_conditions) {
-      y = checkPage(doc, y, 14);
+      y = checkPage(doc, y, 18);
+      // Condition card background
+      drawRoundedRect(doc, 22, y - 3, 166, cond.explanation ? 18 : 12, 2, COLORS.cardBg, COLORS.border);
+
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
-      doc.text(cond.name || "", 24, y);
+      doc.setTextColor(...COLORS.foreground);
+      doc.text(cond.name || "", 26, y + 1);
+
+      // Percentage badge
+      const pct = cond.percentage ?? 0;
+      const pctColor = pct >= 60 ? COLORS.emerald : pct >= 30 ? COLORS.amber : COLORS.red;
+      const pctBg = pct >= 60 ? COLORS.emeraldLight : pct >= 30 ? COLORS.amberLight : COLORS.redLight;
+      const pctStr = `${pct}%`;
+      const badgeW = 16;
+      drawRoundedRect(doc, 170, y - 3, badgeW, 7, 2, pctBg);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(...pctColor);
+      doc.text(pctStr, 170 + badgeW / 2, y + 1.5, { align: "center" });
+
+      // Progress bar
+      const barY = y + 4;
+      const barX = 26;
+      const barW = 130;
+      const barH = 2.5;
+      drawRoundedRect(doc, barX, barY, barW, barH, 1, COLORS.background);
+      if (pct > 0) {
+        const fillW = Math.max(2, (pct / 100) * barW);
+        drawRoundedRect(doc, barX, barY, fillW, barH, 1, pctColor);
+      }
+
+      y += 10;
 
       if (cond.likelihood) {
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
+        doc.setFontSize(7.5);
         doc.setTextColor(...COLORS.muted);
-        doc.text(`(${cond.likelihood})`, 24 + doc.getTextWidth((cond.name || "") + "  "), y);
-        doc.setTextColor(...COLORS.foreground);
+        doc.text(`Likelihood: ${cond.likelihood}`, 26, y);
+        y += 4;
       }
-      y += 5;
+
       if (cond.explanation) {
         y = addParagraph(doc, cond.explanation, y, 28);
       }
-      y += 2;
+      y += 4;
     }
     y += 2;
   }
@@ -222,14 +251,35 @@ export async function generateQuickAssessmentPdf(report: any) {
     y = addParagraph(doc, data.follow_up, y);
   }
 
-  // Confidence
+  // Confidence Score — graphical gauge
   if (data.confidence_score != null) {
-    y = checkPage(doc, y, 12);
+    y = checkPage(doc, y, 22);
     y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.muted);
-    doc.text(`Confidence Score: ${data.confidence_score}%`, 20, y);
+    drawRoundedRect(doc, 20, y - 2, 170, 16, 3, COLORS.cardBg, COLORS.border);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.foreground);
+    doc.text("AI Confidence Score", 26, y + 3);
+
+    const score = data.confidence_score;
+    const scoreColor = score >= 80 ? COLORS.emerald : score >= 50 ? COLORS.amber : COLORS.red;
+
+    // Score value
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(...scoreColor);
+    doc.text(`${score}%`, 180, y + 4, { align: "right" });
+
+    // Gauge bar
+    const gaugeX = 26;
+    const gaugeY = y + 8;
+    const gaugeW = 158;
+    const gaugeH = 3;
+    drawRoundedRect(doc, gaugeX, gaugeY, gaugeW, gaugeH, 1.5, COLORS.background);
+    const fillW = Math.max(3, (score / 100) * gaugeW);
+    drawRoundedRect(doc, gaugeX, gaugeY, fillW, gaugeH, 1.5, scoreColor);
+
+    y += 18;
   }
 
   addFooter(doc);
@@ -372,14 +422,33 @@ export async function generateDetailedReportPdf(report: any) {
     y += 4;
   }
 
-  // Confidence
+  // Confidence Score — graphical gauge
   if (data.confidence_score != null) {
-    y = checkPage(doc, y, 12);
+    y = checkPage(doc, y, 22);
     y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.muted);
-    doc.text(`Confidence Score: ${data.confidence_score}%`, 20, y);
+    drawRoundedRect(doc, 20, y - 2, 170, 16, 3, COLORS.cardBg, COLORS.border);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.foreground);
+    doc.text("AI Confidence Score", 26, y + 3);
+
+    const score = data.confidence_score;
+    const scoreColor = score >= 80 ? COLORS.emerald : score >= 50 ? COLORS.amber : COLORS.red;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(...scoreColor);
+    doc.text(`${score}%`, 180, y + 4, { align: "right" });
+
+    const gaugeX = 26;
+    const gaugeY = y + 8;
+    const gaugeW = 158;
+    const gaugeH = 3;
+    drawRoundedRect(doc, gaugeX, gaugeY, gaugeW, gaugeH, 1.5, COLORS.background);
+    const fillW = Math.max(3, (score / 100) * gaugeW);
+    drawRoundedRect(doc, gaugeX, gaugeY, fillW, gaugeH, 1.5, scoreColor);
+
+    y += 18;
   }
 
   addFooter(doc);
