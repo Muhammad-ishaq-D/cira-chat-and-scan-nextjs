@@ -107,67 +107,70 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-20 sm:pb-28">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-8 sm:pb-12">
         {/* H1 */}
-        <div className="text-center mb-6 animate-fade-in">
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-[64px] font-semibold text-foreground leading-[1.1] tracking-tight">
-            Your face reveals<br />
-            your <span className="text-primary">health</span>.
+        <div className="text-center mb-3 sm:mb-4 animate-fade-in">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-[1.1] tracking-tight">
+            Your face reveals your <span className="text-primary">health</span>.
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-muted-foreground text-center leading-relaxed mb-10 font-body max-w-lg mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          30-second face scan. 30+ clinical vitals.<br />
-          AI nurse assessment. No wearables needed.
+        <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed mb-6 sm:mb-8 font-body max-w-lg mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
+          30-second face scan. 30+ vitals. AI nurse assessment.
         </p>
 
-        {/* Face scan visual */}
-        <div className="scroll-fade flex justify-center items-center gap-4 sm:gap-6 mb-10 animate-fade-in-slow" style={{ animationDelay: "0.3s" }}>
-          <div className="relative">
-            <img src={faceNormal} alt="Face scan — normal view" className="w-36 h-36 sm:w-48 sm:h-48 rounded-2xl object-cover shadow-lg" />
-            <span className="absolute -bottom-2 -right-2 bg-card border border-border text-[10px] sm:text-xs font-body text-muted-foreground px-2 py-1 rounded-full shadow">Your face</span>
+        {/* Two-column: Scan + Chat */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 mb-6 sm:mb-8 animate-fade-in-slow" style={{ animationDelay: "0.3s" }}>
+          {/* Face scan visual */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="relative">
+              <img src={faceNormal} alt="Face scan — normal view" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg" />
+              <span className="absolute -bottom-1.5 -right-1.5 bg-card border border-border text-[9px] sm:text-[10px] font-body text-muted-foreground px-1.5 py-0.5 rounded-full shadow">Your face</span>
+            </div>
+            <div className="flex flex-col items-center gap-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <span className="text-[9px] text-muted-foreground font-body">30 sec</span>
+            </div>
+            <div className="relative">
+              <img src={faceHeatmap} alt="Face scan — heatmap" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg ring-2 ring-primary/30" />
+              <span className="absolute -bottom-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] sm:text-[10px] font-body px-1.5 py-0.5 rounded-full shadow font-medium">30+ vitals</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            <span className="text-[10px] text-muted-foreground font-body">30 sec</span>
-          </div>
-          <div className="relative">
-            <img src={faceHeatmap} alt="Face scan — heatmap analysis" className="w-36 h-36 sm:w-48 sm:h-48 rounded-2xl object-cover shadow-lg ring-2 ring-primary/30" />
-            <span className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground text-[10px] sm:text-xs font-body px-2 py-1 rounded-full shadow font-medium">30+ vitals</span>
-          </div>
-        </div>
 
-        {/* Chat preview snippet */}
-        <div className="max-w-md mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div className="flex items-start gap-3 mb-3">
-              <img src={doctor1} alt="Cira" className="w-8 h-8 rounded-full object-cover mt-0.5" />
-              <div className="bg-primary/5 rounded-xl rounded-tl-none px-4 py-3 text-sm text-foreground font-body leading-relaxed">
-                Your blood pressure is elevated at 135/86. Tell me — how long have you been feeling this way?
+          {/* Chat preview */}
+          <div className="w-full max-w-xs animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+              <div className="flex items-start gap-2 mb-2">
+                <img src={doctor1} alt="Cira" className="w-6 h-6 rounded-full object-cover mt-0.5" />
+                <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed">
+                  BP elevated at 135/86. How long have you felt this way?
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <div className="bg-primary/10 rounded-lg rounded-tr-none px-3 py-2 text-xs text-foreground font-body">
+                  A few days, after work
+                </div>
               </div>
             </div>
-            <div className="flex justify-end">
-              <div className="bg-primary/10 rounded-xl rounded-tr-none px-4 py-2.5 text-sm text-foreground font-body">
-                A few days, mostly after work
-              </div>
-            </div>
+            <p className="text-[10px] text-muted-foreground text-center font-body mt-1.5">Scan → AI conversation → assessment</p>
           </div>
-          <p className="text-[11px] text-muted-foreground text-center font-body mt-2">Cira combines your scan data with a structured conversation</p>
         </div>
 
         {/* CTA */}
-        <div className="flex flex-col items-center gap-4 animate-slide-up" style={{ animationDelay: "0.5s" }}>
+        <div className="flex flex-col items-center gap-3 animate-slide-up" style={{ animationDelay: "0.45s" }}>
           <button
             onClick={handleAskCira}
-            className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-base sm:text-lg font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
+            className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm sm:text-base font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
           >
             Try a free scan →
           </button>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
-            <span>🔒 100% on-device</span>
-            <span>⚡ No app download</span>
+          <div className="flex items-center gap-3 text-[10px] sm:text-xs text-muted-foreground font-body">
+            <span>🔒 On-device</span>
+            <span>⚡ No download</span>
             <span>📷 Camera only</span>
+          </div>
+        </div>
           </div>
         </div>
       </main>
