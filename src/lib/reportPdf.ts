@@ -584,25 +584,6 @@ function drawScanFooter(doc: jsPDF) {
   }
 }
 
-function drawSectionIcon(doc: jsPDF, type: string, x: number, y: number) {
-  // Draw a small colored circle with a shape inside instead of emoji
-  const colors: Record<string, [number, number, number]> = {
-    vital: COLORS.primary,
-    index: COLORS.emerald,
-    risk: COLORS.amber,
-    compare: COLORS.purple,
-    detail: COLORS.primary,
-  };
-  const color = colors[type] || COLORS.primary;
-  doc.setFillColor(...color);
-  doc.circle(x + 3, y - 1, 3, "F");
-  // White dot/letter inside
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(4.5);
-  doc.setTextColor(255, 255, 255);
-  const letters: Record<string, string> = { vital: "V", index: "I", risk: "R", compare: "C", detail: "D" };
-  doc.text(letters[type] || "+", x + 3, y + 0.2, { align: "center" });
-}
 
 function drawSectionTitle(doc: jsPDF, title: string, y: number): number {
   y = checkPage(doc, y, 14);
