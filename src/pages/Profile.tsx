@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2 } from "lucide-react";
+import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { userApi } from "@/lib/apiClient";
-import { getUser, logout } from "@/lib/auth";
+import { getUser, logout, updateUserAvatar } from "@/lib/auth";
 import { toast } from "sonner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 
@@ -22,6 +22,8 @@ const Profile = () => {
   const [weight, setWeight] = useState("");
   const [sex, setSex] = useState<Sex>("");
   const [dirty, setDirty] = useState(false);
+  const [avatar, setAvatar] = useState<string | undefined>(localUser?.avatar);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -33,6 +35,7 @@ const Profile = () => {
         setHeight(p.height ? String(p.height) : "");
         setWeight(p.weight ? String(p.weight) : "");
         setSex(p.biological_sex || "");
+        if (p.avatar) setAvatar(p.avatar);
       } catch {
         setName(localUser?.name || "");
         setEmail(localUser?.email || "");
@@ -98,6 +101,30 @@ const Profile = () => {
 
   const markDirty = () => setDirty(true);
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+    setUploadingAvatar(true);
+    try {
+      const result = await userApi.uploadAvatar(file);
+      setAvatar(result.avatar);
+      updateUserAvatar(result.avatar);
+      toast.success("Profile picture updated!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload picture");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const initials = (name || "U").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
   if (loading) {
@@ -123,9 +150,30 @@ const Profile = () => {
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
         {/* Avatar */}
         <div className="flex flex-col items-center gap-3">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-2xl font-semibold">
-            {initials}
+          <div className="relative group">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-2xl font-semibold overflow-hidden">
+              {avatar ? (
+                <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
+            </div>
+            <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              {uploadingAvatar ? (
+                <Loader2 size={20} className="animate-spin text-white" />
+              ) : (
+                <Camera size={20} className="text-white" />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={uploadingAvatar}
+                className="hidden"
+              />
+            </label>
           </div>
+          <p className="text-xs text-muted-foreground font-body">Tap to change photo</p>
           <p className="text-sm text-muted-foreground font-body">{email}</p>
         </div>
 
