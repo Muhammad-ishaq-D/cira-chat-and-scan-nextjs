@@ -70,6 +70,13 @@ const VitalsScan = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Auto-start measurement once SDK is ready
+  useEffect(() => {
+    if (status === "ready") {
+      startMeasurement();
+    }
+  }, [status, startMeasurement]);
+
   useEffect(() => {
     if (!results) return;
 
@@ -354,15 +361,23 @@ const VitalsScan = () => {
 
           {/* ── Floating Action Button — bottom right ── */}
           <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
-            {status === "idle" && (
-              <button onClick={handleStartCamera} className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base">
-                <ScanFace size={22} />
-                <span>Start</span>
-              </button>
-            )}
-            {status === "ready" && (
-              <button onClick={startMeasurement} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20 animate-pulse">
-                <Heart size={28} />
+            {(status === "idle" || status === "loading" || status === "ready") && (
+              <button 
+                onClick={handleStartCamera} 
+                disabled={status === "loading" || status === "ready"}
+                className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {status === "idle" ? (
+                  <>
+                    <ScanFace size={22} />
+                    <span>Start</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-5 h-5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+                    <span>Loading...</span>
+                  </>
+                )}
               </button>
             )}
             {status === "error" && (
