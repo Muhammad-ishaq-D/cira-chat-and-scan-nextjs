@@ -114,6 +114,11 @@ const VitalsScan = () => {
 
         if (!isActive) return;
 
+        // Refresh profile to update credit count
+        userApi.getProfile()
+          .then((data) => { if (isActive) setUserProfile(data); })
+          .catch(() => {});
+
         const historyData = await vitalsApi.getHistory().catch(() => null);
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
