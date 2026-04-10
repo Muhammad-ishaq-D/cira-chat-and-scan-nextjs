@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Shield, Database, Save, ToggleLeft, ToggleRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shield, Database, Save, ToggleLeft, ToggleRight, Loader2 } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -30,6 +30,23 @@ const AdminSettings = () => {
   const [toggles, setToggles] = useState<SettingToggle[]>(defaultToggles);
   const [credits, setCredits] = useState(defaultCredits);
   const [saving, setSaving] = useState(false);
+  const [loadingCredits, setLoadingCredits] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await adminApi.getCreditLimits();
+        if (data && typeof data === "object") {
+          setCredits((prev) => ({ ...prev, ...data }));
+        }
+      } catch {
+        // fallback to defaults
+      } finally {
+        setLoadingCredits(false);
+      }
+    };
+    load();
+  }, []);
 
   const toggle = async (key: string) => {
     const updated = toggles.map((t) => (t.key === key ? { ...t, enabled: !t.enabled } : t));
@@ -47,7 +64,7 @@ const AdminSettings = () => {
       await adminApi.updateCreditLimits(credits);
       toast.success("Credit limits saved");
     } catch (e: any) {
-      toast.info("Settings saved locally — backend endpoint not yet available");
+      toast.error(e?.message || "Failed to save credit limits");
     } finally {
       setSaving(false);
     }
