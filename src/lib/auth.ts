@@ -73,6 +73,14 @@ export function logout() {
   sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
 }
 
+/** Update avatar in stored user data */
+export function updateUserAvatar(avatar: string) {
+  const user = getUser();
+  if (user) {
+    localStorage.setItem(USER_KEY, JSON.stringify({ ...user, avatar }));
+  }
+}
+
 /** Register a new user */
 export async function register(payload: {
   name: string;

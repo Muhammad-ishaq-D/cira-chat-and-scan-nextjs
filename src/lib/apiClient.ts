@@ -105,6 +105,28 @@ export const userApi = {
   getProfile: () => get("/api/user/profile"),
   updateProfile: (data: any) => put("/api/user/profile", data),
   deleteAccount: () => del("/api/user/account"),
+  uploadAvatar: async (file: File): Promise<{ avatar: string }> => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const res = await fetch(`${API_BASE}/api/user/avatar`, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+    if (res.status === 401) {
+      logout();
+      redirectToLogin();
+      throw new Error("Session expired");
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || "Upload failed");
+    }
+    return res.json();
+  },
 };
 
 // ─── Chat Sessions ──────────────────────────────────────────────
