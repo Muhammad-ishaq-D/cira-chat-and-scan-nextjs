@@ -250,8 +250,8 @@ const VitalsScan = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto relative">
-        <button onClick={() => setShowHistory(!showHistory)} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Scan History">
+      <div className="flex-1 overflow-y-auto md:overflow-y-auto relative flex flex-col">
+        <button onClick={() => setShowHistory(!showHistory)} className="absolute top-3 left-3 md:top-4 md:left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Scan History">
           <Menu size={18} strokeWidth={1.5} />
         </button>
         <div className="fixed inset-0 pointer-events-none" style={{ left: 72 }}>
@@ -260,16 +260,16 @@ const VitalsScan = () => {
           <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6 py-8">
-          <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-foreground mb-1 font-heading">Vitals Scan</h1>
-            <p className="text-sm text-muted-foreground font-body">AI-powered face scan to measure your vitals in 30 seconds</p>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-6 pt-4 md:py-8 flex-1 flex flex-col md:block pb-20 md:pb-8">
+          <div className="mb-3 md:mb-8">
+            <h1 className="text-lg md:text-2xl font-semibold text-foreground mb-0.5 font-heading">Vitals Scan</h1>
+            <p className="text-xs md:text-sm text-muted-foreground font-body">AI-powered face scan · 30 seconds</p>
           </div>
 
           {status !== "finished" ? (
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 mb-8 shadow-sm flex flex-col items-center">
-              {/* Camera canvas — explicit height required for WASM renderer */}
-              <div className="w-full max-w-xl rounded-2xl overflow-hidden bg-black border border-border/30 mb-6 relative" style={{ height: 480 }}>
+            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-3 md:p-6 shadow-sm flex flex-col items-center flex-1 md:flex-none md:mb-8">
+              {/* Camera canvas — responsive height */}
+              <div className="w-full max-w-xl rounded-2xl overflow-hidden bg-black border border-border/30 mb-3 md:mb-6 relative flex-1 md:flex-none" style={{ minHeight: 200, maxHeight: 480 }}>
                 <canvas
                   id={CANVAS_ID}
                   ref={canvasRef}
@@ -277,8 +277,8 @@ const VitalsScan = () => {
                 />
                 {status === "idle" && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-                    <ScanFace size={48} className="text-primary mb-3 opacity-60" />
-                    <p className="text-sm text-white/70 font-body">Tap below to start camera</p>
+                    <ScanFace size={40} className="text-primary mb-2 opacity-60" />
+                    <p className="text-xs text-white/70 font-body">Tap below to start camera</p>
                   </div>
                 )}
                 {status === "measuring" && (
@@ -296,45 +296,45 @@ const VitalsScan = () => {
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 mb-4 text-destructive">
+                <div className="flex items-center gap-2 mb-2 text-destructive">
                   <AlertCircle size={14} />
                   <p className="text-xs">{error}</p>
                 </div>
               )}
 
-              <div className="flex items-center gap-2 mb-5">
-                <AlertCircle size={14} className="text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">Credits will be deducted upon scan · 100% on-device processing</p>
+              <div className="flex items-center gap-2 mb-3 md:mb-5">
+                <AlertCircle size={12} className="text-muted-foreground shrink-0" />
+                <p className="text-[10px] md:text-xs text-muted-foreground">Credits deducted upon scan · 100% on-device</p>
               </div>
 
               <div className="flex gap-3">
                 {status === "ready" && (
-                  <button onClick={startMeasurement} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                  <button onClick={startMeasurement} className="h-11 md:h-12 px-6 md:px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
                     Start Face Scan
                   </button>
                 )}
                 {status === "measuring" && (
-                  <button disabled className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm opacity-60 cursor-not-allowed">
+                  <button disabled className="h-11 md:h-12 px-6 md:px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm opacity-60 cursor-not-allowed">
                     Scanning...
                   </button>
                 )}
                 {status === "error" && (
-                  <button onClick={reset} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                  <button onClick={reset} className="h-11 md:h-12 px-6 md:px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
                     <RefreshCw size={16} /> Try Again
                   </button>
                 )}
                 {status === "idle" && (
-                  <button onClick={handleStartCamera} className="h-12 px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
+                  <button onClick={handleStartCamera} className="h-11 md:h-12 px-6 md:px-8 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all flex items-center gap-2">
                     <ScanFace size={18} /> {scanNeedsSecureReload ? "Prepare Camera" : "Start Camera"}
                   </button>
                 )}
               </div>
 
               {(status === "ready" || status === "idle") && (
-                <div className="mt-6 grid grid-cols-3 gap-4 w-full max-w-md">
+                <div className="mt-3 md:mt-6 grid grid-cols-3 gap-3 md:gap-4 w-full max-w-md">
                   {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face the camera" }, { step: "3", text: "Stay still 30s" }].map((s) => (
                     <div key={s.step} className="text-center">
-                      <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center mx-auto mb-1.5">
+                      <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-secondary flex items-center justify-center mx-auto mb-1">
                         <span className="text-[10px] font-semibold text-muted-foreground">{s.step}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground">{s.text}</p>
@@ -345,30 +345,30 @@ const VitalsScan = () => {
             </div>
           ) : (
             <div>
-              <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-6 mb-6 shadow-sm">
+              <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-4 md:p-6 mb-4 md:mb-6 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
+                  <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
-                    <p className="text-xs text-muted-foreground">All vitals measured successfully · Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
+                    <p className="text-[11px] md:text-xs text-muted-foreground">All vitals measured · Signal: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-3 mb-4 md:mb-6">
                 {displayVitals.map((v) => {
                   const Icon = v.icon;
                   return (
-                    <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
-                          <Icon size={14} className={v.color.split(" ")[0]} />
+                    <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-3 md:p-4 hover:shadow-md transition-all">
+                      <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+                        <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                          <Icon size={12} className={v.color.split(" ")[0]} />
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-body">{v.label}</p>
+                        <p className="text-[10px] md:text-[11px] text-muted-foreground font-body">{v.label}</p>
                       </div>
-                      <p className="text-xl font-semibold text-foreground font-heading">
-                        {v.value}<span className="text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
+                      <p className="text-lg md:text-xl font-semibold text-foreground font-heading">
+                        {v.value}<span className="text-[10px] md:text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
                       </p>
                     </div>
                   );
@@ -378,23 +378,23 @@ const VitalsScan = () => {
               {/* Health Indexes */}
               {displayHealthIndexes.length > 0 && (
                 <>
-                  <div className="flex items-center gap-2 mb-3 mt-2">
-                    <ShieldCheck size={16} className="text-primary" />
-                    <p className="text-sm font-semibold text-foreground font-heading">Health Indexes</p>
+                  <div className="flex items-center gap-2 mb-2 md:mb-3 mt-1 md:mt-2">
+                    <ShieldCheck size={14} className="text-primary" />
+                    <p className="text-xs md:text-sm font-semibold text-foreground font-heading">Health Indexes</p>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-3 mb-4 md:mb-6">
                     {displayHealthIndexes.map((v) => {
                       const Icon = v.icon;
                       return (
-                        <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
-                              <Icon size={14} className={v.color.split(" ")[0]} />
+                        <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-3 md:p-4 hover:shadow-md transition-all">
+                          <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+                            <div className={`w-6 h-6 md:w-7 md:h-7 rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                              <Icon size={12} className={v.color.split(" ")[0]} />
                             </div>
-                            <p className="text-[11px] text-muted-foreground font-body">{v.label}</p>
+                            <p className="text-[10px] md:text-[11px] text-muted-foreground font-body">{v.label}</p>
                           </div>
-                          <p className="text-xl font-semibold text-foreground font-heading">
-                            {v.value}<span className="text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
+                          <p className="text-lg md:text-xl font-semibold text-foreground font-heading">
+                            {v.value}<span className="text-[10px] md:text-xs text-muted-foreground font-normal ml-1">{v.unit}</span>
                           </p>
                         </div>
                       );
@@ -402,9 +402,9 @@ const VitalsScan = () => {
                   </div>
                 </>
               )}
-              <div className="flex gap-3">
-                <button onClick={reset} className="h-11 px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
-                <button onClick={handleAnalyzeWithCira} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
+              <div className="flex gap-3 pb-4">
+                <button onClick={reset} className="h-10 md:h-11 px-5 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
+                <button onClick={handleAnalyzeWithCira} className="h-10 md:h-11 px-5 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
                   Analyze with Cira
                 </button>
               </div>
