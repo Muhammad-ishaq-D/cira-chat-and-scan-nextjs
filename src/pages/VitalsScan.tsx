@@ -114,6 +114,11 @@ const VitalsScan = () => {
 
         if (!isActive) return;
 
+        // Refresh profile to update credit count
+        userApi.getProfile()
+          .then((data) => { if (isActive) setUserProfile(data); })
+          .catch(() => {});
+
         const historyData = await vitalsApi.getHistory().catch(() => null);
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
@@ -158,9 +163,24 @@ const VitalsScan = () => {
     navigate("/chat");
   };
 
-  const handleStartCamera = () => {
+  const handleStartCamera = async () => {
+    // Check credits before allowing scan
+    try {
+      const freshProfile = await userApi.getProfile();
+      setUserProfile(freshProfile);
+      const scansLeft = freshProfile?.credits?.face_scans;
+      if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
+        toast.error("No scan credits remaining. Upgrade your plan.", {
+          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+          duration: 8000,
+        });
+        return;
+      }
+    } catch {
+      // If profile fetch fails, allow scan attempt — backend will enforce
+    }
+
     // If not cross-origin isolated, attempt a single reload to activate the service worker.
-    // Use sessionStorage flag to avoid infinite reload loops.
     if (scanNeedsSecureReload) {
       const reloadKey = "coi_reload_attempted";
       if (!sessionStorage.getItem(reloadKey)) {
@@ -168,7 +188,6 @@ const VitalsScan = () => {
         window.location.replace("/vitals-scan");
         return;
       }
-      // Already tried reloading once — proceed anyway and let SDK report the real error
       sessionStorage.removeItem(reloadKey);
     }
 
