@@ -70,12 +70,6 @@ const VitalsScan = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-start measurement once SDK is ready
-  useEffect(() => {
-    if (status === "ready") {
-      startMeasurement();
-    }
-  }, [status, startMeasurement]);
 
   useEffect(() => {
     if (!results) return;
