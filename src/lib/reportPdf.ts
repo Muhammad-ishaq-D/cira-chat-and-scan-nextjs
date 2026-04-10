@@ -779,59 +779,62 @@ export async function generateCombinedScansPdf(scans: VitalScanData[]) {
   doc.text(`${sorted.length} scans included  |  Most recent first`, 20, y);
   y += 8;
 
-  // Quick Comparison Table (if multiple scans)
+  // Comparison Table — dates as rows, metrics as columns
   if (sorted.length > 1) {
     y = drawSectionTitle(doc, "Scan Comparison", y);
-    
-    const cols = sorted.slice(0, 6);
-    const labelW = 38;
-    const colW = Math.min(25, (172 - labelW) / cols.length);
-    const startX = 20 + labelW;
+
+    const metrics: [string, (s: VitalScanData) => string][] = [
+      ["HR", s => val(s.heart_rate)],
+      ["BP", s => s.systolic_bp && s.diastolic_bp ? `${Math.round(s.systolic_bp)}/${Math.round(s.diastolic_bp)}` : "—"],
+      ["BR", s => val(s.breathing_rate)],
+      ["Stress", s => val(s.stress_index)],
+      ["HRV", s => val(s.hrv_sdnn)],
+      ["BMI", s => val(s.bmi, 1)],
+      ["Wellness", s => val(s.wellness_score)],
+      ["Vasc Age", s => val(s.vascular_age)],
+    ];
+
     const tableX = 20;
-    const tableW = labelW + cols.length * colW;
-    
-    // Table header row
+    const dateColW = 30;
+    const metricColW = Math.min(20, (172 - dateColW) / metrics.length);
+    const startX = tableX + dateColW;
+    const tableW = dateColW + metrics.length * metricColW;
+
+    // Header row — metric names
     drawRoundedRect(doc, tableX, y - 1, tableW, 7, 1.5, COLORS.purpleLight);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(6.5);
+    doc.setFontSize(6);
     doc.setTextColor(...COLORS.purple);
-    doc.text("Metric", tableX + 3, y + 3);
-    cols.forEach((s, i) => {
-      const d = new Date(s.created_at || s.date || "");
-      const label = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `#${i + 1}`;
-      doc.text(label, startX + i * colW + colW / 2, y + 3, { align: "center" });
+    doc.text("Date", tableX + 2, y + 3);
+    metrics.forEach(([label], i) => {
+      doc.text(label, startX + i * metricColW + metricColW / 2, y + 3, { align: "center" });
     });
     y += 9;
 
-    const compareRows: [string, (s: VitalScanData) => string][] = [
-      ["Heart Rate (bpm)", s => val(s.heart_rate)],
-      ["Blood Pressure", s => s.systolic_bp && s.diastolic_bp ? `${Math.round(s.systolic_bp)}/${Math.round(s.diastolic_bp)}` : "—"],
-      ["Breathing Rate", s => val(s.breathing_rate)],
-      ["Stress Index", s => val(s.stress_index)],
-      ["HRV (ms)", s => val(s.hrv_sdnn)],
-      ["BMI", s => val(s.bmi, 1)],
-      ["Wellness Score", s => val(s.wellness_score)],
-      ["Vascular Age", s => val(s.vascular_age)],
-    ];
-
-    compareRows.forEach(([label, getter], rowIdx) => {
+    // Data rows — one per scan
+    sorted.forEach((scan, rowIdx) => {
       y = checkPage(doc, y, 6);
-      const isAlt = rowIdx % 2 === 0;
-      if (isAlt) {
+      if (rowIdx % 2 === 0) {
         doc.setFillColor(...COLORS.cardBg);
         doc.rect(tableX, y - 3, tableW, 5.5, "F");
       }
-      
+
+      // Date label
+      const d = new Date(scan.created_at || scan.date || "");
+      const dateLabel = !isNaN(d.getTime())
+        ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })
+        : `Scan ${rowIdx + 1}`;
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
+      doc.setFontSize(6.5);
       doc.setTextColor(...COLORS.muted);
-      doc.text(label, tableX + 3, y);
-      
+      doc.text(dateLabel, tableX + 2, y);
+
+      // Metric values
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(...COLORS.foreground);
-      cols.forEach((s, i) => {
-        doc.text(getter(s), startX + i * colW + colW / 2, y, { align: "center" });
+      metrics.forEach(([, getter], i) => {
+        doc.text(getter(scan), startX + i * metricColW + metricColW / 2, y, { align: "center" });
       });
       y += 5.5;
     });
