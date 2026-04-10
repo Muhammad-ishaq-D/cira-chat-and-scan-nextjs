@@ -7,14 +7,21 @@ import jsPDF from "jspdf";
 // Cira brand colors (HSL converted to RGB)
 const COLORS = {
   primary: [196, 64, 157] as [number, number, number],       // hsl(319,65%,56%) → pink
+  primaryLight: [251, 100, 182] as [number, number, number],  // lighter pink
   foreground: [30, 20, 46] as [number, number, number],      // dark purple-black
   muted: [130, 117, 107] as [number, number, number],        // muted text
   border: [220, 213, 206] as [number, number, number],       // light border
   background: [247, 244, 239] as [number, number, number],   // cream bg
+  cardBg: [252, 250, 248] as [number, number, number],       // slightly off-white card
   white: [255, 255, 255] as [number, number, number],
   emerald: [16, 185, 129] as [number, number, number],
+  emeraldLight: [209, 250, 229] as [number, number, number],
   amber: [217, 119, 6] as [number, number, number],
+  amberLight: [254, 243, 199] as [number, number, number],
   red: [239, 68, 68] as [number, number, number],
+  redLight: [254, 226, 226] as [number, number, number],
+  purple: [158, 29, 244] as [number, number, number],
+  purpleLight: [243, 232, 255] as [number, number, number],
 };
 
 function drawLine(doc: jsPDF, y: number, x1 = 20, x2 = 190) {
