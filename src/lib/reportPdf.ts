@@ -7,14 +7,21 @@ import jsPDF from "jspdf";
 // Cira brand colors (HSL converted to RGB)
 const COLORS = {
   primary: [196, 64, 157] as [number, number, number],       // hsl(319,65%,56%) → pink
+  primaryLight: [251, 100, 182] as [number, number, number],  // lighter pink
   foreground: [30, 20, 46] as [number, number, number],      // dark purple-black
   muted: [130, 117, 107] as [number, number, number],        // muted text
   border: [220, 213, 206] as [number, number, number],       // light border
   background: [247, 244, 239] as [number, number, number],   // cream bg
+  cardBg: [252, 250, 248] as [number, number, number],       // slightly off-white card
   white: [255, 255, 255] as [number, number, number],
   emerald: [16, 185, 129] as [number, number, number],
+  emeraldLight: [209, 250, 229] as [number, number, number],
   amber: [217, 119, 6] as [number, number, number],
+  amberLight: [254, 243, 199] as [number, number, number],
   red: [239, 68, 68] as [number, number, number],
+  redLight: [254, 226, 226] as [number, number, number],
+  purple: [158, 29, 244] as [number, number, number],
+  purpleLight: [243, 232, 255] as [number, number, number],
 };
 
 function drawLine(doc: jsPDF, y: number, x1 = 20, x2 = 190) {
@@ -403,6 +410,15 @@ function formatScanDate(d?: string): string {
   return d;
 }
 
+function formatShortDate(d?: string): string {
+  if (!d) return "N/A";
+  try {
+    const date = new Date(d);
+    if (!isNaN(date.getTime())) return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {}
+  return d;
+}
+
 function val(v: number | null | undefined, decimals = 0): string {
   if (v == null) return "—";
   return decimals > 0 ? Number(v).toFixed(decimals) : String(Math.round(v));
@@ -423,132 +439,297 @@ function fattyLiverLabel(v: number | null | undefined): string {
   return riskLabel(v);
 }
 
-function riskColor(level: string): [number, number, number] {
-  if (level === "Low") return COLORS.emerald;
-  if (level === "Moderate") return COLORS.amber;
-  if (level === "High") return COLORS.red;
-  return COLORS.muted;
+function riskBadgeColors(level: string): { text: [number, number, number]; bg: [number, number, number] } {
+  if (level === "Low") return { text: COLORS.emerald, bg: COLORS.emeraldLight };
+  if (level === "Moderate") return { text: COLORS.amber, bg: COLORS.amberLight };
+  if (level === "High") return { text: COLORS.red, bg: COLORS.redLight };
+  return { text: COLORS.muted, bg: COLORS.cardBg };
 }
 
-function drawVitalRow(doc: jsPDF, label: string, value: string, unit: string, y: number, x = 24): number {
-  y = checkPage(doc, y, 6);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.muted);
-  doc.text(label, x, y);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(...COLORS.foreground);
-  doc.text(value, x + 75, y);
-  if (unit && value !== "—") {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.muted);
-    doc.text(unit, x + 75 + doc.getTextWidth(value + " "), y);
+// ─── Drawing helpers for professional cards ─────────────────────
+
+function drawRoundedRect(doc: jsPDF, x: number, y: number, w: number, h: number, r: number, fillColor: [number, number, number], borderColor?: [number, number, number]) {
+  doc.setFillColor(...fillColor);
+  if (borderColor) {
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(0.3);
   }
-  return y + 5.5;
+  doc.roundedRect(x, y, w, h, r, r, borderColor ? "FD" : "F");
 }
 
-function drawRiskRow(doc: jsPDF, label: string, level: string, y: number, x = 24): number {
-  y = checkPage(doc, y, 6);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.muted);
-  doc.text(label, x, y);
+function drawCiraLogo(doc: jsPDF, x: number, y: number, size: number) {
+  // Draw a simplified Cira star/sparkle icon
+  const cx = x + size / 2;
+  const cy = y + size / 2;
+  const r = size / 2;
+  
+  // Pink gradient circle background
+  doc.setFillColor(...COLORS.primary);
+  doc.circle(cx, cy, r, "F");
+  
+  // White star sparkle in center
+  doc.setFillColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(...riskColor(level));
-  doc.text(level, x + 75, y);
-  doc.setTextColor(...COLORS.foreground);
-  return y + 5.5;
+  doc.setFontSize(size * 0.7);
+  doc.setTextColor(255, 255, 255);
+  doc.text("✦", cx, cy + size * 0.15, { align: "center" });
 }
 
-function addScanBlock(doc: jsPDF, scan: VitalScanData, y: number, showDate = true): number {
-  if (showDate) {
-    y = checkPage(doc, y, 10);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(...COLORS.primary);
-    doc.text(formatScanDate(scan.created_at || scan.date), 20, y);
-    y += 2;
-    drawLine(doc, y);
+function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: string): number {
+  // Top gradient bar
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(0, 0, 210, 4, "F");
+  doc.setFillColor(...COLORS.primaryLight);
+  doc.rect(140, 0, 70, 4, "F");
+
+  // Logo circle + brand
+  drawCiraLogo(doc, 18, 10, 10);
+  
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.setTextColor(...COLORS.foreground);
+  doc.text("Cira", 32, 17);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(...COLORS.primary);
+  doc.text("AI Health Nurse", 47, 17);
+
+  // Right side: report type badge
+  const badgeW = 40;
+  drawRoundedRect(doc, 190 - badgeW, 8, badgeW, 7, 2, COLORS.purpleLight);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.purple);
+  doc.text(subtitle.toUpperCase(), 190 - badgeW / 2, 13, { align: "center" });
+
+  // Date below badge
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(formatShortDate(date), 190 - badgeW / 2, 19, { align: "center" });
+
+  // Separator
+  drawLine(doc, 24, 18, 192);
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(...COLORS.foreground);
+  const titleLines = doc.splitTextToSize(title, 170);
+  let y = 32;
+  for (const line of titleLines) {
+    doc.text(line, 20, y);
     y += 6;
   }
 
-  // Vital Signs
-  const vitals: [string, string, string][] = [
+  return y + 2;
+}
+
+function drawScanFooter(doc: jsPDF) {
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    
+    // Disclaimer box
+    const disclaimerY = 276;
+    drawRoundedRect(doc, 15, disclaimerY, 180, 12, 2, COLORS.cardBg, COLORS.border);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6);
+    doc.setTextColor(...COLORS.muted);
+    doc.text("⚕️  Medical Disclaimer", 20, disclaimerY + 4);
+    doc.setFontSize(5.5);
+    doc.text("Cira is an AI health nurse, not a licensed medical professional. This report is for informational purposes only.", 20, disclaimerY + 7.5);
+    doc.text("Always discuss these findings with your doctor. Trained on peer-reviewed medical data worldwide.", 20, disclaimerY + 10.5);
+
+    // Bottom bar
+    doc.setFillColor(...COLORS.primary);
+    doc.rect(0, 294, 210, 3, "F");
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(...COLORS.muted);
+    doc.text("Generated by Cira  •  askainurse.com", 105, 292, { align: "center" });
+    doc.text(`Page ${i} of ${pages}`, 192, 292, { align: "right" });
+  }
+}
+
+function drawSectionTitle(doc: jsPDF, title: string, y: number, icon?: string): number {
+  y = checkPage(doc, y, 14);
+  
+  // Section icon circle
+  if (icon) {
+    drawRoundedRect(doc, 20, y - 4, 6, 6, 1.5, COLORS.purpleLight);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(5);
+    doc.setTextColor(...COLORS.purple);
+    doc.text(icon, 23, y, { align: "center" });
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.5);
+  doc.setTextColor(...COLORS.primary);
+  doc.text(title, icon ? 29 : 20, y);
+  y += 2;
+  
+  // Thin accent line
+  doc.setDrawColor(...COLORS.primary);
+  doc.setLineWidth(0.5);
+  doc.line(icon ? 29 : 20, y, 80, y);
+  doc.setDrawColor(...COLORS.border);
+  doc.setLineWidth(0.15);
+  doc.line(80, y, 192, y);
+  
+  return y + 5;
+}
+
+function drawVitalCard(doc: jsPDF, label: string, value: string, unit: string, x: number, y: number, w: number, h: number): void {
+  drawRoundedRect(doc, x, y, w, h, 2.5, COLORS.cardBg, COLORS.border);
+  
+  // Label
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(label, x + 4, y + 5.5);
+  
+  // Value
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(...COLORS.foreground);
+  doc.text(value, x + 4, y + 12.5);
+  
+  // Unit
+  if (unit && value !== "—") {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(...COLORS.muted);
+    doc.text(unit, x + 4 + doc.getTextWidth(value) + 1.5, y + 12.5);
+  }
+}
+
+function drawRiskBadge(doc: jsPDF, label: string, level: string, x: number, y: number, w: number, h: number): void {
+  drawRoundedRect(doc, x, y, w, h, 2.5, COLORS.cardBg, COLORS.border);
+  
+  // Label
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(label, x + 4, y + 5.5);
+  
+  // Risk badge
+  const { text, bg } = riskBadgeColors(level);
+  const badgeW = doc.getTextWidth(level) + 6;
+  drawRoundedRect(doc, x + 4, y + 8, badgeW > 12 ? badgeW : 12, 5.5, 1.5, bg);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(...text);
+  doc.text(level, x + 4 + (badgeW > 12 ? badgeW : 12) / 2, y + 12, { align: "center" });
+}
+
+function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = true): number {
+  if (showDate) {
+    y = checkPage(doc, y, 12);
+    // Date banner
+    drawRoundedRect(doc, 20, y - 3, 172, 8, 2, COLORS.purpleLight);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.purple);
+    doc.text("📅  " + formatScanDate(scan.created_at || scan.date), 26, y + 2);
+    y += 10;
+  }
+
+  // Vital Signs cards
+  const vitals = ([
     ["Blood Pressure", scan.systolic_bp && scan.diastolic_bp ? `${Math.round(scan.systolic_bp)}/${Math.round(scan.diastolic_bp)}` : "—", "mmHg"],
     ["Heart Rate", val(scan.heart_rate), "bpm"],
-    ["Heart Rate Variability", val(scan.hrv_sdnn), "ms"],
+    ["HRV (SDNN)", val(scan.hrv_sdnn), "ms"],
     ["Breathing Rate", val(scan.breathing_rate), "/min"],
     ["Stress Index", val(scan.stress_index), "/100"],
     ["Cardiac Workload", val(scan.cardiac_workload), ""],
-    ["Parasympathetic Activity", val(scan.parasympathetic_activity), ""],
-  ];
+    ["Parasympathetic", val(scan.parasympathetic_activity), ""],
+  ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
-  const hasVitals = vitals.some(([, v]) => v !== "—");
-  if (hasVitals) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...COLORS.foreground);
-    y = checkPage(doc, y, 8);
-    doc.text("Vital Signs", 20, y);
-    y += 5;
-    for (const [label, value, unit] of vitals) {
-      if (value !== "—") y = drawVitalRow(doc, label, value, unit, y);
+  if (vitals.length > 0) {
+    y = drawSectionTitle(doc, "Vital Signs", y, "♥");
+    const cardW = 40;
+    const cardH = 16;
+    const gap = 3;
+    const cols = 4;
+    for (let i = 0; i < vitals.length; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const cx = 20 + col * (cardW + gap);
+      const cy = y + row * (cardH + gap);
+      if (i === 0 || col === 0) {
+        const neededY = cy + cardH;
+        if (neededY > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+      drawVitalCard(doc, vitals[i][0], vitals[i][1], vitals[i][2], cx, y + row * (cardH + gap), cardW, cardH);
     }
-    y += 3;
+    y += Math.ceil(vitals.length / cols) * (cardH + gap) + 4;
   }
 
-  // Health Indices
-  const indices: [string, string, string][] = [
-    ["Body Mass Index", val(scan.bmi, 1), "kg/m²"],
+  // Health Indices cards
+  const indices = ([
+    ["BMI", val(scan.bmi, 1), "kg/m²"],
     ["Vascular Age", val(scan.vascular_age), "yrs"],
     ["Wellness Score", val(scan.wellness_score), "/100"],
-    ["Waist-to-Height Ratio", val(scan.waist_to_height_ratio, 2), ""],
-    ["Body Fat Percentage", val(scan.body_fat_percentage, 1), "%"],
-    ["Basal Metabolic Rate", val(scan.basal_metabolic_rate), "kcal"],
-    ["Body Shape Index", val(scan.body_shape_index, 3), ""],
-    ["Total Daily Energy", val(scan.total_daily_energy_expenditure), "kcal"],
-  ];
+    ["Waist:Height", val(scan.waist_to_height_ratio, 2), ""],
+    ["Body Fat", val(scan.body_fat_percentage, 1), "%"],
+    ["BMR", val(scan.basal_metabolic_rate), "kcal"],
+    ["Body Shape", val(scan.body_shape_index, 3), ""],
+    ["Daily Energy", val(scan.total_daily_energy_expenditure), "kcal"],
+  ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
-  const hasIndices = indices.some(([, v]) => v !== "—");
-  if (hasIndices) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...COLORS.foreground);
-    y = checkPage(doc, y, 8);
-    doc.text("Health Indices", 20, y);
-    y += 5;
-    for (const [label, value, unit] of indices) {
-      if (value !== "—") y = drawVitalRow(doc, label, value, unit, y);
+  if (indices.length > 0) {
+    y = drawSectionTitle(doc, "Health Indices", y, "📊");
+    const cardW = 40;
+    const cardH = 16;
+    const gap = 3;
+    const cols = 4;
+    for (let i = 0; i < indices.length; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      if (col === 0 && y + row * (cardH + gap) + cardH > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      drawVitalCard(doc, indices[i][0], indices[i][1], indices[i][2], 20 + col * (cardW + gap), y + row * (cardH + gap), cardW, cardH);
     }
-    y += 3;
+    y += Math.ceil(indices.length / cols) * (cardH + gap) + 4;
   }
 
-  // Health Risks
-  const risks: [string, string][] = [
-    ["Cardiovascular Risk", riskLabel(scan.cv_disease_risk)],
-    ["Coronary Heart Disease", riskLabel(scan.coronary_heart_disease_risk)],
-    ["Stroke Risk", riskLabel(scan.stroke_risk)],
-    ["Heart Failure Risk", riskLabel(scan.heart_failure_risk)],
-    ["Diabetes Risk", riskLabel(scan.diabetes_risk)],
-    ["Fatty Liver Disease", fattyLiverLabel(scan.fatty_liver_risk)],
-    ["Cardiovascular Event", riskLabel(scan.hard_cv_event_risk)],
-  ];
+  // Health Risks badges
+  const risks = ([
+    ["Cardiovascular", riskLabel(scan.cv_disease_risk)],
+    ["Coronary Heart", riskLabel(scan.coronary_heart_disease_risk)],
+    ["Stroke", riskLabel(scan.stroke_risk)],
+    ["Heart Failure", riskLabel(scan.heart_failure_risk)],
+    ["Diabetes", riskLabel(scan.diabetes_risk)],
+    ["Fatty Liver", fattyLiverLabel(scan.fatty_liver_risk)],
+    ["CV Event", riskLabel(scan.hard_cv_event_risk)],
+  ] as [string, string][]).filter(([, v]) => v !== "—");
 
-  const hasRisks = risks.some(([, v]) => v !== "—");
-  if (hasRisks) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...COLORS.foreground);
-    y = checkPage(doc, y, 8);
-    doc.text("Health Risks", 20, y);
-    y += 5;
-    for (const [label, level] of risks) {
-      if (level !== "—") y = drawRiskRow(doc, label, level, y);
+  if (risks.length > 0) {
+    y = drawSectionTitle(doc, "Health Risks", y, "⚠");
+    const cardW = 40;
+    const cardH = 16;
+    const gap = 3;
+    const cols = 4;
+    for (let i = 0; i < risks.length; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      if (col === 0 && y + row * (cardH + gap) + cardH > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      drawRiskBadge(doc, risks[i][0], risks[i][1], 20 + col * (cardW + gap), y + row * (cardH + gap), cardW, cardH);
     }
-    y += 3;
+    y += Math.ceil(risks.length / cols) * (cardH + gap) + 4;
   }
 
   return y;
@@ -556,9 +737,9 @@ function addScanBlock(doc: jsPDF, scan: VitalScanData, y: number, showDate = tru
 
 export function generateSingleScanPdf(scan: VitalScanData) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  let y = addHeader(doc, "Face Scan Report", "Vital Scan", scan.created_at || scan.date || new Date().toISOString());
-  y = addScanBlock(doc, scan, y, false);
-  addFooter(doc);
+  let y = drawScanHeader(doc, "Face Scan Report", "Vital Scan", scan.created_at || scan.date || new Date().toISOString());
+  y = addScanBlockPro(doc, scan, y, false);
+  drawScanFooter(doc);
   return doc;
 }
 
@@ -566,63 +747,85 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const sorted = [...scans].sort((a, b) => new Date(b.created_at || b.date || 0).getTime() - new Date(a.created_at || a.date || 0).getTime());
 
-  let y = addHeader(doc, `Face Scan History (${sorted.length} scans)`, "Combined Report", new Date().toISOString());
+  let y = drawScanHeader(doc, `Face Scan History`, "Combined Report", new Date().toISOString());
 
-  // Summary table — compact comparison across scans
+  // Patient summary line
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(`${sorted.length} scans included  •  Most recent first`, 20, y);
+  y += 8;
+
+  // Quick Comparison Table (if multiple scans)
   if (sorted.length > 1) {
-    y = addSection(doc, "Quick Comparison", y);
-    const cols = sorted.slice(0, 6); // max 6 scans in comparison
-    const colW = Math.min(28, 150 / cols.length);
-    const startX = 45;
-
-    // Date headers
+    y = drawSectionTitle(doc, "Scan Comparison", y, "📋");
+    
+    const cols = sorted.slice(0, 6);
+    const labelW = 38;
+    const colW = Math.min(25, (172 - labelW) / cols.length);
+    const startX = 20 + labelW;
+    const tableX = 20;
+    const tableW = labelW + cols.length * colW;
+    
+    // Table header row
+    drawRoundedRect(doc, tableX, y - 1, tableW, 7, 1.5, COLORS.purpleLight);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.primary);
+    doc.setFontSize(6.5);
+    doc.setTextColor(...COLORS.purple);
+    doc.text("Metric", tableX + 3, y + 3);
     cols.forEach((s, i) => {
       const d = new Date(s.created_at || s.date || "");
-      const label = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `Scan ${i + 1}`;
-      doc.text(label, startX + i * colW, y, { align: "center" });
+      const label = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `#${i + 1}`;
+      doc.text(label, startX + i * colW + colW / 2, y + 3, { align: "center" });
     });
-    y += 5;
+    y += 9;
 
     const compareRows: [string, (s: VitalScanData) => string][] = [
-      ["Heart Rate", s => val(s.heart_rate)],
+      ["Heart Rate (bpm)", s => val(s.heart_rate)],
       ["Blood Pressure", s => s.systolic_bp && s.diastolic_bp ? `${Math.round(s.systolic_bp)}/${Math.round(s.diastolic_bp)}` : "—"],
       ["Breathing Rate", s => val(s.breathing_rate)],
       ["Stress Index", s => val(s.stress_index)],
-      ["HRV", s => val(s.hrv_sdnn)],
+      ["HRV (ms)", s => val(s.hrv_sdnn)],
       ["BMI", s => val(s.bmi, 1)],
       ["Wellness Score", s => val(s.wellness_score)],
+      ["Vascular Age", s => val(s.vascular_age)],
     ];
 
-    for (const [label, getter] of compareRows) {
-      y = checkPage(doc, y, 5);
+    compareRows.forEach(([label, getter], rowIdx) => {
+      y = checkPage(doc, y, 6);
+      const isAlt = rowIdx % 2 === 0;
+      if (isAlt) {
+        doc.setFillColor(...COLORS.cardBg);
+        doc.rect(tableX, y - 3, tableW, 5.5, "F");
+      }
+      
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(...COLORS.muted);
-      doc.text(label, 20, y);
-      doc.setTextColor(...COLORS.foreground);
+      doc.text(label, tableX + 3, y);
+      
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(...COLORS.foreground);
       cols.forEach((s, i) => {
-        doc.text(getter(s), startX + i * colW, y, { align: "center" });
+        doc.text(getter(s), startX + i * colW + colW / 2, y, { align: "center" });
       });
-      y += 4.5;
-    }
+      y += 5.5;
+    });
     y += 6;
   }
 
   // Detailed per-scan data
-  y = addSection(doc, "Detailed Scan Results", y);
+  y = drawSectionTitle(doc, "Individual Scan Details", y, "🔍");
   for (let i = 0; i < sorted.length; i++) {
-    y = addScanBlock(doc, sorted[i], y, true);
+    y = addScanBlockPro(doc, sorted[i], y, true);
     if (i < sorted.length - 1) {
-      y += 4;
-      y = checkPage(doc, y, 30);
+      y += 2;
+      y = checkPage(doc, y, 40);
     }
   }
 
-  addFooter(doc);
+  drawScanFooter(doc);
   return doc;
 }
 
