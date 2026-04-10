@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IndianRupee, Users, CreditCard, Search, Filter } from "lucide-react";
+import { DollarSign, Users, CreditCard, Search, Filter } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminBilling = () => {
@@ -69,8 +69,8 @@ const AdminBilling = () => {
   const totalUsers = dashboard?.total_users ?? 0;
 
   const stats = [
-    { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: "bg-emerald-50 text-emerald-600" },
-    { label: "Today's Revenue", value: `₹${todayRevenue.toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
+    { label: "Today's Revenue", value: `$${todayRevenue.toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
     { label: "Active Subscriptions", value: activeSubs, icon: Users, color: "bg-blue-50 text-blue-600" },
     { label: "Total Users", value: totalUsers, icon: Users, color: "bg-purple-50 text-purple-600" },
   ];
@@ -146,7 +146,7 @@ const AdminBilling = () => {
                 {transactions.map((tx: any, i: number) => (
                   <tr key={tx.id || i} className="border-b border-border/30 last:border-0">
                     <td className="py-2.5">{tx.user_name || tx.email || "—"}</td>
-                    <td className="py-2.5 font-medium">₹{tx.amount?.toLocaleString() ?? 0}</td>
+                    <td className="py-2.5 font-medium">${tx.amount?.toLocaleString() ?? 0}</td>
                     <td className="py-2.5">{tx.plan || tx.plan_id || "—"}</td>
                     <td className="py-2.5">
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
