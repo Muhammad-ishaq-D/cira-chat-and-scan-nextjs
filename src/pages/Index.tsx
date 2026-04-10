@@ -171,8 +171,6 @@ const Index = () => {
             <span>📷 Camera only</span>
           </div>
         </div>
-          </div>
-        </div>
       </main>
 
       {/* ═══════════════════════════════════════════ */}
