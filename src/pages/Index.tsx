@@ -108,8 +108,11 @@ const Index = () => {
 
       {/* Hero */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center" style={{ minHeight: "calc(100vh - 68px)" }}>
-        {/* H1 */}
+        {/* Tag + H1 */}
         <div className="text-center mb-3 sm:mb-4 animate-fade-in">
+          <span className="inline-block mb-3 sm:mb-4 px-4 py-1.5 rounded-full text-xs font-medium font-body text-primary-foreground bg-gradient-to-r from-primary to-primary/70 shadow-sm">
+            ✨ AI Nurse
+          </span>
           <h1 className="font-heading text-4xl sm:text-5xl md:text-[60px] font-semibold text-foreground leading-[1.1] tracking-tight">
             Your face reveals your <span className="text-primary">health</span>.
           </h1>
