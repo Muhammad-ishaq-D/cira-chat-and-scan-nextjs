@@ -111,7 +111,7 @@ const Profile = () => {
 
   const markDirty = () => setDirty(true);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -122,17 +122,11 @@ const Profile = () => {
       toast.error("Image must be under 5MB");
       return;
     }
-    setUploadingAvatar(true);
-    try {
-      const result = await userApi.uploadAvatar(file);
-      setAvatar(result.avatar);
-      updateUserAvatar(result.avatar);
-      toast.success("Profile picture updated!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to upload picture");
-    } finally {
-      setUploadingAvatar(false);
-    }
+    // Create local preview and mark dirty
+    const previewUrl = URL.createObjectURL(file);
+    setPendingAvatarFile(file);
+    setPendingAvatarPreview(previewUrl);
+    setDirty(true);
   };
 
   const initials = (name || "U").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
