@@ -603,24 +603,29 @@ function drawSectionTitle(doc: jsPDF, title: string, y: number, iconType?: strin
 function drawVitalCard(doc: jsPDF, label: string, value: string, unit: string, x: number, y: number, w: number, h: number): void {
   drawRoundedRect(doc, x, y, w, h, 2.5, COLORS.cardBg, COLORS.border);
   
-  // Label
+  // Label — truncate to fit card
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.setTextColor(...COLORS.muted);
-  doc.text(label, x + 4, y + 5.5);
+  const truncLabel = doc.splitTextToSize(label, w - 8)[0] || label;
+  doc.text(truncLabel, x + 3.5, y + 5);
   
   // Value
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
+  doc.setFontSize(11);
   doc.setTextColor(...COLORS.foreground);
-  doc.text(value, x + 4, y + 12.5);
+  const truncVal = doc.splitTextToSize(value, w - 8)[0] || value;
+  doc.text(truncVal, x + 3.5, y + 12);
   
   // Unit
   if (unit && value !== "—") {
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
+    doc.setFontSize(6.5);
     doc.setTextColor(...COLORS.muted);
-    doc.text(unit, x + 4 + doc.getTextWidth(value) + 1.5, y + 12.5);
+    const valW = doc.getTextWidth(truncVal);
+    if (valW + 10 < w - 4) {
+      doc.text(unit, x + 3.5 + valW + 1.5, y + 12);
+    }
   }
 }
 
