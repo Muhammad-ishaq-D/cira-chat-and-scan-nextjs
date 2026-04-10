@@ -51,7 +51,7 @@ const VitalsScan = () => {
   const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
-  const scanNeedsSecureReload = typeof window !== "undefined" && window.crossOriginIsolated === false;
+  
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
@@ -73,17 +73,6 @@ const VitalsScan = () => {
             duration: 8000,
           });
           return;
-        }
-
-        // Handle cross-origin isolation reload
-        if (scanNeedsSecureReload) {
-          const reloadKey = "coi_reload_attempted";
-          if (!sessionStorage.getItem(reloadKey)) {
-            sessionStorage.setItem(reloadKey, "1");
-            window.location.replace("/vitals-scan");
-            return;
-          }
-          sessionStorage.removeItem(reloadKey);
         }
 
         initialize(CANVAS_ID, {
