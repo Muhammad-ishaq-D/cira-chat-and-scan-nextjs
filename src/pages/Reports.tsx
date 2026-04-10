@@ -61,9 +61,9 @@ const Reports = () => {
     (r.title || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDownload = (report: any) => {
+  const handleDownload = async (report: any) => {
     try {
-      downloadReportPdf(report);
+      await downloadReportPdf(report);
       toast.success("PDF downloaded");
     } catch (e) {
       console.error("PDF generation failed:", e);
