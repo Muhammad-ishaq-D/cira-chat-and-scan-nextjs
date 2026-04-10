@@ -84,6 +84,9 @@ const Login = () => {
   }, [location.pathname]);
 
   const redirectAfterAuth = useCallback(async () => {
+    // Double-check we're actually authenticated before doing anything
+    if (!isAuthenticated()) return;
+
     const followUpPath = requestedPath || (sessionStorage.getItem("cira_landing_message") ? "/chat" : null);
 
     try {
@@ -95,10 +98,11 @@ const Login = () => {
         return;
       }
     } catch (error) {
-      if (error instanceof Error && error.message === "Session expired") {
-        throw error;
-      }
+      // If auth is no longer valid after the error, stay on login
+      if (!isAuthenticated()) return;
 
+      // Only redirect to onboarding if we're genuinely authenticated
+      // but profile fetch failed for a non-auth reason
       storePostAuthRedirect(followUpPath);
       navigate("/onboarding", { replace: true });
       return;

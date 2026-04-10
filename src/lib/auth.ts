@@ -52,9 +52,26 @@ export function getUser(): AuthUser | null {
   }
 }
 
-/** Check if user is authenticated */
+/** Check if user is authenticated (token exists AND is not expired) */
 export function isAuthenticated(): boolean {
-  return !!getToken();
+  const token = getToken();
+  if (!token) return false;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    // exp is in seconds; add 30s buffer so we don't use a nearly-expired token
+    if (payload.exp && payload.exp * 1000 < Date.now() + 30_000) {
+      // Token expired — clean up stale auth data
+      logout();
+      return false;
+    }
+  } catch {
+    // Malformed token — clear it
+    logout();
+    return false;
+  }
+
+  return true;
 }
 
 /** Store auth data */
