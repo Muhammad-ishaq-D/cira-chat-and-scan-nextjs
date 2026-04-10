@@ -88,14 +88,14 @@ const Reports = () => {
     }
   };
 
-  const handleDownloadCombined = () => {
+  const handleDownloadCombined = async () => {
     const selected = scans.filter(s => selectedScans.has(s.id || s._id));
     if (selected.length === 0) {
       toast.error("Select at least one scan");
       return;
     }
     try {
-      downloadCombinedScansPdf(selected);
+      await downloadCombinedScansPdf(selected);
       toast.success(`Combined report (${selected.length} scans) downloaded`);
     } catch (e) {
       console.error("Combined PDF failed:", e);
@@ -412,9 +412,9 @@ const Reports = () => {
 
                           {/* Download single */}
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               try {
-                                downloadSingleScanPdf(scan);
+                                await downloadSingleScanPdf(scan);
                                 toast.success("Scan PDF downloaded");
                               } catch {
                                 toast.error("Failed to generate PDF");
