@@ -229,7 +229,15 @@ const Login = () => {
 
           setLoading(true);
           try {
-            await googleLogin(response.credential);
+            const authData = await googleLogin(response.credential);
+            // Extract Google profile picture from ID token
+            try {
+              const payload = JSON.parse(atob(response.credential.split(".")[1]));
+              if (payload.picture && !authData.user.avatar) {
+                const { updateUserAvatar } = await import("@/lib/auth");
+                updateUserAvatar(payload.picture);
+              }
+            } catch {}
             await redirectAfterAuth();
           } catch (error) {
             toast.error(getErrorMessage(error, "Google login failed"));
