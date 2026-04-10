@@ -186,32 +186,32 @@ export async function generateQuickAssessmentPdf(report: any) {
   if (data.possible_conditions?.length) {
     y = addSection(doc, "Possible Conditions", y);
     for (const cond of data.possible_conditions) {
-      y = checkPage(doc, y, 18);
-      // Condition card background
-      drawRoundedRect(doc, 22, y - 3, 166, cond.explanation ? 18 : 12, 2, COLORS.cardBg, COLORS.border);
+      const hasExplanation = !!cond.explanation;
+      const cardH = hasExplanation ? 20 : 14;
+      y = checkPage(doc, y, cardH + 4);
 
+      // Card aligned to section width: x=20, w=170
+      drawRoundedRect(doc, 20, y - 3, 170, cardH, 2, COLORS.cardBg, COLORS.border);
+
+      // Condition name — left
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(...COLORS.foreground);
-      doc.text(cond.name || "", 26, y + 1);
+      doc.text(cond.name || "", 24, y + 1);
 
-      // Percentage badge
+      // Percentage — right-middle aligned
       const pct = cond.percentage ?? 0;
       const pctColor = pct >= 60 ? COLORS.emerald : pct >= 30 ? COLORS.amber : COLORS.red;
-      const pctBg = pct >= 60 ? COLORS.emeraldLight : pct >= 30 ? COLORS.amberLight : COLORS.redLight;
-      const pctStr = `${pct}%`;
-      const badgeW = 16;
-      drawRoundedRect(doc, 170, y - 3, badgeW, 7, 2, pctBg);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
+      doc.setFontSize(11);
       doc.setTextColor(...pctColor);
-      doc.text(pctStr, 170 + badgeW / 2, y + 1.5, { align: "center" });
+      doc.text(`${pct}%`, 186, y + 1, { align: "right" });
 
-      // Progress bar
-      const barY = y + 4;
-      const barX = 26;
-      const barW = 130;
-      const barH = 2.5;
+      // Slim progress bar — full section width
+      const barY = y + 5;
+      const barX = 24;
+      const barW = 162;
+      const barH = 2;
       drawRoundedRect(doc, barX, barY, barW, barH, 1, COLORS.background);
       if (pct > 0) {
         const fillW = Math.max(2, (pct / 100) * barW);
@@ -224,14 +224,14 @@ export async function generateQuickAssessmentPdf(report: any) {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(7.5);
         doc.setTextColor(...COLORS.muted);
-        doc.text(`Likelihood: ${cond.likelihood}`, 26, y);
+        doc.text(`Likelihood: ${cond.likelihood}`, 24, y);
         y += 4;
       }
 
-      if (cond.explanation) {
-        y = addParagraph(doc, cond.explanation, y, 28);
+      if (hasExplanation) {
+        y = addParagraph(doc, cond.explanation, y, 24);
       }
-      y += 4;
+      y += 3;
     }
     y += 2;
   }
@@ -251,35 +251,33 @@ export async function generateQuickAssessmentPdf(report: any) {
     y = addParagraph(doc, data.follow_up, y);
   }
 
-  // Confidence Score — graphical gauge
+  // Confidence Score — minimal gauge, section-width aligned
   if (data.confidence_score != null) {
-    y = checkPage(doc, y, 22);
+    y = checkPage(doc, y, 20);
     y += 4;
-    drawRoundedRect(doc, 20, y - 2, 170, 16, 3, COLORS.cardBg, COLORS.border);
+    drawRoundedRect(doc, 20, y - 2, 170, 14, 2, COLORS.cardBg, COLORS.border);
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(...COLORS.foreground);
-    doc.text("AI Confidence Score", 26, y + 3);
+    doc.text("AI Confidence Score", 24, y + 3);
 
     const score = data.confidence_score;
     const scoreColor = score >= 80 ? COLORS.emerald : score >= 50 ? COLORS.amber : COLORS.red;
 
-    // Score value
+    // Score — right-middle
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
+    doc.setFontSize(13);
     doc.setTextColor(...scoreColor);
-    doc.text(`${score}%`, 180, y + 4, { align: "right" });
+    doc.text(`${score}%`, 186, y + 3, { align: "right" });
 
     // Gauge bar
-    const gaugeX = 26;
-    const gaugeY = y + 8;
-    const gaugeW = 158;
-    const gaugeH = 3;
-    drawRoundedRect(doc, gaugeX, gaugeY, gaugeW, gaugeH, 1.5, COLORS.background);
-    const fillW = Math.max(3, (score / 100) * gaugeW);
-    drawRoundedRect(doc, gaugeX, gaugeY, fillW, gaugeH, 1.5, scoreColor);
+    const gaugeY = y + 7;
+    drawRoundedRect(doc, 24, gaugeY, 162, 2, 1, COLORS.background);
+    const fillW = Math.max(3, (score / 100) * 162);
+    drawRoundedRect(doc, 24, gaugeY, fillW, 2, 1, scoreColor);
 
-    y += 18;
+    y += 16;
   }
 
   addFooter(doc);
