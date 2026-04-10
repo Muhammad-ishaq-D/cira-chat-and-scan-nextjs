@@ -640,7 +640,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   }
 
   // Vital Signs cards
-  const vitals: [string, string, string][] = [
+  const vitals = ([
     ["Blood Pressure", scan.systolic_bp && scan.diastolic_bp ? `${Math.round(scan.systolic_bp)}/${Math.round(scan.diastolic_bp)}` : "—", "mmHg"],
     ["Heart Rate", val(scan.heart_rate), "bpm"],
     ["HRV (SDNN)", val(scan.hrv_sdnn), "ms"],
@@ -648,7 +648,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
     ["Stress Index", val(scan.stress_index), "/100"],
     ["Cardiac Workload", val(scan.cardiac_workload), ""],
     ["Parasympathetic", val(scan.parasympathetic_activity), ""],
-  ].filter(([, v]) => v !== "—");
+  ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (vitals.length > 0) {
     y = drawSectionTitle(doc, "Vital Signs", y, "♥");
@@ -674,7 +674,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   }
 
   // Health Indices cards
-  const indices: [string, string, string][] = [
+  const indices = ([
     ["BMI", val(scan.bmi, 1), "kg/m²"],
     ["Vascular Age", val(scan.vascular_age), "yrs"],
     ["Wellness Score", val(scan.wellness_score), "/100"],
@@ -683,7 +683,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
     ["BMR", val(scan.basal_metabolic_rate), "kcal"],
     ["Body Shape", val(scan.body_shape_index, 3), ""],
     ["Daily Energy", val(scan.total_daily_energy_expenditure), "kcal"],
-  ].filter(([, v]) => v !== "—");
+  ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (indices.length > 0) {
     y = drawSectionTitle(doc, "Health Indices", y, "📊");
@@ -704,7 +704,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   }
 
   // Health Risks badges
-  const risks: [string, string][] = [
+  const risks = ([
     ["Cardiovascular", riskLabel(scan.cv_disease_risk)],
     ["Coronary Heart", riskLabel(scan.coronary_heart_disease_risk)],
     ["Stroke", riskLabel(scan.stroke_risk)],
@@ -712,7 +712,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
     ["Diabetes", riskLabel(scan.diabetes_risk)],
     ["Fatty Liver", fattyLiverLabel(scan.fatty_liver_risk)],
     ["CV Event", riskLabel(scan.hard_cv_event_risk)],
-  ].filter(([, v]) => v !== "—");
+  ] as [string, string][]).filter(([, v]) => v !== "—");
 
   if (risks.length > 0) {
     y = drawSectionTitle(doc, "Health Risks", y, "⚠");
