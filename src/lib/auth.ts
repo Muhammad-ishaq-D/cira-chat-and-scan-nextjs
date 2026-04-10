@@ -155,7 +155,9 @@ export async function googleLogin(idToken: string): Promise<AuthResponse> {
     throw new Error(err.error || err.message || "Google login failed");
   }
   const data = await res.json();
-  // If backend returned avatar, use it; otherwise use the extracted one
+  if (!data?.token || !data?.user) {
+    throw new Error("Google login failed");
+  }
   if (!data.user.avatar && avatar) {
     data.user.avatar = avatar;
   }
