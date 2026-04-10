@@ -502,25 +502,25 @@ function drawCiraLogoImage(doc: jsPDF, x: number, y: number, size: number) {
   }
 }
 
-function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: string): number {
+async function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: string): Promise<number> {
   // Top gradient bar
   doc.setFillColor(...COLORS.primary);
   doc.rect(0, 0, 210, 4, "F");
   doc.setFillColor(...COLORS.primaryLight);
   doc.rect(140, 0, 70, 4, "F");
 
-  // Logo circle + brand
-  drawCiraLogo(doc, 18, 10, 10);
+  // Real Cira logo
+  await drawCiraLogoImage(doc, 18, 8, 12);
   
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
   doc.setTextColor(...COLORS.foreground);
-  doc.text("Cira", 32, 17);
+  doc.text("Cira", 33, 16);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(...COLORS.primary);
-  doc.text("AI Health Nurse", 47, 17);
+  doc.text("AI Health Nurse", 33, 21);
 
   // Right side: report type badge
   const badgeW = 40;
@@ -537,14 +537,14 @@ function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: strin
   doc.text(formatShortDate(date), 190 - badgeW / 2, 19, { align: "center" });
 
   // Separator
-  drawLine(doc, 24, 18, 192);
+  drawLine(doc, 26, 18, 192);
 
   // Title
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(...COLORS.foreground);
   const titleLines = doc.splitTextToSize(title, 170);
-  let y = 32;
+  let y = 34;
   for (const line of titleLines) {
     doc.text(line, 20, y);
     y += 6;
