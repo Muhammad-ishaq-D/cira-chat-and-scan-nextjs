@@ -324,9 +324,43 @@ export async function generateDetailedReportPdf(report: any) {
       doc.setFontSize(9.5);
       y = checkPage(doc, y);
       doc.text("Differential Diagnoses:", 24, y);
-      y += 5;
+      y += 6;
       for (const dd of data.assessment.differential_diagnoses) {
-        y = addBullet(doc, `${dd.name}${dd.likelihood ? ` — ${dd.likelihood}` : ""}`, y);
+        y = checkPage(doc, y, 14);
+
+        // Name — left
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(...COLORS.foreground);
+        doc.text(dd.name || "", 20, y);
+
+        // Percentage — right aligned
+        const pct = dd.percentage ?? 0;
+        const pctColor = pct >= 60 ? COLORS.emerald : pct >= 30 ? COLORS.amber : COLORS.red;
+        if (pct > 0) {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10);
+          doc.setTextColor(...pctColor);
+          doc.text(`${pct}%`, 190, y, { align: "right" });
+
+          // Progress bar
+          y += 3;
+          drawRoundedRect(doc, 20, y, 170, 2, 1, COLORS.background);
+          const fillW = Math.max(2, (pct / 100) * 170);
+          drawRoundedRect(doc, 20, y, fillW, 2, 1, pctColor);
+          y += 4;
+        } else if (dd.likelihood) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(...COLORS.muted);
+          doc.text(`— ${dd.likelihood}`, 20 + doc.getTextWidth((dd.name || "") + "  "), y);
+          y += 5;
+        } else {
+          y += 5;
+        }
+
+        doc.setTextColor(...COLORS.foreground);
+        y += 3;
       }
     }
     y += 4;
