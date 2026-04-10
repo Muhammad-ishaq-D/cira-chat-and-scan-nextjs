@@ -695,7 +695,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   if (vitals.length > 0) {
     y = drawSectionTitle(doc, "Vital Signs", y);
     const cardW = 40;
-    const cardH = 16;
+    const cardH = 19;
     const gap = 3;
     const cols = 4;
     for (let i = 0; i < vitals.length; i++) {
@@ -730,7 +730,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   if (indices.length > 0) {
     y = drawSectionTitle(doc, "Health Indices", y);
     const cardW = 40;
-    const cardH = 16;
+    const cardH = 19;
     const gap = 3;
     const cols = 4;
     for (let i = 0; i < indices.length; i++) {
@@ -759,7 +759,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   if (risks.length > 0) {
     y = drawSectionTitle(doc, "Health Risks", y);
     const cardW = 40;
-    const cardH = 16;
+    const cardH = 19;
     const gap = 3;
     const cols = 4;
     for (let i = 0; i < risks.length; i++) {
