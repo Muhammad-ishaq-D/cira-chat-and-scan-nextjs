@@ -412,9 +412,9 @@ const Reports = () => {
 
                           {/* Download single */}
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               try {
-                                downloadSingleScanPdf(scan);
+                                await downloadSingleScanPdf(scan);
                                 toast.success("Scan PDF downloaded");
                               } catch {
                                 toast.error("Failed to generate PDF");
