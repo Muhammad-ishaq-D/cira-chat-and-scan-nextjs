@@ -458,21 +458,19 @@ function drawRoundedRect(doc: jsPDF, x: number, y: number, w: number, h: number,
 }
 
 function drawCiraLogo(doc: jsPDF, x: number, y: number, size: number) {
-  // Draw a simplified Cira star/sparkle icon
   const cx = x + size / 2;
   const cy = y + size / 2;
   const r = size / 2;
   
-  // Pink gradient circle background
+  // Pink circle background
   doc.setFillColor(...COLORS.primary);
   doc.circle(cx, cy, r, "F");
   
-  // White star sparkle in center
-  doc.setFillColor(255, 255, 255);
+  // White "C" letter in center
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(size * 0.7);
+  doc.setFontSize(size * 0.65);
   doc.setTextColor(255, 255, 255);
-  doc.text("✦", cx, cy + size * 0.15, { align: "center" });
+  doc.text("C", cx, cy + size * 0.12, { align: "center" });
 }
 
 function drawScanHeader(doc: jsPDF, title: string, subtitle: string, date: string): number {
@@ -535,11 +533,13 @@ function drawScanFooter(doc: jsPDF) {
     const disclaimerY = 276;
     drawRoundedRect(doc, 15, disclaimerY, 180, 12, 2, COLORS.cardBg, COLORS.border);
     
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(6.5);
+    doc.setTextColor(...COLORS.primary);
+    doc.text("MEDICAL DISCLAIMER", 20, disclaimerY + 4);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.muted);
-    doc.text("⚕️  Medical Disclaimer", 20, disclaimerY + 4);
     doc.setFontSize(5.5);
+    doc.setTextColor(...COLORS.muted);
     doc.text("Cira is an AI health nurse, not a licensed medical professional. This report is for informational purposes only.", 20, disclaimerY + 7.5);
     doc.text("Always discuss these findings with your doctor. Trained on peer-reviewed medical data worldwide.", 20, disclaimerY + 10.5);
 
@@ -555,28 +555,44 @@ function drawScanFooter(doc: jsPDF) {
   }
 }
 
-function drawSectionTitle(doc: jsPDF, title: string, y: number, icon?: string): number {
+function drawSectionIcon(doc: jsPDF, type: string, x: number, y: number) {
+  // Draw a small colored circle with a shape inside instead of emoji
+  const colors: Record<string, [number, number, number]> = {
+    vital: COLORS.primary,
+    index: COLORS.emerald,
+    risk: COLORS.amber,
+    compare: COLORS.purple,
+    detail: COLORS.primary,
+  };
+  const color = colors[type] || COLORS.primary;
+  doc.setFillColor(...color);
+  doc.circle(x + 3, y - 1, 3, "F");
+  // White dot/letter inside
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(4.5);
+  doc.setTextColor(255, 255, 255);
+  const letters: Record<string, string> = { vital: "V", index: "I", risk: "R", compare: "C", detail: "D" };
+  doc.text(letters[type] || "+", x + 3, y + 0.2, { align: "center" });
+}
+
+function drawSectionTitle(doc: jsPDF, title: string, y: number, iconType?: string): number {
   y = checkPage(doc, y, 14);
   
-  // Section icon circle
-  if (icon) {
-    drawRoundedRect(doc, 20, y - 4, 6, 6, 1.5, COLORS.purpleLight);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(5);
-    doc.setTextColor(...COLORS.purple);
-    doc.text(icon, 23, y, { align: "center" });
+  const hasIcon = !!iconType;
+  if (hasIcon) {
+    drawSectionIcon(doc, iconType!, 20, y);
   }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
   doc.setTextColor(...COLORS.primary);
-  doc.text(title, icon ? 29 : 20, y);
+  doc.text(title, hasIcon ? 29 : 20, y);
   y += 2;
   
   // Thin accent line
   doc.setDrawColor(...COLORS.primary);
   doc.setLineWidth(0.5);
-  doc.line(icon ? 29 : 20, y, 80, y);
+  doc.line(hasIcon ? 29 : 20, y, 80, y);
   doc.setDrawColor(...COLORS.border);
   doc.setLineWidth(0.15);
   doc.line(80, y, 192, y);
@@ -587,24 +603,29 @@ function drawSectionTitle(doc: jsPDF, title: string, y: number, icon?: string): 
 function drawVitalCard(doc: jsPDF, label: string, value: string, unit: string, x: number, y: number, w: number, h: number): void {
   drawRoundedRect(doc, x, y, w, h, 2.5, COLORS.cardBg, COLORS.border);
   
-  // Label
+  // Label — truncate to fit card
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.setTextColor(...COLORS.muted);
-  doc.text(label, x + 4, y + 5.5);
+  const truncLabel = doc.splitTextToSize(label, w - 8)[0] || label;
+  doc.text(truncLabel, x + 3.5, y + 5);
   
   // Value
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
+  doc.setFontSize(11);
   doc.setTextColor(...COLORS.foreground);
-  doc.text(value, x + 4, y + 12.5);
+  const truncVal = doc.splitTextToSize(value, w - 8)[0] || value;
+  doc.text(truncVal, x + 3.5, y + 12);
   
   // Unit
   if (unit && value !== "—") {
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
+    doc.setFontSize(6.5);
     doc.setTextColor(...COLORS.muted);
-    doc.text(unit, x + 4 + doc.getTextWidth(value) + 1.5, y + 12.5);
+    const valW = doc.getTextWidth(truncVal);
+    if (valW + 10 < w - 4) {
+      doc.text(unit, x + 3.5 + valW + 1.5, y + 12);
+    }
   }
 }
 
@@ -613,18 +634,19 @@ function drawRiskBadge(doc: jsPDF, label: string, level: string, x: number, y: n
   
   // Label
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.setTextColor(...COLORS.muted);
-  doc.text(label, x + 4, y + 5.5);
+  const truncRiskLabel = doc.splitTextToSize(label, w - 8)[0] || label;
+  doc.text(truncRiskLabel, x + 3.5, y + 5);
   
-  // Risk badge
+  // Risk badge pill
   const { text, bg } = riskBadgeColors(level);
-  const badgeW = doc.getTextWidth(level) + 6;
-  drawRoundedRect(doc, x + 4, y + 8, badgeW > 12 ? badgeW : 12, 5.5, 1.5, bg);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.5);
+  doc.setFontSize(7);
+  const badgeW = Math.max(doc.getTextWidth(level) + 5, 14);
+  drawRoundedRect(doc, x + 3.5, y + 7.5, badgeW, 5, 1.5, bg);
   doc.setTextColor(...text);
-  doc.text(level, x + 4 + (badgeW > 12 ? badgeW : 12) / 2, y + 12, { align: "center" });
+  doc.text(level, x + 3.5 + badgeW / 2, y + 11, { align: "center" });
 }
 
 function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = true): number {
@@ -635,7 +657,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(...COLORS.purple);
-    doc.text("📅  " + formatScanDate(scan.created_at || scan.date), 26, y + 2);
+    doc.text(formatScanDate(scan.created_at || scan.date), 26, y + 2);
     y += 10;
   }
 
@@ -651,7 +673,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (vitals.length > 0) {
-    y = drawSectionTitle(doc, "Vital Signs", y, "♥");
+    y = drawSectionTitle(doc, "Vital Signs", y, "vital");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -686,7 +708,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (indices.length > 0) {
-    y = drawSectionTitle(doc, "Health Indices", y, "📊");
+    y = drawSectionTitle(doc, "Health Indices", y, "index");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -715,7 +737,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string][]).filter(([, v]) => v !== "—");
 
   if (risks.length > 0) {
-    y = drawSectionTitle(doc, "Health Risks", y, "⚠");
+    y = drawSectionTitle(doc, "Health Risks", y, "risk");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -758,7 +780,7 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
 
   // Quick Comparison Table (if multiple scans)
   if (sorted.length > 1) {
-    y = drawSectionTitle(doc, "Scan Comparison", y, "📋");
+    y = drawSectionTitle(doc, "Scan Comparison", y, "compare");
     
     const cols = sorted.slice(0, 6);
     const labelW = 38;
@@ -816,7 +838,7 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
   }
 
   // Detailed per-scan data
-  y = drawSectionTitle(doc, "Individual Scan Details", y, "🔍");
+  y = drawSectionTitle(doc, "Individual Scan Details", y, "detail");
   for (let i = 0; i < sorted.length; i++) {
     y = addScanBlockPro(doc, sorted[i], y, true);
     if (i < sorted.length - 1) {
