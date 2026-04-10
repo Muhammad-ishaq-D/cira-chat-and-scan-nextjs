@@ -156,23 +156,18 @@ const Profile = () => {
         <div className="flex flex-col items-center gap-3">
           <div className="relative group">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-2xl font-semibold overflow-hidden">
-              {avatar ? (
-                <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+              {(pendingAvatarPreview || avatar) ? (
+                <img src={pendingAvatarPreview || avatar} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 initials
               )}
             </div>
             <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              {uploadingAvatar ? (
-                <Loader2 size={20} className="animate-spin text-white" />
-              ) : (
-                <Camera size={20} className="text-white" />
-              )}
+              <Camera size={20} className="text-white" />
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
-                disabled={uploadingAvatar}
                 className="hidden"
               />
             </label>
