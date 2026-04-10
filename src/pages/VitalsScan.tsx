@@ -159,9 +159,17 @@ const VitalsScan = () => {
   };
 
   const handleStartCamera = () => {
+    // If not cross-origin isolated, attempt a single reload to activate the service worker.
+    // Use sessionStorage flag to avoid infinite reload loops.
     if (scanNeedsSecureReload) {
-      window.location.replace("/vitals-scan");
-      return;
+      const reloadKey = "coi_reload_attempted";
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, "1");
+        window.location.replace("/vitals-scan");
+        return;
+      }
+      // Already tried reloading once — proceed anyway and let SDK report the real error
+      sessionStorage.removeItem(reloadKey);
     }
 
     initialize(CANVAS_ID, {
