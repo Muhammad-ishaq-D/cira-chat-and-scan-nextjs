@@ -41,9 +41,9 @@ const AdminOverview = () => {
   const stats = [
     { label: "Total Users", value: dashboard?.total_users ?? "—", icon: Users, color: "bg-blue-50 text-blue-600" },
     { label: "Active Consultations", value: dashboard?.active_consultations ?? "—", icon: Activity, color: "bg-emerald-50 text-emerald-600" },
-    { label: "Total Scans", value: dashboard?.scans_completed ?? "—", icon: ScanFace, color: "bg-purple-50 text-purple-600" },
-    { label: "New Signups", value: dashboard?.new_signups ?? "—", icon: TrendingUp, color: "bg-primary/10 text-primary" },
-    { label: "Revenue", value: dashboard?.revenue != null ? `$${dashboard.revenue}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Total Scans", value: dashboard?.total_scans ?? dashboard?.scans_completed ?? "—", icon: ScanFace, color: "bg-purple-50 text-purple-600" },
+    { label: "Active Subscriptions", value: dashboard?.active_subscriptions ?? "—", icon: TrendingUp, color: "bg-primary/10 text-primary" },
+    { label: "Revenue", value: dashboard?.total_revenue != null ? `₹${dashboard.total_revenue.toLocaleString()}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
   ];
 
   return (
@@ -73,8 +73,8 @@ const AdminOverview = () => {
         <h2 className="text-base font-semibold text-foreground mb-4" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Quick Summary</h2>
         <div className="space-y-3 text-sm text-muted-foreground">
           <p>• <span className="font-medium text-foreground">{dashboard?.total_users ?? 0}</span> registered users on the platform</p>
-          <p>• <span className="font-medium text-foreground">{dashboard?.scans_completed ?? 0}</span> vitals scans completed</p>
-          <p>• <span className="font-medium text-foreground">{dashboard?.new_signups ?? 0}</span> new signups</p>
+          <p>• <span className="font-medium text-foreground">{dashboard?.total_scans ?? dashboard?.scans_completed ?? 0}</span> vitals scans completed</p>
+          <p>• <span className="font-medium text-foreground">{dashboard?.active_subscriptions ?? 0}</span> active subscriptions</p>
           <p>• <span className="font-medium text-foreground">{dashboard?.active_consultations ?? 0}</span> active consultations</p>
         </div>
       </div>
