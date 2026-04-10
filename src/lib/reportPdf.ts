@@ -361,3 +361,279 @@ export function downloadReportPdf(report: any) {
   const filename = `Cira_${(report.type || "Report").replace(/\s+/g, "_")}_${report.id || Date.now()}.pdf`;
   doc.save(filename);
 }
+
+// ─── Vitals Scan PDF ────────────────────────────────────────────
+
+interface VitalScanData {
+  id?: string;
+  created_at?: string;
+  date?: string;
+  heart_rate?: number;
+  systolic_bp?: number;
+  diastolic_bp?: number;
+  hrv_sdnn?: number;
+  breathing_rate?: number;
+  stress_index?: number;
+  cardiac_workload?: number;
+  parasympathetic_activity?: number;
+  bmi?: number;
+  vascular_age?: number;
+  wellness_score?: number;
+  waist_to_height_ratio?: number;
+  body_fat_percentage?: number;
+  basal_metabolic_rate?: number;
+  body_shape_index?: number;
+  total_daily_energy_expenditure?: number;
+  cv_disease_risk?: number;
+  coronary_heart_disease_risk?: number;
+  stroke_risk?: number;
+  heart_failure_risk?: number;
+  diabetes_risk?: number;
+  fatty_liver_risk?: number;
+  hard_cv_event_risk?: number;
+  [key: string]: any;
+}
+
+function formatScanDate(d?: string): string {
+  if (!d) return "N/A";
+  try {
+    const date = new Date(d);
+    if (!isNaN(date.getTime())) return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch {}
+  return d;
+}
+
+function val(v: number | null | undefined, decimals = 0): string {
+  if (v == null) return "—";
+  return decimals > 0 ? Number(v).toFixed(decimals) : String(Math.round(v));
+}
+
+function riskLabel(v: number | null | undefined): string {
+  if (v == null) return "—";
+  if (v < 10) return "Low";
+  if (v < 25) return "Moderate";
+  return "High";
+}
+
+function fattyLiverLabel(v: number | null | undefined): string {
+  if (v == null) return "—";
+  if (v === 0) return "Low";
+  if (v === 1) return "Moderate";
+  if (v === 2) return "High";
+  return riskLabel(v);
+}
+
+function riskColor(level: string): [number, number, number] {
+  if (level === "Low") return COLORS.emerald;
+  if (level === "Moderate") return COLORS.amber;
+  if (level === "High") return COLORS.red;
+  return COLORS.muted;
+}
+
+function drawVitalRow(doc: jsPDF, label: string, value: string, unit: string, y: number, x = 24): number {
+  y = checkPage(doc, y, 6);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(label, x, y);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...COLORS.foreground);
+  doc.text(value, x + 75, y);
+  if (unit && value !== "—") {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...COLORS.muted);
+    doc.text(unit, x + 75 + doc.getTextWidth(value + " "), y);
+  }
+  return y + 5.5;
+}
+
+function drawRiskRow(doc: jsPDF, label: string, level: string, y: number, x = 24): number {
+  y = checkPage(doc, y, 6);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.muted);
+  doc.text(label, x, y);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...riskColor(level));
+  doc.text(level, x + 75, y);
+  doc.setTextColor(...COLORS.foreground);
+  return y + 5.5;
+}
+
+function addScanBlock(doc: jsPDF, scan: VitalScanData, y: number, showDate = true): number {
+  if (showDate) {
+    y = checkPage(doc, y, 10);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...COLORS.primary);
+    doc.text(formatScanDate(scan.created_at || scan.date), 20, y);
+    y += 2;
+    drawLine(doc, y);
+    y += 6;
+  }
+
+  // Vital Signs
+  const vitals: [string, string, string][] = [
+    ["Blood Pressure", scan.systolic_bp && scan.diastolic_bp ? `${Math.round(scan.systolic_bp)}/${Math.round(scan.diastolic_bp)}` : "—", "mmHg"],
+    ["Heart Rate", val(scan.heart_rate), "bpm"],
+    ["Heart Rate Variability", val(scan.hrv_sdnn), "ms"],
+    ["Breathing Rate", val(scan.breathing_rate), "/min"],
+    ["Stress Index", val(scan.stress_index), "/100"],
+    ["Cardiac Workload", val(scan.cardiac_workload), ""],
+    ["Parasympathetic Activity", val(scan.parasympathetic_activity), ""],
+  ];
+
+  const hasVitals = vitals.some(([, v]) => v !== "—");
+  if (hasVitals) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...COLORS.foreground);
+    y = checkPage(doc, y, 8);
+    doc.text("Vital Signs", 20, y);
+    y += 5;
+    for (const [label, value, unit] of vitals) {
+      if (value !== "—") y = drawVitalRow(doc, label, value, unit, y);
+    }
+    y += 3;
+  }
+
+  // Health Indices
+  const indices: [string, string, string][] = [
+    ["Body Mass Index", val(scan.bmi, 1), "kg/m²"],
+    ["Vascular Age", val(scan.vascular_age), "yrs"],
+    ["Wellness Score", val(scan.wellness_score), "/100"],
+    ["Waist-to-Height Ratio", val(scan.waist_to_height_ratio, 2), ""],
+    ["Body Fat Percentage", val(scan.body_fat_percentage, 1), "%"],
+    ["Basal Metabolic Rate", val(scan.basal_metabolic_rate), "kcal"],
+    ["Body Shape Index", val(scan.body_shape_index, 3), ""],
+    ["Total Daily Energy", val(scan.total_daily_energy_expenditure), "kcal"],
+  ];
+
+  const hasIndices = indices.some(([, v]) => v !== "—");
+  if (hasIndices) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...COLORS.foreground);
+    y = checkPage(doc, y, 8);
+    doc.text("Health Indices", 20, y);
+    y += 5;
+    for (const [label, value, unit] of indices) {
+      if (value !== "—") y = drawVitalRow(doc, label, value, unit, y);
+    }
+    y += 3;
+  }
+
+  // Health Risks
+  const risks: [string, string][] = [
+    ["Cardiovascular Risk", riskLabel(scan.cv_disease_risk)],
+    ["Coronary Heart Disease", riskLabel(scan.coronary_heart_disease_risk)],
+    ["Stroke Risk", riskLabel(scan.stroke_risk)],
+    ["Heart Failure Risk", riskLabel(scan.heart_failure_risk)],
+    ["Diabetes Risk", riskLabel(scan.diabetes_risk)],
+    ["Fatty Liver Disease", fattyLiverLabel(scan.fatty_liver_risk)],
+    ["Cardiovascular Event", riskLabel(scan.hard_cv_event_risk)],
+  ];
+
+  const hasRisks = risks.some(([, v]) => v !== "—");
+  if (hasRisks) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...COLORS.foreground);
+    y = checkPage(doc, y, 8);
+    doc.text("Health Risks", 20, y);
+    y += 5;
+    for (const [label, level] of risks) {
+      if (level !== "—") y = drawRiskRow(doc, label, level, y);
+    }
+    y += 3;
+  }
+
+  return y;
+}
+
+export function generateSingleScanPdf(scan: VitalScanData) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  let y = addHeader(doc, "Face Scan Report", "Vital Scan", scan.created_at || scan.date || new Date().toISOString());
+  y = addScanBlock(doc, scan, y, false);
+  addFooter(doc);
+  return doc;
+}
+
+export function generateCombinedScansPdf(scans: VitalScanData[]) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const sorted = [...scans].sort((a, b) => new Date(b.created_at || b.date || 0).getTime() - new Date(a.created_at || a.date || 0).getTime());
+
+  let y = addHeader(doc, `Face Scan History (${sorted.length} scans)`, "Combined Report", new Date().toISOString());
+
+  // Summary table — compact comparison across scans
+  if (sorted.length > 1) {
+    y = addSection(doc, "Quick Comparison", y);
+    const cols = sorted.slice(0, 6); // max 6 scans in comparison
+    const colW = Math.min(28, 150 / cols.length);
+    const startX = 45;
+
+    // Date headers
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...COLORS.primary);
+    cols.forEach((s, i) => {
+      const d = new Date(s.created_at || s.date || "");
+      const label = !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `Scan ${i + 1}`;
+      doc.text(label, startX + i * colW, y, { align: "center" });
+    });
+    y += 5;
+
+    const compareRows: [string, (s: VitalScanData) => string][] = [
+      ["Heart Rate", s => val(s.heart_rate)],
+      ["Blood Pressure", s => s.systolic_bp && s.diastolic_bp ? `${Math.round(s.systolic_bp)}/${Math.round(s.diastolic_bp)}` : "—"],
+      ["Breathing Rate", s => val(s.breathing_rate)],
+      ["Stress Index", s => val(s.stress_index)],
+      ["HRV", s => val(s.hrv_sdnn)],
+      ["BMI", s => val(s.bmi, 1)],
+      ["Wellness Score", s => val(s.wellness_score)],
+    ];
+
+    for (const [label, getter] of compareRows) {
+      y = checkPage(doc, y, 5);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(...COLORS.muted);
+      doc.text(label, 20, y);
+      doc.setTextColor(...COLORS.foreground);
+      doc.setFont("helvetica", "bold");
+      cols.forEach((s, i) => {
+        doc.text(getter(s), startX + i * colW, y, { align: "center" });
+      });
+      y += 4.5;
+    }
+    y += 6;
+  }
+
+  // Detailed per-scan data
+  y = addSection(doc, "Detailed Scan Results", y);
+  for (let i = 0; i < sorted.length; i++) {
+    y = addScanBlock(doc, sorted[i], y, true);
+    if (i < sorted.length - 1) {
+      y += 4;
+      y = checkPage(doc, y, 30);
+    }
+  }
+
+  addFooter(doc);
+  return doc;
+}
+
+export function downloadSingleScanPdf(scan: VitalScanData) {
+  const doc = generateSingleScanPdf(scan);
+  const d = new Date(scan.created_at || scan.date || "");
+  const dateStr = !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : "scan";
+  doc.save(`Cira_Vital_Scan_${dateStr}.pdf`);
+}
+
+export function downloadCombinedScansPdf(scans: VitalScanData[]) {
+  const doc = generateCombinedScansPdf(scans);
+  doc.save(`Cira_Combined_Scans_${scans.length}_${Date.now()}.pdf`);
+}
