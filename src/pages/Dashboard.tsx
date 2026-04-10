@@ -218,8 +218,12 @@ const Dashboard = () => {
             <span className="text-[9px] font-body font-medium leading-none">Logout</span>
           </button>
           <ProfilePopover>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
-              {initials}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20 overflow-hidden">
+              {localUser?.avatar ? (
+                <img src={localUser.avatar} alt={localUser.name || "User"} className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
             </div>
           </ProfilePopover>
         </div>

@@ -42,8 +42,12 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
         {/* User Info */}
         <div className="p-4 border-b border-border/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-sm font-semibold">
-              {initials}
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-sm font-semibold overflow-hidden">
+              {(profile?.avatar || localUser?.avatar) ? (
+                <img src={profile?.avatar || localUser?.avatar} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground truncate" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{name}</p>
