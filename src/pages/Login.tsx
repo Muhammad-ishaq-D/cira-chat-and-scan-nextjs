@@ -251,7 +251,7 @@ const Login = () => {
               try {
                 await userApi.updateProfile({ 
                   avatar: googleAvatar,
-                  ...(googleName && !authData.user.name ? { name: googleName } : {}),
+                  ...(googleName && !authData?.user?.name ? { name: googleName } : {}),
                 });
               } catch (e) {
                 console.warn("Failed to save Google avatar to backend:", e);
