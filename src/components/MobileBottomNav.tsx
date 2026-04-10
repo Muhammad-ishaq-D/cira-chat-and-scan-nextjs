@@ -1,13 +1,14 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, ScanFace, FileText, UserRound } from "lucide-react";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import { getUser } from "@/lib/auth";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home", path: "/dashboard" },
   { icon: null, label: "Ask Cira", id: "chat", path: "/chat" },
   { icon: ScanFace, label: "Scan", id: "scan", path: "/vitals-scan" },
   { icon: FileText, label: "Reports", id: "reports", path: "/reports" },
-  { icon: UserRound, label: "Doctor", id: "doctor", path: "/doctor" },
+  { icon: UserRound, label: "Profile", id: "profile", path: "/profile" },
 ];
 
 const routeToId: Record<string, string> = {
@@ -15,13 +16,14 @@ const routeToId: Record<string, string> = {
   "/chat": "chat",
   "/vitals-scan": "scan",
   "/reports": "reports",
-  "/doctor": "doctor",
+  "/profile": "profile",
 };
 
 const MobileBottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const activeId = routeToId[location.pathname] || "";
+  const user = getUser();
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 px-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)', backgroundColor: 'rgba(255,255,255,0.95)', WebkitBackdropFilter: 'blur(20px)', backdropFilter: 'blur(20px)' }}>
@@ -41,6 +43,12 @@ const MobileBottomNav = () => {
             >
               {item.id === "chat" ? (
                 <AiSparkleIcon size={20} active={isActive} />
+              ) : item.id === "profile" && user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="Profile"
+                  className={`w-5 h-5 rounded-full object-cover ring-1 ${isActive ? "ring-primary" : "ring-border"}`}
+                />
               ) : Icon ? (
                 <Icon size={20} strokeWidth={isActive ? 2.2 : 1.5} />
               ) : null}
