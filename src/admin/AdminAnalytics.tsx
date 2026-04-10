@@ -24,9 +24,17 @@ const AdminAnalytics = () => {
     );
   }
 
+  // Extract trend totals from arrays if available
+  const signupCount = Array.isArray(data?.signups_trend)
+    ? data.signups_trend.reduce((sum: number, d: any) => sum + (d.count || 0), 0)
+    : data?.new_signups ?? "—";
+  const scanCount = Array.isArray(data?.scans_trend)
+    ? data.scans_trend.reduce((sum: number, d: any) => sum + (d.count || 0), 0)
+    : data?.scans_completed ?? "—";
+
   const stats = [
-    { label: "New Signups", value: data?.new_signups ?? "—", icon: Users, color: "bg-blue-50 text-blue-600", description: "Total registered users" },
-    { label: "Scans Completed", value: data?.scans_completed ?? "—", icon: ScanFace, color: "bg-purple-50 text-purple-600", description: "Total vitals scans performed" },
+    { label: "New Signups", value: signupCount, icon: Users, color: "bg-blue-50 text-blue-600", description: "Total registered users" },
+    { label: "Scans Completed", value: scanCount, icon: ScanFace, color: "bg-purple-50 text-purple-600", description: "Total vitals scans performed" },
   ];
 
   return (
