@@ -278,6 +278,7 @@ export const adminApi = {
   getAnalytics: () => adminGet("/api/admin/analytics"),
 
   // Settings
-  getSettings: () => adminGet<{ settings: Array<{ setting_key: string; setting_value: string }> }>("/api/admin/settings"),
-  updateSetting: (key: string, value: string) => adminPut("/api/admin/settings", { setting_key: key, setting_value: value }),
+  getSettings: () => adminGet("/api/admin/settings"),
+  updateSettings: (settings: any) => adminPut("/api/admin/settings", settings),
+  updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
 };
