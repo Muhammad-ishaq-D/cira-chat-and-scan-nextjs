@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound, Loader2 } from "lucide-react";
+import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
