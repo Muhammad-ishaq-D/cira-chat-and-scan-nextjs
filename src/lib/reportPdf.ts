@@ -673,7 +673,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (vitals.length > 0) {
-    y = drawSectionTitle(doc, "Vital Signs", y, "♥");
+    y = drawSectionTitle(doc, "Vital Signs", y, "vital");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -708,7 +708,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (indices.length > 0) {
-    y = drawSectionTitle(doc, "Health Indices", y, "📊");
+    y = drawSectionTitle(doc, "Health Indices", y, "index");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -737,7 +737,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string][]).filter(([, v]) => v !== "—");
 
   if (risks.length > 0) {
-    y = drawSectionTitle(doc, "Health Risks", y, "⚠");
+    y = drawSectionTitle(doc, "Health Risks", y, "risk");
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -780,7 +780,7 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
 
   // Quick Comparison Table (if multiple scans)
   if (sorted.length > 1) {
-    y = drawSectionTitle(doc, "Scan Comparison", y, "📋");
+    y = drawSectionTitle(doc, "Scan Comparison", y, "compare");
     
     const cols = sorted.slice(0, 6);
     const labelW = 38;
@@ -838,7 +838,7 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
   }
 
   // Detailed per-scan data
-  y = drawSectionTitle(doc, "Individual Scan Details", y, "🔍");
+  y = drawSectionTitle(doc, "Individual Scan Details", y, "detail");
   for (let i = 0; i < sorted.length; i++) {
     y = addScanBlockPro(doc, sorted[i], y, true);
     if (i < sorted.length - 1) {
