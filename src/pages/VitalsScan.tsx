@@ -180,47 +180,52 @@ const VitalsScan = () => {
     });
   };
 
+  // Whether we're in immersive camera mode (not finished / results)
+  const isCameraView = status !== "finished";
+
   return (
     <div className="flex bg-background" style={{ height: '100dvh' }}>
-      {/* Sidebar — desktop only */}
-      <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
-        <div className="mb-4"><img src={ciraLogo} alt="Cira" width={28} height={28} /></div>
-        <div className="w-10 h-[1px] bg-border mb-3" />
-        <div className="flex-1 flex flex-col items-center gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button key={item.id} onClick={() => {
-                if (item.id === "home") navigate("/dashboard");
-                if (item.id === "chat") navigate("/chat");
-                if (item.id === "scan") navigate("/vitals-scan");
-                if (item.id === "reports") navigate("/reports");
-                if (item.id === "doctor") navigate("/doctor");
-              }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
-                item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              }`}>
-                {item.id === "chat" ? <AiSparkleIcon size={18} /> : <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
-              </button>
-            );
-          })}
+      {/* Sidebar — desktop only, hidden during camera view for true fullscreen */}
+      {(!isCameraView || status === "finished") && (
+        <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
+          <div className="mb-4"><img src={ciraLogo} alt="Cira" width={28} height={28} /></div>
+          <div className="w-10 h-[1px] bg-border mb-3" />
+          <div className="flex-1 flex flex-col items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button key={item.id} onClick={() => {
+                  if (item.id === "home") navigate("/dashboard");
+                  if (item.id === "chat") navigate("/chat");
+                  if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "reports") navigate("/reports");
+                  if (item.id === "doctor") navigate("/doctor");
+                }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
+                  item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}>
+                  {item.id === "chat" ? <AiSparkleIcon size={18} /> : <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />}
+                  <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-auto flex flex-col items-center gap-2">
+            <button onClick={() => { logout(); navigate("/login"); }} className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all">
+              <LogOut size={18} strokeWidth={1.5} />
+              <span className="text-[9px] font-body font-medium leading-none">Logout</span>
+            </button>
+            <ProfilePopover>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">{initials}</div>
+            </ProfilePopover>
+          </div>
         </div>
-        <div className="mt-auto flex flex-col items-center gap-2">
-          <button onClick={() => { logout(); navigate("/login"); }} className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all">
-            <LogOut size={18} strokeWidth={1.5} />
-            <span className="text-[9px] font-body font-medium leading-none">Logout</span>
-          </button>
-          <ProfilePopover>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">{initials}</div>
-          </ProfilePopover>
-        </div>
-      </div>
+      )}
 
       {/* Scan history drawer */}
       {showHistory && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/10 md:left-[72px]" onClick={() => setShowHistory(false)} />
-          <div className="fixed top-0 bottom-0 left-0 md:left-[72px] z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setShowHistory(false)} />
+          <div className="fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
               <p className="text-sm font-semibold text-foreground font-heading">Scan History</p>
               <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
@@ -249,184 +254,194 @@ const VitalsScan = () => {
         </>
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 relative flex flex-col overflow-hidden">
-        {/* History toggle */}
-        <button onClick={() => setShowHistory(!showHistory)} className="absolute top-3 left-3 md:top-4 md:left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Scan History">
-          <Menu size={18} strokeWidth={1.5} />
-        </button>
+      {/* ═══════════ CAMERA VIEW — Immersive Fullscreen ═══════════ */}
+      {isCameraView ? (
+        <div className="flex-1 relative flex flex-col bg-black overflow-hidden">
+          {/* Camera canvas — fills entire screen */}
+          <canvas
+            id={CANVAS_ID}
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ display: "block" }}
+          />
 
-        {/* Background gradients */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
-          <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
-        </div>
+          {/* Idle overlay */}
+          {status === "idle" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
+                <ScanFace size={40} className="text-primary opacity-70" />
+              </div>
+              <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Vitals Scan</h2>
+              <p className="text-white/50 text-xs md:text-sm font-body mb-6">AI-powered face scan · 30 seconds</p>
 
-        {/* Scrollable content */}
-        <div className="relative z-10 flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-4 md:px-6 pt-4 md:py-8 pb-24 md:pb-8">
-            {/* Header */}
-            <div className="mb-3 md:mb-8 pl-11 md:pl-0">
-              <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Vitals Scan</h1>
-              <p className="text-[11px] md:text-sm text-muted-foreground font-body">AI-powered face scan · 30 seconds</p>
+              {/* Tips row */}
+              <div className="grid grid-cols-3 gap-4 max-w-xs mb-8">
+                {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face camera" }, { step: "3", text: "Stay still" }].map((s) => (
+                  <div key={s.step} className="text-center">
+                    <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-1.5">
+                      <span className="text-[10px] font-semibold text-white/60">{s.step}</span>
+                    </div>
+                    <p className="text-[10px] text-white/40 leading-tight">{s.text}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-1.5 mb-1">
+                <AlertCircle size={10} className="text-white/30 shrink-0" />
+                <p className="text-[10px] text-white/30">Credits deducted upon scan · 100% on-device</p>
+              </div>
             </div>
+          )}
 
-            {status !== "finished" ? (
-              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-3 md:p-6 shadow-sm flex flex-col items-center">
-                {/* Camera canvas */}
-                <div className="w-full rounded-2xl overflow-hidden bg-black border border-border/30 mb-3 md:mb-6 relative aspect-[4/3] md:aspect-auto md:max-w-xl" style={{ maxHeight: 480 }}>
-                  <canvas
-                    id={CANVAS_ID}
-                    ref={canvasRef}
-                    style={{ display: "block", width: "100%", height: "100%" }}
-                  />
-                  {status === "idle" && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-                      <ScanFace size={36} className="text-primary mb-2 opacity-60" />
-                      <p className="text-xs text-white/70 font-body">Tap below to start</p>
-                    </div>
-                  )}
-                  {status === "measuring" && (
-                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                      <div className="bg-card/90 backdrop-blur-sm rounded-xl px-3 py-2 flex items-center gap-3">
-                        <div className="flex-1">
-                          <div className="h-1.5 bg-border rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
-                          </div>
-                        </div>
-                        <span className="text-xs font-semibold text-foreground font-heading">{progress}%</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {error && (
-                  <div className="flex items-center gap-2 mb-2 text-destructive">
-                    <AlertCircle size={14} />
-                    <p className="text-xs">{error}</p>
+          {/* Progress overlay during measurement */}
+          {status === "measuring" && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
+              <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 max-w-md mx-auto border border-white/10">
+                <div className="flex-1">
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
                   </div>
-                )}
-
-                {/* Action button */}
-                <div className="flex gap-3 mb-2">
-                  {status === "ready" && (
-                    <button onClick={startMeasurement} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 transition-all">
-                      Start Face Scan
-                    </button>
-                  )}
-                  {status === "measuring" && (
-                    <button disabled className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm opacity-60 cursor-not-allowed">
-                      Scanning...
-                    </button>
-                  )}
-                  {status === "error" && (
-                    <button onClick={reset} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                      <RefreshCw size={16} /> Try Again
-                    </button>
-                  )}
-                  {status === "idle" && (
-                    <button onClick={handleStartCamera} className="h-11 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                      <ScanFace size={18} /> {scanNeedsSecureReload ? "Prepare Camera" : "Start Camera"}
-                    </button>
-                  )}
                 </div>
-
-                {/* Disclaimer */}
-                <div className="flex items-center gap-1.5 mb-2">
-                  <AlertCircle size={10} className="text-muted-foreground shrink-0" />
-                  <p className="text-[10px] text-muted-foreground">Credits deducted upon scan · 100% on-device</p>
-                </div>
-
-                {/* Tips */}
-                {(status === "ready" || status === "idle") && (
-                  <div className="grid grid-cols-3 gap-3 w-full max-w-xs md:max-w-md mt-1">
-                    {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face camera" }, { step: "3", text: "Stay still 30s" }].map((s) => (
-                      <div key={s.step} className="text-center">
-                        <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center mx-auto mb-1">
-                          <span className="text-[10px] font-semibold text-muted-foreground">{s.step}</span>
-                        </div>
-                        <p className="text-[10px] text-muted-foreground leading-tight">{s.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <span className="text-sm font-semibold text-white font-heading min-w-[3ch] text-right">{progress}%</span>
               </div>
-            ) : (
-              /* ── Results View ── */
-              <div>
-                <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-3 md:p-6 mb-3 md:mb-6 shadow-sm">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
-                      <p className="text-[10px] md:text-xs text-muted-foreground">Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
-                    </div>
-                  </div>
-                </div>
+            </div>
+          )}
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
-                  {displayVitals.map((v) => {
-                    const Icon = v.icon;
-                    return (
-                      <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 md:p-4">
-                        <div className="flex items-center gap-1.5 mb-1.5 md:mb-3">
-                          <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
-                            <Icon size={11} className={v.color.split(" ")[0]} />
-                          </div>
-                          <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
-                        </div>
-                        <p className="text-base md:text-xl font-semibold text-foreground font-heading">
-                          {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+          {/* Loading overlay */}
+          {status === "loading" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10">
+              <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4" />
+              <p className="text-white/60 text-sm font-body">Initializing camera...</p>
+            </div>
+          )}
 
-                {/* Health Indexes */}
-                {displayHealthIndexes.length > 0 && (
-                  <>
-                    <div className="flex items-center gap-1.5 mb-2 mt-1">
-                      <ShieldCheck size={13} className="text-primary" />
-                      <p className="text-xs font-semibold text-foreground font-heading">Health Indexes</p>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
-                      {displayHealthIndexes.map((v) => {
-                        const Icon = v.icon;
-                        return (
-                          <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 md:p-4">
-                            <div className="flex items-center gap-1.5 mb-1.5 md:mb-3">
-                              <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
-                                <Icon size={11} className={v.color.split(" ")[0]} />
-                              </div>
-                              <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
-                            </div>
-                            <p className="text-base md:text-xl font-semibold text-foreground font-heading">
-                              {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
+          {/* Error overlay */}
+          {error && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
+              <AlertCircle size={40} className="text-destructive mb-3 opacity-70" />
+              <p className="text-white/80 text-sm font-body mb-4 max-w-xs text-center px-4">{error}</p>
+            </div>
+          )}
 
-                {/* Action buttons */}
-                <div className="flex gap-2.5 pb-2">
-                  <button onClick={reset} className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
-                  <button onClick={handleAnalyzeWithCira} className="h-10 px-4 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 transition-all flex-1 md:flex-none">
-                    Analyze with Cira
-                  </button>
-                </div>
-              </div>
+          {/* ── Top bar overlay ── */}
+          <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3 md:p-4">
+            <button onClick={() => setShowHistory(!showHistory)} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="History">
+              <Menu size={18} strokeWidth={1.5} />
+            </button>
+            <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">
+              <Home size={18} strokeWidth={1.5} />
+            </button>
+          </div>
+
+          {/* ── Floating Action Button — bottom right ── */}
+          <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
+            {status === "idle" && (
+              <button onClick={handleStartCamera} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
+                <ScanFace size={28} />
+              </button>
+            )}
+            {status === "ready" && (
+              <button onClick={startMeasurement} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20 animate-pulse">
+                <Heart size={28} />
+              </button>
+            )}
+            {status === "error" && (
+              <button onClick={reset} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
+                <RefreshCw size={24} />
+              </button>
             )}
           </div>
         </div>
-      </div>
-      <MobileBottomNav />
+      ) : (
+        /* ═══════════ RESULTS VIEW ═══════════ */
+        <div className="flex-1 relative flex flex-col overflow-hidden">
+          {/* Background gradients */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
+            <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
+          </div>
+
+          <div className="relative z-10 flex-1 overflow-y-auto">
+            <div className="max-w-3xl mx-auto px-4 md:px-6 pt-4 md:py-8 pb-24 md:pb-8">
+              {/* Header */}
+              <div className="mb-4 md:mb-8">
+                <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Scan Results</h1>
+                <p className="text-[11px] md:text-sm text-muted-foreground font-body">Your vitals have been analyzed</p>
+              </div>
+
+              <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-3 md:p-6 mb-3 md:mb-6 shadow-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
+                {displayVitals.map((v) => {
+                  const Icon = v.icon;
+                  return (
+                    <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 md:p-4">
+                      <div className="flex items-center gap-1.5 mb-1.5 md:mb-3">
+                        <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                          <Icon size={11} className={v.color.split(" ")[0]} />
+                        </div>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                      </div>
+                      <p className="text-base md:text-xl font-semibold text-foreground font-heading">
+                        {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Health Indexes */}
+              {displayHealthIndexes.length > 0 && (
+                <>
+                  <div className="flex items-center gap-1.5 mb-2 mt-1">
+                    <ShieldCheck size={13} className="text-primary" />
+                    <p className="text-xs font-semibold text-foreground font-heading">Health Indexes</p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
+                    {displayHealthIndexes.map((v) => {
+                      const Icon = v.icon;
+                      return (
+                        <div key={v.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-2.5 md:p-4">
+                          <div className="flex items-center gap-1.5 mb-1.5 md:mb-3">
+                            <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
+                              <Icon size={11} className={v.color.split(" ")[0]} />
+                            </div>
+                            <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                          </div>
+                          <p className="text-base md:text-xl font-semibold text-foreground font-heading">
+                            {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-2.5 pb-2">
+                <button onClick={reset} className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
+                <button onClick={handleAnalyzeWithCira} className="h-10 px-4 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 transition-all flex-1 md:flex-none">
+                  Analyze with Cira
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Bottom nav only visible on results view */}
+      {!isCameraView && <MobileBottomNav />}
     </div>
   );
 };
