@@ -417,29 +417,32 @@ export async function generateDetailedReportPdf(report: any) {
 
   // Confidence Score — graphical gauge
   if (data.confidence_score != null) {
-    y = checkPage(doc, y, 20);
-    y += 4;
-    drawRoundedRect(doc, 20, y - 2, 170, 14, 2, COLORS.cardBg, COLORS.border);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(...COLORS.foreground);
-    doc.text("AI Confidence Score", 24, y + 3);
+    y = checkPage(doc, y, 24);
+    y += 6;
 
     const score = data.confidence_score;
     const scoreColor = score >= 80 ? COLORS.emerald : score >= 50 ? COLORS.amber : COLORS.red;
+    const scoreBg = score >= 80 ? COLORS.emeraldLight : score >= 50 ? COLORS.amberLight : COLORS.redLight;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...COLORS.muted);
+    doc.text("AI CONFIDENCE", 105, y, { align: "center" });
+    y += 6;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
+    doc.setFontSize(22);
     doc.setTextColor(...scoreColor);
-    doc.text(`${score}%`, 186, y + 3, { align: "right" });
+    doc.text(`${score}%`, 105, y, { align: "center" });
+    y += 5;
 
-    const gaugeY = y + 7;
-    drawRoundedRect(doc, 24, gaugeY, 162, 2, 1, COLORS.background);
-    const fillW = Math.max(3, (score / 100) * 162);
-    drawRoundedRect(doc, 24, gaugeY, fillW, 2, 1, scoreColor);
+    const gaugeW = 80;
+    const gaugeX = 105 - gaugeW / 2;
+    drawRoundedRect(doc, gaugeX, y, gaugeW, 3, 1.5, scoreBg);
+    const fillW = Math.max(3, (score / 100) * gaugeW);
+    drawRoundedRect(doc, gaugeX, y, fillW, 3, 1.5, scoreColor);
 
-    y += 16;
+    y += 10;
   }
 
   addFooter(doc);
