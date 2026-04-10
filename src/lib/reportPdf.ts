@@ -693,7 +693,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (vitals.length > 0) {
-    y = drawSectionTitle(doc, "Vital Signs", y, "vital");
+    y = drawSectionTitle(doc, "Vital Signs", y);
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -728,7 +728,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string, string][]).filter(([, v]) => v !== "—");
 
   if (indices.length > 0) {
-    y = drawSectionTitle(doc, "Health Indices", y, "index");
+    y = drawSectionTitle(doc, "Health Indices", y);
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -757,7 +757,7 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   ] as [string, string][]).filter(([, v]) => v !== "—");
 
   if (risks.length > 0) {
-    y = drawSectionTitle(doc, "Health Risks", y, "risk");
+    y = drawSectionTitle(doc, "Health Risks", y);
     const cardW = 40;
     const cardH = 16;
     const gap = 3;
@@ -777,30 +777,30 @@ function addScanBlockPro(doc: jsPDF, scan: VitalScanData, y: number, showDate = 
   return y;
 }
 
-export function generateSingleScanPdf(scan: VitalScanData) {
+export async function generateSingleScanPdf(scan: VitalScanData) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  let y = drawScanHeader(doc, "Face Scan Report", "Vital Scan", scan.created_at || scan.date || new Date().toISOString());
+  let y = await drawScanHeader(doc, "Face Scan Report", "Vital Scan", scan.created_at || scan.date || new Date().toISOString());
   y = addScanBlockPro(doc, scan, y, false);
   drawScanFooter(doc);
   return doc;
 }
 
-export function generateCombinedScansPdf(scans: VitalScanData[]) {
+export async function generateCombinedScansPdf(scans: VitalScanData[]) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const sorted = [...scans].sort((a, b) => new Date(b.created_at || b.date || 0).getTime() - new Date(a.created_at || a.date || 0).getTime());
 
-  let y = drawScanHeader(doc, `Face Scan History`, "Combined Report", new Date().toISOString());
+  let y = await drawScanHeader(doc, "Face Scan History", "Combined Report", new Date().toISOString());
 
   // Patient summary line
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...COLORS.muted);
-  doc.text(`${sorted.length} scans included  •  Most recent first`, 20, y);
+  doc.text(`${sorted.length} scans included  |  Most recent first`, 20, y);
   y += 8;
 
   // Quick Comparison Table (if multiple scans)
   if (sorted.length > 1) {
-    y = drawSectionTitle(doc, "Scan Comparison", y, "compare");
+    y = drawSectionTitle(doc, "Scan Comparison", y);
     
     const cols = sorted.slice(0, 6);
     const labelW = 38;
@@ -858,7 +858,7 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
   }
 
   // Detailed per-scan data
-  y = drawSectionTitle(doc, "Individual Scan Details", y, "detail");
+  y = drawSectionTitle(doc, "Individual Scan Details", y);
   for (let i = 0; i < sorted.length; i++) {
     y = addScanBlockPro(doc, sorted[i], y, true);
     if (i < sorted.length - 1) {
@@ -871,14 +871,14 @@ export function generateCombinedScansPdf(scans: VitalScanData[]) {
   return doc;
 }
 
-export function downloadSingleScanPdf(scan: VitalScanData) {
-  const doc = generateSingleScanPdf(scan);
+export async function downloadSingleScanPdf(scan: VitalScanData) {
+  const doc = await generateSingleScanPdf(scan);
   const d = new Date(scan.created_at || scan.date || "");
   const dateStr = !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : "scan";
   doc.save(`Cira_Vital_Scan_${dateStr}.pdf`);
 }
 
-export function downloadCombinedScansPdf(scans: VitalScanData[]) {
-  const doc = generateCombinedScansPdf(scans);
+export async function downloadCombinedScansPdf(scans: VitalScanData[]) {
+  const doc = await generateCombinedScansPdf(scans);
   doc.save(`Cira_Combined_Scans_${scans.length}_${Date.now()}.pdf`);
 }
