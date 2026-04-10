@@ -106,20 +106,32 @@ export const userApi = {
   updateProfile: (data: any) => put("/api/user/profile", data),
   deleteAccount: () => del("/api/user/account"),
   uploadAvatar: async (file: File): Promise<{ avatar: string }> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const base64 = reader.result as string;
-          const result = await put("/api/user/profile", { avatar: base64 });
-          resolve({ avatar: result.avatar || base64 });
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
+    // Compress image to max 200x200 JPEG to avoid payload size issues
+    const compressImage = (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement("canvas");
+          const maxSize = 200;
+          let w = img.width, h = img.height;
+          if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+          else { w = Math.round(w * maxSize / h); h = maxSize; }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d")!;
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.8));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Failed to load image")); };
+        img.src = url;
+      });
+    };
+
+    const base64 = await compressImage(file);
+    const result = await put("/api/user/profile", { avatar: base64 });
+    return { avatar: result.avatar || base64 };
   },
 };
 
