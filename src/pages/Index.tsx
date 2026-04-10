@@ -138,8 +138,26 @@ const Index = () => {
           </div>
         </div>
 
+        {/* Chat preview snippet */}
+        <div className="max-w-md mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-start gap-3 mb-3">
+              <img src={doctor1} alt="Cira" className="w-8 h-8 rounded-full object-cover mt-0.5" />
+              <div className="bg-primary/5 rounded-xl rounded-tl-none px-4 py-3 text-sm text-foreground font-body leading-relaxed">
+                Your blood pressure is elevated at 135/86. Tell me — how long have you been feeling this way?
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <div className="bg-primary/10 rounded-xl rounded-tr-none px-4 py-2.5 text-sm text-foreground font-body">
+                A few days, mostly after work
+              </div>
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center font-body mt-2">Cira combines your scan data with a structured conversation</p>
+        </div>
+
         {/* CTA */}
-        <div className="flex flex-col items-center gap-4 animate-slide-up" style={{ animationDelay: "0.45s" }}>
+        <div className="flex flex-col items-center gap-4 animate-slide-up" style={{ animationDelay: "0.5s" }}>
           <button
             onClick={handleAskCira}
             className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-base sm:text-lg font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
