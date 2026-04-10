@@ -138,16 +138,27 @@ export async function login(email: string, password: string): Promise<AuthRespon
 
 /** Google OAuth login */
 export async function googleLogin(idToken: string): Promise<AuthResponse> {
+  // Extract avatar from Google JWT to send along with auth request
+  let avatar: string | undefined;
+  try {
+    const payload = JSON.parse(atob(idToken.split(".")[1]));
+    avatar = payload.picture;
+  } catch {}
+
   const res = await fetch(`${API_BASE}/api/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify({ idToken, avatar }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || err.message || "Google login failed");
   }
   const data = await res.json();
+  // If backend returned avatar, use it; otherwise use the extracted one
+  if (!data.user.avatar && avatar) {
+    data.user.avatar = avatar;
+  }
   saveAuth(data);
   return data;
 }

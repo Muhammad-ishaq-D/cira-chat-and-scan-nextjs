@@ -233,21 +233,30 @@ const Login = () => {
 
           setLoading(true);
           try {
-            const authData = await googleLogin(response.credential);
-            // Extract Google profile picture from ID token
+            // Extract Google profile picture from ID token before auth call
+            let googleAvatar: string | undefined;
+            let googleName: string | undefined;
             try {
               const payload = JSON.parse(atob(response.credential.split(".")[1]));
-              if (payload.picture) {
-                const { updateUserAvatar } = await import("@/lib/auth");
-                updateUserAvatar(payload.picture);
-                // Always persist Google avatar to backend profile
-                try {
-                  await userApi.updateProfile({ avatar: payload.picture });
-                } catch (e) {
-                  console.warn("Failed to save Google avatar to backend:", e);
-                }
-              }
+              googleAvatar = payload.picture;
+              googleName = payload.name;
             } catch {}
+
+            const authData = await googleLogin(response.credential);
+
+            // Persist Google avatar to local storage and backend
+            if (googleAvatar) {
+              const { updateUserAvatar } = await import("@/lib/auth");
+              updateUserAvatar(googleAvatar);
+              try {
+                await userApi.updateProfile({ 
+                  avatar: googleAvatar,
+                  ...(googleName && !authData.user.name ? { name: googleName } : {}),
+                });
+              } catch (e) {
+                console.warn("Failed to save Google avatar to backend:", e);
+              }
+            }
             await redirectAfterAuth();
           } catch (error) {
             toast.error(getErrorMessage(error, "Google login failed"));
