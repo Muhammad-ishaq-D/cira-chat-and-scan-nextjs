@@ -43,7 +43,7 @@ const AdminOverview = () => {
     { label: "Active Consultations", value: dashboard?.active_consultations ?? "—", icon: Activity, color: "bg-emerald-50 text-emerald-600" },
     { label: "Total Scans", value: dashboard?.total_scans ?? dashboard?.scans_completed ?? "—", icon: ScanFace, color: "bg-purple-50 text-purple-600" },
     { label: "Active Subscriptions", value: dashboard?.active_subscriptions ?? "—", icon: TrendingUp, color: "bg-primary/10 text-primary" },
-    { label: "Revenue", value: dashboard?.total_revenue != null ? `₹${dashboard.total_revenue.toLocaleString()}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Revenue", value: dashboard?.total_revenue != null ? `$${dashboard.total_revenue.toLocaleString()}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
   ];
 
   return (
