@@ -64,7 +64,10 @@ async function post<T = any>(endpoint: string, body?: any): Promise<T> {
         return { message: errText };
       }
     })() : {};
-    throw new Error(err.error || err.message || `Request failed (${res.status})`);
+    const errorMsg = typeof err.error === 'string' ? err.error
+      : typeof err.message === 'string' ? err.message
+      : JSON.stringify(err) || `Request failed (${res.status})`;
+    throw new Error(errorMsg);
   }
 
   if (res.status === 204) return {} as T;

@@ -129,8 +129,9 @@ const VitalsScan = () => {
             duration: 8000,
           });
         } else {
-          console.error("[Scan] Submit error:", err);
-          toast.error(err?.message || "Failed to save scan to backend");
+          const msg = typeof err?.message === 'string' ? err.message : String(err);
+          console.error("[Scan] Submit error:", msg);
+          toast.error(msg || "Failed to save scan to backend");
         }
       }
     };
