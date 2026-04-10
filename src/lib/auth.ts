@@ -138,31 +138,47 @@ export async function login(email: string, password: string): Promise<AuthRespon
 
 /** Google OAuth login */
 export async function googleLogin(idToken: string): Promise<AuthResponse> {
-  // Extract avatar from Google JWT to send along with auth request
-  let avatar: string | undefined;
+  let googleId = "";
+  let googleName = "User";
+  let googleEmail = "";
+  let googleAvatar: string | undefined;
+
   try {
     const payload = JSON.parse(atob(idToken.split(".")[1]));
-    avatar = payload.picture;
+    googleId = payload.sub || payload.email || "";
+    googleName = payload.name || payload.email?.split("@")[0] || "User";
+    googleEmail = payload.email || "";
+    googleAvatar = payload.picture;
   } catch {}
 
   const res = await fetch(`${API_BASE}/api/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken, avatar }),
+    body: JSON.stringify({ idToken }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || err.message || "Google login failed");
   }
+
   const data = await res.json();
-  if (!data?.token || !data?.user) {
+  if (!data?.token) {
     throw new Error("Google login failed");
   }
-  if (!data.user.avatar && avatar) {
-    data.user.avatar = avatar;
-  }
-  saveAuth(data);
-  return data;
+
+  const normalizedData: AuthResponse = {
+    ...data,
+    user: {
+      id: data?.user?.id || googleId,
+      name: data?.user?.name || googleName,
+      email: data?.user?.email || googleEmail,
+      role: data?.user?.role || "user",
+      ...(data?.user?.avatar || googleAvatar ? { avatar: data?.user?.avatar || googleAvatar } : {}),
+    },
+  };
+
+  saveAuth(normalizedData);
+  return normalizedData;
 }
 
 /** Send OTP to email */
