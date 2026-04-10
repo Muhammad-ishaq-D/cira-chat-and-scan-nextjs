@@ -170,12 +170,12 @@ function addFooter(doc: jsPDF) {
   }
 }
 
-export function generateQuickAssessmentPdf(report: any) {
+export async function generateQuickAssessmentPdf(report: any) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const data = report.data || {};
   const date = report.date || report.created_at || new Date().toLocaleDateString();
 
-  let y = addHeader(doc, report.title || "Quick Assessment Report", "Quick Assessment", date);
+  let y = await addHeader(doc, report.title || "Quick Assessment Report", "Quick Assessment", date);
 
   // Summary
   y = addSection(doc, "Summary", y);
@@ -236,12 +236,12 @@ export function generateQuickAssessmentPdf(report: any) {
   return doc;
 }
 
-export function generateDetailedReportPdf(report: any) {
+export async function generateDetailedReportPdf(report: any) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const data = report.data || {};
   const date = report.date || report.created_at || new Date().toLocaleDateString();
 
-  let y = addHeader(doc, report.title || "Detailed Assessment Report", "Detailed Assessment", date);
+  let y = await addHeader(doc, report.title || "Detailed Assessment Report", "Detailed Assessment", date);
 
   // Patient Summary
   if (data.patient_summary) {
@@ -386,11 +386,11 @@ export function generateDetailedReportPdf(report: any) {
   return doc;
 }
 
-export function downloadReportPdf(report: any) {
+export async function downloadReportPdf(report: any) {
   const isDetailed = (report.type || "").toLowerCase().includes("detailed");
   const doc = isDetailed
-    ? generateDetailedReportPdf(report)
-    : generateQuickAssessmentPdf(report);
+    ? await generateDetailedReportPdf(report)
+    : await generateQuickAssessmentPdf(report);
 
   const filename = `Cira_${(report.type || "Report").replace(/\s+/g, "_")}_${report.id || Date.now()}.pdf`;
   doc.save(filename);
