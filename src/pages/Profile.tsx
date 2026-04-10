@@ -23,7 +23,8 @@ const Profile = () => {
   const [sex, setSex] = useState<Sex>("");
   const [dirty, setDirty] = useState(false);
   const [avatar, setAvatar] = useState<string | undefined>(localUser?.avatar);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [pendingAvatarPreview, setPendingAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
