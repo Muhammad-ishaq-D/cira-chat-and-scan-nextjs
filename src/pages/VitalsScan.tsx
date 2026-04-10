@@ -56,16 +56,50 @@ const VitalsScan = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
-    vitalsApi.getHistory()
-      .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
-      .catch(() => {});
-    userApi.getProfile()
-      .then((data) => setUserProfile(data))
-      .catch(() => {});
-  }, []);
+    const init = async () => {
+      // Fetch history + profile
+      vitalsApi.getHistory()
+        .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
+        .catch(() => {});
 
-  // Clean up SDK on unmount only — don't auto-init (needs user gesture for camera)
-  useEffect(() => {
+      // Check credits then auto-initialize SDK
+      try {
+        const freshProfile = await userApi.getProfile();
+        setUserProfile(freshProfile);
+        const scansLeft = freshProfile?.credits?.face_scans;
+        if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
+          toast.error("No scan credits remaining. Upgrade your plan.", {
+            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            duration: 8000,
+          });
+          return;
+        }
+
+        // Handle cross-origin isolation reload
+        if (scanNeedsSecureReload) {
+          const reloadKey = "coi_reload_attempted";
+          if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, "1");
+            window.location.replace("/vitals-scan");
+            return;
+          }
+          sessionStorage.removeItem(reloadKey);
+        }
+
+        initialize(CANVAS_ID, {
+          age: freshProfile?.age || undefined,
+          height: freshProfile?.height || undefined,
+          weight: freshProfile?.weight || undefined,
+          gender: freshProfile?.biological_sex || undefined,
+        });
+      } catch {
+        // If profile fetch fails, still try to initialize
+        initialize(CANVAS_ID);
+      }
+    };
+
+    init();
+
     return () => { cleanup(); hasInitRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
