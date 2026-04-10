@@ -147,7 +147,7 @@ const AdminBilling = () => {
                   <tr key={tx.id || i} className="border-b border-border/30 last:border-0">
                     <td className="py-2.5">{tx.user_name || tx.email || "—"}</td>
                     <td className="py-2.5 font-medium">${tx.amount?.toLocaleString() ?? 0}</td>
-                    <td className="py-2.5">{tx.plan || tx.plan_id || "—"}</td>
+                    <td className="py-2.5">{tx.plan_name || tx.plan || tx.plan_id || "—"}</td>
                     <td className="py-2.5">
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                         tx.status === "completed" ? "bg-emerald-50 text-emerald-700" :
