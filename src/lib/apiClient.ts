@@ -293,5 +293,6 @@ export const adminApi = {
   // Settings
   getSettings: () => adminGet("/api/admin/settings"),
   updateSettings: (settings: any) => adminPut("/api/admin/settings", settings),
+  getCreditLimits: () => adminGet("/api/admin/settings/credits"),
   updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
 };
