@@ -36,8 +36,9 @@ const AdminSettings = () => {
     const load = async () => {
       try {
         const data = await adminApi.getCreditLimits();
-        if (data && typeof data === "object") {
-          setCredits((prev) => ({ ...prev, ...data }));
+        const limits = data?.limits || data;
+        if (limits && typeof limits === "object") {
+          setCredits((prev) => ({ ...prev, ...limits }));
         }
       } catch {
         // fallback to defaults
