@@ -326,13 +326,6 @@ const VitalsScan = () => {
             </div>
           )}
 
-          {/* Loading overlay */}
-          {status === "loading" && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10">
-              <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4" />
-              <p className="text-white/60 text-sm font-body">Initializing camera...</p>
-            </div>
-          )}
 
           {/* Error overlay */}
           {error && (
