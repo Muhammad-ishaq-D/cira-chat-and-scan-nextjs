@@ -67,6 +67,15 @@ const Profile = () => {
 
     setSaving(true);
     try {
+      // If there's a pending avatar, upload it first
+      if (pendingAvatarFile) {
+        const result = await userApi.uploadAvatar(pendingAvatarFile);
+        setAvatar(result.avatar);
+        updateUserAvatar(result.avatar);
+        setPendingAvatarFile(null);
+        setPendingAvatarPreview(null);
+      }
+
       await userApi.updateProfile({
         name: name.trim(),
         ...(age ? { age: Number(age) } : {}),
