@@ -106,7 +106,17 @@ async function del<T = any>(endpoint: string): Promise<T> {
 // ─── User Profile ───────────────────────────────────────────────
 export const userApi = {
   getProfile: () => get("/api/user/profile"),
-  updateProfile: (data: any) => put("/api/user/profile", data),
+  updateProfile: async (data: any) => {
+    const { getUser } = await import("./auth");
+    const localUser = getUser();
+    const payload = {
+      ...(localUser?.name && data?.name === undefined ? { name: localUser.name } : {}),
+      ...(localUser?.avatar && data?.avatar === undefined ? { avatar: localUser.avatar } : {}),
+      ...(data || {}),
+    };
+
+    return put("/api/user/profile", payload);
+  },
   deleteAccount: () => del("/api/user/account"),
   uploadAvatar: async (file: File): Promise<{ avatar: string }> => {
     // Compress image to max 200x200 JPEG to avoid payload size issues
