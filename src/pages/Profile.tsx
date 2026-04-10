@@ -23,7 +23,8 @@ const Profile = () => {
   const [sex, setSex] = useState<Sex>("");
   const [dirty, setDirty] = useState(false);
   const [avatar, setAvatar] = useState<string | undefined>(localUser?.avatar);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [pendingAvatarPreview, setPendingAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -66,6 +67,15 @@ const Profile = () => {
 
     setSaving(true);
     try {
+      // If there's a pending avatar, upload it first
+      if (pendingAvatarFile) {
+        const result = await userApi.uploadAvatar(pendingAvatarFile);
+        setAvatar(result.avatar);
+        updateUserAvatar(result.avatar);
+        setPendingAvatarFile(null);
+        setPendingAvatarPreview(null);
+      }
+
       await userApi.updateProfile({
         name: name.trim(),
         ...(age ? { age: Number(age) } : {}),
@@ -101,7 +111,7 @@ const Profile = () => {
 
   const markDirty = () => setDirty(true);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -112,17 +122,11 @@ const Profile = () => {
       toast.error("Image must be under 5MB");
       return;
     }
-    setUploadingAvatar(true);
-    try {
-      const result = await userApi.uploadAvatar(file);
-      setAvatar(result.avatar);
-      updateUserAvatar(result.avatar);
-      toast.success("Profile picture updated!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to upload picture");
-    } finally {
-      setUploadingAvatar(false);
-    }
+    // Create local preview and mark dirty
+    const previewUrl = URL.createObjectURL(file);
+    setPendingAvatarFile(file);
+    setPendingAvatarPreview(previewUrl);
+    setDirty(true);
   };
 
   const initials = (name || "U").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
@@ -152,23 +156,18 @@ const Profile = () => {
         <div className="flex flex-col items-center gap-3">
           <div className="relative group">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-2xl font-semibold overflow-hidden">
-              {avatar ? (
-                <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+              {(pendingAvatarPreview || avatar) ? (
+                <img src={pendingAvatarPreview || avatar} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 initials
               )}
             </div>
             <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              {uploadingAvatar ? (
-                <Loader2 size={20} className="animate-spin text-white" />
-              ) : (
-                <Camera size={20} className="text-white" />
-              )}
+              <Camera size={20} className="text-white" />
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
-                disabled={uploadingAvatar}
                 className="hidden"
               />
             </label>
