@@ -236,6 +236,8 @@ const Login = () => {
               if (payload.picture && !authData.user.avatar) {
                 const { updateUserAvatar } = await import("@/lib/auth");
                 updateUserAvatar(payload.picture);
+                // Persist to backend profile
+                userApi.updateProfile({ avatar: payload.picture }).catch(() => {});
               }
             } catch {}
             await redirectAfterAuth();
