@@ -56,16 +56,50 @@ const VitalsScan = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
-    vitalsApi.getHistory()
-      .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
-      .catch(() => {});
-    userApi.getProfile()
-      .then((data) => setUserProfile(data))
-      .catch(() => {});
-  }, []);
+    const init = async () => {
+      // Fetch history + profile
+      vitalsApi.getHistory()
+        .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
+        .catch(() => {});
 
-  // Clean up SDK on unmount only — don't auto-init (needs user gesture for camera)
-  useEffect(() => {
+      // Check credits then auto-initialize SDK
+      try {
+        const freshProfile = await userApi.getProfile();
+        setUserProfile(freshProfile);
+        const scansLeft = freshProfile?.credits?.face_scans;
+        if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
+          toast.error("No scan credits remaining. Upgrade your plan.", {
+            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            duration: 8000,
+          });
+          return;
+        }
+
+        // Handle cross-origin isolation reload
+        if (scanNeedsSecureReload) {
+          const reloadKey = "coi_reload_attempted";
+          if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, "1");
+            window.location.replace("/vitals-scan");
+            return;
+          }
+          sessionStorage.removeItem(reloadKey);
+        }
+
+        initialize(CANVAS_ID, {
+          age: freshProfile?.age || undefined,
+          height: freshProfile?.height || undefined,
+          weight: freshProfile?.weight || undefined,
+          gender: freshProfile?.biological_sex || undefined,
+        });
+      } catch {
+        // If profile fetch fails, still try to initialize
+        initialize(CANVAS_ID);
+      }
+    };
+
+    init();
+
     return () => { cleanup(); hasInitRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -164,41 +198,6 @@ const VitalsScan = () => {
     navigate("/chat");
   };
 
-  const handleStartCamera = async () => {
-    // Check credits before allowing scan
-    try {
-      const freshProfile = await userApi.getProfile();
-      setUserProfile(freshProfile);
-      const scansLeft = freshProfile?.credits?.face_scans;
-      if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
-        toast.error("No scan credits remaining. Upgrade your plan.", {
-          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
-          duration: 8000,
-        });
-        return;
-      }
-    } catch {
-      // If profile fetch fails, allow scan attempt — backend will enforce
-    }
-
-    // If not cross-origin isolated, attempt a single reload to activate the service worker.
-    if (scanNeedsSecureReload) {
-      const reloadKey = "coi_reload_attempted";
-      if (!sessionStorage.getItem(reloadKey)) {
-        sessionStorage.setItem(reloadKey, "1");
-        window.location.replace("/vitals-scan");
-        return;
-      }
-      sessionStorage.removeItem(reloadKey);
-    }
-
-    initialize(CANVAS_ID, {
-      age: userProfile?.age || undefined,
-      height: userProfile?.height || undefined,
-      weight: userProfile?.weight || undefined,
-      gender: userProfile?.biological_sex || undefined,
-    });
-  };
 
   // Whether we're in immersive camera mode (not finished / results)
   const isCameraView = status !== "finished";
@@ -285,14 +284,14 @@ const VitalsScan = () => {
             style={{ display: "block" }}
           />
 
-          {/* Idle overlay */}
-          {status === "idle" && (
+          {/* Idle/Loading overlay */}
+          {(status === "idle" || status === "loading") && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
-                <ScanFace size={40} className="text-primary opacity-70" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
+                <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               </div>
-              <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Vitals Scan</h2>
-              <p className="text-white/50 text-xs md:text-sm font-body mb-6">AI-powered face scan · 30 seconds</p>
+              <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Initializing Scanner</h2>
+              <p className="text-white/50 text-xs md:text-sm font-body mb-6">Setting up camera · Please wait</p>
 
               {/* Tips row */}
               <div className="grid grid-cols-3 gap-4 max-w-xs mb-8">
@@ -327,13 +326,6 @@ const VitalsScan = () => {
             </div>
           )}
 
-          {/* Loading overlay */}
-          {status === "loading" && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10">
-              <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4" />
-              <p className="text-white/60 text-sm font-body">Initializing camera...</p>
-            </div>
-          )}
 
           {/* Error overlay */}
           {error && (
@@ -355,24 +347,6 @@ const VitalsScan = () => {
 
           {/* ── Floating Action Button — bottom right ── */}
           <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
-            {status === "idle" && (
-              <button 
-                onClick={handleStartCamera} 
-                className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base"
-              >
-                <ScanFace size={22} />
-                <span>Start</span>
-              </button>
-            )}
-            {status === "loading" && (
-              <button 
-                disabled
-                className="px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center gap-2 ring-4 ring-primary/20 font-semibold text-sm md:text-base opacity-60 cursor-not-allowed"
-              >
-                <div className="w-5 h-5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-                <span>Loading...</span>
-              </button>
-            )}
             {status === "ready" && (
               <button 
                 onClick={startMeasurement}
