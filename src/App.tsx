@@ -16,6 +16,7 @@ import PaymentHistory from "./pages/PaymentHistory.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import FreeChat from "./pages/FreeChat.tsx";
 import Profile from "./pages/Profile.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Login />} />
           <Route path="/our-story" element={<OurStory />} />
+          <Route path="/free-chat" element={<FreeChat />} />
           {/* Protected user routes */}
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
