@@ -113,6 +113,13 @@ const VitalsScan = () => {
     let isActive = true;
 
     const saveScan = async () => {
+      // Guest mode: deduct free scan, don't save to backend
+      if (isGuest) {
+        deductFreeScan();
+        toast.success("Scan complete! (Guest mode — login to save)");
+        return;
+      }
+
       const hr = results.healthRisks;
       const payload = Object.fromEntries(
         Object.entries({
@@ -126,7 +133,6 @@ const VitalsScan = () => {
           bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
           cardiac_workload: results.cardiacWorkload != null ? Math.round(results.cardiacWorkload) : undefined,
           signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
-          // Health indexes
           wellness_score: hr?.wellnessScore != null ? Math.round(hr.wellnessScore) : undefined,
           vascular_age: hr?.vascularAge != null ? Math.round(hr.vascularAge) : undefined,
           body_fat_percentage: hr?.bodyFatPercentage != null ? Number(hr.bodyFatPercentage.toFixed(1)) : undefined,
@@ -148,23 +154,17 @@ const VitalsScan = () => {
 
       try {
         await vitalsApi.submitScan(payload);
-
         if (!isActive) return;
-
-        // Refresh profile to update credit count
         userApi.getProfile()
           .then((data) => { if (isActive) setUserProfile(data); })
           .catch(() => {});
-
         const historyData = await vitalsApi.getHistory().catch(() => null);
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
         }
-
         toast.success("Scan saved · 1 scan credit used");
       } catch (err: any) {
         if (!isActive) return;
-
         if (err?.message?.includes("insufficient") || err?.message?.includes("credits")) {
           toast.error("No scan credits remaining. Upgrade your plan.", {
             action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
@@ -179,11 +179,8 @@ const VitalsScan = () => {
     };
 
     saveScan();
-
-    return () => {
-      isActive = false;
-    };
-  }, [results, navigate]);
+    return () => { isActive = false; };
+  }, [results, navigate, isGuest]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
   const displayHealthIndexes = results?.healthRisks ? formatHealthIndexes(results.healthRisks) : [];
