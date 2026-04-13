@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
-import { getUser, logout } from "@/lib/auth";
+import { getUser, logout, isAuthenticated } from "@/lib/auth";
+import { deductFreeScan, getFreeScans } from "@/lib/freeCredits";
 import { toast } from "sonner";
 
 const navItems = [
@@ -44,13 +45,15 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 
 const VitalsScan = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasInitRef = useRef(false);
   const localUser = getUser();
-  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
   
 
   const [userProfile, setUserProfile] = useState<any>(null);
