@@ -162,11 +162,12 @@ const FreeChat = () => {
         case "disconnectAgent":
           if (tool.input.disconnect_now) { toast.info("Session ended."); syncChatMode("none"); }
           break;
-        case "prepare_consultation_payload":
-          if (!prepPayloadSentRef.current) {
+        case "prepare_consultation_payload": {
+          const payload = tool.input?.consultation_payload;
+          // Only trigger report generation when we have a reason (final payload after full intake)
+          if (payload?.reason && !prepPayloadSentRef.current) {
             prepPayloadSentRef.current = true;
             setTimeout(() => {
-              const payload = tool.input?.consultation_payload;
               const pathway = payload?.pathway;
               const payloadJson = JSON.stringify(payload, null, 2);
               const followUp = pathway === "detailed"
@@ -176,6 +177,7 @@ const FreeChat = () => {
             }, 500);
           }
           break;
+        }
       }
     }
   };
