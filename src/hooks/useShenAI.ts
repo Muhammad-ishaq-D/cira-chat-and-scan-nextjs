@@ -342,6 +342,10 @@ export function useShenAI() {
             });
           }
           setStatus("finished");
+
+          // Stop camera after scan is done
+          try { sdk.deinitialize(); } catch {}
+          sdkRef.current = null;
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
