@@ -214,6 +214,7 @@ const FreeChat = () => {
           message: outboundText,
           sessionId: currentSessionIdRef.current || undefined,
           deviceId: deviceId.current,
+          guest: true,
         }),
       });
 
