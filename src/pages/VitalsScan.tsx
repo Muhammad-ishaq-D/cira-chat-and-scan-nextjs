@@ -60,12 +60,25 @@ const VitalsScan = () => {
 
   useEffect(() => {
     const init = async () => {
-      // Fetch history + profile
+      if (isGuest) {
+        // Guest mode: check free scans, skip profile/history fetch
+        const scans = getFreeScans();
+        if (scans <= 0) {
+          toast.error("Free scan already used. Login to get more scans.", {
+            action: { label: "Login", onClick: () => navigate("/login") },
+            duration: 8000,
+          });
+          return;
+        }
+        initialize(CANVAS_ID);
+        return;
+      }
+
+      // Authenticated mode
       vitalsApi.getHistory()
         .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
         .catch(() => {});
 
-      // Check credits then auto-initialize SDK
       try {
         const freshProfile = await userApi.getProfile();
         setUserProfile(freshProfile);
@@ -77,7 +90,6 @@ const VitalsScan = () => {
           });
           return;
         }
-
         initialize(CANVAS_ID, {
           age: freshProfile?.age || undefined,
           height: freshProfile?.height || undefined,
@@ -85,13 +97,11 @@ const VitalsScan = () => {
           gender: freshProfile?.biological_sex || undefined,
         });
       } catch {
-        // If profile fetch fails, still try to initialize
         initialize(CANVAS_ID);
       }
     };
 
     init();
-
     return () => { cleanup(); hasInitRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
