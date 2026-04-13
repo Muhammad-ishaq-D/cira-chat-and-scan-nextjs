@@ -200,8 +200,8 @@ const VitalsScan = () => {
 
   return (
     <div className="flex bg-background" style={{ height: '100dvh' }}>
-      {/* Sidebar — desktop only, hidden during camera view for true fullscreen */}
-      {!isCameraView && (
+      {/* Sidebar — desktop only, hidden during camera view and for guests */}
+      {!isCameraView && !isGuest && (
         <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
           <div className="mb-4"><img src={ciraLogo} alt="Cira" width={28} height={28} /></div>
           <div className="w-10 h-[1px] bg-border mb-3" />
@@ -236,8 +236,8 @@ const VitalsScan = () => {
         </div>
       )}
 
-      {/* Scan history drawer */}
-      {showHistory && (
+      {/* Scan history drawer — hidden for guests */}
+      {showHistory && !isGuest && (
         <>
           <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setShowHistory(false)} />
           <div className="fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
@@ -447,8 +447,8 @@ const VitalsScan = () => {
           </div>
         </div>
       )}
-      {/* Bottom nav only visible on results view */}
-      {!isCameraView && <MobileBottomNav />}
+      {/* Bottom nav only visible on results view, hidden for guests */}
+      {!isCameraView && !isGuest && <MobileBottomNav />}
     </div>
   );
 };
