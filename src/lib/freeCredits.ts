@@ -34,7 +34,13 @@ export function getFreeCredits(): number {
     localStorage.setItem(FREE_CREDITS_KEY, String(INITIAL_CREDITS));
     return INITIAL_CREDITS;
   }
-  return parseInt(val, 10);
+  const current = parseInt(val, 10);
+  // Cap to new limit if previously had higher allowance
+  if (current > INITIAL_CREDITS) {
+    localStorage.setItem(FREE_CREDITS_KEY, String(INITIAL_CREDITS));
+    return INITIAL_CREDITS;
+  }
+  return current;
 }
 
 export function deductFreeCredits(amount = 1): number {
