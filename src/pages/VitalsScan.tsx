@@ -188,13 +188,10 @@ const VitalsScan = () => {
   const handleAnalyzeWithCira = () => {
     if (!results) return;
     const serializableVitals = [...displayVitals, ...displayHealthIndexes].map(v => ({
-      label: v.label,
-      value: v.value,
-      unit: v.unit,
-      color: v.color,
+      label: v.label, value: v.value, unit: v.unit, color: v.color,
     }));
     sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
-    navigate("/chat");
+    navigate(isGuest ? "/free-chat" : "/chat");
   };
 
 
