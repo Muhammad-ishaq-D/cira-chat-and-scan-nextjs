@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
-import { getUser, logout } from "@/lib/auth";
+import { getUser, logout, isAuthenticated } from "@/lib/auth";
+import { deductFreeScan, getFreeScans } from "@/lib/freeCredits";
 import { toast } from "sonner";
 
 const navItems = [
@@ -44,25 +45,40 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 
 const VitalsScan = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasInitRef = useRef(false);
   const localUser = getUser();
-  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
   
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
     const init = async () => {
-      // Fetch history + profile
+      if (isGuest) {
+        // Guest mode: check free scans, skip profile/history fetch
+        const scans = getFreeScans();
+        if (scans <= 0) {
+          toast.error("Free scan already used. Login to get more scans.", {
+            action: { label: "Login", onClick: () => navigate("/login") },
+            duration: 8000,
+          });
+          return;
+        }
+        initialize(CANVAS_ID);
+        return;
+      }
+
+      // Authenticated mode
       vitalsApi.getHistory()
         .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
         .catch(() => {});
 
-      // Check credits then auto-initialize SDK
       try {
         const freshProfile = await userApi.getProfile();
         setUserProfile(freshProfile);
@@ -74,7 +90,6 @@ const VitalsScan = () => {
           });
           return;
         }
-
         initialize(CANVAS_ID, {
           age: freshProfile?.age || undefined,
           height: freshProfile?.height || undefined,
@@ -82,13 +97,11 @@ const VitalsScan = () => {
           gender: freshProfile?.biological_sex || undefined,
         });
       } catch {
-        // If profile fetch fails, still try to initialize
         initialize(CANVAS_ID);
       }
     };
 
     init();
-
     return () => { cleanup(); hasInitRef.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -100,6 +113,13 @@ const VitalsScan = () => {
     let isActive = true;
 
     const saveScan = async () => {
+      // Guest mode: deduct free scan, don't save to backend
+      if (isGuest) {
+        deductFreeScan();
+        toast.success("Scan complete! (Guest mode — login to save)");
+        return;
+      }
+
       const hr = results.healthRisks;
       const payload = Object.fromEntries(
         Object.entries({
@@ -113,7 +133,6 @@ const VitalsScan = () => {
           bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
           cardiac_workload: results.cardiacWorkload != null ? Math.round(results.cardiacWorkload) : undefined,
           signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
-          // Health indexes
           wellness_score: hr?.wellnessScore != null ? Math.round(hr.wellnessScore) : undefined,
           vascular_age: hr?.vascularAge != null ? Math.round(hr.vascularAge) : undefined,
           body_fat_percentage: hr?.bodyFatPercentage != null ? Number(hr.bodyFatPercentage.toFixed(1)) : undefined,
@@ -135,23 +154,17 @@ const VitalsScan = () => {
 
       try {
         await vitalsApi.submitScan(payload);
-
         if (!isActive) return;
-
-        // Refresh profile to update credit count
         userApi.getProfile()
           .then((data) => { if (isActive) setUserProfile(data); })
           .catch(() => {});
-
         const historyData = await vitalsApi.getHistory().catch(() => null);
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
         }
-
         toast.success("Scan saved · 1 scan credit used");
       } catch (err: any) {
         if (!isActive) return;
-
         if (err?.message?.includes("insufficient") || err?.message?.includes("credits")) {
           toast.error("No scan credits remaining. Upgrade your plan.", {
             action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
@@ -166,11 +179,8 @@ const VitalsScan = () => {
     };
 
     saveScan();
-
-    return () => {
-      isActive = false;
-    };
-  }, [results, navigate]);
+    return () => { isActive = false; };
+  }, [results, navigate, isGuest]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
   const displayHealthIndexes = results?.healthRisks ? formatHealthIndexes(results.healthRisks) : [];
@@ -178,13 +188,10 @@ const VitalsScan = () => {
   const handleAnalyzeWithCira = () => {
     if (!results) return;
     const serializableVitals = [...displayVitals, ...displayHealthIndexes].map(v => ({
-      label: v.label,
-      value: v.value,
-      unit: v.unit,
-      color: v.color,
+      label: v.label, value: v.value, unit: v.unit, color: v.color,
     }));
     sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
-    navigate("/chat");
+    navigate(isGuest ? "/free-chat" : "/chat");
   };
 
 

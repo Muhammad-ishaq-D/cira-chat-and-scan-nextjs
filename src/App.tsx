@@ -16,6 +16,7 @@ import PaymentHistory from "./pages/PaymentHistory.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import FreeChat from "./pages/FreeChat.tsx";
 import Profile from "./pages/Profile.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
@@ -38,12 +39,13 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Login />} />
           <Route path="/our-story" element={<OurStory />} />
+          <Route path="/free-chat" element={<FreeChat />} />
           {/* Protected user routes */}
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
-          <Route path="/vitals-scan" element={<ProtectedRoute><VitalsScan /></ProtectedRoute>} />
+          <Route path="/vitals-scan" element={<VitalsScan />} />
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
           <Route path="/doctor" element={<ProtectedRoute><Doctor /></ProtectedRoute>} />

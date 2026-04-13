@@ -70,7 +70,7 @@ const Index = () => {
     if (heroMessage.trim()) {
       sessionStorage.setItem("cira_landing_message", heroMessage.trim());
     }
-    navigate("/login");
+    navigate("/free-chat");
   };
 
   useEffect(() => {
@@ -166,12 +166,12 @@ const Index = () => {
             onClick={handleAskCira}
             className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm sm:text-base font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
           >
-            Try a free scan →
+            Ask Cira →
           </button>
           <div className="flex items-center gap-3 text-[10px] sm:text-xs text-muted-foreground font-body">
             <span>🔒 On-device</span>
-            <span>⚡ No download</span>
-            <span>📷 Camera only</span>
+            <span>⚡ No signup needed</span>
+            <span>🆓 Free to try</span>
           </div>
         </div>
       </main>
