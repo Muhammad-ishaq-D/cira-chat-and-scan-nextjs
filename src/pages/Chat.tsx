@@ -108,7 +108,7 @@ const buildFreeChatPrompt = (userText: string) => [
   "",
   "Just Chat mode selected.",
   "Reply conversationally as Cira.",
-  "Do not ask the user to choose Quick Assessment, Detailed Assessment, or Vital Scan.",
+  "Do not ask the user to choose Assessment or Vital Scan.",
   "Do not call the openModal tool unless the user explicitly asks for an assessment or scan.",
   "Do not begin a structured intake unless the user asks for one.",
 ].join("\n");
