@@ -896,25 +896,23 @@ const Chat = () => {
                         </div>
                       </button>
 
-                      {/* Secondary — Quick & Detailed (compact tiles) */}
-                      <div className="grid grid-cols-2 gap-2">
-                        {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                          const Icon = mode.icon;
-                          return (
-                            <button
-                              key={mode.id}
-                              onClick={() => selectMode(mode.id)}
-                              className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
-                            >
-                              <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
-                                <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                              </div>
-                              <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                              <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {/* Assessment */}
+                      {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                        const Icon = mode.icon;
+                        return (
+                          <button
+                            key={mode.id}
+                            onClick={() => selectMode(mode.id)}
+                            className="group w-full bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
+                          >
+                            <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                              <Icon size={13} style={{ color: "#3b82f6" }} />
+                            </div>
+                            <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                            <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
+                          </button>
+                        );
+                      })}
 
                       {/* Just chat */}
                       <button
