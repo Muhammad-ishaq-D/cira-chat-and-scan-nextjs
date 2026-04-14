@@ -488,7 +488,7 @@ const FreeChat = () => {
                               🩺 Health Assessment
                             </button>
                             <button
-                              onClick={() => { syncChatMode("chat"); }}
+                              onClick={() => selectMode("chat")}
                               className="px-3.5 py-1.5 rounded-full border border-border/60 text-[12px] font-medium text-foreground hover:bg-accent transition-colors active:scale-95"
                             >
                               💬 Just Chat
