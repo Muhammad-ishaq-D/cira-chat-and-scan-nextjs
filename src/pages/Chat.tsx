@@ -240,8 +240,8 @@ const Chat = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                  title: `Quick Assessment — ${summaryData.possible_conditions?.[0]?.name || "Health Check"}`,
-                  type: "Quick Assessment",
+                  title: `Assessment — ${summaryData.possible_conditions?.[0]?.name || "Health Check"}`,
+                  type: "Assessment",
                   summary: summaryData.summary,
                   data: summaryData,
                   chat_session_id: currentSessionIdRef.current || undefined,
@@ -265,8 +265,8 @@ const Chat = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                  title: `Detailed Assessment — ${detailedData.assessment?.primary_diagnosis || "Health Report"}`,
-                  type: "Detailed Assessment",
+                  title: `Assessment — ${detailedData.assessment?.primary_diagnosis || "Health Report"}`,
+                  type: "Assessment",
                   summary: detailedData.patient_summary,
                   data: detailedData,
                   chat_session_id: currentSessionIdRef.current || undefined,
