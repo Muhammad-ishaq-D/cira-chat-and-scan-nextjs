@@ -18,6 +18,8 @@ import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import FreeChat from "./pages/FreeChat.tsx";
 import Profile from "./pages/Profile.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
 import AdminOverview from "./admin/AdminOverview.tsx";
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/register" element={<Login />} />
           <Route path="/our-story" element={<OurStory />} />
           <Route path="/free-chat" element={<FreeChat />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* Protected user routes */}
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
