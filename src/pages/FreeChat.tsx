@@ -325,8 +325,7 @@ const FreeChat = () => {
     }
     setPendingLandingMessage(null);
     const pathwayMessages: Record<ChatMode, string> = {
-      quick: "⚡ I'd like a quick assessment",
-      detailed: "🩺 I'd like a detailed assessment",
+      assessment: "🩺 I'd like a health assessment",
       chat: "", vitals: "", none: "",
     };
     const pathwayText = pathwayMessages[mode];
@@ -576,18 +575,11 @@ const FreeChat = () => {
                   Face Scan
                 </button>
                 <button
-                  onClick={() => { selectMode("quick"); setShowFloatingModes(false); }}
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/50 text-foreground text-[11px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  onClick={() => { selectMode("assessment"); setShowFloatingModes(false); }}
+                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[11px] font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
                 >
-                  <Stethoscope size={14} className="text-blue-500" />
-                  Quick Assessment
-                </button>
-                <button
-                  onClick={() => { selectMode("detailed"); setShowFloatingModes(false); }}
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/50 text-foreground text-[11px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
-                >
-                  <FileText size={14} className="text-purple-500" />
-                  Detailed Assessment
+                  <Stethoscope size={14} />
+                  Assessment
                 </button>
               </div>
             </div>
