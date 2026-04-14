@@ -604,14 +604,8 @@ const FreeChat = () => {
               <button
                 type="button"
                 onClick={() => {
-                  const next = !showFloatingModes;
-                  setShowFloatingModes(next);
-                  if (next) {
-                    setShowTooltip(true);
-                    setTimeout(() => setShowTooltip(false), 2000);
-                  } else {
-                    setShowTooltip(false);
-                  }
+                  setShowFloatingModes(!showFloatingModes);
+                  setShowTooltip(false);
                 }}
                 className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
               >
