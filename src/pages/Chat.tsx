@@ -463,8 +463,7 @@ const Chat = () => {
 
     // Map mode selection to the text Claude expects
     const pathwayMessages: Record<ChatMode, string> = {
-      quick: "⚡ I'd like a quick assessment",
-      detailed: "🩺 I'd like a detailed assessment",
+      assessment: "🩺 I'd like a health assessment",
       chat: "",
       vitals: "",
       none: "",
