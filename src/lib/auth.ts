@@ -152,19 +152,32 @@ export async function googleLogin(idToken: string): Promise<AuthResponse> {
     googleAvatar = payload.picture;
   } catch {}
 
-  const res = await fetch(`${API_BASE}/api/auth/google`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || err.message || "Google login failed");
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+  } catch (networkErr) {
+    throw new Error("Network error — could not reach server");
   }
 
-  const data = await res.json();
-  if (!data?.token) {
-    throw new Error("Google login failed");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const msg = (err?.error || err?.message || "").toString().trim();
+    throw new Error(msg && msg !== "null" ? msg : "Google login failed");
+  }
+
+  let data: any;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("Google login failed — invalid server response");
+  }
+
+  if (!data || !data.token) {
+    throw new Error("Google login failed — no token received");
   }
 
   const normalizedData: AuthResponse = {
