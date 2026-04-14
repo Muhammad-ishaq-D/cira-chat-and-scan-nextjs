@@ -61,26 +61,17 @@ const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { t
 
 
 
-type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
+type ChatMode = "none" | "assessment" | "vitals" | "chat";
 
 const chatModes = [
   {
-    id: "quick" as ChatMode,
+    id: "assessment" as ChatMode,
     icon: Stethoscope,
-    title: "Quick Assessment",
-    desc: "Cira screens for red flags with focused questions — fast, accurate triage in minutes.",
-    badge: "~2 min · Fast Triage",
-    gradient: "from-blue-500 to-cyan-400",
+    title: "Assessment",
+    desc: "Cira adapts — quick triage or deep clinical intake based on your issue.",
+    badge: "Adaptive · AI-Driven",
+    gradient: "from-blue-500 to-purple-400",
     bgGlow: "bg-blue-100",
-  },
-  {
-    id: "detailed" as ChatMode,
-    icon: FileText,
-    title: "Detailed Assessment",
-    desc: "Full clinical-style intake — Cira collects history, vitals, ROS & generates a doctor-ready report.",
-    badge: "~8 min · Doctor-Ready Report",
-    gradient: "from-purple-500 to-pink-400",
-    bgGlow: "bg-purple-100",
   },
   {
     id: "vitals" as ChatMode,
@@ -117,7 +108,7 @@ const buildFreeChatPrompt = (userText: string) => [
   "",
   "Just Chat mode selected.",
   "Reply conversationally as Cira.",
-  "Do not ask the user to choose Quick Assessment, Detailed Assessment, or Vital Scan.",
+  "Do not ask the user to choose Assessment or Vital Scan.",
   "Do not call the openModal tool unless the user explicitly asks for an assessment or scan.",
   "Do not begin a structured intake unless the user asks for one.",
 ].join("\n");
@@ -249,8 +240,8 @@ const Chat = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                  title: `Quick Assessment — ${summaryData.possible_conditions?.[0]?.name || "Health Check"}`,
-                  type: "Quick Assessment",
+                  title: `Assessment — ${summaryData.possible_conditions?.[0]?.name || "Health Check"}`,
+                  type: "Assessment",
                   summary: summaryData.summary,
                   data: summaryData,
                   chat_session_id: currentSessionIdRef.current || undefined,
@@ -274,8 +265,8 @@ const Chat = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                  title: `Detailed Assessment — ${detailedData.assessment?.primary_diagnosis || "Health Report"}`,
-                  type: "Detailed Assessment",
+                  title: `Assessment — ${detailedData.assessment?.primary_diagnosis || "Health Report"}`,
+                  type: "Assessment",
                   summary: detailedData.patient_summary,
                   data: detailedData,
                   chat_session_id: currentSessionIdRef.current || undefined,
@@ -472,8 +463,7 @@ const Chat = () => {
 
     // Map mode selection to the text Claude expects
     const pathwayMessages: Record<ChatMode, string> = {
-      quick: "⚡ I'd like a quick assessment",
-      detailed: "🩺 I'd like a detailed assessment",
+      assessment: "🩺 I'd like a health assessment",
       chat: "",
       vitals: "",
       none: "",
@@ -744,22 +734,22 @@ const Chat = () => {
                   </div>
                 </button>
 
-                {/* Secondary modes — compact tiles */}
-                <div className="grid grid-cols-2 gap-2 md:gap-3 w-full max-w-2xl mb-4 md:mb-8">
+                {/* Assessment mode */}
+                <div className="w-full max-w-2xl mb-4 md:mb-8">
                   {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                     const Icon = mode.icon;
                     return (
                       <button
                         key={mode.id}
                         onClick={() => selectMode(mode.id)}
-                        className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
+                        className="group w-full bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
                       >
                         <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2 md:mb-3`}>
-                          <Icon size={15} className="md:hidden" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                          <Icon size={20} className="hidden md:block" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                          <Icon size={15} className="md:hidden" style={{ color: "#3b82f6" }} />
+                          <Icon size={20} className="hidden md:block" style={{ color: "#3b82f6" }} />
                         </div>
                         <p className="text-[11px] md:text-sm font-semibold text-foreground mb-0.5 md:mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-none mb-2 md:mb-3">{mode.desc}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed mb-2 md:mb-3">{mode.desc}</p>
                         <span className="inline-block text-[8px] md:text-[9px] font-medium px-1.5 md:px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
                           {mode.badge}
                         </span>
@@ -906,25 +896,23 @@ const Chat = () => {
                         </div>
                       </button>
 
-                      {/* Secondary — Quick & Detailed (compact tiles) */}
-                      <div className="grid grid-cols-2 gap-2">
-                        {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                          const Icon = mode.icon;
-                          return (
-                            <button
-                              key={mode.id}
-                              onClick={() => selectMode(mode.id)}
-                              className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
-                            >
-                              <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
-                                <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                              </div>
-                              <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                              <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {/* Assessment */}
+                      {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                        const Icon = mode.icon;
+                        return (
+                          <button
+                            key={mode.id}
+                            onClick={() => selectMode(mode.id)}
+                            className="group w-full bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
+                          >
+                            <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                              <Icon size={13} style={{ color: "#3b82f6" }} />
+                            </div>
+                            <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                            <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
+                          </button>
+                        );
+                      })}
 
                       {/* Just chat */}
                       <button

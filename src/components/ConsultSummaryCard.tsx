@@ -42,7 +42,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                Quick Assessment
+                Assessment
               </p>
               <p className="text-[9px] text-muted-foreground">AI Triage Summary</p>
             </div>
