@@ -75,7 +75,7 @@ const FreeChat = () => {
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
   const [showFloatingModes, setShowFloatingModes] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
@@ -602,7 +602,16 @@ const FreeChat = () => {
             <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
               <button
                 type="button"
-                onClick={() => { setShowFloatingModes(!showFloatingModes); setShowTooltip(false); }}
+                onClick={() => {
+                  const next = !showFloatingModes;
+                  setShowFloatingModes(next);
+                  if (next) {
+                    setShowTooltip(true);
+                    setTimeout(() => setShowTooltip(false), 2000);
+                  } else {
+                    setShowTooltip(false);
+                  }
+                }}
                 className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
               >
                 <ScanFace size={18} strokeWidth={1.5} />
