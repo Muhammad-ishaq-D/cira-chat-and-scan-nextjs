@@ -178,8 +178,9 @@ const FreeChat = () => {
           break;
         case "prepare_consultation_payload": {
           const payload = tool.input?.consultation_payload;
-          // Only trigger report generation when we have a reason (final payload after full intake)
-          if (payload?.reason && !prepPayloadSentRef.current) {
+          // Only trigger report generation after real intake (at least 3 user messages)
+          const userMsgCount = messages.filter(m => m.role === "user").length;
+          if (payload?.reason && !prepPayloadSentRef.current && userMsgCount >= 3) {
             prepPayloadSentRef.current = true;
             setTimeout(() => {
               const pathway = payload?.pathway;
@@ -320,6 +321,8 @@ const FreeChat = () => {
     // Reset for a fresh conversation
     syncCurrentSessionId(null);
     setConversationHistory([]);
+    
+    prepPayloadSentRef.current = false;
     syncChatMode(mode);
     setShowModeSelection(false);
     setPendingLandingMessage(null);
