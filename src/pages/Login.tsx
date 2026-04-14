@@ -69,20 +69,67 @@ const Login = () => {
       return;
     }
 
-    const controller = navigator.serviceWorker.controller;
-    if (!controller) {
+    let cancelled = false;
+
+    const markReady = () => {
+      if (cancelled) return;
       sessionStorage.removeItem("cira_google_popup_reset_at");
       setGoogleContextReady(true);
-      return;
-    }
+    };
 
-    setGoogleContextReady(false);
+    const resetGoogleContext = async () => {
+      const controller = navigator.serviceWorker.controller;
 
-    const lastResetAt = Number(sessionStorage.getItem("cira_google_popup_reset_at") || "0");
-    if (Date.now() - lastResetAt > 3000) {
+      if (!controller) {
+        markReady();
+        return;
+      }
+
+      const isCoiServiceWorker = controller.scriptURL.includes("coi-serviceworker");
+      if (!isCoiServiceWorker) {
+        markReady();
+        return;
+      }
+
+      setGoogleContextReady(false);
+
+      const lastResetAt = Number(sessionStorage.getItem("cira_google_popup_reset_at") || "0");
+      if (Date.now() - lastResetAt <= 3000) {
+        window.setTimeout(markReady, 1200);
+        return;
+      }
+
       sessionStorage.setItem("cira_google_popup_reset_at", String(Date.now()));
-      controller.postMessage({ type: "deregister" });
-    }
+
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        const coiRegistrations = registrations.filter((registration) =>
+          [registration.active?.scriptURL, registration.waiting?.scriptURL, registration.installing?.scriptURL].some(
+            (scriptUrl) => scriptUrl?.includes("coi-serviceworker"),
+          ),
+        );
+
+        if (!coiRegistrations.length) {
+          markReady();
+          return;
+        }
+
+        await Promise.all(coiRegistrations.map((registration) => registration.unregister()));
+
+        if (!cancelled) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.warn("Failed to clear COI service worker for Google sign-in:", error);
+        markReady();
+      }
+    };
+
+    void resetGoogleContext();
+
+    return () => {
+      cancelled = true;
+    };
   }, [location.pathname]);
 
   const redirectAfterAuth = useCallback(async () => {
