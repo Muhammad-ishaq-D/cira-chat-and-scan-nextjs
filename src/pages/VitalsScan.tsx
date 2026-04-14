@@ -8,6 +8,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
 import { getUser, logout, isAuthenticated } from "@/lib/auth";
+import { clearDocumentReload, hasRecentDocumentReload, isDocumentCrossOriginIsolated, markDocumentReload } from "@/lib/browserContext";
 import { deductFreeScan, getFreeScans } from "@/lib/freeCredits";
 import { toast } from "sonner";
 
@@ -20,6 +21,7 @@ const navItems = [
 ];
 
 const CANVAS_ID = "shenai-canvas";
+const VITALS_SCAN_RELOAD_KEY = "cira_vitals_scan_context_reload";
 
 const formatVitalsForDisplay = (r: VitalResults) => [
   { label: "Heart Rate", value: String(Math.round(r.heartRate)), unit: "bpm", icon: Heart, color: "text-red-500 bg-red-50" },
@@ -59,6 +61,20 @@ const VitalsScan = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
+    if (!isDocumentCrossOriginIsolated()) {
+      if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY)) {
+        markDocumentReload(VITALS_SCAN_RELOAD_KEY);
+        window.location.reload();
+        return;
+      }
+
+      clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
+      toast.error("Vitals Scan needs a full page reload on /vitals-scan to start.");
+      return;
+    }
+
+    clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
+
     const init = async () => {
       if (isGuest) {
         // Guest mode: check free scans, skip profile/history fetch
