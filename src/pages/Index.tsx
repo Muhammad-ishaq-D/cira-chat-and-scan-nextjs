@@ -195,20 +195,23 @@ const Index = () => {
             <HeroChatPreview />
           </div>
 
-          {/* Face scan — secondary gimmick */}
-          <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <div className="relative">
-              <img src={faceNormal} alt="Face scan" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md" />
-              <span className="absolute -bottom-1 -right-1 bg-card border border-border text-[7px] sm:text-[8px] font-body text-muted-foreground px-1 py-px rounded-full shadow">You</span>
+          {/* Face scan — secondary */}
+          <div className="flex flex-col items-center gap-1.5 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <img src={faceNormal} alt="Face scan" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md" />
+                <span className="absolute -bottom-1 -right-1 bg-card border border-border text-[7px] sm:text-[8px] font-body text-muted-foreground px-1 py-px rounded-full shadow">You</span>
+              </div>
+              <div className="flex flex-col items-center gap-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <span className="text-[7px] text-muted-foreground font-body">30s</span>
+              </div>
+              <div className="relative">
+                <img src={faceHeatmap} alt="Vitals heatmap" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md ring-1 ring-primary/20" />
+                <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[7px] sm:text-[8px] font-body px-1 py-px rounded-full shadow font-medium">30+ vitals</span>
+              </div>
             </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              <span className="text-[7px] text-muted-foreground font-body">30s</span>
-            </div>
-            <div className="relative">
-              <img src={faceHeatmap} alt="Vitals heatmap" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md ring-1 ring-primary/20" />
-              <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[7px] sm:text-[8px] font-body px-1 py-px rounded-full shadow font-medium">30+ vitals</span>
-            </div>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground font-body font-medium tracking-wide">Powered by <span className="text-foreground">Face Vital Scan</span></p>
           </div>
         </div>
 
