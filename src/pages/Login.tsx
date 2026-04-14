@@ -32,6 +32,8 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [useOtp, setUseOtp] = useState(false);
+  const [registerOtpSent, setRegisterOtpSent] = useState(false);
+  const [registerOtp, setRegisterOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleContextReady, setGoogleContextReady] = useState(() =>
     typeof window === "undefined" || !("serviceWorker" in navigator) || !navigator.serviceWorker.controller,
@@ -130,6 +132,8 @@ const Login = () => {
     setAuthMode(mode);
     setPassword("");
     setConfirmPassword("");
+    setRegisterOtpSent(false);
+    setRegisterOtp("");
     resetOtpFlow();
     navigate(buildAuthPath(mode), { replace: true, state: location.state });
   };
@@ -147,7 +151,7 @@ const Login = () => {
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegisterSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!fullName.trim()) {
@@ -155,27 +159,31 @@ const Login = () => {
       return;
     }
 
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
+    setLoading(true);
+    try {
+      await sendOtp(email.trim());
+      setRegisterOtpSent(true);
+      toast.success("Verification code sent to your email!");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to send verification code"));
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
+  const handleRegisterVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     try {
       await register({
         name: fullName.trim(),
         email: email.trim(),
-        password,
+        otp: registerOtp,
       });
-      toast.success("Account created");
+      toast.success("Account created!");
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Registration failed"));
+      toast.error(getErrorMessage(error, "Verification failed"));
     } finally {
       setLoading(false);
     }
@@ -345,58 +353,71 @@ const Login = () => {
         </div>
 
         {authMode === "register" ? (
-          <form onSubmit={handleRegister} className="space-y-3">
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Full name"
-              autoComplete="name"
-              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
-              required
-            />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              autoComplete="email"
-              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
-              required
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              autoComplete="new-password"
-              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
-              required
-            />
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm password"
-              autoComplete="new-password"
-              className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Create account"}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange("login")}
-              className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
-            >
-              Already have an account? Sign in
-            </button>
-          </form>
+          !registerOtpSent ? (
+            <form onSubmit={handleRegisterSendOtp} className="space-y-3">
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Full name"
+                autoComplete="name"
+                className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+                required
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                autoComplete="email"
+                className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? "Sending code..." : "Send verification code"}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange("login")}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
+              >
+                Already have an account? Sign in
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRegisterVerifyOtp} className="space-y-3">
+              <p className="text-xs text-muted-foreground font-body text-center">
+                We sent a code to <strong className="text-foreground">{email}</strong>
+              </p>
+              <input
+                type="text"
+                value={registerOtp}
+                onChange={(e) => setRegisterOtp(e.target.value)}
+                placeholder="Enter 6-digit code"
+                maxLength={6}
+                className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? "Verifying..." : "Verify & Create account"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setRegisterOtpSent(false)}
+                className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
+              >
+                Use a different email
+              </button>
+            </form>
+          )
         ) : useOtp ? (
           !otpSent ? (
             <form onSubmit={handleSendOtp} className="space-y-3">
