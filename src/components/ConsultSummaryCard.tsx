@@ -1,6 +1,16 @@
 import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
 import type { ConsultSummary } from "@/lib/chatApi";
 
+const formatText = (text: string) => {
+  // Replace literal \n with real newlines, then parse markdown bold
+  const cleaned = text.replace(/\\n/g, "\n");
+  const parts = cleaned.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    return part;
+  });
+};
+
 interface Props {
   data: ConsultSummary;
 }
@@ -50,7 +60,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
         {/* Summary */}
         <div className="px-4 py-3 bg-accent/10">
           <p className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-            {data.summary}
+            {formatText(data.summary)}
           </p>
         </div>
 
@@ -90,7 +100,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
                 What to Do Next
               </p>
               <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                {data.self_care_advice}
+                {formatText(data.self_care_advice)}
               </p>
             </div>
           </div>
