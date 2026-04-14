@@ -57,7 +57,7 @@ const chatModes = [
   { id: "vitals" as ChatMode, icon: ScanFace, title: "Vital Scan + Assessment", desc: "30-second face scan captures real vitals — then AI cross-references with symptoms.", badge: "~4 min · Scan Powered", gradient: "from-emerald-500 to-teal-400", bgGlow: "bg-emerald-100" },
 ];
 
-const FREE_CHAT_WELCOME = "Hey there! 👋🏼\n\nI'm **Cira**, your personal AI health nurse 🩺✨\n\nTell me what's going on — symptoms, questions, or just a health curiosity. I'm all ears 💙";
+const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
 
 const buildFreeChatPrompt = (userText: string) => [
   userText, "", "Just Chat mode selected.", "Reply conversationally as Cira.",
@@ -574,13 +574,6 @@ const FreeChat = () => {
                 >
                   <ScanFace size={14} />
                   Face Scan
-                </button>
-                <button
-                  onClick={() => { selectMode("assessment"); setShowFloatingModes(false); }}
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[11px] font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
-                >
-                  <Stethoscope size={14} />
-                  Assessment
                 </button>
               </div>
             </div>
