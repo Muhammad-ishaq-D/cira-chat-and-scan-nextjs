@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 
-const AiSparkleIcon = ({ size = 18, active = false }: { size?: number; active?: boolean }) => (
-  <span className="relative inline-flex items-center justify-center icon-ai-glow">
+const AiSparkleIcon = ({ size = 18, active = false, thinking = false }: { size?: number; active?: boolean; thinking?: boolean }) => (
+  <span className={`relative inline-flex items-center justify-center icon-ai-glow ${thinking ? "animate-ai-thinking" : ""}`}>
     <svg width={0} height={0} className="absolute">
       <defs>
         <linearGradient id="ai-sparkle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
