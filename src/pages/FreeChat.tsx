@@ -563,7 +563,7 @@ const FreeChat = () => {
                         <div className="h-2.5 w-32 rounded-full bg-muted-foreground/15 animate-pulse" />
                         <div className="h-2.5 w-20 rounded-full bg-muted-foreground/10 animate-pulse" style={{ animationDelay: "200ms" }} />
                       </div>
-                      <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">Analyzing...</p>
+                      <ThinkingLabel />
                     </div>
                   </div>
                 )}
