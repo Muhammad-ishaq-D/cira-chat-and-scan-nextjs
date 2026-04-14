@@ -734,22 +734,22 @@ const Chat = () => {
                   </div>
                 </button>
 
-                {/* Secondary modes — compact tiles */}
-                <div className="grid grid-cols-2 gap-2 md:gap-3 w-full max-w-2xl mb-4 md:mb-8">
+                {/* Assessment mode */}
+                <div className="w-full max-w-2xl mb-4 md:mb-8">
                   {chatModes.filter(m => m.id !== "vitals").map((mode) => {
                     const Icon = mode.icon;
                     return (
                       <button
                         key={mode.id}
                         onClick={() => selectMode(mode.id)}
-                        className="group bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
+                        className="group w-full bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
                       >
                         <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2 md:mb-3`}>
-                          <Icon size={15} className="md:hidden" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                          <Icon size={20} className="hidden md:block" style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                          <Icon size={15} className="md:hidden" style={{ color: "#3b82f6" }} />
+                          <Icon size={20} className="hidden md:block" style={{ color: "#3b82f6" }} />
                         </div>
                         <p className="text-[11px] md:text-sm font-semibold text-foreground mb-0.5 md:mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-none mb-2 md:mb-3">{mode.desc}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed mb-2 md:mb-3">{mode.desc}</p>
                         <span className="inline-block text-[8px] md:text-[9px] font-medium px-1.5 md:px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
                           {mode.badge}
                         </span>
