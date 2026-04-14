@@ -102,7 +102,8 @@ export function updateUserAvatar(avatar: string) {
 export async function register(payload: {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  otp?: string;
   biological_sex?: string;
   age?: number;
 }): Promise<AuthResponse> {
