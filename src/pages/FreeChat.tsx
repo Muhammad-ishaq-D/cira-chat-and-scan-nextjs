@@ -494,19 +494,17 @@ const FreeChat = () => {
                           <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
                             Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
                           </p>
-                          <div className="flex flex-wrap gap-2 mt-4">
+                          <div className="flex flex-wrap gap-2 mt-3">
                             <button
                               onClick={() => selectMode("assessment")}
-                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                              className="px-3.5 py-1.5 rounded-full border border-border/60 text-[12px] font-medium text-foreground hover:bg-accent transition-colors active:scale-95"
                             >
-                              <Stethoscope size={15} />
                               🩺 Health Assessment
                             </button>
                             <button
                               onClick={() => { syncChatMode("chat"); }}
-                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-foreground text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                              className="px-3.5 py-1.5 rounded-full border border-border/60 text-[12px] font-medium text-foreground hover:bg-accent transition-colors active:scale-95"
                             >
-                              <MessageCircle size={15} className="text-muted-foreground" />
                               💬 Just Chat
                             </button>
                           </div>
