@@ -305,23 +305,21 @@ const FreeChat = () => {
       navigate("/vitals-scan?guest=1");
       return;
     }
+
+    // Reset for a fresh conversation
+    syncCurrentSessionId(null);
+    setConversationHistory([]);
     syncChatMode(mode);
     setShowModeSelection(false);
-
-    if (mode === "chat") {
-      syncCurrentSessionId(null);
-      setConversationHistory([]);
-      const userText = "💬 I just want to chat";
-      setMessages(prev => [...prev, { role: "user", text: userText }]);
-      callClaude(userText);
-      return;
-    }
     setPendingLandingMessage(null);
-    if (mode === "assessment") {
-      const userText = "🩺 I'd like a health assessment";
-      setMessages(prev => [...prev, { role: "user", text: userText }]);
-      callClaude(userText);
-    }
+
+    const userText = mode === "chat"
+      ? "💬 I just want to chat"
+      : "🩺 I'd like a health assessment";
+
+    // Replace welcome message with user's selection + send to AI
+    setMessages([{ role: "user", text: userText }]);
+    callClaude(userText);
   };
 
   const loadSession = (session: FreeChatSession) => {
