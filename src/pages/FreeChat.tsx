@@ -57,7 +57,7 @@ const chatModes = [
   { id: "vitals" as ChatMode, icon: ScanFace, title: "Vital Scan + Assessment", desc: "30-second face scan captures real vitals — then AI cross-references with symptoms.", badge: "~4 min · Scan Powered", gradient: "from-emerald-500 to-teal-400", bgGlow: "bg-emerald-100" },
 ];
 
-const FREE_CHAT_WELCOME = "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — no signup needed. I'm here to help.";
+const FREE_CHAT_WELCOME = "Hey there! 👋🏼\n\nI'm **Cira**, your personal AI health nurse 🩺✨\n\nTell me what's going on — symptoms, questions, or just a health curiosity. I'm all ears 💙";
 
 const buildFreeChatPrompt = (userText: string) => [
   userText, "", "Just Chat mode selected.", "Reply conversationally as Cira.",
