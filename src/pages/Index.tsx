@@ -114,49 +114,43 @@ const Index = () => {
             ✦ AI Nurse
           </span>
           <h1 className="font-heading text-4xl sm:text-5xl md:text-[60px] font-semibold text-foreground leading-[1.1] tracking-tight">
-            Your face reveals your <span className="text-primary">health</span>.
+            Talk to an AI nurse.<br /><span className="text-primary">Anytime.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed mb-6 sm:mb-8 font-body max-w-lg mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          30-second face scan. 30+ vitals. AI nurse assessment.
+          Describe your symptoms. Get a clinical-grade assessment in minutes — no appointment, no waiting room.
         </p>
 
-        {/* Two-column: Scan + Chat */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 mb-6 sm:mb-8 animate-fade-in-slow" style={{ animationDelay: "0.3s" }}>
-          {/* Face scan visual */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="relative">
-              <img src={faceNormal} alt="Face scan — normal view" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg" />
-              <span className="absolute -bottom-1.5 -right-1.5 bg-card border border-border text-[9px] sm:text-[10px] font-body text-muted-foreground px-1.5 py-0.5 rounded-full shadow">Your face</span>
-            </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              <span className="text-[9px] text-muted-foreground font-body">30 sec</span>
-            </div>
-            <div className="relative">
-              <img src={faceHeatmap} alt="Face scan — heatmap" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg ring-2 ring-primary/30" />
-              <span className="absolute -bottom-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] sm:text-[10px] font-body px-1.5 py-0.5 rounded-full shadow font-medium">30+ vitals</span>
-            </div>
-          </div>
-
-          {/* Chat preview */}
-          <div className="w-full max-w-xs animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
-              <div className="flex items-start gap-2 mb-2">
-                <img src={doctor1} alt="Cira" className="w-6 h-6 rounded-full object-cover mt-0.5" />
-                <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed">
-                  BP elevated at 135/86. How long have you felt this way?
-                </div>
+        {/* Chat preview — primary visual */}
+        <div className="flex justify-center mb-6 sm:mb-8 animate-fade-in-slow" style={{ animationDelay: "0.3s" }}>
+          <div className="w-full max-w-sm">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-lg">
+              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/30">
+                <img src={ciraLogo} alt="Cira" className="w-6 h-6 rounded-full" />
+                <span className="text-xs font-semibold text-foreground font-heading">Cira</span>
+                <span className="ml-auto text-[9px] text-emerald-500 font-medium">● Online</span>
               </div>
-              <div className="flex justify-end">
-                <div className="bg-primary/10 rounded-lg rounded-tr-none px-3 py-2 text-xs text-foreground font-body">
-                  A few days, after work
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed max-w-[85%]">
+                    Hi! I'm Cira, your AI health nurse. What's bothering you today?
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="bg-primary/10 rounded-lg rounded-tr-none px-3 py-2 text-xs text-foreground font-body max-w-[85%]">
+                    I've had a headache and sore throat for 2 days
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed max-w-[85%]">
+                    I'll help you figure this out. Any fever or body aches? 🩺
+                  </div>
                 </div>
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground text-center font-body mt-1.5">Scan → AI conversation → assessment</p>
+            <p className="text-[10px] text-muted-foreground text-center font-body mt-2">Describe symptoms → AI assessment → action plan</p>
           </div>
         </div>
 
@@ -169,7 +163,7 @@ const Index = () => {
             Ask Cira →
           </button>
           <div className="flex items-center gap-3 text-[10px] sm:text-xs text-muted-foreground font-body">
-            <span>🔒 On-device</span>
+            <span>🩺 Clinical-grade AI</span>
             <span>⚡ No signup needed</span>
             <span>🆓 Free to try</span>
           </div>
