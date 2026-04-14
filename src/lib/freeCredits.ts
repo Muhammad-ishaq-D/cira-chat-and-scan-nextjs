@@ -8,7 +8,7 @@ const FREE_CREDITS_KEY = "cira_free_credits";
 const FREE_SCANS_KEY = "cira_free_scans";
 const FREE_CHAT_HISTORY_KEY = "cira_free_chat_history";
 
-const INITIAL_CREDITS = 1000;
+const INITIAL_CREDITS = 200;
 const INITIAL_SCANS = 1;
 
 function generateUUID(): string {
