@@ -56,36 +56,61 @@ const VitalsScan = () => {
   const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
-  
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
-    // The COI service worker (coi-serviceworker.js) handles registering itself
-    // and reloading the page to enable cross-origin isolation (SharedArrayBuffer).
-    // We just need to wait for it — if not isolated yet, show a message and
-    // do a single reload to give the SW a chance to intercept.
-    if (!isDocumentCrossOriginIsolated()) {
-      if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY)) {
-        markDocumentReload(VITALS_SCAN_RELOAD_KEY);
-        // Give the service worker time to register before reloading
-        const timer = setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-        return () => clearTimeout(timer);
+    let cancelled = false;
+    let reloadTimer: number | undefined;
+
+    const ensureSecureScannerContext = async () => {
+      if (isDocumentCrossOriginIsolated()) {
+        clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
+        return true;
+      }
+
+      if (typeof window === "undefined" || !("serviceWorker" in navigator) || !window.isSecureContext) {
+        console.error("[VitalsScan] Secure context or service workers are unavailable.");
+        return false;
+      }
+
+      try {
+        await navigator.serviceWorker.register("/coi-serviceworker.js");
+        await navigator.serviceWorker.ready;
+      } catch (serviceWorkerError) {
+        console.error("[VitalsScan] Failed to register COI service worker:", serviceWorkerError);
+        return false;
+      }
+
+      if (cancelled) return false;
+
+      if (!navigator.serviceWorker.controller || !isDocumentCrossOriginIsolated()) {
+        if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY)) {
+          markDocumentReload(VITALS_SCAN_RELOAD_KEY);
+          reloadTimer = window.setTimeout(() => {
+            window.location.reload();
+          }, 250);
+        } else {
+          clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
+          console.error("[VitalsScan] COI service worker is active, but the page is still not cross-origin isolated.");
+        }
+
+        return false;
       }
 
       clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
-      // Still not isolated after reload — likely the server doesn't provide
-      // COOP/COEP headers. Proceed anyway (SDK will fail gracefully if needed).
-      console.warn("[VitalsScan] Not cross-origin isolated. SharedArrayBuffer may be unavailable.");
-    }
-
-    clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
+      return true;
+    };
 
     const init = async () => {
+      if (hasInitRef.current) return;
+
+      const canInitialize = await ensureSecureScannerContext();
+      if (!canInitialize || cancelled) return;
+
+      hasInitRef.current = true;
+
       if (isGuest) {
-        // Guest mode: check free scans, skip profile/history fetch
         const scans = getFreeScans();
         if (scans <= 0) {
           toast.error("Free scan already used. Login to get more scans.", {
@@ -94,26 +119,29 @@ const VitalsScan = () => {
           });
           return;
         }
+
         initialize(CANVAS_ID);
         return;
       }
 
-      // Authenticated mode
       vitalsApi.getHistory()
         .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
         .catch(() => {});
 
       try {
         const freshProfile = await userApi.getProfile();
+        if (cancelled) return;
+
         setUserProfile(freshProfile);
         const scansLeft = freshProfile?.credits?.face_scans;
-        if (scansLeft !== "Unlimited" && (typeof scansLeft === "number" && scansLeft <= 0)) {
+        if (scansLeft !== "Unlimited" && typeof scansLeft === "number" && scansLeft <= 0) {
           toast.error("No scan credits remaining. Upgrade your plan.", {
             action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
             duration: 8000,
           });
           return;
         }
+
         initialize(CANVAS_ID, {
           age: freshProfile?.age || undefined,
           height: freshProfile?.height || undefined,
@@ -121,14 +149,23 @@ const VitalsScan = () => {
           gender: freshProfile?.biological_sex || undefined,
         });
       } catch {
-        initialize(CANVAS_ID);
+        if (!cancelled) {
+          initialize(CANVAS_ID);
+        }
       }
     };
 
-    init();
-    return () => { cleanup(); hasInitRef.current = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    void init();
+
+    return () => {
+      cancelled = true;
+      if (reloadTimer) {
+        window.clearTimeout(reloadTimer);
+      }
+      cleanup();
+      hasInitRef.current = false;
+    };
+  }, [cleanup, initialize, isGuest, navigate]);
 
 
   useEffect(() => {
