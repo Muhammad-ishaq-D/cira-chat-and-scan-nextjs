@@ -74,7 +74,7 @@ const FreeChat = () => {
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
-  const [showFloatingModes, setShowFloatingModes] = useState(true);
+  const [showFloatingModes, setShowFloatingModes] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
