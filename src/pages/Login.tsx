@@ -3,10 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { googleLogin, isAuthenticated, login, register, sendOtp, verifyOtp } from "@/lib/auth";
 import { sanitizeAuthRedirect, storePostAuthRedirect } from "@/lib/authFlow";
+import {
+  clearDocumentReload,
+  hasCoiServiceWorkerController,
+  hasRecentDocumentReload,
+  isDocumentCrossOriginIsolated,
+  markDocumentReload,
+  unregisterCoiServiceWorkers,
+} from "@/lib/browserContext";
 import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
 const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.googleusercontent.com";
+const GOOGLE_CONTEXT_RESET_KEY = "cira_google_popup_reset";
 type AuthMode = "login" | "register";
 type RouteState = {
   from?: {
@@ -35,9 +44,10 @@ const Login = () => {
   const [registerOtpSent, setRegisterOtpSent] = useState(false);
   const [registerOtp, setRegisterOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [googleContextReady, setGoogleContextReady] = useState(() =>
-    typeof window === "undefined" || !("serviceWorker" in navigator) || !navigator.serviceWorker.controller,
-  );
+  const [googleContextReady, setGoogleContextReady] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !isDocumentCrossOriginIsolated() && !hasCoiServiceWorkerController();
+  });
 
   const resetOtpFlow = useCallback(() => {
     setUseOtp(false);
@@ -64,7 +74,7 @@ const Login = () => {
   }, [location.search]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    if (typeof window === "undefined") {
       setGoogleContextReady(true);
       return;
     }
@@ -73,55 +83,40 @@ const Login = () => {
 
     const markReady = () => {
       if (cancelled) return;
-      sessionStorage.removeItem("cira_google_popup_reset_at");
-      setGoogleContextReady(true);
+      const isReady = !isDocumentCrossOriginIsolated() && !hasCoiServiceWorkerController();
+
+      if (isReady) {
+        clearDocumentReload(GOOGLE_CONTEXT_RESET_KEY);
+      }
+
+      setGoogleContextReady(isReady);
     };
 
     const resetGoogleContext = async () => {
-      const controller = navigator.serviceWorker.controller;
+      const needsReset = isDocumentCrossOriginIsolated() || hasCoiServiceWorkerController();
 
-      if (!controller) {
-        markReady();
-        return;
-      }
-
-      const isCoiServiceWorker = controller.scriptURL.includes("coi-serviceworker");
-      if (!isCoiServiceWorker) {
+      if (!needsReset) {
         markReady();
         return;
       }
 
       setGoogleContextReady(false);
 
-      const lastResetAt = Number(sessionStorage.getItem("cira_google_popup_reset_at") || "0");
-      if (Date.now() - lastResetAt <= 3000) {
+      if (hasRecentDocumentReload(GOOGLE_CONTEXT_RESET_KEY)) {
         window.setTimeout(markReady, 1200);
         return;
       }
 
-      sessionStorage.setItem("cira_google_popup_reset_at", String(Date.now()));
+      markDocumentReload(GOOGLE_CONTEXT_RESET_KEY);
 
       try {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        const coiRegistrations = registrations.filter((registration) =>
-          [registration.active?.scriptURL, registration.waiting?.scriptURL, registration.installing?.scriptURL].some(
-            (scriptUrl) => scriptUrl?.includes("coi-serviceworker"),
-          ),
-        );
-
-        if (!coiRegistrations.length) {
-          markReady();
-          return;
-        }
-
-        await Promise.all(coiRegistrations.map((registration) => registration.unregister()));
-
-        if (!cancelled) {
-          window.location.reload();
-        }
+        await unregisterCoiServiceWorkers();
       } catch (error) {
         console.warn("Failed to clear COI service worker for Google sign-in:", error);
-        markReady();
+      }
+
+      if (!cancelled) {
+        window.location.reload();
       }
     };
 

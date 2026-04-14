@@ -27,6 +27,15 @@ if (typeof window === 'undefined') {
             return;
         }
 
+        // Only add COOP/COEP headers for /vitals-scan pages (where SharedArrayBuffer is needed).
+        // Adding these headers to other pages breaks Google Sign-In popup flow.
+        const url = new URL(r.url);
+        const isNavigationToVitalsScan = r.mode === "navigate" &&
+            (url.pathname === "/vitals-scan" || url.pathname.startsWith("/vitals-scan/"));
+        const isSubresourceForVitalsScan = r.mode !== "navigate";
+
+        const needsHeaders = isNavigationToVitalsScan || isSubresourceForVitalsScan;
+
         const request = (coepCredentialless && r.mode === "no-cors")
             ? new Request(r, {
                 credentials: "omit",
@@ -35,7 +44,7 @@ if (typeof window === 'undefined') {
         event.respondWith(
             fetch(request)
                 .then((response) => {
-                    if (response.status === 0) {
+                    if (response.status === 0 || !needsHeaders) {
                         return response;
                     }
 
