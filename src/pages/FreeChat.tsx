@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle } from "lucide-react";
+import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
@@ -75,6 +75,7 @@ const FreeChat = () => {
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
   const [showFloatingModes, setShowFloatingModes] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
@@ -587,13 +588,21 @@ const FreeChat = () => {
 
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
             <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
-              <button
-                type="button"
-                onClick={() => setShowFloatingModes(!showFloatingModes)}
-                className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary rotate-45" : "text-muted-foreground"}`}
-              >
-                <Plus size={20} strokeWidth={1.5} />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => { setShowFloatingModes(!showFloatingModes); setShowTooltip(false); }}
+                  className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
+                >
+                  <SlidersHorizontal size={18} strokeWidth={1.5} />
+                </button>
+                {showTooltip && (
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
+                    ✨ Tap for Scan & Assessment
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+                  </div>
+                )}
+              </div>
               <input
                 type="text"
                 value={message}
