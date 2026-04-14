@@ -603,7 +603,7 @@ const FreeChat = () => {
                 onClick={() => { setShowFloatingModes(!showFloatingModes); setShowTooltip(false); }}
                 className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
               >
-                <SlidersHorizontal size={18} strokeWidth={1.5} />
+                <ScanFace size={18} strokeWidth={1.5} />
               </button>
               <input
                 type="text"
