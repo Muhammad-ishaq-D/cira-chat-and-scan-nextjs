@@ -71,7 +71,7 @@ const FreeChat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [chatMode, setChatMode] = useState<ChatMode>("chat");
+  const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
   const [showFloatingModes, setShowFloatingModes] = useState(true);
