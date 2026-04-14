@@ -30,6 +30,16 @@ const renderFormattedText = (text: string) => {
   });
 };
 
+const THINKING_PHRASES = ["Thinking...", "Looking into it...", "Processing...", "One moment..."];
+const ThinkingLabel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % THINKING_PHRASES.length), 2000);
+    return () => clearInterval(t);
+  }, []);
+  return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
+};
+
 const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
@@ -563,7 +573,7 @@ const FreeChat = () => {
                         <div className="h-2.5 w-32 rounded-full bg-muted-foreground/15 animate-pulse" />
                         <div className="h-2.5 w-20 rounded-full bg-muted-foreground/10 animate-pulse" style={{ animationDelay: "200ms" }} />
                       </div>
-                      <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">Analyzing...</p>
+                      <ThinkingLabel />
                     </div>
                   </div>
                 )}
