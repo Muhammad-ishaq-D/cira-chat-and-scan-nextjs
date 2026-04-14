@@ -102,12 +102,7 @@ const FreeChat = () => {
   // Load local chat history
   useEffect(() => { setChatHistory(getFreeChatHistory()); }, []);
 
-  // Auto-scroll
-  useEffect(() => {
-    if (scrollRef.current) setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
-  }, [messages, isTyping]);
-
-  // Pick up landing message or scan vitals
+  // Auto-start with welcome message in chat mode
   useEffect(() => {
     const scanVitalsJson = sessionStorage.getItem("cira_scan_vitals");
     if (scanVitalsJson) {
@@ -115,7 +110,6 @@ const FreeChat = () => {
       try {
         const realVitals = JSON.parse(scanVitalsJson);
         syncChatMode("vitals");
-        setShowModeSelection(false);
         setMessages([{ role: "vitals", text: "Face Scan Results", vitalsData: realVitals }]);
         const vitalsText = realVitals.map((v: any) => `- ${v.label}: ${v.value} ${v.unit}`).join("\n");
         callClaude(`Here are my face scan vitals results:\n${vitalsText}\n\nPlease analyze these vitals. Do NOT call any tools yet — just analyze and respond.`);
@@ -126,9 +120,12 @@ const FreeChat = () => {
     if (landingMsg) {
       sessionStorage.removeItem("cira_landing_message");
       setPendingLandingMessage(landingMsg);
-      setMessages([{ role: "user", text: landingMsg }]);
+      setMessages([{ role: "user", text: landingMsg }, { role: "cira", text: FREE_CHAT_WELCOME }]);
       callClaude(landingMsg);
+      return;
     }
+    // Default: start with welcome message directly
+    setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]);
   }, []);
 
   // Save current session to localStorage
