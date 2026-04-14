@@ -184,7 +184,7 @@ export async function googleLogin(idToken: string): Promise<AuthResponse> {
 
 /** Send OTP to email */
 export async function sendOtp(email: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/api/auth/otp/send`, {
+  const res = await fetch(`${API_BASE}/api/auth/send-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -197,7 +197,7 @@ export async function sendOtp(email: string): Promise<void> {
 
 /** Verify OTP and login */
 export async function verifyOtp(email: string, otp: string): Promise<AuthResponse> {
-  const res = await fetch(`${API_BASE}/api/auth/otp/verify`, {
+  const res = await fetch(`${API_BASE}/api/auth/verify-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, otp }),
