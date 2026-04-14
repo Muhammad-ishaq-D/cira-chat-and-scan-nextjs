@@ -311,28 +311,16 @@ const FreeChat = () => {
     if (mode === "chat") {
       syncCurrentSessionId(null);
       setConversationHistory([]);
-      if (pendingLandingMessage) {
-        setMessages([{ role: "user", text: pendingLandingMessage }]);
-        setPendingLandingMessage(null);
-        void callClaude(pendingLandingMessage);
-        return;
-      }
-      setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "cira" && last.text === FREE_CHAT_WELCOME) return prev;
-        return [...prev, { role: "cira", text: FREE_CHAT_WELCOME }];
-      });
+      const userText = "💬 I just want to chat";
+      setMessages(prev => [...prev, { role: "user", text: userText }]);
+      callClaude(userText);
       return;
     }
     setPendingLandingMessage(null);
-    const pathwayMessages: Record<ChatMode, string> = {
-      assessment: "🩺 I'd like a health assessment",
-      chat: "", vitals: "", none: "",
-    };
-    const pathwayText = pathwayMessages[mode];
-    if (pathwayText) {
-      setMessages(prev => [...prev, { role: "user", text: pathwayText }]);
-      callClaude(pathwayText);
+    if (mode === "assessment") {
+      const userText = "🩺 I'd like a health assessment";
+      setMessages(prev => [...prev, { role: "user", text: userText }]);
+      callClaude(userText);
     }
   };
 
