@@ -1,6 +1,16 @@
 import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
 import type { ConsultSummary } from "@/lib/chatApi";
 
+const formatText = (text: string) => {
+  // Replace literal \n with real newlines, then parse markdown bold
+  const cleaned = text.replace(/\\n/g, "\n");
+  const parts = cleaned.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    return part;
+  });
+};
+
 interface Props {
   data: ConsultSummary;
 }
