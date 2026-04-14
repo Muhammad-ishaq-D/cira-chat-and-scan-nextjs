@@ -554,16 +554,16 @@ const FreeChat = () => {
                   </div>
                 )}
 
-                {/* Typing indicator */}
+                {/* Thinking indicator */}
                 {isTyping && (
                   <div className="flex justify-start animate-fade-in">
                     <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
-                      <div className="flex items-center gap-1.5 py-1">
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <div className="mb-2 animate-pulse"><AiSparkleIcon size={20} active /></div>
+                      <div className="flex flex-col gap-1.5 py-1">
+                        <div className="h-2.5 w-32 rounded-full bg-muted-foreground/15 animate-pulse" />
+                        <div className="h-2.5 w-20 rounded-full bg-muted-foreground/10 animate-pulse" style={{ animationDelay: "200ms" }} />
                       </div>
+                      <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">Analyzing...</p>
                     </div>
                   </div>
                 )}
