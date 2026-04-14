@@ -128,6 +128,11 @@ const FreeChat = () => {
     setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]);
   }, []);
 
+  // Auto-scroll
+  useEffect(() => {
+    if (scrollRef.current) setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
+  }, [messages, isTyping]);
+
   // Save current session to localStorage
   const persistSession = useCallback((msgs: typeof messages) => {
     if (!currentSessionIdRef.current) return;
