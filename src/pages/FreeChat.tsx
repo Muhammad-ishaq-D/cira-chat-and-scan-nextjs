@@ -608,7 +608,7 @@ const FreeChat = () => {
           {showTooltip && (
             <div className="max-w-2xl mx-auto px-3 flex justify-start pl-6 pb-1">
               <div className="relative whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
-                ✨ Tap for Scan & Assessment
+                📸 Tap for Face Scan
                 <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
               </div>
             </div>
