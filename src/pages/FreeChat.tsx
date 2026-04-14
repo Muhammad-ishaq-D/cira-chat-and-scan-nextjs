@@ -586,23 +586,25 @@ const FreeChat = () => {
             </div>
           )}
 
+          {/* Tooltip above input */}
+          {showTooltip && (
+            <div className="max-w-2xl mx-auto px-3 flex justify-start pl-6 pb-1">
+              <div className="relative whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
+                ✨ Tap for Scan & Assessment
+                <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
             <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => { setShowFloatingModes(!showFloatingModes); setShowTooltip(false); }}
-                  className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
-                >
-                  <SlidersHorizontal size={18} strokeWidth={1.5} />
-                </button>
-                {showTooltip && (
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
-                    ✨ Tap for Scan & Assessment
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={() => { setShowFloatingModes(!showFloatingModes); setShowTooltip(false); }}
+                className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
+              >
+                <SlidersHorizontal size={18} strokeWidth={1.5} />
+              </button>
               <input
                 type="text"
                 value={message}
