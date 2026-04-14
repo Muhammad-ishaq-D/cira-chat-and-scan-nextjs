@@ -496,8 +496,7 @@ const FreeChat = () => {
                               <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
                               <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
                             </button>
-                          </div>
-                          </div>
+                        </div>
                         </div>
                       </div>
                     ) : (
