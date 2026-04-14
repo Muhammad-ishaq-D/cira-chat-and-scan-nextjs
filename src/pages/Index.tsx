@@ -107,65 +107,82 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center" style={{ minHeight: "calc(100vh - 68px)" }}>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center items-center" style={{ minHeight: "calc(100vh - 68px)" }}>
         {/* Tag + H1 */}
-        <div className="text-center mb-3 sm:mb-4 animate-fade-in">
-          <span className="inline-flex items-center gap-1.5 mb-3 sm:mb-4 text-xs font-medium font-body tracking-widest uppercase bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+        <div className="text-center mb-2 sm:mb-3 animate-fade-in">
+          <span className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 text-xs font-medium font-body tracking-widest uppercase bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             ✦ AI Nurse
           </span>
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-[60px] font-semibold text-foreground leading-[1.1] tracking-tight">
+          <h1 className="font-heading text-3xl sm:text-5xl md:text-[56px] font-semibold text-foreground leading-[1.1] tracking-tight">
             Talk to an AI nurse.<br /><span className="text-primary">Anytime.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base text-muted-foreground text-center leading-relaxed mb-6 sm:mb-8 font-body max-w-lg mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          Describe your symptoms. Get a clinical-grade assessment in minutes — no appointment, no waiting room.
+        <p className="text-xs sm:text-sm text-muted-foreground text-center leading-relaxed mb-4 sm:mb-6 font-body max-w-md mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
+          Describe your symptoms. Get a clinical-grade assessment in minutes.
         </p>
 
-        {/* Chat preview — primary visual */}
-        <div className="flex justify-center mb-6 sm:mb-8 animate-fade-in-slow" style={{ animationDelay: "0.3s" }}>
-          <div className="w-full max-w-sm">
-            <div className="rounded-2xl border border-border bg-card p-4 shadow-lg">
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/30">
-                <img src={ciraLogo} alt="Cira" className="w-6 h-6 rounded-full" />
-                <span className="text-xs font-semibold text-foreground font-heading">Cira</span>
-                <span className="ml-auto text-[9px] text-emerald-500 font-medium">● Online</span>
+        {/* Two columns: Chat + Face Scan */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-4 sm:mb-6 w-full max-w-3xl">
+          {/* Chat preview — compact + animated */}
+          <div className="w-full max-w-xs animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <div className="rounded-xl border border-border bg-card p-3 shadow-md">
+              <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
+                <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
+                <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
+                <span className="ml-auto text-[8px] text-emerald-500 font-medium flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Online</span>
               </div>
-              <div className="space-y-2.5">
-                <div className="flex items-start gap-2">
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed max-w-[85%]">
-                    Hi! I'm Cira, your AI health nurse. What's bothering you today?
+              <div className="space-y-1.5">
+                <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
+                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
+                    Hi! I'm Cira. What's bothering you? 👋
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <div className="bg-primary/10 rounded-lg rounded-tr-none px-3 py-2 text-xs text-foreground font-body max-w-[85%]">
-                    I've had a headache and sore throat for 2 days
+                <div className="flex justify-end animate-fade-in" style={{ animationDelay: "0.8s" }}>
+                  <div className="bg-primary/10 rounded-lg rounded-tr-none px-2.5 py-1.5 text-[11px] text-foreground font-body max-w-[90%]">
+                    Headache and sore throat for 2 days
                   </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-3 py-2 text-xs text-foreground font-body leading-relaxed max-w-[85%]">
-                    I'll help you figure this out. Any fever or body aches? 🩺
+                <div className="animate-fade-in" style={{ animationDelay: "1.1s" }}>
+                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
+                    Any fever or body aches? 🩺
                   </div>
                 </div>
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground text-center font-body mt-2">Describe symptoms → AI assessment → action plan</p>
+          </div>
+
+          {/* Face scan — secondary gimmick */}
+          <div className="flex items-center gap-2 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+            <div className="relative">
+              <img src={faceNormal} alt="Face scan" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md" />
+              <span className="absolute -bottom-1 -right-1 bg-card border border-border text-[7px] sm:text-[8px] font-body text-muted-foreground px-1 py-px rounded-full shadow">You</span>
+            </div>
+            <div className="flex flex-col items-center gap-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <span className="text-[7px] text-muted-foreground font-body">30s</span>
+            </div>
+            <div className="relative">
+              <img src={faceHeatmap} alt="Vitals heatmap" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md ring-1 ring-primary/20" />
+              <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[7px] sm:text-[8px] font-body px-1 py-px rounded-full shadow font-medium">30+ vitals</span>
+            </div>
           </div>
         </div>
 
         {/* CTA */}
-        <div className="flex flex-col items-center gap-3 animate-slide-up" style={{ animationDelay: "0.45s" }}>
+        <div className="flex flex-col items-center gap-2.5 animate-slide-up" style={{ animationDelay: "0.6s" }}>
           <button
             onClick={handleAskCira}
             className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm sm:text-base font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
           >
             Ask Cira →
           </button>
-          <div className="flex items-center gap-3 text-[10px] sm:text-xs text-muted-foreground font-body">
-            <span>🩺 Clinical-grade AI</span>
-            <span>⚡ No signup needed</span>
-            <span>🆓 Free to try</span>
+          <div className="flex items-center gap-3 text-[9px] sm:text-[11px] text-muted-foreground font-body">
+            <span>🩺 Clinical AI</span>
+            <span>📸 Face scan</span>
+            <span>⚡ No signup</span>
+            <span>🆓 Free</span>
           </div>
         </div>
       </main>
