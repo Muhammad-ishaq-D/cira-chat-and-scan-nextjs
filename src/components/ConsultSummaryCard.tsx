@@ -60,7 +60,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
         {/* Summary */}
         <div className="px-4 py-3 bg-accent/10">
           <p className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-            {data.summary}
+            {formatText(data.summary)}
           </p>
         </div>
 
@@ -100,7 +100,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
                 What to Do Next
               </p>
               <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                {data.self_care_advice}
+                {formatText(data.self_care_advice)}
               </p>
             </div>
           </div>
