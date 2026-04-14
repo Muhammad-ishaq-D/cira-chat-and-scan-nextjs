@@ -50,11 +50,10 @@ const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { t
   );
 };
 
-type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
+type ChatMode = "none" | "assessment" | "vitals" | "chat";
 
 const chatModes = [
-  { id: "quick" as ChatMode, icon: Stethoscope, title: "Quick Assessment", desc: "Cira screens for red flags with focused questions — fast, accurate triage.", badge: "~2 min · Fast Triage", gradient: "from-blue-500 to-cyan-400", bgGlow: "bg-blue-100" },
-  { id: "detailed" as ChatMode, icon: FileText, title: "Detailed Assessment", desc: "Full clinical-style intake — doctor-ready report.", badge: "~8 min · Doctor-Ready Report", gradient: "from-purple-500 to-pink-400", bgGlow: "bg-purple-100" },
+  { id: "assessment" as ChatMode, icon: Stethoscope, title: "Assessment", desc: "Cira adapts — quick triage or deep clinical intake based on your issue.", badge: "Adaptive · AI-Driven", gradient: "from-blue-500 to-purple-400", bgGlow: "bg-blue-100" },
   { id: "vitals" as ChatMode, icon: ScanFace, title: "Vital Scan + Assessment", desc: "30-second face scan captures real vitals — then AI cross-references with symptoms.", badge: "~4 min · Scan Powered", gradient: "from-emerald-500 to-teal-400", bgGlow: "bg-emerald-100" },
 ];
 
