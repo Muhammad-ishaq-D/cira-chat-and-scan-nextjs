@@ -57,7 +57,7 @@ const chatModes = [
   { id: "vitals" as ChatMode, icon: ScanFace, title: "Vital Scan + Assessment", desc: "30-second face scan captures real vitals — then AI cross-references with symptoms.", badge: "~4 min · Scan Powered", gradient: "from-emerald-500 to-teal-400", bgGlow: "bg-emerald-100" },
 ];
 
-const FREE_CHAT_WELCOME = "Hey there! 👋🏼\n\nI'm **Cira**, your personal AI health nurse 🩺✨\n\nTell me what's going on — symptoms, questions, or just a health curiosity. I'm all ears 💙";
+const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
 
 const buildFreeChatPrompt = (userText: string) => [
   userText, "", "Just Chat mode selected.", "Reply conversationally as Cira.",
@@ -487,6 +487,31 @@ const FreeChat = () => {
                       <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
                         <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>
                       </div>
+                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="text-foreground">
+                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                            Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            <button
+                              onClick={() => selectMode("assessment")}
+                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                            >
+                              <Stethoscope size={15} />
+                              🩺 Health Assessment
+                            </button>
+                            <button
+                              onClick={() => { syncChatMode("chat"); }}
+                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-foreground text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                            >
+                              <MessageCircle size={15} className="text-muted-foreground" />
+                              💬 Just Chat
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     ) : (
                       <div className="max-w-[95%] md:max-w-[80%]">
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
@@ -575,13 +600,6 @@ const FreeChat = () => {
                   <ScanFace size={14} />
                   Face Scan
                 </button>
-                <button
-                  onClick={() => { selectMode("assessment"); setShowFloatingModes(false); }}
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[11px] font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
-                >
-                  <Stethoscope size={14} />
-                  Assessment
-                </button>
               </div>
             </div>
           )}
@@ -590,7 +608,7 @@ const FreeChat = () => {
           {showTooltip && (
             <div className="max-w-2xl mx-auto px-3 flex justify-start pl-6 pb-1">
               <div className="relative whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
-                ✨ Tap for Scan & Assessment
+                📸 Tap for Face Scan
                 <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
               </div>
             </div>
