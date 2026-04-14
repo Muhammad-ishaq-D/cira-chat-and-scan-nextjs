@@ -61,26 +61,17 @@ const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { t
 
 
 
-type ChatMode = "none" | "quick" | "detailed" | "vitals" | "chat";
+type ChatMode = "none" | "assessment" | "vitals" | "chat";
 
 const chatModes = [
   {
-    id: "quick" as ChatMode,
+    id: "assessment" as ChatMode,
     icon: Stethoscope,
-    title: "Quick Assessment",
-    desc: "Cira screens for red flags with focused questions — fast, accurate triage in minutes.",
-    badge: "~2 min · Fast Triage",
-    gradient: "from-blue-500 to-cyan-400",
+    title: "Assessment",
+    desc: "Cira adapts — quick triage or deep clinical intake based on your issue.",
+    badge: "Adaptive · AI-Driven",
+    gradient: "from-blue-500 to-purple-400",
     bgGlow: "bg-blue-100",
-  },
-  {
-    id: "detailed" as ChatMode,
-    icon: FileText,
-    title: "Detailed Assessment",
-    desc: "Full clinical-style intake — Cira collects history, vitals, ROS & generates a doctor-ready report.",
-    badge: "~8 min · Doctor-Ready Report",
-    gradient: "from-purple-500 to-pink-400",
-    bgGlow: "bg-purple-100",
   },
   {
     id: "vitals" as ChatMode,
