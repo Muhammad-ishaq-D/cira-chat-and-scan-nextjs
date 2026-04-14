@@ -61,6 +61,71 @@ const visitHistory = [
   { date: "Feb 2", complaint: "Headache, high BP", result: "Cira: hypertensive episode" },
 ];
 
+const heroChatMessages = [
+  { role: "cira", text: "Hi! I'm Cira. What's bothering you? 👋" },
+  { role: "user", text: "Headache and sore throat for 2 days" },
+  { role: "cira", text: "Any fever or body aches? 🩺" },
+  { role: "user", text: "Yeah, mild fever since last night" },
+  { role: "cira", text: "Sounds like an upper respiratory infection. Let me run a quick assessment..." },
+  { role: "user", text: "Should I see a doctor?" },
+  { role: "cira", text: "Based on your symptoms, rest and fluids should help. I'll flag if anything needs urgent care 💙" },
+];
+
+const HeroChatPreview = () => {
+  const [visibleMessages, setVisibleMessages] = useState<typeof heroChatMessages>([]);
+  const [msgIndex, setMsgIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (msgIndex >= heroChatMessages.length) {
+      // Pause then restart
+      const t = setTimeout(() => {
+        setVisibleMessages([]);
+        setMsgIndex(0);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+    const delay = heroChatMessages[msgIndex].role === "cira" ? 1200 : 800;
+    const t = setTimeout(() => {
+      setVisibleMessages(prev => [...prev, heroChatMessages[msgIndex]]);
+      setMsgIndex(i => i + 1);
+    }, msgIndex === 0 ? 600 : delay);
+    return () => clearTimeout(t);
+  }, [msgIndex]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [visibleMessages]);
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-3 shadow-md w-full max-w-xs">
+      <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
+        <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
+        <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
+        <span className="ml-auto text-[8px] text-emerald-500 font-medium flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Online</span>
+      </div>
+      <div ref={scrollRef} className="space-y-1.5 h-[90px] overflow-hidden">
+        {visibleMessages.map((msg, i) => (
+          <div key={i} className={`animate-fade-in ${msg.role === "user" ? "flex justify-end" : ""}`}>
+            <div className={`px-2.5 py-1.5 text-[11px] font-body leading-relaxed max-w-[90%] rounded-lg ${
+              msg.role === "cira" ? "bg-primary/5 rounded-tl-none text-foreground" : "bg-primary/10 rounded-tr-none text-foreground"
+            }`}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {msgIndex < heroChatMessages.length && visibleMessages.length > 0 && (
+          <div className="flex items-center gap-1 px-1">
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -125,32 +190,9 @@ const Index = () => {
 
         {/* Two columns: Chat + Face Scan */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-4 sm:mb-6 w-full max-w-3xl">
-          {/* Chat preview — compact + animated */}
-          <div className="w-full max-w-xs animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="rounded-xl border border-border bg-card p-3 shadow-md">
-              <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
-                <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
-                <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
-                <span className="ml-auto text-[8px] text-emerald-500 font-medium flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Online</span>
-              </div>
-              <div className="space-y-1.5">
-                <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
-                    Hi! I'm Cira. What's bothering you? 👋
-                  </div>
-                </div>
-                <div className="flex justify-end animate-fade-in" style={{ animationDelay: "0.8s" }}>
-                  <div className="bg-primary/10 rounded-lg rounded-tr-none px-2.5 py-1.5 text-[11px] text-foreground font-body max-w-[90%]">
-                    Headache and sore throat for 2 days
-                  </div>
-                </div>
-                <div className="animate-fade-in" style={{ animationDelay: "1.1s" }}>
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
-                    Any fever or body aches? 🩺
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Chat preview — animated */}
+          <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <HeroChatPreview />
           </div>
 
           {/* Face scan — secondary gimmick */}
