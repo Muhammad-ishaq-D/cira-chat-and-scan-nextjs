@@ -61,16 +61,24 @@ const VitalsScan = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
+    // The COI service worker (coi-serviceworker.js) handles registering itself
+    // and reloading the page to enable cross-origin isolation (SharedArrayBuffer).
+    // We just need to wait for it — if not isolated yet, show a message and
+    // do a single reload to give the SW a chance to intercept.
     if (!isDocumentCrossOriginIsolated()) {
       if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY)) {
         markDocumentReload(VITALS_SCAN_RELOAD_KEY);
-        window.location.reload();
-        return;
+        // Give the service worker time to register before reloading
+        const timer = setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+        return () => clearTimeout(timer);
       }
 
       clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
-      toast.error("Vitals Scan needs a full page reload on /vitals-scan to start.");
-      return;
+      // Still not isolated after reload — likely the server doesn't provide
+      // COOP/COEP headers. Proceed anyway (SDK will fail gracefully if needed).
+      console.warn("[VitalsScan] Not cross-origin isolated. SharedArrayBuffer may be unavailable.");
     }
 
     clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
