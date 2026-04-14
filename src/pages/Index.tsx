@@ -1,4 +1,5 @@
 import ciraLogo from "@/assets/cira-logo.svg"; 
+import dashboardPreview from "@/assets/dashboard-preview.png";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import doctor1 from "@/assets/doctor-1.jpg";
 import doctor2 from "@/assets/doctor-2.jpg";
@@ -561,72 +562,8 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Dashboard content */}
-          <div className="flex min-h-[400px]">
-            {/* Sidebar */}
-            <div className="w-44 border-r border-border bg-secondary p-4 hidden sm:block">
-              <div className="flex items-center gap-2 mb-6">
-                <img src={ciraLogo} alt="Cira" width={20} height={20} />
-                <span className="font-heading text-sm font-semibold text-foreground">Cira</span>
-              </div>
-              <ul className="space-y-3 text-sm font-body">
-                <li className="text-foreground font-medium">Dashboard</li>
-                <li className="text-muted-foreground">Talk to Cira</li>
-                <li className="text-muted-foreground">My Scans</li>
-                <li className="text-muted-foreground">History</li>
-                <li className="text-muted-foreground">Doctor Report</li>
-              </ul>
-              <button className="mt-6 w-full bg-primary text-primary-foreground py-2 rounded-lg text-xs font-medium font-body">
-                New Scan
-              </button>
-            </div>
-
-            {/* Main area */}
-            <div className="flex-1 p-5">
-              <h3 className="font-heading text-lg font-semibold text-foreground mb-4">Visit History</h3>
-              <table className="w-full text-xs font-body mb-6">
-                <tbody>
-                  {visitHistory.map((v) => (
-                    <tr key={v.date} className="border-b border-border last:border-0">
-                      <td className="py-2 text-muted-foreground whitespace-nowrap pr-3">{v.date}</td>
-                      <td className="py-2 text-foreground pr-3">{v.complaint}</td>
-                      <td className="py-2 text-muted-foreground">{v.result}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <h3 className="font-heading text-lg font-semibold text-foreground mb-3">Last Scan</h3>
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="bg-secondary rounded-lg p-3">
-                  <p className="text-[11px] text-muted-foreground font-body">Heart Rate</p>
-                  <p className="text-sm text-foreground font-body font-medium">89 bpm <span className="text-primary text-xs">↑ Elevated</span></p>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <p className="text-[11px] text-muted-foreground font-body">Blood Pressure</p>
-                  <p className="text-sm text-foreground font-body font-medium">138/88 <span className="text-primary text-xs">↑ Above baseline</span></p>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <p className="text-[11px] text-muted-foreground font-body">HRV</p>
-                  <p className="text-sm text-foreground font-body font-medium">28ms <span className="text-destructive text-xs">↓ Critically low</span></p>
-                </div>
-                <div className="bg-secondary rounded-lg p-3">
-                  <p className="text-[11px] text-muted-foreground font-body">Stress Index</p>
-                  <p className="text-sm text-foreground font-body font-medium">High <span className="text-primary text-xs">↑</span></p>
-                </div>
-              </div>
-
-              {/* Cira observation */}
-              <div className="scroll-fade border-l-4 border-primary bg-secondary rounded-r-lg p-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Cira noticed</p>
-                <p className="text-sm text-foreground font-body italic leading-relaxed">
-                  "I've seen this pattern before.<br />
-                  Last time it led to an infection.<br />
-                  Watch for fever in 48 hours."
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* Dashboard screenshot */}
+          <img src={dashboardPreview} alt="Cira Dashboard showing vital signs, health indices, and scan history" className="w-full h-auto" />
 
           {/* Gradient fade */}
           <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent pointer-events-none" />
