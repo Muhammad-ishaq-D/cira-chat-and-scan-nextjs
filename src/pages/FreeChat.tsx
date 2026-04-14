@@ -487,6 +487,31 @@ const FreeChat = () => {
                       <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
                         <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>
                       </div>
+                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="text-foreground">
+                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                            Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            <button
+                              onClick={() => selectMode("assessment")}
+                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                            >
+                              <Stethoscope size={15} />
+                              🩺 Health Assessment
+                            </button>
+                            <button
+                              onClick={() => { syncChatMode("chat"); }}
+                              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-foreground text-[12px] font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                            >
+                              <MessageCircle size={15} className="text-muted-foreground" />
+                              💬 Just Chat
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     ) : (
                       <div className="max-w-[95%] md:max-w-[80%]">
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
