@@ -358,7 +358,7 @@ const FreeChat = () => {
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
               <p className="text-sm font-semibold text-foreground font-heading">Chat History</p>
               <div className="flex items-center gap-2">
-                <button onClick={() => { syncCurrentSessionId(null); setMessages([]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title="New chat">
+                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title="New chat">
                   <Plus size={16} />
                 </button>
                 <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
