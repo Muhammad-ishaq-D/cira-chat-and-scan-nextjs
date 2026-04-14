@@ -98,7 +98,7 @@ const HeroChatPreview = () => {
   }, [visibleMessages]);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-3 shadow-md w-full max-w-xs">
+    <div className="rounded-xl border border-border bg-card p-3 shadow-md w-[280px]">
       <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
         <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
         <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
