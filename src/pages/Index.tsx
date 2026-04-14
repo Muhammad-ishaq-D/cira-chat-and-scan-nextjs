@@ -190,32 +190,9 @@ const Index = () => {
 
         {/* Two columns: Chat + Face Scan */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-4 sm:mb-6 w-full max-w-3xl">
-          {/* Chat preview — compact + animated */}
-          <div className="w-full max-w-xs animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <div className="rounded-xl border border-border bg-card p-3 shadow-md">
-              <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
-                <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
-                <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
-                <span className="ml-auto text-[8px] text-emerald-500 font-medium flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Online</span>
-              </div>
-              <div className="space-y-1.5">
-                <div className="animate-fade-in" style={{ animationDelay: "0.5s" }}>
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
-                    Hi! I'm Cira. What's bothering you? 👋
-                  </div>
-                </div>
-                <div className="flex justify-end animate-fade-in" style={{ animationDelay: "0.8s" }}>
-                  <div className="bg-primary/10 rounded-lg rounded-tr-none px-2.5 py-1.5 text-[11px] text-foreground font-body max-w-[90%]">
-                    Headache and sore throat for 2 days
-                  </div>
-                </div>
-                <div className="animate-fade-in" style={{ animationDelay: "1.1s" }}>
-                  <div className="bg-primary/5 rounded-lg rounded-tl-none px-2.5 py-1.5 text-[11px] text-foreground font-body leading-relaxed max-w-[90%]">
-                    Any fever or body aches? 🩺
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Chat preview — animated */}
+          <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <HeroChatPreview />
           </div>
 
           {/* Face scan — secondary gimmick */}
