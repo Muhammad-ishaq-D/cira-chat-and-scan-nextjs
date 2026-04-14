@@ -481,20 +481,22 @@ const FreeChat = () => {
                           <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
                             Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
                           </p>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            <button
-                              onClick={() => selectMode("assessment")}
-                              className="px-3.5 py-1.5 rounded-full border border-border/60 text-[12px] font-medium text-foreground hover:bg-accent transition-colors active:scale-95"
-                            >
-                              🩺 Health Assessment
-                            </button>
+                          <div className="flex flex-col gap-2 mt-3">
                             <button
                               onClick={() => selectMode("chat")}
-                              className="px-3.5 py-1.5 rounded-full border border-border/60 text-[12px] font-medium text-foreground hover:bg-accent transition-colors active:scale-95"
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                             >
-                              💬 Just Chat
+                              <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
+                              <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
                             </button>
-                          </div>
+                            <button
+                              onClick={() => selectMode("assessment")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
+                              <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
+                            </button>
+                        </div>
                         </div>
                       </div>
                     ) : (
