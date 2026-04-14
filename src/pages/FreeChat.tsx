@@ -415,9 +415,6 @@ const FreeChat = () => {
           </button>
         </div>
         <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-          <button onClick={() => navigate("/")} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Home">
-            <Home size={18} strokeWidth={1.5} />
-          </button>
           <button onClick={() => navigate("/login")} className="px-3 h-9 rounded-xl flex items-center gap-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-all bg-card/60 backdrop-blur-sm border border-primary/20 shadow-sm">
             <LogIn size={14} />
             Login
