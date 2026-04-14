@@ -320,6 +320,8 @@ const FreeChat = () => {
     // Reset for a fresh conversation
     syncCurrentSessionId(null);
     setConversationHistory([]);
+    conversationHistoryRef.current = [];
+    prepPayloadSentRef.current = false;
     syncChatMode(mode);
     setShowModeSelection(false);
     setPendingLandingMessage(null);
