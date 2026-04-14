@@ -96,16 +96,6 @@ const ConsultSummaryCard = ({ data }: Props) => {
           </div>
         </div>
 
-        {/* Upgrade CTA */}
-        <div className="px-4 pb-3">
-          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
-            <div className="flex items-center gap-2">
-              <Sparkles size={12} className="text-purple-500" />
-              <span className="text-[10px] font-medium text-purple-700">Want deeper analysis? Try Detailed Assessment</span>
-            </div>
-            <ChevronRight size={12} className="text-purple-400" />
-          </div>
-        </div>
 
         <div className="px-4 py-2 border-t border-border/20 bg-amber-50/50">
           <div className="flex items-center gap-1.5">
