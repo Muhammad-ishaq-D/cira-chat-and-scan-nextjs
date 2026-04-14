@@ -625,9 +625,9 @@ const FreeChat = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask Cira anything..."
+                placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
                 className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
-                disabled={isApiLoading}
+                disabled={isApiLoading || chatMode === "none"}
               />
               <button type="submit" disabled={isApiLoading || !message.trim()} className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30">
                 <Send size={18} strokeWidth={1.5} />
