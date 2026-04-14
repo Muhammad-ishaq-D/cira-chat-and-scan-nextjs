@@ -92,6 +92,7 @@ const FreeChat = () => {
 
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
+  useEffect(() => { if (showTooltip) { const t = setTimeout(() => setShowTooltip(false), 2000); return () => clearTimeout(t); } }, [showTooltip]);
 
   const syncChatMode = (mode: ChatMode) => { chatModeRef.current = mode; setChatMode(mode); };
   const syncCurrentSessionId = (id: string | null) => {
