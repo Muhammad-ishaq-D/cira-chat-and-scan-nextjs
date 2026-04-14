@@ -223,3 +223,29 @@ export async function verifyOtp(email: string, otp: string): Promise<AuthRespons
   saveAuth(data);
   return data;
 }
+
+/** Request a password-reset OTP */
+export async function forgotPassword(email: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Failed to send reset code");
+  }
+}
+
+/** Reset password using OTP */
+export async function resetPassword(email: string, otp: string, newPassword: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, otp, newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || "Password reset failed");
+  }
+}

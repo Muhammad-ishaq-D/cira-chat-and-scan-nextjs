@@ -587,6 +587,13 @@ const Login = () => {
             </button>
             <button
               type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
+            >
+              Forgot password?
+            </button>
+            <button
+              type="button"
               onClick={() => handleModeChange("register")}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
