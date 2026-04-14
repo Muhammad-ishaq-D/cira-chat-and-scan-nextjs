@@ -570,7 +570,6 @@ const FreeChat = () => {
                     <div className="max-w-[95%] md:max-w-[80%]">
                       <div className="mb-2 animate-pulse"><AiSparkleIcon size={20} active /></div>
                       <ThinkingLabel />
-                      <ThinkingLabel />
                     </div>
                   </div>
                 )}
