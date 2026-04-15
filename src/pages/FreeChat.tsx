@@ -627,6 +627,7 @@ const FreeChat = () => {
                                   timestamp: new Date().toISOString(),
                                   deviceId: deviceId.current,
                                   page: window.location.pathname,
+                                  source: "welcome_button",
                                   userAgent: navigator.userAgent,
                                   screenSize: `${window.innerWidth}x${window.innerHeight}`,
                                 };

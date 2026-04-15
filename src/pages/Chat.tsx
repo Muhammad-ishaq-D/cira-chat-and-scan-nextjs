@@ -928,6 +928,7 @@ const Chat = () => {
                                   userEmail: user?.email || null,
                                   userPlan: (user as any)?.plan || "free",
                                   page: window.location.pathname,
+                                  source: "welcome_button",
                                   userAgent: navigator.userAgent,
                                   screenSize: `${window.innerWidth}x${window.innerHeight}`,
                                 };
