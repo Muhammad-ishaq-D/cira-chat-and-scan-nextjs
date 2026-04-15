@@ -111,7 +111,7 @@ const navItems = [
   { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
-const FREE_CHAT_WELCOME = "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — I'm here to help.";
+const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
 
 const buildFreeChatPrompt = (userText: string) => [
   userText,
@@ -845,6 +845,31 @@ const Chat = () => {
                         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                       >
                         <p className="text-[14px] leading-6 whitespace-pre-line">{renderFormattedText(msg.text)}</p>
+                      </div>
+                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="text-foreground">
+                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                            Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
+                          </p>
+                          <div className="flex flex-col gap-2 mt-3">
+                            <button
+                              onClick={() => selectMode("chat")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
+                              <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
+                            </button>
+                            <button
+                              onClick={() => selectMode("assessment")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
+                              <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       /* Cira response — no bubble, just text with sparkle icon */
