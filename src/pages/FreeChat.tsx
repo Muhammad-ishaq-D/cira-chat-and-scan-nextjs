@@ -37,18 +37,46 @@ const ThinkingLabel = () => {
   return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
 };
 
-const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const LiveTypewriterText = ({
+  text,
+  speed = 3,
+  formatted = false,
+  isComplete = false,
+  onComplete,
+}: {
+  text: string;
+  speed?: number;
+  formatted?: boolean;
+  isComplete?: boolean;
+  onComplete?: () => void;
+}) => {
   const [displayed, setDisplayed] = useState("");
-  const indexRef = useRef(0);
+  const targetRef = useRef(text);
+  const completionFiredRef = useRef(false);
+
   useEffect(() => {
-    setDisplayed(""); indexRef.current = 0;
-    const interval = setInterval(() => {
-      indexRef.current += 1;
-      setDisplayed(text.slice(0, indexRef.current));
-      if (indexRef.current >= text.length) { clearInterval(interval); onComplete?.(); }
+    targetRef.current = text;
+    completionFiredRef.current = false;
+    setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
+  }, [text]);
+
+  useEffect(() => {
+    if (!isComplete || displayed.length < text.length || completionFiredRef.current) return;
+    completionFiredRef.current = true;
+    onComplete?.();
+  }, [displayed, text, isComplete, onComplete]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setDisplayed((prev) => {
+        const target = targetRef.current;
+        if (prev.length >= target.length) return prev;
+        return target.slice(0, prev.length + 1);
+      });
     }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
+    return () => window.clearInterval(interval);
+  }, [speed]);
+
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
