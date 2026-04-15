@@ -290,6 +290,7 @@ const FreeChat = () => {
         setMessages(prev => [...prev, { role: "cira" as const, text: "" }]);
         const msgIdx = { current: -1 };
         setMessages(prev => { msgIdx.current = prev.length - 1; return prev; });
+        setStreamingMsgIndex(msgIdx.current >= 0 ? msgIdx.current : null);
         setIsTyping(false);
 
         while (true) {
