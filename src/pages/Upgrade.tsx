@@ -47,9 +47,11 @@ const Upgrade = () => {
         if (Array.isArray(data) && data.length > 0) {
           // Merge API plans with UI defaults for icons
           setPlans(prev => prev.map(p => {
-            const apiPlan = data.find((ap: any) => ap.id === p.id || ap.name?.toLowerCase() === p.id);
+            const apiPlan = data.find((ap: any) => ap.id === p.id || ap.plan_id === p.id || ap.name?.toLowerCase() === p.id);
             if (apiPlan) {
-              return { ...p, price: apiPlan.price_display || p.price, features: apiPlan.features || p.features };
+              const apiPrice = apiPlan.price_display || apiPlan.price || apiPlan.amount || apiPlan.monthly_price;
+              const displayPrice = typeof apiPrice === 'number' ? `$${apiPrice}` : (apiPrice || p.price);
+              return { ...p, price: displayPrice, features: apiPlan.features || p.features };
             }
             return p;
           }));
