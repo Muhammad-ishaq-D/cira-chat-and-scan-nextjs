@@ -5,6 +5,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import AirDoctorButton from "@/components/AirDoctorButton";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
@@ -1235,6 +1236,7 @@ const Chat = () => {
           </div>
         </div>
       )}
+      <AirDoctorButton />
       <MobileBottomNav />
     </div>
   );
