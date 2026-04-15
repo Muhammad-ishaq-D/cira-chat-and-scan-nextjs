@@ -462,10 +462,9 @@ const Chat = () => {
           }
         }
 
+        setStreamingMsgIndex(null);
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
-          // Set text and typewriter index together to avoid flash of full text
-          setTypingMsgIndex(msgIdx.current);
           setMessages((prev) => {
             const updated = [...prev];
             if (msgIdx.current >= 0 && updated[msgIdx.current]) {
