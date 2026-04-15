@@ -13,7 +13,7 @@ const AirDoctorButton = () => {
       userId: user?.id || null,
       userName: user?.name || null,
       userEmail: user?.email || null,
-      userPlan: user?.plan || "free",
+      userPlan: (user as any)?.plan || "free",
       deviceId: getDeviceId(),
       page: window.location.pathname,
       referrer: document.referrer || null,
