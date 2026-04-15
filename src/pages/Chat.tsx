@@ -965,7 +965,7 @@ const Chat = () => {
                             {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
                               <LiveTypewriterText
                                 text={msg.text}
-                                speed={7}
+                                speed={10}
                                 formatted
                                 isComplete={streamingMsgIndex !== i}
                                 onComplete={() => {
@@ -980,7 +980,7 @@ const Chat = () => {
                             ) : typingMsgIndex === i ? (
                               <TypewriterText
                                 text={msg.text}
-                                speed={7}
+                                speed={10}
                                 onComplete={() => setTypingMsgIndex(null)}
                                 formatted
                               />
