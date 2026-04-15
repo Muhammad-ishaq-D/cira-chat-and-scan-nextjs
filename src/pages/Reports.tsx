@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square } from "lucide-react";
+import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square, Lock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { reportsApi, vitalsApi } from "@/lib/apiClient";
+import { reportsApi, vitalsApi, billingApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { downloadReportPdf, downloadSingleScanPdf, downloadCombinedScansPdf } from "@/lib/reportPdf";
 import { toast } from "sonner";
