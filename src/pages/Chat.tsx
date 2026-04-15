@@ -863,11 +863,9 @@ const Chat = () => {
                 )}
               </div>
             </div>
-          )}
         </div>
 
         {/* Bottom input — Gemini-style clean pill */}
-        {messages.length > 0 && (
           <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
               <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
