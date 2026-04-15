@@ -323,7 +323,6 @@ const FreeChat = () => {
 
         if (fullText) {
           setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
-          setTypingMsgIndex(msgIdx.current);
           setMessages(prev => {
             setTimeout(() => persistSession(prev), 100);
             return prev;
@@ -361,7 +360,6 @@ const FreeChat = () => {
           setConversationHistory(prev => [...prev, { role: "assistant", text: textContent }]);
           setMessages(prev => {
             const newMessages = [...prev, { role: "cira" as const, text: textContent }];
-            setTypingMsgIndex(newMessages.length - 1);
             setTimeout(() => persistSession(newMessages), 100);
             return newMessages;
           });

@@ -430,7 +430,6 @@ const Chat = () => {
 
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
-          setTypingMsgIndex(msgIdx.current);
         }
 
         if (toolCalls.length > 0) {
@@ -462,11 +461,7 @@ const Chat = () => {
 
         if (textContent) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: textContent }]);
-          setMessages((prev) => {
-            const newMessages = [...prev, { role: "cira" as const, text: textContent }];
-            setTypingMsgIndex(newMessages.length - 1);
-            return newMessages;
-          });
+          setMessages((prev) => [...prev, { role: "cira" as const, text: textContent }]);
         }
 
         if (toolCalls.length > 0) {
