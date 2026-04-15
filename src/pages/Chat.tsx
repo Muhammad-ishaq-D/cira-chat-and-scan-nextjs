@@ -521,6 +521,17 @@ const Chat = () => {
               }
             }
 
+            // Catch-all: backend may send tool_use as a standalone event or nested differently
+            if (event.type === "tool_use" && event.name && event.input) {
+              toolCalls.push(event as ToolUse);
+            }
+            // Some backends send toolCalls array directly on an event
+            if (Array.isArray(event.toolCalls)) {
+              for (const tc of event.toolCalls) {
+                if (tc.type === "tool_use" && tc.name) toolCalls.push(tc);
+              }
+            }
+
             if (event.credits) { /* credits available */ }
           } catch { /* skip malformed SSE */ }
         }
