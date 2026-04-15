@@ -10,7 +10,6 @@ import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type Con
 import { toast } from "sonner";
 import {
   getDeviceId,
-  getFreeScans,
   getFreeChatHistory,
   saveFreeChatSession,
   deleteFreeChatSession,
@@ -92,7 +91,6 @@ const FreeChat = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [guestRemaining, setGuestRemaining] = useState<number>(20);
   const [guestDailyLimit, setGuestDailyLimit] = useState<number>(20);
-  const [scansLeft, setScansLeft] = useState(getFreeScans());
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
@@ -320,10 +318,20 @@ const FreeChat = () => {
     callClaude(userText);
   };
 
-  const selectMode = (mode: ChatMode) => {
+  const selectMode = async (mode: ChatMode) => {
     if (mode === "vitals") {
-      if (scansLeft <= 0) {
-        toast.error("Free scan used. Login to get more scans.", { action: { label: "Login", onClick: () => navigate("/login") } });
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+        const res = await fetch(`${API_BASE}/api/guest/scan-check`, {
+          headers: { "X-Device-Id": deviceId.current },
+        });
+        const data = await res.json();
+        if (!data.allowed) {
+          toast.error("Daily free scan used. Login to get more scans.", { action: { label: "Login", onClick: () => navigate("/login") } });
+          return;
+        }
+      } catch {
+        toast.error("Could not verify scan eligibility.");
         return;
       }
       syncChatMode(mode);
@@ -410,7 +418,7 @@ const FreeChat = () => {
             <div className="px-3 pt-2 pb-1">
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <Sparkles size={10} />
-                <span>{guestRemaining}/{guestDailyLimit} messages today · {scansLeft} scan{scansLeft !== 1 ? "s" : ""}</span>
+                <span>{guestRemaining}/{guestDailyLimit} messages today</span>
               </div>
             </div>
 
