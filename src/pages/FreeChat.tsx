@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import AirDoctorButton from "@/components/AirDoctorButton";
+import { useNavigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -507,6 +507,40 @@ const FreeChat = () => {
                               <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
                               <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
                             </button>
+                            <button
+                              onClick={() => selectMode("vitals")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">📸 Face Scan</span>
+                              <span className="text-[10px] text-muted-foreground">30-second scan captures real vitals from your face</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                // Track the click
+                                const trackingData = {
+                                  timestamp: new Date().toISOString(),
+                                  deviceId: deviceId.current,
+                                  page: window.location.pathname,
+                                  userAgent: navigator.userAgent,
+                                  screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                                };
+                                console.log("[AirDoctor] Referral click:", trackingData);
+                                try {
+                                  const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+                                  fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {});
+                                } catch {}
+                                try {
+                                  const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                  clicks.push(trackingData);
+                                  localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                                } catch {}
+                                window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                              }}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">🏥 Book a Doctor</span>
+                              <span className="text-[10px] text-muted-foreground">Connect with a real doctor near you via Air Doctor</span>
+                            </button>
                         </div>
                         </div>
                       </div>
@@ -583,49 +617,14 @@ const FreeChat = () => {
 
         {/* Bottom input with floating mode buttons */}
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
-          {/* Floating mode buttons */}
-          {showFloatingModes && (
-            <div className="absolute bottom-full left-0 right-0 z-20 px-3 pb-2 animate-fade-in">
-              <div className="max-w-2xl mx-auto flex items-center gap-2 overflow-x-auto py-2">
-                <button
-                  onClick={() => { selectMode("vitals"); setShowFloatingModes(false); }}
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[11px] font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
-                >
-                  <ScanFace size={14} />
-                  Face Scan
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Tooltip above input */}
-          {showTooltip && (
-            <div className="max-w-2xl mx-auto px-3 flex justify-start pl-6 pb-1">
-              <div className="relative whitespace-nowrap bg-foreground text-background text-[10px] font-medium px-2.5 py-1 rounded-lg shadow-lg animate-bounce pointer-events-none">
-                📸 Tap for Face Scan
-                <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
             <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowFloatingModes(!showFloatingModes);
-                  setShowTooltip(false);
-                }}
-                className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
-              >
-                <ScanFace size={18} strokeWidth={1.5} />
-              </button>
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
-                className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
+                className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
                 disabled={isApiLoading || chatMode === "none"}
               />
               <button type="submit" disabled={isApiLoading || !message.trim()} className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30">
@@ -639,7 +638,6 @@ const FreeChat = () => {
           </div>
         </div>
       </div>
-      <AirDoctorButton />
     </div>
   );
 };
