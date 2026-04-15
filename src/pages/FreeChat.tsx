@@ -10,8 +10,6 @@ import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type Con
 import { toast } from "sonner";
 import {
   getDeviceId,
-  getFreeCredits,
-  deductFreeCredits,
   getFreeScans,
   getFreeChatHistory,
   saveFreeChatSession,
