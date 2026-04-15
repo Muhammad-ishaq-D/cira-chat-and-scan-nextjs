@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square } from "lucide-react";
+import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square, Lock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { reportsApi, vitalsApi } from "@/lib/apiClient";
+import { reportsApi, vitalsApi, billingApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { downloadReportPdf, downloadSingleScanPdf, downloadCombinedScansPdf } from "@/lib/reportPdf";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
+  const [isBasicPlan, setIsBasicPlan] = useState(true);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -55,6 +56,12 @@ const Reports = () => {
     };
     loadReports();
     loadScans();
+    billingApi.getSubscription()
+      .then((sub) => {
+        const plan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
+        setIsBasicPlan(plan === "basic" || plan === "free");
+      })
+      .catch(() => setIsBasicPlan(true));
   }, []);
 
   const filteredReports = reports.filter((r: any) =>
@@ -62,6 +69,10 @@ const Reports = () => {
   );
 
   const handleDownload = async (report: any) => {
+    if (isBasicPlan) {
+      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      return;
+    }
     try {
       await downloadReportPdf(report);
       toast.success("PDF downloaded");
@@ -89,6 +100,10 @@ const Reports = () => {
   };
 
   const handleDownloadCombined = async () => {
+    if (isBasicPlan) {
+      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      return;
+    }
     const selected = scans.filter(s => selectedScans.has(s.id || s._id));
     if (selected.length === 0) {
       toast.error("Select at least one scan");
@@ -272,9 +287,10 @@ const Reports = () => {
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
-                                className="h-8 px-3 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
+                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
-                                <Download size={13} />Download
+                                {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                                {isBasicPlan ? "Upgrade to Download" : "Download"}
                               </button>
                             </div>
                           </div>
@@ -332,10 +348,10 @@ const Reports = () => {
                   <button
                     onClick={handleDownloadCombined}
                     disabled={selectedScans.size === 0}
-                    className="h-8 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={`h-8 px-4 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                   >
-                    <Download size={13} />
-                    Download Combined Report
+                    {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                    {isBasicPlan ? "Upgrade to Download" : "Download Combined Report"}
                   </button>
                 </div>
               )}
@@ -413,6 +429,10 @@ const Reports = () => {
                           {/* Download single */}
                           <button
                             onClick={async () => {
+                              if (isBasicPlan) {
+                                toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+                                return;
+                              }
                               try {
                                 await downloadSingleScanPdf(scan);
                                 toast.success("Scan PDF downloaded");
@@ -420,10 +440,10 @@ const Reports = () => {
                                 toast.error("Failed to generate PDF");
                               }
                             }}
-                            className="shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium text-foreground hover:bg-accent transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100"
+                            className={`shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100 ${isBasicPlan ? "text-muted-foreground" : "text-foreground hover:bg-accent"}`}
                           >
-                            <Download size={13} />
-                            <span className="hidden sm:inline">PDF</span>
+                            {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                            <span className="hidden sm:inline">{isBasicPlan ? "Pro" : "PDF"}</span>
                           </button>
                         </div>
                       </div>
