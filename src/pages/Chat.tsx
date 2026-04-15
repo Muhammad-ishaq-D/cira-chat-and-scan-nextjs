@@ -445,19 +445,9 @@ const Chat = () => {
                 const msg = event.message as ClaudeResponse;
                 const finalTools = extractToolCalls(msg);
                 if (finalTools.length > 0) toolCalls = finalTools;
-                // If no deltas were received, extract full text from message
                 if (!fullText) {
                   const msgText = extractText(msg);
-                  if (msgText) {
-                    fullText = msgText;
-                    setMessages((prev) => {
-                      const updated = [...prev];
-                      if (msgIdx.current >= 0 && updated[msgIdx.current]) {
-                        updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
-                      }
-                      return updated;
-                    });
-                  }
+                  if (msgText) fullText = msgText;
                 }
               }
 
@@ -473,7 +463,15 @@ const Chat = () => {
 
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
+          // Set text and typewriter index together to avoid flash of full text
           setTypingMsgIndex(msgIdx.current);
+          setMessages((prev) => {
+            const updated = [...prev];
+            if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+              updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+            }
+            return updated;
+          });
         }
 
         if (toolCalls.length > 0) {
