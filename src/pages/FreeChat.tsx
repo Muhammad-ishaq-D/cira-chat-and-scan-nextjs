@@ -336,16 +336,7 @@ const FreeChat = () => {
                 if (finalTools.length > 0) toolCalls = finalTools;
                 if (!fullText) {
                   const msgText = extractText(msg);
-                  if (msgText) {
-                    fullText = msgText;
-                    setMessages(prev => {
-                      const updated = [...prev];
-                      if (msgIdx.current >= 0 && updated[msgIdx.current]) {
-                        updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
-                      }
-                      return updated;
-                    });
-                  }
+                  if (msgText) fullText = msgText;
                 }
               }
             } catch { /* skip malformed SSE */ }
@@ -354,10 +345,15 @@ const FreeChat = () => {
 
         if (fullText) {
           setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
+          // Set text and typewriter index together to avoid flash of full text
           setTypingMsgIndex(msgIdx.current);
           setMessages(prev => {
-            setTimeout(() => persistSession(prev), 100);
-            return prev;
+            const updated = [...prev];
+            if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+              updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+            }
+            setTimeout(() => persistSession(updated), 100);
+            return updated;
           });
         }
 
