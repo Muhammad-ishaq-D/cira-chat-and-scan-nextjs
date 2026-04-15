@@ -330,8 +330,22 @@ const FreeChat = () => {
                 toolCalls.push(event.content_block as ToolUse);
               }
               if (event.type === "message_stop" && event.message) {
-                const finalTools = extractToolCalls(event.message as ClaudeResponse);
+                const msg = event.message as ClaudeResponse;
+                const finalTools = extractToolCalls(msg);
                 if (finalTools.length > 0) toolCalls = finalTools;
+                if (!fullText) {
+                  const msgText = extractText(msg);
+                  if (msgText) {
+                    fullText = msgText;
+                    setMessages(prev => {
+                      const updated = [...prev];
+                      if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+                        updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+                      }
+                      return updated;
+                    });
+                  }
+                }
               }
             } catch { /* skip malformed SSE */ }
           }
