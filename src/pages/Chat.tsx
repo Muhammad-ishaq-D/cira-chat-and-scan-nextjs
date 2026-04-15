@@ -41,7 +41,7 @@ const ThinkingLabel = () => {
 };
 
 // Typewriter component — types full text character by character
-const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
@@ -68,7 +68,7 @@ const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { te
 
 const LiveTypewriterText = ({
   text,
-  speed = 3,
+  speed = 18,
   formatted = false,
   isComplete = false,
   onComplete,
@@ -575,6 +575,16 @@ const Chat = () => {
             { role: "cira" as const, text: "I'm processing your information... Let me continue with my assessment. 💙" },
           ]);
         }
+      }
+
+      // Fallback: always show Face Scan + Doctor buttons after agent text responses
+      const hasActionButtons = toolCalls.some(t => t.name === "render_action_buttons");
+      if (fullText && !hasActionButtons) {
+        const defaultButtons = [
+          { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
+          { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
+        ];
+        setMessages((prev) => [...prev, { role: "action_buttons" as const, text: "", buttons: defaultButtons }]);
       }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
