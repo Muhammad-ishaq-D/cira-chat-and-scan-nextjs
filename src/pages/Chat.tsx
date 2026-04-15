@@ -1063,7 +1063,7 @@ const Chat = () => {
                   <div className="flex justify-start animate-fade-in">
                     <div className="max-w-[95%] md:max-w-[80%]">
                       <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
-                      <ThinkingLabel />
+                      
                     </div>
                   </div>
                 )}
