@@ -69,17 +69,37 @@ const TypewriterText = ({ text, speed = 35, onComplete, formatted = false }: { t
   );
 };
 
-const LiveTypewriterText = ({ text, speed = 35, formatted = false }: { text: string; speed?: number; formatted?: boolean }) => {
+const LiveTypewriterText = ({
+  text,
+  speed = 35,
+  formatted = false,
+  isComplete = false,
+  onComplete,
+}: {
+  text: string;
+  speed?: number;
+  formatted?: boolean;
+  isComplete?: boolean;
+  onComplete?: () => void;
+}) => {
   const [displayed, setDisplayed] = useState("");
   const targetRef = useRef(text);
+  const completionFiredRef = useRef(false);
 
   useEffect(() => {
     targetRef.current = text;
+    completionFiredRef.current = false;
     setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
   }, [text]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!isComplete || displayed.length < text.length || completionFiredRef.current) return;
+    completionFiredRef.current = true;
+    onComplete?.();
+  }, [displayed, text, isComplete, onComplete]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
       setDisplayed((prev) => {
         const target = targetRef.current;
         if (prev.length >= target.length) return prev;
@@ -87,7 +107,7 @@ const LiveTypewriterText = ({ text, speed = 35, formatted = false }: { text: str
       });
     }, speed);
 
-    return () => clearInterval(interval);
+    return () => window.clearInterval(interval);
   }, [speed]);
 
   return (
@@ -171,6 +191,7 @@ const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
+  const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
@@ -195,6 +216,12 @@ const Chat = () => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
     if (!sessionId) prepPayloadSentRef.current = false;
+  };
+
+  const clearLiveTypingState = () => {
+    setStreamingMsgIndex(null);
+    setTypingMsgIndex(null);
+    setCompletedStreamingMsgIndices({});
   };
 
   // Load chat history from API
@@ -467,6 +494,9 @@ const Chat = () => {
         }
       }
 
+      if (msgIdx.current >= 0) {
+        setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
+      }
       setStreamingMsgIndex(null);
       if (fullText) {
         setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
@@ -546,6 +576,7 @@ const Chat = () => {
       syncCurrentSessionId(null);
       setConversationHistory([]);
       prepPayloadSentRef.current = false;
+      clearLiveTypingState();
 
       if (pendingLandingMessage) {
         setMessages([{ role: "user", text: pendingLandingMessage }]);
@@ -582,6 +613,7 @@ const Chat = () => {
     if (sessionId) {
       // Load existing session messages via GET /api/chat/:chatId
       syncCurrentSessionId(sessionId);
+      clearLiveTypingState();
       setConversationHistory([]);
       setMessages([]);
       syncChatMode("chat");
@@ -608,6 +640,7 @@ const Chat = () => {
       }
     } else {
       syncCurrentSessionId(null);
+      clearLiveTypingState();
       setMessages([{ role: "user", text: title }]);
       setConversationHistory([]);
       syncChatMode("chat");
@@ -621,6 +654,7 @@ const Chat = () => {
       setChatHistory((prev) => prev.filter((c: any) => c.id !== chatId));
       if (currentSessionId === chatId) {
         syncCurrentSessionId(null);
+        clearLiveTypingState();
         setMessages([]);
         setConversationHistory([]);
         syncChatMode("none");
@@ -712,7 +746,7 @@ const Chat = () => {
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setActiveChat(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(null); clearLiveTypingState(); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                   title="New chat"
                 >
@@ -926,12 +960,25 @@ const Chat = () => {
                           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                         >
                           <p className="text-[14px] md:text-[15px] leading-7">
-                            {streamingMsgIndex === i ? (
-                              <LiveTypewriterText text={msg.text} speed={20} formatted />
+                            {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
+                              <LiveTypewriterText
+                                text={msg.text}
+                                speed={35}
+                                formatted
+                                isComplete={streamingMsgIndex !== i}
+                                onComplete={() => {
+                                  setCompletedStreamingMsgIndices((prev) => {
+                                    if (!prev[i]) return prev;
+                                    const next = { ...prev };
+                                    delete next[i];
+                                    return next;
+                                  });
+                                }}
+                              />
                             ) : typingMsgIndex === i ? (
                               <TypewriterText
                                 text={msg.text}
-                                speed={20}
+                                speed={35}
                                 onComplete={() => setTypingMsgIndex(null)}
                                 formatted
                               />
