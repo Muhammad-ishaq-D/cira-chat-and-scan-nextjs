@@ -69,6 +69,10 @@ const Reports = () => {
   );
 
   const handleDownload = async (report: any) => {
+    if (isBasicPlan) {
+      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      return;
+    }
     try {
       await downloadReportPdf(report);
       toast.success("PDF downloaded");
