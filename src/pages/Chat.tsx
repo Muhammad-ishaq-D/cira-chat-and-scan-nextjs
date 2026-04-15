@@ -386,7 +386,7 @@ const Chat = () => {
           }
           break;
         case "render_action_buttons": {
-          const buttons = tool.input?.buttons?.length ? tool.input.buttons : resolveFallbackButtons();
+          const buttons = resolveButtons(tool.input?.buttons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
           break;
         }
