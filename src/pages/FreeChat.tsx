@@ -39,7 +39,7 @@ const ThinkingLabel = () => {
 
 const LiveTypewriterText = ({
   text,
-  speed = 3,
+  speed = 18,
   formatted = false,
   isComplete = false,
   onComplete,

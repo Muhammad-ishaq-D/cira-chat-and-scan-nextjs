@@ -41,7 +41,7 @@ const ThinkingLabel = () => {
 };
 
 // Typewriter component — types full text character by character
-const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
@@ -68,7 +68,7 @@ const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { te
 
 const LiveTypewriterText = ({
   text,
-  speed = 3,
+  speed = 18,
   formatted = false,
   isComplete = false,
   onComplete,
