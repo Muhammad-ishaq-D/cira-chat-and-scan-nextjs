@@ -390,7 +390,7 @@ const Chat = () => {
 
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
-              loadChatHistory();
+              // Don't reload history during streaming — it resets the message state
             }
 
             // Live text deltas — render as they arrive
