@@ -351,6 +351,16 @@ const FreeChat = () => {
                 }
               }
             }
+
+            // Catch-all: backend may send tool_use as a standalone event
+            if (event.type === "tool_use" && event.name && event.input) {
+              toolCalls.push(event as ToolUse);
+            }
+            if (Array.isArray(event.toolCalls)) {
+              for (const tc of event.toolCalls) {
+                if (tc.type === "tool_use" && tc.name) toolCalls.push(tc);
+              }
+            }
           } catch { /* skip malformed SSE */ }
         }
       }
