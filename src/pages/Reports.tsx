@@ -348,10 +348,10 @@ const Reports = () => {
                   <button
                     onClick={handleDownloadCombined}
                     disabled={selectedScans.size === 0}
-                    className="h-8 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={`h-8 px-4 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                   >
-                    <Download size={13} />
-                    Download Combined Report
+                    {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                    {isBasicPlan ? "Upgrade to Download" : "Download Combined Report"}
                   </button>
                 </div>
               )}
