@@ -600,9 +600,6 @@ const FreeChat = () => {
                             ) : (
                               <span className="whitespace-pre-line">
                                 {renderFormattedText(msg.text)}
-                                {streamingMsgIndex === i && (
-                                  <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-                                )}
                               </span>
                             )}
                           </p>
