@@ -100,6 +100,10 @@ const Reports = () => {
   };
 
   const handleDownloadCombined = async () => {
+    if (isBasicPlan) {
+      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      return;
+    }
     const selected = scans.filter(s => selectedScans.has(s.id || s._id));
     if (selected.length === 0) {
       toast.error("Select at least one scan");
