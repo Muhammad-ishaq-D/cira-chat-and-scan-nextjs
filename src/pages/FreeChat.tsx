@@ -744,7 +744,7 @@ const FreeChat = () => {
                       </div>
                     ) : (
                       <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="mb-2"><AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} /></div>
                         <div className="text-foreground">
                           <p className="text-[14px] md:text-[15px] leading-7 font-body">
                             {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
