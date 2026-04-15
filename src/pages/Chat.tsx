@@ -285,7 +285,18 @@ const Chat = () => {
   }, []);
 
   // Process Claude tool calls and render UI elements
-  const processToolCalls = (toolCalls: ToolUse[]) => {
+  const processToolCalls = (toolCalls: ToolUse[], fallbackText = "") => {
+    const normalizedFallbackText = fallbackText.toLowerCase();
+    const defaultButtons = [
+      { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
+      { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
+    ];
+    const doctorOnlyButtons = [defaultButtons[1]];
+    const resolveFallbackButtons = () => {
+      const isDoctorRequest = /\b(doctor|dr\.?|appointment|book|booking|specialist|clinic|physician)\b/.test(normalizedFallbackText);
+      return isDoctorRequest ? doctorOnlyButtons : defaultButtons;
+    };
+
     for (const tool of toolCalls) {
       switch (tool.name) {
         case "openModal":
@@ -365,11 +376,7 @@ const Chat = () => {
           }
           break;
         case "render_action_buttons": {
-          const defaultButtons = [
-            { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
-            { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
-          ];
-          const buttons = (tool.input?.buttons?.length ? tool.input.buttons : defaultButtons);
+          const buttons = tool.input?.buttons?.length ? tool.input.buttons : resolveFallbackButtons();
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
           break;
         }
@@ -510,8 +517,9 @@ const Chat = () => {
               const msg = event.message as ClaudeResponse;
               const finalTools = extractToolCalls(msg);
               if (finalTools.length > 0) toolCalls = finalTools;
+              const responseText = extractText(msg);
               if (!fullText) {
-                const msgText = extractText(msg);
+                const msgText = responseText;
                 if (msgText) {
                   fullText = msgText;
                   setMessages((prev) => {
@@ -550,7 +558,7 @@ const Chat = () => {
       }
 
       if (toolCalls.length > 0) {
-        processToolCalls(toolCalls);
+        processToolCalls(toolCalls, fullText);
         if (!fullText) {
           setMessages((prev) => [
             ...prev,
