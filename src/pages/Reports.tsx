@@ -28,6 +28,7 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
+  const [isBasicPlan, setIsBasicPlan] = useState(true);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
