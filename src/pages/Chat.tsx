@@ -41,7 +41,7 @@ const ThinkingLabel = () => {
 };
 
 // Typewriter component — types full text character by character
-const TypewriterText = ({ text, speed = 35, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 15, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
@@ -62,16 +62,13 @@ const TypewriterText = ({ text, speed = 35, onComplete, formatted = false }: { t
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
-      {displayed.length < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-      )}
     </span>
   );
 };
 
 const LiveTypewriterText = ({
   text,
-  speed = 35,
+  speed = 15,
   formatted = false,
   isComplete = false,
   onComplete,
@@ -113,9 +110,6 @@ const LiveTypewriterText = ({
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
-      {displayed.length < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-      )}
     </span>
   );
 };
@@ -246,9 +240,13 @@ const Chat = () => {
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
     if (scrollRef.current) {
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-      }, 100);
+      const el = scrollRef.current;
+      const doScroll = () => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      doScroll();
+      // Repeat to catch late renders / images loading
+      const t1 = setTimeout(doScroll, 150);
+      const t2 = setTimeout(doScroll, 400);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [messages, isTyping]);
 
