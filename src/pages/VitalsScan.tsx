@@ -9,7 +9,7 @@ import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useS
 import { vitalsApi, userApi } from "@/lib/apiClient";
 import { getUser, logout, isAuthenticated } from "@/lib/auth";
 import { clearDocumentReload, hasRecentDocumentReload, isDocumentCrossOriginIsolated, markDocumentReload } from "@/lib/browserContext";
-import { deductFreeScan, getFreeScans } from "@/lib/freeCredits";
+import { getDeviceId } from "@/lib/freeCredits";
 import { toast } from "sonner";
 
 const navItems = [
@@ -111,12 +111,21 @@ const VitalsScan = () => {
       hasInitRef.current = true;
 
       if (isGuest) {
-        const scans = getFreeScans();
-        if (scans <= 0) {
-          toast.error("Free scan already used. Login to get more scans.", {
-            action: { label: "Login", onClick: () => navigate("/login") },
-            duration: 8000,
+        try {
+          const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+          const scanCheck = await fetch(`${API_BASE}/api/guest/scan-check`, {
+            headers: { "X-Device-Id": getDeviceId() },
           });
+          const scanData = await scanCheck.json();
+          if (!scanData.allowed) {
+            toast.error("Daily free scan used. Login to get more scans.", {
+              action: { label: "Login", onClick: () => navigate("/login") },
+              duration: 8000,
+            });
+            return;
+          }
+        } catch {
+          toast.error("Could not verify scan eligibility. Please try again.");
           return;
         }
 
@@ -174,9 +183,15 @@ const VitalsScan = () => {
     let isActive = true;
 
     const saveScan = async () => {
-      // Guest mode: deduct free scan, don't save to backend
+      // Guest mode: notify backend scan was used, don't save results
       if (isGuest) {
-        deductFreeScan();
+        try {
+          const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+          await fetch(`${API_BASE}/api/guest/scan-used`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Device-Id": getDeviceId() },
+          });
+        } catch {}
         toast.success("Scan complete! (Guest mode — login to save)");
         return;
       }
