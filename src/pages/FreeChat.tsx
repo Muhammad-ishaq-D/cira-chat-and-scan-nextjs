@@ -639,6 +639,7 @@ const FreeChat = () => {
           </div>
         </div>
       </div>
+      <AirDoctorButton />
     </div>
   );
 };

@@ -1049,6 +1049,7 @@ const Chat = () => {
         </div>
       )}
       <MobileBottomNav />
+      <AirDoctorButton />
     </div>
   );
 };
