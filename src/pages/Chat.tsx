@@ -577,15 +577,6 @@ const Chat = () => {
         }
       }
 
-      // Fallback: always show Face Scan + Doctor buttons after agent text responses
-      const hasActionButtons = toolCalls.some(t => t.name === "render_action_buttons");
-      if (fullText && !hasActionButtons) {
-        const defaultButtons = [
-          { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
-          { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
-        ];
-        setMessages((prev) => [...prev, { role: "action_buttons" as const, text: "", buttons: defaultButtons }]);
-      }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
       if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
