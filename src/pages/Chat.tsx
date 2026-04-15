@@ -388,12 +388,12 @@ const Chat = () => {
         let sessionIdCaptured = false;
         let toolCalls: ToolUse[] = [];
         // Add a placeholder cira message
-        setMessages((prev) => [...prev, { role: "cira" as const, text: "" }]);
         const msgIdx = { current: -1 };
-
         setMessages((prev) => {
-          msgIdx.current = prev.length - 1;
-          return prev;
+          const updated = [...prev, { role: "cira" as const, text: "" }];
+          msgIdx.current = updated.length - 1;
+          setStreamingMsgIndex(updated.length - 1);
+          return updated;
         });
 
         setIsTyping(false); // Hide thinking indicator since text is streaming
