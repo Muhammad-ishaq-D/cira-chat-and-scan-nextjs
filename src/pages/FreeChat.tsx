@@ -90,7 +90,8 @@ const FreeChat = () => {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [credits, setCredits] = useState(getFreeCredits());
+  const [guestRemaining, setGuestRemaining] = useState<number>(20);
+  const [guestDailyLimit, setGuestDailyLimit] = useState<number>(20);
   const [scansLeft, setScansLeft] = useState(getFreeScans());
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
