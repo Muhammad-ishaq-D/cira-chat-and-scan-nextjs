@@ -1019,7 +1019,7 @@ const Chat = () => {
                       /* Cira response — no bubble, just text with sparkle icon */
                       <div className="max-w-[95%] md:max-w-[80%]">
                         <div className="mb-2">
-                          <AiSparkleIcon size={20} active />
+                          <AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} />
                         </div>
                         <div
                           className="text-foreground"
