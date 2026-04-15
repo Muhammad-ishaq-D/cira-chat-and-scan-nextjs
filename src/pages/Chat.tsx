@@ -447,6 +447,13 @@ const Chat = () => {
           if (data === "[DONE]") continue;
           try {
             const event = JSON.parse(data);
+            // Debug: log tool-related SSE events
+            if (event.type?.includes("content_block") && (event.content_block?.type === "tool_use" || event.delta?.type === "input_json_delta")) {
+              console.log("[SSE Tool Event]", event.type, event);
+            }
+            if (event.type === "message_stop") {
+              console.log("[SSE message_stop]", JSON.stringify(event).slice(0, 500));
+            }
 
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
