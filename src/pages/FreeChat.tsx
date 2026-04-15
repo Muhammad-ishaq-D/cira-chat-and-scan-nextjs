@@ -319,6 +319,7 @@ const FreeChat = () => {
       setMessages(prev => {
         const updated = [...prev, { role: "cira" as const, text: "" }];
         msgIdx.current = updated.length - 1;
+        setStreamingMsgIndex(updated.length - 1);
         return updated;
       });
       setIsTyping(false);
@@ -415,6 +416,11 @@ const FreeChat = () => {
           } catch { /* skip malformed SSE */ }
         }
       }
+
+      if (msgIdx.current >= 0) {
+        setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
+      }
+      setStreamingMsgIndex(null);
 
       if (fullText) {
         setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
