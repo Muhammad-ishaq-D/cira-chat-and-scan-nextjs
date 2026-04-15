@@ -680,11 +680,7 @@ const FreeChat = () => {
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
                         <div className="text-foreground">
                           <p className="text-[14px] md:text-[15px] leading-7 font-body">
-                            {typingMsgIndex === i ? (
-                              <TypewriterText text={msg.text} speed={15} onComplete={() => setTypingMsgIndex(null)} formatted />
-                            ) : (
-                              <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
-                            )}
+                            <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
                           </p>
                         </div>
                       </div>
@@ -733,15 +729,6 @@ const FreeChat = () => {
                   </div>
                 )}
 
-                {/* Thinking indicator */}
-                {isTyping && (
-                  <div className="flex justify-start animate-fade-in">
-                    <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
-                      <ThinkingLabel />
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
         </div>
