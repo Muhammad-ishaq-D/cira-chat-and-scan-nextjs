@@ -461,6 +461,10 @@ const Chat = () => {
                 }
                 return updated;
               });
+              // Keep scrolled to bottom as new text streams in
+              if (scrollRef.current) {
+                scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+              }
             }
 
             if (event.type === "content_block_stop" && event.content_block?.type === "tool_use") {
