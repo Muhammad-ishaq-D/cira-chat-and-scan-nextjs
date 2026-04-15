@@ -421,6 +421,8 @@ const Chat = () => {
       let fullText = "";
       let buffer = "";
       let toolCalls: ToolUse[] = [];
+      // Accumulate tool_use blocks from streaming events
+      let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
       const msgIdx = { current: -1 };
 
       // Add empty placeholder message immediately
@@ -448,7 +450,6 @@ const Chat = () => {
 
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
-              // Don't reload history during streaming — it resets the message state
             }
 
             // Live text deltas — render as they arrive
@@ -461,14 +462,36 @@ const Chat = () => {
                 }
                 return updated;
               });
-              // Keep scrolled to bottom as new text streams in
               if (scrollRef.current) {
                 scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
               }
             }
 
-            if (event.type === "content_block_stop" && event.content_block?.type === "tool_use") {
-              toolCalls.push(event.content_block as ToolUse);
+            // Tool use streaming: start accumulating
+            if (event.type === "content_block_start" && event.content_block?.type === "tool_use") {
+              pendingToolBlock = { type: "tool_use", id: event.content_block.id, name: event.content_block.name, inputJson: "" };
+            }
+
+            // Tool use streaming: accumulate input JSON deltas
+            if (event.type === "content_block_delta" && event.delta?.type === "input_json_delta" && pendingToolBlock) {
+              pendingToolBlock.inputJson += event.delta.partial_json || "";
+            }
+
+            // Tool use streaming: finalize on content_block_stop
+            if (event.type === "content_block_stop") {
+              if (event.content_block?.type === "tool_use") {
+                // Backend sent the full block in content_block_stop
+                toolCalls.push(event.content_block as ToolUse);
+              } else if (pendingToolBlock) {
+                // Build tool from accumulated deltas
+                try {
+                  const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+                  toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+                } catch (e) {
+                  console.error("[SSE] Failed to parse tool input JSON:", e);
+                }
+              }
+              pendingToolBlock = null;
             }
 
             // Backend sends full message in message_stop (fallback if no deltas)

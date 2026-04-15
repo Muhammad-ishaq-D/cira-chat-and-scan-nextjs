@@ -262,6 +262,7 @@ const FreeChat = () => {
       let fullText = "";
       let buffer = "";
       let toolCalls: ToolUse[] = [];
+      let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
       const msgIdx = { current: -1 };
 
       // Add empty placeholder message immediately
@@ -304,8 +305,29 @@ const FreeChat = () => {
               });
             }
 
-            if (event.type === "content_block_stop" && event.content_block?.type === "tool_use") {
-              toolCalls.push(event.content_block as ToolUse);
+            // Tool use streaming: start accumulating
+            if (event.type === "content_block_start" && event.content_block?.type === "tool_use") {
+              pendingToolBlock = { type: "tool_use", id: event.content_block.id, name: event.content_block.name, inputJson: "" };
+            }
+
+            // Tool use streaming: accumulate input JSON deltas
+            if (event.type === "content_block_delta" && event.delta?.type === "input_json_delta" && pendingToolBlock) {
+              pendingToolBlock.inputJson += event.delta.partial_json || "";
+            }
+
+            // Tool use streaming: finalize on content_block_stop
+            if (event.type === "content_block_stop") {
+              if (event.content_block?.type === "tool_use") {
+                toolCalls.push(event.content_block as ToolUse);
+              } else if (pendingToolBlock) {
+                try {
+                  const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+                  toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+                } catch (e) {
+                  console.error("[SSE] Failed to parse tool input JSON:", e);
+                }
+              }
+              pendingToolBlock = null;
             }
 
             // Backend sends full message in message_stop (fallback if no deltas)
