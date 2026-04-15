@@ -365,7 +365,11 @@ const Chat = () => {
           }
           break;
         case "render_action_buttons": {
-          const buttons = tool.input?.buttons || [];
+          const defaultButtons = [
+            { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
+            { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
+          ];
+          const buttons = (tool.input?.buttons?.length ? tool.input.buttons : defaultButtons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
           break;
         }
