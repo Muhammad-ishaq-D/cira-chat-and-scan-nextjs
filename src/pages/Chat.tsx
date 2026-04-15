@@ -30,44 +30,6 @@ const renderFormattedText = (text: string) => {
   });
 };
 
-const THINKING_PHRASES = ["Thinking...", "Looking into it...", "Processing...", "One moment..."];
-const ThinkingLabel = () => {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx(i => (i + 1) % THINKING_PHRASES.length), 2000);
-    return () => clearInterval(t);
-  }, []);
-  return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
-};
-
-// Typewriter component — streams text character by character
-const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
-  const [displayed, setDisplayed] = useState("");
-  const indexRef = useRef(0);
-
-  useEffect(() => {
-    setDisplayed("");
-    indexRef.current = 0;
-    const interval = setInterval(() => {
-      indexRef.current += 1;
-      setDisplayed(text.slice(0, indexRef.current));
-      if (indexRef.current >= text.length) {
-        clearInterval(interval);
-        onComplete?.();
-      }
-    }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
-
-  return (
-    <span className="whitespace-pre-line">
-      {formatted ? renderFormattedText(displayed) : displayed}
-      {displayed.length < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-      )}
-    </span>
-  );
-};
 
 
 
@@ -183,14 +145,13 @@ const Chat = () => {
     loadChatHistory();
   }, [loadChatHistory]);
 
-  // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
     if (scrollRef.current) {
       setTimeout(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
       }, 100);
     }
-  }, [messages, isTyping]);
+  }, [messages]);
 
   // Pick up message from landing page — send to Claude
   useEffect(() => {
@@ -324,9 +285,6 @@ const Chat = () => {
       : userText;
 
     setConversationHistory(updatedHistory);
-    if (!hidden) {
-      setIsTyping(true);
-    }
     setIsApiLoading(true);
 
     try {
@@ -472,7 +430,6 @@ const Chat = () => {
 
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
-          setTypingMsgIndex(msgIdx.current);
         }
 
         if (toolCalls.length > 0) {
@@ -504,11 +461,7 @@ const Chat = () => {
 
         if (textContent) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: textContent }]);
-          setMessages((prev) => {
-            const newMessages = [...prev, { role: "cira" as const, text: textContent }];
-            setTypingMsgIndex(newMessages.length - 1);
-            return newMessages;
-          });
+          setMessages((prev) => [...prev, { role: "cira" as const, text: textContent }]);
         }
 
         if (toolCalls.length > 0) {
@@ -966,16 +919,7 @@ const Chat = () => {
                           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                         >
                           <p className="text-[14px] md:text-[15px] leading-7">
-                            {typingMsgIndex === i ? (
-                              <TypewriterText
-                                text={msg.text}
-                                speed={15}
-                                onComplete={() => setTypingMsgIndex(null)}
-                                formatted
-                              />
-                            ) : (
-                              <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
-                            )}
+                            <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
                           </p>
                         </div>
                       </div>
@@ -1050,15 +994,6 @@ const Chat = () => {
                   </div>
                 )}
 
-                {/* Thinking indicator */}
-                {isTyping && (
-                  <div className="flex justify-start animate-fade-in">
-                    <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
-                      <ThinkingLabel />
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
         </div>
