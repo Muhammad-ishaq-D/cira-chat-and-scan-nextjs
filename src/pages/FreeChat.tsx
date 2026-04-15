@@ -37,7 +37,7 @@ const ThinkingLabel = () => {
   return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
 };
 
-const TypewriterText = ({ text, speed = 35, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
   useEffect(() => {
@@ -52,7 +52,6 @@ const TypewriterText = ({ text, speed = 35, onComplete, formatted = false }: { t
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
-      {displayed.length < text.length && <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />}
     </span>
   );
 };
