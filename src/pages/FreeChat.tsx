@@ -527,6 +527,8 @@ const FreeChat = () => {
       syncCurrentSessionId(null);
       setMessages([]);
       setConversationHistory([]);
+      setStreamingMsgIndex(null);
+      setCompletedStreamingMsgIndices({});
       syncChatMode("none");
     }
     toast.success("Chat deleted");
