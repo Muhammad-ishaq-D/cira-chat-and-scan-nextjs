@@ -111,7 +111,7 @@ const navItems = [
   { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
-const FREE_CHAT_WELCOME = "Hi there! 👋 I'm Cira, your AI health nurse. Ask me anything health-related — I'm here to help.";
+const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
 
 const buildFreeChatPrompt = (userText: string) => [
   userText,
@@ -128,7 +128,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([{ role: "cira", text: FREE_CHAT_WELCOME }]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -450,6 +450,7 @@ const Chat = () => {
       setActiveChat(null);
       syncCurrentSessionId(null);
       setConversationHistory([]);
+      prepPayloadSentRef.current = false;
 
       if (pendingLandingMessage) {
         setMessages([{ role: "user", text: pendingLandingMessage }]);
@@ -458,14 +459,9 @@ const Chat = () => {
         return;
       }
 
-      setMessages((prev) => {
-        const lastMessage = prev[prev.length - 1];
-        if (lastMessage?.role === "cira" && lastMessage.text === FREE_CHAT_WELCOME) {
-          return prev;
-        }
-
-        return [...prev, { role: "cira", text: FREE_CHAT_WELCOME }];
-      });
+      const userText = "💬 I just want to chat";
+      setMessages([{ role: "user", text: userText }]);
+      callClaude(userText);
       return;
     }
 
@@ -621,7 +617,7 @@ const Chat = () => {
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setActiveChat(null); setMessages([]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
+                  onClick={() => { setActiveChat(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                   title="New chat"
                 >
@@ -678,117 +674,7 @@ const Chat = () => {
           <Menu size={18} strokeWidth={1.5} />
         </button>
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0">
-          {messages.length === 0 ? (
-            /* Welcome screen — Lovable-style soft gradient */
-            <div className="h-full flex flex-col items-center justify-center px-4 md:px-6 pb-20 md:pb-0 relative overflow-hidden">
-              {/* Full-screen pastel gradient background */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-pink-100/40 to-orange-100/50" />
-                <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-gradient-to-br from-blue-200/50 to-purple-200/30 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 right-0 w-[60%] h-[60%] bg-gradient-to-tl from-orange-200/50 via-pink-200/40 to-rose-200/30 rounded-full blur-[120px]" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-gradient-to-r from-pink-200/30 to-purple-200/20 rounded-full blur-[100px]" />
-              </div>
-
-               <div className="relative z-10 flex flex-col items-center w-full max-w-2xl px-1">
-                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/40 flex items-center justify-center mb-4 md:mb-5 shadow-sm">
-                  <img src={ciraLogo} alt="Cira" width={24} height={24} className="md:w-7 md:h-7" />
-                </div>
-                <h1 className="text-xl md:text-[32px] font-semibold text-foreground mb-1.5 md:mb-2 tracking-tight" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  Hi, I'm Cira 👋
-                </h1>
-                <p className="text-xs md:text-sm text-muted-foreground mb-5 md:mb-10 text-center max-w-md">
-                  Your AI health nurse. Choose a care pathway to get started.
-                </p>
-
-                {/* ✦ HERO — Vital Scan — compact on mobile */}
-                <button
-                  onClick={() => selectMode("vitals")}
-                  className="group w-full max-w-2xl mb-3 md:mb-5 relative overflow-hidden rounded-xl md:rounded-2xl text-left transition-all active:scale-[0.98] hover:-translate-y-1 hover:shadow-2xl"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-                  <div className="absolute top-3 right-8 w-1 h-1 bg-white/40 rounded-full animate-pulse" />
-                  <div className="absolute top-5 right-16 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-                  
-                  <div className="relative z-10 p-3.5 md:p-6 flex items-center gap-3 md:gap-5">
-                    <div className="shrink-0">
-                      <div className="w-11 h-11 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg relative">
-                        <ScanFace size={20} className="text-white md:hidden" />
-                        <ScanFace size={30} className="text-white hidden md:block" />
-                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                          <Sparkles size={7} className="text-white" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <p className="text-[13px] md:text-lg font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
-                        <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[7px] font-semibold text-white uppercase tracking-wider">AI</span>
-                      </div>
-                      <p className="text-[10px] md:text-sm text-white/75 leading-relaxed hidden md:block">
-                        30-second face scan captures 30+ vitals — then Cira cross-references your symptoms with real clinical data.
-                      </p>
-                      <p className="text-[9px] text-white/70 leading-snug md:hidden">Face scan → 30+ vitals → AI analysis</p>
-                      <div className="flex items-center gap-2 mt-1.5 md:mt-3">
-                        <span className="text-[8px] md:text-[10px] text-white/60 flex items-center gap-0.5"><Camera size={8} /> Scan</span>
-                        <span className="text-white/30">·</span>
-                        <span className="text-[8px] md:text-[10px] text-white/60 flex items-center gap-0.5"><Activity size={8} /> 30+ Vitals</span>
-                        <span className="text-white/30">·</span>
-                        <span className="text-[8px] md:text-[10px] text-white/60">~4 min</span>
-                      </div>
-                    </div>
-                    <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Assessment mode */}
-                <div className="w-full max-w-2xl mb-4 md:mb-8">
-                  {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                    const Icon = mode.icon;
-                    return (
-                      <button
-                        key={mode.id}
-                        onClick={() => selectMode(mode.id)}
-                        className="group w-full bg-card/80 backdrop-blur-sm border border-border/40 rounded-xl md:rounded-2xl p-3 md:p-5 text-left hover:shadow-lg hover:border-border/80 transition-all active:scale-[0.98]"
-                      >
-                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${mode.bgGlow} flex items-center justify-center mb-2 md:mb-3`}>
-                          <Icon size={15} className="md:hidden" style={{ color: "#3b82f6" }} />
-                          <Icon size={20} className="hidden md:block" style={{ color: "#3b82f6" }} />
-                        </div>
-                        <p className="text-[11px] md:text-sm font-semibold text-foreground mb-0.5 md:mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed mb-2 md:mb-3">{mode.desc}</p>
-                        <span className="inline-block text-[8px] md:text-[9px] font-medium px-1.5 md:px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">
-                          {mode.badge}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Just chat option */}
-                <button
-                  onClick={() => selectMode("chat")}
-                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/60 backdrop-blur-sm border border-border/30 hover:bg-card/90 hover:border-border/60 transition-all active:scale-[0.98]"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center">
-                    <MessageCircle size={14} className="text-muted-foreground" />
-                  </div>
-                  <div className="text-left">
-                <p className="text-[11px] font-medium text-foreground">💬 Just Chat with Cira</p>
-                    <p className="text-[9px] text-muted-foreground">No assessment — ask anything health-related</p>
-                  </div>
-                </button>
-
-                <p className="text-[8px] md:text-[9px] text-muted-foreground/60 mt-5 md:mt-8 text-center max-w-sm leading-relaxed">
-                  ⚕️ Cira is an AI nurse — not a doctor. Always discuss findings with a licensed medical professional.
-                </p>
-               </div>
-            </div>
-          ) : (
-            /* Chat messages — white bg with soft gradients */
+            {/* Chat messages — white bg with soft gradients */}
             <div className="relative min-h-full bg-white">
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
@@ -845,6 +731,31 @@ const Chat = () => {
                         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                       >
                         <p className="text-[14px] leading-6 whitespace-pre-line">{renderFormattedText(msg.text)}</p>
+                      </div>
+                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="text-foreground">
+                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                            Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
+                          </p>
+                          <div className="flex flex-col gap-2 mt-3">
+                            <button
+                              onClick={() => selectMode("chat")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
+                              <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
+                            </button>
+                            <button
+                              onClick={() => selectMode("assessment")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
+                              <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       /* Cira response — no bubble, just text with sparkle icon */
@@ -952,11 +863,9 @@ const Chat = () => {
                 )}
               </div>
             </div>
-          )}
         </div>
 
         {/* Bottom input — Gemini-style clean pill */}
-        {messages.length > 0 && (
           <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
               <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
@@ -982,7 +891,6 @@ const Chat = () => {
               </div>
             </form>
           </div>
-        )}
       </div>
 
       {/* Face Scan Modal */}
