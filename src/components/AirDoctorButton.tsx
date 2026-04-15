@@ -16,6 +16,7 @@ const AirDoctorButton = () => {
       userPlan: (user as any)?.plan || "free",
       deviceId: getDeviceId(),
       page: window.location.pathname,
+      source: "floating_button",
       referrer: document.referrer || null,
       userAgent: navigator.userAgent,
       screenSize: `${window.innerWidth}x${window.innerHeight}`,
