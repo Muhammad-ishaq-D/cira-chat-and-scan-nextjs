@@ -87,17 +87,22 @@ const Dashboard = () => {
           userApi.getProfile(),
           vitalsApi.getLatest(),
         ]);
-        if (profileData.status === "fulfilled") setProfile(profileData.value);
-        if (vitalsData.status === "fulfilled" && vitalsData.value) {
+        let prof: any = null;
+        if (profileData.status === "fulfilled") {
+          prof = profileData.value;
+          setProfile(prof);
+        }
+
+        const hasVitals = vitalsData.status === "fulfilled" && vitalsData.value;
+
+        if (hasVitals) {
           const v = vitalsData.value;
-          // Support both structured response ({vitals: [...]}) and flat scan response ({heart_rate, ...})
           if (v.vitals) {
             setVitals(prev => prev.map(item => {
               const match = v.vitals?.find((vi: any) => vi.label === item.label);
               return match ? { ...item, value: match.value } : item;
             }));
           } else if (v.heart_rate !== undefined) {
-            // Map flat scan data to dashboard vitals
             setVitals(prev => prev.map(item => {
               const map: Record<string, string> = {
                 "Blood Pressure": v.systolic_bp && v.diastolic_bp ? `${Math.round(v.systolic_bp)}/${Math.round(v.diastolic_bp)}` : "--",
@@ -112,7 +117,6 @@ const Dashboard = () => {
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
           }
-          // Map flat health indices from API
           if (v.healthIndices) {
             setHealthIndices(prev => prev.map(item => {
               const match = v.healthIndices?.find((hi: any) => hi.label === item.label);
@@ -132,7 +136,6 @@ const Dashboard = () => {
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
           }
-          // Map flat health risks from API
           if (v.healthRisks) {
             setHealthRisks(prev => prev.map(item => {
               const match = v.healthRisks?.find((hr: any) => hr.label === item.label);
@@ -152,6 +155,45 @@ const Dashboard = () => {
               return map[item.label] !== undefined ? { ...item, level: map[item.label] } : item;
             }));
           }
+        }
+
+        // Calculate profile-based indices when no scan data available
+        if (prof?.weight && prof?.height && prof?.age) {
+          const weightKg = Number(prof.weight);
+          const heightCm = Number(prof.height);
+          const age = Number(prof.age);
+          const heightM = heightCm / 100;
+          const isMale = (prof.biological_sex || "").toLowerCase() === "male";
+
+          const bmi = weightKg / (heightM * heightM);
+          // Mifflin-St Jeor BMR
+          const bmr = isMale
+            ? 10 * weightKg + 6.25 * heightCm - 5 * age + 5
+            : 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+          const tdee = bmr * 1.55; // moderate activity default
+          // US Navy body fat estimate (simplified without waist)
+          const bodyFat = isMale
+            ? 1.20 * bmi + 0.23 * age - 16.2
+            : 1.20 * bmi + 0.23 * age - 5.4;
+
+          // Only fill indices that are still "--" (don't override scan data)
+          setVitals(prev => prev.map(item => {
+            if (item.label === "Body Mass Index" && item.value === "--") {
+              return { ...item, value: bmi.toFixed(1) };
+            }
+            return item;
+          }));
+
+          setHealthIndices(prev => prev.map(item => {
+            if (item.value !== "--") return item;
+            const map: Record<string, string> = {
+              "Body Fat Percentage": Math.max(0, bodyFat).toFixed(1),
+              "Basal Metabolic Rate": String(Math.round(bmr)),
+              "Total Daily Energy": String(Math.round(tdee)),
+              "Waist-to-Height Ratio": (weightKg / heightCm * 0.55).toFixed(2),
+            };
+            return map[item.label] ? { ...item, value: map[item.label] } : item;
+          }));
         }
       } catch (e) {
         console.error("Dashboard load error:", e);
