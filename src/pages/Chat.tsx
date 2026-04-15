@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import AirDoctorButton from "@/components/AirDoctorButton";
+import { useNavigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
