@@ -56,6 +56,12 @@ const Reports = () => {
     };
     loadReports();
     loadScans();
+    billingApi.getSubscription()
+      .then((sub) => {
+        const plan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
+        setIsBasicPlan(plan === "basic" || plan === "free");
+      })
+      .catch(() => setIsBasicPlan(true));
   }, []);
 
   const filteredReports = reports.filter((r: any) =>
