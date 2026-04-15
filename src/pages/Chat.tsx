@@ -425,9 +425,6 @@ const Chat = () => {
         sessionId: currentSessionIdRef.current || undefined,
       });
 
-      // Check if browser supports ReadableStream for SSE
-      const supportsStreaming = typeof ReadableStream !== "undefined" && typeof res?.body?.getReader === "function";
-
       const res = await fetch(`${API_BASE}/api/anthropic/chat/stream`, {
         method: "POST",
         headers: { ...headers, Accept: "text/event-stream" },
@@ -449,7 +446,6 @@ const Chat = () => {
       if (!res.body || typeof res.body.getReader !== "function") {
         console.log("[Chat] No ReadableStream support, falling back to full response");
         const text = await res.text();
-        // Parse SSE events from full text
         let fullText = "";
         let toolCalls: ToolUse[] = [];
         let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
@@ -500,6 +496,7 @@ const Chat = () => {
             toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
           } catch {}
         }
+        console.log("[Chat] Fallback parsed:", { textLen: fullText.length, tools: toolCalls.map(t => t.name) });
         if (fullText) {
           setMessages(prev => [...prev, { role: "cira" as const, text: fullText }]);
           setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
@@ -507,9 +504,11 @@ const Chat = () => {
         if (toolCalls.length > 0) {
           processToolCalls(toolCalls, fullText);
         }
-        return; // skip streaming path
+        return;
       }
-      const decoder = new TextDecoder();
+
+      // ——— SSE streaming path ———
+      const reader = res.body.getReader();
       let fullText = "";
       let buffer = "";
       let toolCalls: ToolUse[] = [];
