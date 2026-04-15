@@ -238,9 +238,9 @@ const FreeChat = () => {
         guest: true,
       });
 
-      const res = await fetch(`${API_BASE}/api/anthropic/chat`, {
+      const res = await fetch(`${API_BASE}/api/anthropic/chat/stream`, {
         method: "POST",
-        headers,
+        headers: { ...headers, Accept: "text/event-stream" },
         body: payloadBody,
       });
 
@@ -258,32 +258,94 @@ const FreeChat = () => {
         throw new Error(errorMsg);
       }
 
-      const responseData = await res.json();
-      if (responseData.guest_remaining !== undefined) setGuestRemaining(responseData.guest_remaining);
-      if (responseData.guest_daily_limit !== undefined) setGuestDailyLimit(responseData.guest_daily_limit);
+      // ——— SSE streaming: show text word-by-word as it arrives ———
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let buffer = "";
+      let toolCalls: ToolUse[] = [];
+      const msgIdx = { current: -1 };
 
-      const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
-      if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
-        syncCurrentSessionId(nextSessionId);
+      // Add empty placeholder message immediately
+      setMessages(prev => {
+        const updated = [...prev, { role: "cira" as const, text: "" }];
+        msgIdx.current = updated.length - 1;
+        return updated;
+      });
+      setIsTyping(false);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const event = JSON.parse(data);
+
+            if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
+              syncCurrentSessionId(event.sessionId);
+            }
+            if (event.guest_remaining !== undefined) setGuestRemaining(event.guest_remaining);
+            if (event.guest_daily_limit !== undefined) setGuestDailyLimit(event.guest_daily_limit);
+
+            // Live text deltas — render as they arrive
+            if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+              fullText += event.delta.text;
+              setMessages(prev => {
+                const updated = [...prev];
+                if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+                  updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+                }
+                return updated;
+              });
+            }
+
+            if (event.type === "content_block_stop" && event.content_block?.type === "tool_use") {
+              toolCalls.push(event.content_block as ToolUse);
+            }
+
+            // Backend sends full message in message_stop (fallback if no deltas)
+            if (event.type === "message_stop" && event.message) {
+              const msg = event.message as ClaudeResponse;
+              const finalTools = extractToolCalls(msg);
+              if (finalTools.length > 0) toolCalls = finalTools;
+              if (!fullText) {
+                const msgText = extractText(msg);
+                if (msgText) {
+                  fullText = msgText;
+                  // Use typewriter since we got the full text at once
+                  setTypingMsgIndex(msgIdx.current);
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+                      updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+                    }
+                    return updated;
+                  });
+                }
+              }
+            }
+          } catch { /* skip malformed SSE */ }
+        }
       }
 
-      const claudeResponse: ClaudeResponse = responseData.response || responseData;
-      const textContent = extractText(claudeResponse);
-      const toolCalls = extractToolCalls(claudeResponse);
-
-      if (textContent) {
-        setConversationHistory(prev => [...prev, { role: "assistant", text: textContent }]);
+      if (fullText) {
+        setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
         setMessages(prev => {
-          const newMessages = [...prev, { role: "cira" as const, text: textContent }];
-          setTypingMsgIndex(newMessages.length - 1);
-          setTimeout(() => persistSession(newMessages), 100);
-          return newMessages;
+          setTimeout(() => persistSession(prev), 100);
+          return prev;
         });
       }
 
       if (toolCalls.length > 0) {
         processToolCalls(toolCalls);
-        if (!textContent) {
+        if (!fullText) {
           setMessages(prev => [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }]);
         }
       }
