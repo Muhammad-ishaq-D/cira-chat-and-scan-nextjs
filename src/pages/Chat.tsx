@@ -145,14 +145,13 @@ const Chat = () => {
     loadChatHistory();
   }, [loadChatHistory]);
 
-  // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
     if (scrollRef.current) {
       setTimeout(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
       }, 100);
     }
-  }, [messages, isTyping]);
+  }, [messages]);
 
   // Pick up message from landing page — send to Claude
   useEffect(() => {
@@ -286,9 +285,6 @@ const Chat = () => {
       : userText;
 
     setConversationHistory(updatedHistory);
-    if (!hidden) {
-      setIsTyping(true);
-    }
     setIsApiLoading(true);
 
     try {

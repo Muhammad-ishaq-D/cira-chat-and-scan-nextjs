@@ -110,7 +110,7 @@ const FreeChat = () => {
   // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
-  }, [messages, isTyping]);
+  }, [messages]);
 
   // Save current session to localStorage
   const persistSession = useCallback((msgs: typeof messages) => {
@@ -185,7 +185,6 @@ const FreeChat = () => {
     const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current ? buildFreeChatPrompt(userText) : userText;
 
     setConversationHistory(updatedHistory);
-    if (!hidden) setIsTyping(true);
     setIsApiLoading(true);
 
     // Ensure a session ID exists
