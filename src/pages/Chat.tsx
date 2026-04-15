@@ -133,6 +133,7 @@ const Chat = () => {
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
+  const [showFloatingModes, setShowFloatingModes] = useState(false);
   const [showScanModal, setShowScanModal] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanning, setScanning] = useState(false);
@@ -867,19 +868,37 @@ const Chat = () => {
 
         {/* Bottom input — Gemini-style clean pill */}
           <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+            {/* Floating Face Scan button */}
+            {showFloatingModes && (
+              <div className="absolute bottom-full left-0 right-0 z-20 px-3 pb-2 animate-fade-in">
+                <div className="max-w-2xl mx-auto flex items-center gap-2 overflow-x-auto py-2">
+                  <button
+                    onClick={() => { selectMode("vitals"); setShowFloatingModes(false); }}
+                    className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[11px] font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95"
+                  >
+                    <ScanFace size={14} />
+                    Face Scan
+                  </button>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
               <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
-                <button type="button" className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 ml-1">
-                  <Plus size={20} strokeWidth={1.5} />
+                <button
+                  type="button"
+                  onClick={() => setShowFloatingModes(!showFloatingModes)}
+                  className={`w-10 h-10 flex items-center justify-center shrink-0 ml-1 transition-all ${showFloatingModes ? "text-primary" : "text-muted-foreground"}`}
+                >
+                  <ScanFace size={18} strokeWidth={1.5} />
                 </button>
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Ask Cira"
-                  className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50"
-                  style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-                  disabled={isApiLoading}
+                  placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
+                  className="flex-1 py-3 px-1 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
+                  disabled={isApiLoading || chatMode === "none"}
                 />
                 <button
                   type="submit"
