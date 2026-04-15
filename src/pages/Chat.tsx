@@ -388,6 +388,12 @@ const Chat = () => {
         case "render_action_buttons": {
           const buttons = resolveButtons(tool.input?.buttons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
+          // Auto-scroll to show buttons on mobile
+          setTimeout(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+            }
+          }, 100);
           break;
         }
       }
