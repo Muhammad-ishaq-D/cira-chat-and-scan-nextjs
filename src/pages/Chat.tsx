@@ -387,6 +387,7 @@ const Chat = () => {
         let buffer = "";
         let sessionIdCaptured = false;
         let toolCalls: ToolUse[] = [];
+        let receivedDeltas = false;
         // Add a placeholder cira message
         const msgIdx = { current: -1 };
         setMessages((prev) => {
@@ -426,6 +427,7 @@ const Chat = () => {
 
               // Text delta
               if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+                receivedDeltas = true;
                 fullText += event.delta.text;
                 setMessages((prev) => {
                   const updated = [...prev];
@@ -465,6 +467,8 @@ const Chat = () => {
         setStreamingMsgIndex(null);
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
+          // If no deltas were received, use typewriter effect
+          if (!receivedDeltas) setTypingMsgIndex(msgIdx.current);
           setMessages((prev) => {
             const updated = [...prev];
             if (msgIdx.current >= 0 && updated[msgIdx.current]) {
