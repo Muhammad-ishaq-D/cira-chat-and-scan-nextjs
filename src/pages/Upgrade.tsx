@@ -15,17 +15,17 @@ const defaultPlans: Plan[] = [
   {
     id: "basic", name: "Basic", price: "Free", period: "", desc: "Get started with essential health insights",
     icon: Shield, color: "from-slate-100 to-slate-200", iconColor: "text-slate-600", current: true,
-    features: ["2 Face Scans / month", "100,000 Chat Credits", "Basic Vital Signs", "Health Risk Overview", "Email Support"],
+    features: ["1 Face Scan", "100,000 Chat Credits", "Basic Vital Signs", "Health Risk Overview", "Email Support"],
   },
   {
-    id: "pro", name: "Pro", price: "$9.99", period: "/mo", desc: "Advanced monitoring for health-conscious individuals",
+    id: "pro", name: "Pro", price: "$29.99", period: "/mo", desc: "Advanced monitoring for health-conscious individuals",
     icon: Zap, color: "from-primary/20 to-primary/10", iconColor: "text-primary", popular: true,
-    features: ["Unlimited Face Scans", "500,000 Chat Credits", "All Vital Signs + Trends", "Detailed Health Indices", "Priority AI Analysis", "Export Reports (PDF)", "Priority Support"],
+    features: ["20 Face Scans / month", "500,000 Chat Credits", "All Vital Signs + Trends", "Detailed Health Indices", "3 Doctor Consults", "Export Reports (PDF)", "Priority Support"],
   },
   {
-    id: "enterprise", name: "Enterprise", price: "$29.99", period: "/mo", desc: "Complete health intelligence for professionals",
+    id: "enterprise", name: "Enterprise", price: "$99.99", period: "/mo", desc: "Complete health intelligence for professionals",
     icon: Crown, color: "from-amber-100 to-orange-100", iconColor: "text-amber-600",
-    features: ["Unlimited Everything", "Real-time Monitoring", "Advanced AI Diagnostics", "Team & Family Sharing", "API Access", "Custom Integrations", "Dedicated Account Manager", "HIPAA Compliance"],
+    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "10 Doctor Consults", "Advanced AI Diagnostics", "Priority Support", "All Reports", "HIPAA Compliance"],
   },
 ];
 
