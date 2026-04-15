@@ -43,7 +43,8 @@ const Upgrade = () => {
 
   useEffect(() => {
     billingApi.getPlans()
-      .then((data) => {
+      .then((rawData) => {
+        const data = Array.isArray(rawData) ? rawData : rawData?.plans;
         if (Array.isArray(data) && data.length > 0) {
           // Merge API plans with UI defaults for icons
           setPlans(prev => prev.map(p => {
@@ -56,13 +57,9 @@ const Upgrade = () => {
               const dynamicFeatures: string[] = [];
               const scans = apiPlan.face_scans ?? -1;
               const credits = apiPlan.chat_credits ?? -1;
-              const consults = apiPlan.doctor_consults ?? 0;
               
               dynamicFeatures.push(scans === -1 ? "Unlimited Face Scans" : `${scans} Face Scan${scans !== 1 ? 's' : ''} / month`);
               dynamicFeatures.push(credits === -1 ? "Unlimited Chat Credits" : `${credits.toLocaleString()} Chat Credits`);
-              if (consults === -1) dynamicFeatures.push("Unlimited Doctor Consults");
-              else if (consults > 0) dynamicFeatures.push(`${consults} Doctor Consult${consults !== 1 ? 's' : ''}`);
-              
               // Parse additional features from JSON
               try {
                 const featureFlags = typeof apiPlan.features === 'string' ? JSON.parse(apiPlan.features) : apiPlan.features;
