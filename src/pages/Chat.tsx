@@ -509,6 +509,7 @@ const Chat = () => {
 
       // ——— SSE streaming path ———
       const reader = res.body.getReader();
+      const decoder = new TextDecoder();
       let fullText = "";
       let buffer = "";
       let toolCalls: ToolUse[] = [];
