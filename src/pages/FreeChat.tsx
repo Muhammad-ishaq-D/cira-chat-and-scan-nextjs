@@ -37,13 +37,14 @@ const ThinkingLabel = () => {
   return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
 };
 
-const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 12, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
   useEffect(() => {
     setDisplayed(""); indexRef.current = 0;
+    const chunkSize = Math.max(3, Math.ceil(text.length / 80));
     const interval = setInterval(() => {
-      indexRef.current += 1;
+      indexRef.current = Math.min(indexRef.current + chunkSize, text.length);
       setDisplayed(text.slice(0, indexRef.current));
       if (indexRef.current >= text.length) { clearInterval(interval); onComplete?.(); }
     }, speed);
