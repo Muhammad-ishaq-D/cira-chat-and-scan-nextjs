@@ -286,6 +286,7 @@ const FreeChat = () => {
         let buffer = "";
         let toolCalls: ToolUse[] = [];
 
+        const msgIdx = { current: -1 };
         // Add placeholder cira message
         setMessages(prev => {
           const updated = [...prev, { role: "cira" as const, text: "" }];
