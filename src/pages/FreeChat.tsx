@@ -287,10 +287,12 @@ const FreeChat = () => {
         let toolCalls: ToolUse[] = [];
 
         // Add placeholder cira message
-        setMessages(prev => [...prev, { role: "cira" as const, text: "" }]);
-        const msgIdx = { current: -1 };
-        setMessages(prev => { msgIdx.current = prev.length - 1; return prev; });
-        setStreamingMsgIndex(msgIdx.current >= 0 ? msgIdx.current : null);
+        setMessages(prev => {
+          const updated = [...prev, { role: "cira" as const, text: "" }];
+          msgIdx.current = updated.length - 1;
+          setStreamingMsgIndex(updated.length - 1);
+          return updated;
+        });
         setIsTyping(false);
 
         while (true) {
@@ -345,10 +347,9 @@ const FreeChat = () => {
           }
         }
 
+        setStreamingMsgIndex(null);
         if (fullText) {
           setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
-          // Set text and typewriter index together to avoid flash of full text
-          setTypingMsgIndex(msgIdx.current);
           setMessages(prev => {
             const updated = [...prev];
             if (msgIdx.current >= 0 && updated[msgIdx.current]) {
