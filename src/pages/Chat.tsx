@@ -133,6 +133,7 @@ const Chat = () => {
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
   const [showModeSelection, setShowModeSelection] = useState(false);
+  const [showFloatingModes, setShowFloatingModes] = useState(false);
   const [showScanModal, setShowScanModal] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanning, setScanning] = useState(false);
