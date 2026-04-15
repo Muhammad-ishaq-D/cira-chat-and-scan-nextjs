@@ -41,16 +41,15 @@ const ThinkingLabel = () => {
 };
 
 // Typewriter component — streams text character by character
-const TypewriterText = ({ text, speed = 12, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 20, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
   useEffect(() => {
     setDisplayed("");
     indexRef.current = 0;
-    const chunkSize = Math.max(3, Math.ceil(text.length / 80));
     const interval = setInterval(() => {
-      indexRef.current = Math.min(indexRef.current + chunkSize, text.length);
+      indexRef.current += 1;
       setDisplayed(text.slice(0, indexRef.current));
       if (indexRef.current >= text.length) {
         clearInterval(interval);
