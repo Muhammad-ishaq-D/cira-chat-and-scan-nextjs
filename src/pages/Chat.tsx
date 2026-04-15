@@ -30,44 +30,6 @@ const renderFormattedText = (text: string) => {
   });
 };
 
-const THINKING_PHRASES = ["Thinking...", "Looking into it...", "Processing...", "One moment..."];
-const ThinkingLabel = () => {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx(i => (i + 1) % THINKING_PHRASES.length), 2000);
-    return () => clearInterval(t);
-  }, []);
-  return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
-};
-
-// Typewriter component — streams text character by character
-const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
-  const [displayed, setDisplayed] = useState("");
-  const indexRef = useRef(0);
-
-  useEffect(() => {
-    setDisplayed("");
-    indexRef.current = 0;
-    const interval = setInterval(() => {
-      indexRef.current += 1;
-      setDisplayed(text.slice(0, indexRef.current));
-      if (indexRef.current >= text.length) {
-        clearInterval(interval);
-        onComplete?.();
-      }
-    }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
-
-  return (
-    <span className="whitespace-pre-line">
-      {formatted ? renderFormattedText(displayed) : displayed}
-      {displayed.length < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-      )}
-    </span>
-  );
-};
 
 
 
