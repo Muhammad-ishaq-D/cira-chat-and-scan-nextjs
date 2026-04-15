@@ -10,8 +10,6 @@ import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type Con
 import { toast } from "sonner";
 import {
   getDeviceId,
-  getFreeCredits,
-  deductFreeCredits,
   getFreeScans,
   getFreeChatHistory,
   saveFreeChatSession,
@@ -92,7 +90,8 @@ const FreeChat = () => {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [credits, setCredits] = useState(getFreeCredits());
+  const [guestRemaining, setGuestRemaining] = useState<number>(20);
+  const [guestDailyLimit, setGuestDailyLimit] = useState<number>(20);
   const [scansLeft, setScansLeft] = useState(getFreeScans());
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
@@ -203,12 +202,12 @@ const FreeChat = () => {
   };
 
   const callClaude = async (userText: string, image?: string, hidden = false) => {
-    if (credits <= 0) {
-      toast.error("Free credits exhausted. Login and upgrade to continue.", {
+    if (guestRemaining <= 0) {
+      toast.error("Daily free limit reached. Login and upgrade for unlimited access.", {
         action: { label: "Login", onClick: () => navigate("/login") },
         duration: 8000,
       });
-      setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've used all your free credits. Please login and upgrade to continue." }]);
+      setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Please login and upgrade to continue." }]);
       return;
     }
 
@@ -245,6 +244,10 @@ const FreeChat = () => {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
+        if (res.status === 429) {
+          setGuestRemaining(0);
+          throw new Error("RATE_LIMITED: " + errorMsg);
+        }
         if (res.status === 402 || res.status === 403) {
           throw new Error("CREDITS_EXHAUSTED: " + errorMsg);
         }
@@ -253,9 +256,13 @@ const FreeChat = () => {
       }
 
       const responseData = await res.json();
-      // Guest credits are client-side only (backend skips billing for guests)
-      const remaining = deductFreeCredits(1);
-      setCredits(remaining);
+      // Update guest remaining from backend response
+      if (responseData.guest_remaining !== undefined) {
+        setGuestRemaining(responseData.guest_remaining);
+      }
+      if (responseData.guest_daily_limit !== undefined) {
+        setGuestDailyLimit(responseData.guest_daily_limit);
+      }
 
       const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
       if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
@@ -285,7 +292,10 @@ const FreeChat = () => {
       }
     } catch (err: any) {
       const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("CREDITS_EXHAUSTED")) {
+      if (msg.startsWith("RATE_LIMITED")) {
+        toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
+        setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
+      } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
         toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
         setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
       } else if (msg.startsWith("OVERLOADED")) {
@@ -396,11 +406,11 @@ const FreeChat = () => {
               </button>
             </div>
 
-            {/* Credits remaining */}
+            {/* Daily messages remaining */}
             <div className="px-3 pt-2 pb-1">
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <Sparkles size={10} />
-                <span>{credits.toLocaleString()} credits · {scansLeft} scan{scansLeft !== 1 ? "s" : ""} remaining</span>
+                <span>{guestRemaining}/{guestDailyLimit} messages today · {scansLeft} scan{scansLeft !== 1 ? "s" : ""}</span>
               </div>
             </div>
 
@@ -661,9 +671,9 @@ const FreeChat = () => {
               </button>
             </div>
           </form>
-          {/* Credits counter */}
+          {/* Daily limit counter */}
           <div className="text-center">
-            <p className="text-[9px] text-muted-foreground/50">{credits.toLocaleString()} credits remaining · <button onClick={() => navigate("/login")} className="text-primary hover:underline">Login to save</button></p>
+            <p className="text-[9px] text-muted-foreground/50">{guestRemaining}/{guestDailyLimit} free messages today · <button onClick={() => navigate("/login")} className="text-primary hover:underline">Login for unlimited</button></p>
           </div>
         </div>
       </div>
