@@ -418,7 +418,7 @@ const FreeChat = () => {
             <div className="px-3 pt-2 pb-1">
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <Sparkles size={10} />
-                <span>{guestRemaining}/{guestDailyLimit} messages today · {scansLeft} scan{scansLeft !== 1 ? "s" : ""}</span>
+                <span>{guestRemaining}/{guestDailyLimit} messages today</span>
               </div>
             </div>
 
