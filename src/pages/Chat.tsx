@@ -40,7 +40,7 @@ const ThinkingLabel = () => {
   return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
 };
 
-// Typewriter component — streams text character by character
+// Typewriter component — types full text character by character
 const TypewriterText = ({ text, speed = 20, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
@@ -57,7 +57,38 @@ const TypewriterText = ({ text, speed = 20, onComplete, formatted = false }: { t
       }
     }, speed);
     return () => clearInterval(interval);
-  }, [text, speed]);
+  }, [text, speed, onComplete]);
+
+  return (
+    <span className="whitespace-pre-line">
+      {formatted ? renderFormattedText(displayed) : displayed}
+      {displayed.length < text.length && (
+        <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
+      )}
+    </span>
+  );
+};
+
+const LiveTypewriterText = ({ text, speed = 20, formatted = false }: { text: string; speed?: number; formatted?: boolean }) => {
+  const [displayed, setDisplayed] = useState("");
+  const targetRef = useRef(text);
+
+  useEffect(() => {
+    targetRef.current = text;
+    setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
+  }, [text]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDisplayed((prev) => {
+        const target = targetRef.current;
+        if (prev.length >= target.length) return prev;
+        return target.slice(0, prev.length + 1);
+      });
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [speed]);
 
   return (
     <span className="whitespace-pre-line">
@@ -139,6 +170,7 @@ const Chat = () => {
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
@@ -370,6 +402,7 @@ const Chat = () => {
       setMessages((prev) => {
         const updated = [...prev, { role: "cira" as const, text: "" }];
         msgIdx.current = updated.length - 1;
+        setStreamingMsgIndex(updated.length - 1);
         return updated;
       });
       setIsTyping(false);
@@ -418,7 +451,6 @@ const Chat = () => {
                 const msgText = extractText(msg);
                 if (msgText) {
                   fullText = msgText;
-                  setTypingMsgIndex(msgIdx.current);
                   setMessages((prev) => {
                     const updated = [...prev];
                     if (msgIdx.current >= 0 && updated[msgIdx.current]) {
@@ -893,10 +925,12 @@ const Chat = () => {
                           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                         >
                           <p className="text-[14px] md:text-[15px] leading-7">
-                            {typingMsgIndex === i ? (
+                            {streamingMsgIndex === i ? (
+                              <LiveTypewriterText text={msg.text} speed={20} formatted />
+                            ) : typingMsgIndex === i ? (
                               <TypewriterText
                                 text={msg.text}
-                                speed={15}
+                                speed={20}
                                 onComplete={() => setTypingMsgIndex(null)}
                                 formatted
                               />
