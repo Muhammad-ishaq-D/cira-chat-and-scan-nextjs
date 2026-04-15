@@ -13,7 +13,6 @@ const navItems = [
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
   { icon: FileText, label: "Reports", id: "reports" },
-  { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
 const defaultVitals = [
@@ -191,7 +190,6 @@ const Dashboard = () => {
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "scan") navigate("/vitals-scan");
                   if (item.id === "reports") navigate("/reports");
-                  if (item.id === "doctor") navigate("/doctor");
                 }}
                 className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
                   activeNav === item.id

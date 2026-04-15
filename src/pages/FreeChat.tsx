@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import AirDoctorButton from "@/components/AirDoctorButton";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -638,6 +639,7 @@ const FreeChat = () => {
           </div>
         </div>
       </div>
+      <AirDoctorButton />
     </div>
   );
 };

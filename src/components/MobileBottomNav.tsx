@@ -9,7 +9,6 @@ const navItems = [
   { icon: null, label: "Ask Cira", id: "chat", path: "/chat" },
   { icon: ScanFace, label: "Scan", id: "scan", path: "/vitals-scan" },
   { icon: FileText, label: "Reports", id: "reports", path: "/reports" },
-  { icon: UserRound, label: "Doctor", id: "doctor", path: "/doctor" },
 ];
 
 const routeToId: Record<string, string> = {
@@ -17,7 +16,6 @@ const routeToId: Record<string, string> = {
   "/chat": "chat",
   "/vitals-scan": "scan",
   "/reports": "reports",
-  "/doctor": "doctor",
   "/profile": "profile",
 };
 
