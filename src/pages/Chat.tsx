@@ -388,6 +388,12 @@ const Chat = () => {
         case "render_action_buttons": {
           const buttons = resolveButtons(tool.input?.buttons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
+          // Auto-scroll to show buttons on mobile
+          setTimeout(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+            }
+          }, 100);
           break;
         }
       }
@@ -436,8 +442,73 @@ const Chat = () => {
         throw new Error(errorMsg);
       }
 
-      // ——— SSE streaming: show text word-by-word as it arrives ———
-      const reader = res.body!.getReader();
+      // Fallback for iOS/mobile: if ReadableStream not available, read full response
+      if (!res.body || typeof res.body.getReader !== "function") {
+        console.log("[Chat] No ReadableStream support, falling back to full response");
+        const text = await res.text();
+        let fullText = "";
+        let toolCalls: ToolUse[] = [];
+        let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
+        const lines = text.split("\n");
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const event = JSON.parse(data);
+            if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
+              syncCurrentSessionId(event.sessionId);
+            }
+            if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+              fullText += event.delta.text;
+            }
+            if (event.type === "content_block_start" && event.content_block?.type === "tool_use") {
+              pendingToolBlock = { type: "tool_use", id: event.content_block.id, name: event.content_block.name, inputJson: "" };
+            }
+            if (event.type === "content_block_delta" && event.delta?.type === "input_json_delta" && pendingToolBlock) {
+              pendingToolBlock.inputJson += event.delta.partial_json || "";
+            }
+            if (event.type === "content_block_stop") {
+              if (event.content_block?.type === "tool_use") {
+                toolCalls.push(event.content_block as ToolUse);
+              } else if (pendingToolBlock) {
+                try {
+                  const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+                  toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+                } catch {}
+              }
+              pendingToolBlock = null;
+            }
+            if (event.type === "message_stop" && event.message) {
+              const msg = event.message as ClaudeResponse;
+              const finalTools = extractToolCalls(msg);
+              if (finalTools.length > 0) toolCalls = finalTools;
+              if (!fullText) fullText = extractText(msg);
+            }
+            if (event.type === "tool_use" && event.name && event.input) {
+              toolCalls.push(event as ToolUse);
+            }
+          } catch {}
+        }
+        if (pendingToolBlock) {
+          try {
+            const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+            toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+          } catch {}
+        }
+        console.log("[Chat] Fallback parsed:", { textLen: fullText.length, tools: toolCalls.map(t => t.name) });
+        if (fullText) {
+          setMessages(prev => [...prev, { role: "cira" as const, text: fullText }]);
+          setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
+        }
+        if (toolCalls.length > 0) {
+          processToolCalls(toolCalls, fullText);
+        }
+        return;
+      }
+
+      // ——— SSE streaming path ———
+      const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
       let buffer = "";
