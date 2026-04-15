@@ -730,6 +730,32 @@ const Chat = () => {
                           </div>
                         </div>
                       </div>
+                    ) : msg.role === "action_buttons" && msg.buttons ? (
+                      <div className="max-w-[95%] md:max-w-[80%]">
+                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                        <div className="flex flex-col gap-2">
+                          {msg.buttons.map((btn) => (
+                            <button
+                              key={btn.id}
+                              onClick={() => {
+                                if (btn.id === "face_scan") selectMode("vitals");
+                                else if (btn.id === "book_doctor") {
+                                  const user = getUser();
+                                  const trackingData = { timestamp: new Date().toISOString(), userId: user?.id || null, userName: user?.name || null, userEmail: user?.email || null, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
+                                  console.log("[AirDoctor] Referral click:", trackingData);
+                                  try { const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {}); } catch {}
+                                  try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch {}
+                                  window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                                }
+                              }}
+                              className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
+                            >
+                              <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
+                              {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ) : msg.role === "user" ? (
                       /* User bubble — light gray pill, right-aligned */
                       <div
