@@ -128,7 +128,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: typeof scanVitals; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([{ role: "cira", text: FREE_CHAT_WELCOME }]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
