@@ -140,6 +140,7 @@ const Chat = () => {
   const [scanComplete, setScanComplete] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
@@ -387,12 +388,12 @@ const Chat = () => {
         let sessionIdCaptured = false;
         let toolCalls: ToolUse[] = [];
         // Add a placeholder cira message
-        setMessages((prev) => [...prev, { role: "cira" as const, text: "" }]);
         const msgIdx = { current: -1 };
-
         setMessages((prev) => {
-          msgIdx.current = prev.length - 1;
-          return prev;
+          const updated = [...prev, { role: "cira" as const, text: "" }];
+          msgIdx.current = updated.length - 1;
+          setStreamingMsgIndex(updated.length - 1);
+          return updated;
         });
 
         setIsTyping(false); // Hide thinking indicator since text is streaming
@@ -461,10 +462,9 @@ const Chat = () => {
           }
         }
 
+        setStreamingMsgIndex(null);
         if (fullText) {
           setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
-          // Set text and typewriter index together to avoid flash of full text
-          setTypingMsgIndex(msgIdx.current);
           setMessages((prev) => {
             const updated = [...prev];
             if (msgIdx.current >= 0 && updated[msgIdx.current]) {
@@ -973,7 +973,12 @@ const Chat = () => {
                                 formatted
                               />
                             ) : (
-                              <span className="whitespace-pre-line">{renderFormattedText(msg.text)}</span>
+                              <span className="whitespace-pre-line">
+                                {renderFormattedText(msg.text)}
+                                {streamingMsgIndex === i && (
+                                  <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
+                                )}
+                              </span>
                             )}
                           </p>
                         </div>
