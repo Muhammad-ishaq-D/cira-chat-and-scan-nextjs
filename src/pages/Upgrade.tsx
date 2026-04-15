@@ -66,7 +66,7 @@ const Upgrade = () => {
                 if (featureFlags && typeof featureFlags === 'object' && !Array.isArray(featureFlags)) {
                   if (featureFlags.vitals_scan) dynamicFeatures.push("Vital Signs Monitoring");
                   if (featureFlags.reports) dynamicFeatures.push("Export Reports (PDF)");
-                  if (featureFlags.doctor) dynamicFeatures.push("Doctor Access");
+                  
                   if (featureFlags.priority_support) dynamicFeatures.push("Priority Support");
                 } else if (Array.isArray(featureFlags)) {
                   dynamicFeatures.push(...featureFlags);
