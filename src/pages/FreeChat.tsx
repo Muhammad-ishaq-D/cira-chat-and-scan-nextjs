@@ -160,10 +160,19 @@ const FreeChat = () => {
       { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
       { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
     ];
+    const scanOnlyButtons = [defaultButtons[0]];
     const doctorOnlyButtons = [defaultButtons[1]];
-    const resolveFallbackButtons = () => {
-      const isDoctorRequest = /\b(doctor|dr\.?|appointment|book|booking|specialist|clinic|physician)\b/.test(normalizedFallbackText);
-      return isDoctorRequest ? doctorOnlyButtons : defaultButtons;
+    const resolveButtons = (rawButtons: any[]) => {
+      const isDoctorRequest = /\b(doctor|dr\.?|appointment|book|booking|specialist|clinic|physician)\b/i.test(normalizedFallbackText);
+      const isScanRequest = /\b(scan|face\s*scan|vitals?|capture|measure|check\s*(my|your)?\s*(vitals?|health|blood\s*pressure|heart\s*rate))\b/i.test(normalizedFallbackText);
+      if (!rawButtons?.length) {
+        return isDoctorRequest ? doctorOnlyButtons : isScanRequest ? scanOnlyButtons : defaultButtons;
+      }
+      if (rawButtons.length > 1) {
+        if (isDoctorRequest && !isScanRequest) return rawButtons.filter((b: any) => b.id === "book_doctor");
+        if (isScanRequest && !isDoctorRequest) return rawButtons.filter((b: any) => b.id === "face_scan");
+      }
+      return rawButtons;
     };
 
     for (const tool of toolCalls) {
@@ -202,7 +211,7 @@ const FreeChat = () => {
           break;
         }
         case "render_action_buttons": {
-          const buttons = tool.input?.buttons?.length ? tool.input.buttons : resolveFallbackButtons();
+          const buttons = resolveButtons(tool.input?.buttons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
           break;
         }
