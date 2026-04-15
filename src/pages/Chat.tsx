@@ -891,7 +891,6 @@ const Chat = () => {
               </div>
             </form>
           </div>
-        )}
       </div>
 
       {/* Face Scan Modal */}
