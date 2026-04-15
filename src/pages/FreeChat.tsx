@@ -745,8 +745,23 @@ const FreeChat = () => {
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
                         <div className="text-foreground">
                           <p className="text-[14px] md:text-[15px] leading-7 font-body">
-                            {typingMsgIndex === i ? (
-                              <TypewriterText text={msg.text} speed={15} onComplete={() => setTypingMsgIndex(null)} formatted />
+                            {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
+                              <LiveTypewriterText
+                                text={msg.text}
+                                speed={13}
+                                formatted
+                                isComplete={streamingMsgIndex !== i}
+                                onComplete={() => {
+                                  setCompletedStreamingMsgIndices((prev) => {
+                                    if (!prev[i]) return prev;
+                                    const next = { ...prev };
+                                    delete next[i];
+                                    return next;
+                                  });
+                                }}
+                              />
+                            ) : typingMsgIndex === i ? (
+                              <LiveTypewriterText text={msg.text} speed={15} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
                             ) : (
                               <span className="whitespace-pre-line">
                                 {renderFormattedText(msg.text)}
