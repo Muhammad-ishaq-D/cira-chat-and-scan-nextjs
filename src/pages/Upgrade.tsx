@@ -50,8 +50,33 @@ const Upgrade = () => {
             const apiPlan = data.find((ap: any) => ap.id === p.id || ap.plan_id === p.id || ap.name?.toLowerCase() === p.id);
             if (apiPlan) {
               const apiPrice = apiPlan.price_display || apiPlan.price || apiPlan.amount || apiPlan.monthly_price;
-              const displayPrice = typeof apiPrice === 'number' ? `$${apiPrice}` : (apiPrice || p.price);
-              return { ...p, price: displayPrice, features: apiPlan.features || p.features };
+              const displayPrice = typeof apiPrice === 'number' ? `$${apiPrice}` : (apiPrice ? (String(apiPrice) === '0' || String(apiPrice) === '0.00' ? 'Free' : `$${apiPrice}`) : p.price);
+              
+              // Build dynamic features from API data
+              const dynamicFeatures: string[] = [];
+              const scans = apiPlan.face_scans ?? -1;
+              const credits = apiPlan.chat_credits ?? -1;
+              const consults = apiPlan.doctor_consults ?? 0;
+              
+              dynamicFeatures.push(scans === -1 ? "Unlimited Face Scans" : `${scans} Face Scan${scans !== 1 ? 's' : ''} / month`);
+              dynamicFeatures.push(credits === -1 ? "Unlimited Chat Credits" : `${credits.toLocaleString()} Chat Credits`);
+              if (consults === -1) dynamicFeatures.push("Unlimited Doctor Consults");
+              else if (consults > 0) dynamicFeatures.push(`${consults} Doctor Consult${consults !== 1 ? 's' : ''}`);
+              
+              // Parse additional features from JSON
+              try {
+                const featureFlags = typeof apiPlan.features === 'string' ? JSON.parse(apiPlan.features) : apiPlan.features;
+                if (featureFlags && typeof featureFlags === 'object' && !Array.isArray(featureFlags)) {
+                  if (featureFlags.vitals_scan) dynamicFeatures.push("Vital Signs Monitoring");
+                  if (featureFlags.reports) dynamicFeatures.push("Export Reports (PDF)");
+                  if (featureFlags.doctor) dynamicFeatures.push("Doctor Access");
+                  if (featureFlags.priority_support) dynamicFeatures.push("Priority Support");
+                } else if (Array.isArray(featureFlags)) {
+                  dynamicFeatures.push(...featureFlags);
+                }
+              } catch {}
+              
+              return { ...p, price: displayPrice, features: dynamicFeatures };
             }
             return p;
           }));
