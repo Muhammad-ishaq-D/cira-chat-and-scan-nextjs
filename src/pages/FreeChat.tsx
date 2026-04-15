@@ -253,9 +253,15 @@ const FreeChat = () => {
       }
 
       const responseData = await res.json();
-      // Deduct credits
-      const remaining = deductFreeCredits(1);
-      setCredits(remaining);
+      // Update credits from backend response if available, otherwise flat deduct
+      if (responseData.credits_remaining !== undefined) {
+        setCredits(responseData.credits_remaining);
+        // Sync localStorage
+        localStorage.setItem("cira_free_credits", String(responseData.credits_remaining));
+      } else {
+        const remaining = deductFreeCredits(1);
+        setCredits(remaining);
+      }
 
       const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
       if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
