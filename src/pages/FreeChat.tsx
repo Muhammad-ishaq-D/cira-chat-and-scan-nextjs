@@ -86,7 +86,7 @@ const FreeChat = () => {
   const [showTooltip, setShowTooltip] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
-  const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
+  
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
@@ -238,31 +238,11 @@ const FreeChat = () => {
         guest: true,
       });
 
-      // Try streaming endpoint first, fallback to non-streaming
-      let useStreaming = true;
-      let res: Response;
-      try {
-        res = await fetch(`${API_BASE}/api/anthropic/chat/stream`, {
-          method: "POST",
-          headers: { ...headers, Accept: "text/event-stream" },
-          body: payloadBody,
-        });
-        if (res.status === 404 || res.status === 405) {
-          useStreaming = false;
-          res = await fetch(`${API_BASE}/api/anthropic/chat`, {
-            method: "POST",
-            headers,
-            body: payloadBody,
-          });
-        }
-      } catch {
-        useStreaming = false;
-        res = await fetch(`${API_BASE}/api/anthropic/chat`, {
-          method: "POST",
-          headers,
-          body: payloadBody,
-        });
-      }
+      const res = await fetch(`${API_BASE}/api/anthropic/chat`, {
+        method: "POST",
+        headers,
+        body: payloadBody,
+      });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -278,135 +258,33 @@ const FreeChat = () => {
         throw new Error(errorMsg);
       }
 
-      if (useStreaming && res.headers.get("content-type")?.includes("text/event-stream")) {
-        // ——— SSE streaming path ———
-        const reader = res.body!.getReader();
-        const decoder = new TextDecoder();
-        let fullText = "";
-        let buffer = "";
-        let toolCalls: ToolUse[] = [];
-        let receivedDeltas = false;
+      const responseData = await res.json();
+      if (responseData.guest_remaining !== undefined) setGuestRemaining(responseData.guest_remaining);
+      if (responseData.guest_daily_limit !== undefined) setGuestDailyLimit(responseData.guest_daily_limit);
 
-        const msgIdx = { current: -1 };
-        // Add placeholder cira message
+      const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
+      if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
+        syncCurrentSessionId(nextSessionId);
+      }
+
+      const claudeResponse: ClaudeResponse = responseData.response || responseData;
+      const textContent = extractText(claudeResponse);
+      const toolCalls = extractToolCalls(claudeResponse);
+
+      if (textContent) {
+        setConversationHistory(prev => [...prev, { role: "assistant", text: textContent }]);
         setMessages(prev => {
-          const updated = [...prev, { role: "cira" as const, text: "" }];
-          msgIdx.current = updated.length - 1;
-          setStreamingMsgIndex(updated.length - 1);
-          return updated;
+          const newMessages = [...prev, { role: "cira" as const, text: textContent }];
+          setTypingMsgIndex(newMessages.length - 1);
+          setTimeout(() => persistSession(newMessages), 100);
+          return newMessages;
         });
-        setIsTyping(false);
+      }
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || "";
-
-          for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            const data = line.slice(6).trim();
-            if (data === "[DONE]") continue;
-            try {
-              const event = JSON.parse(data);
-
-              // Capture sessionId
-              if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
-                syncCurrentSessionId(event.sessionId);
-              }
-
-              // Guest remaining
-              if (event.guest_remaining !== undefined) setGuestRemaining(event.guest_remaining);
-              if (event.guest_daily_limit !== undefined) setGuestDailyLimit(event.guest_daily_limit);
-
-              // Text delta
-              if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
-                receivedDeltas = true;
-                fullText += event.delta.text;
-                setMessages(prev => {
-                  const updated = [...prev];
-                  if (msgIdx.current >= 0 && updated[msgIdx.current]) {
-                    updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
-                  }
-                  return updated;
-                });
-              }
-
-              // Tool use
-              if (event.type === "content_block_stop" && event.content_block?.type === "tool_use") {
-                toolCalls.push(event.content_block as ToolUse);
-              }
-              if (event.type === "message_stop" && event.message) {
-                const msg = event.message as ClaudeResponse;
-                const finalTools = extractToolCalls(msg);
-                if (finalTools.length > 0) toolCalls = finalTools;
-                if (!fullText) {
-                  const msgText = extractText(msg);
-                  if (msgText) fullText = msgText;
-                }
-              }
-            } catch { /* skip malformed SSE */ }
-          }
-        }
-
-        setStreamingMsgIndex(null);
-        if (fullText) {
-          setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
-          // If no deltas were received, use typewriter effect
-          if (!receivedDeltas) setTypingMsgIndex(msgIdx.current);
-          setMessages(prev => {
-            const updated = [...prev];
-            if (msgIdx.current >= 0 && updated[msgIdx.current]) {
-              updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
-            }
-            setTimeout(() => persistSession(updated), 100);
-            return updated;
-          });
-        }
-
-        if (toolCalls.length > 0) {
-          processToolCalls(toolCalls);
-          if (!fullText) {
-            setMessages(prev => {
-              const updated = [...prev];
-              if (msgIdx.current >= 0 && updated[msgIdx.current]) {
-                updated[msgIdx.current] = { ...updated[msgIdx.current], text: "I'm processing your information... 💙" };
-              }
-              return updated;
-            });
-          }
-        }
-      } else {
-        // ——— Non-streaming fallback ———
-        const responseData = await res.json();
-        if (responseData.guest_remaining !== undefined) setGuestRemaining(responseData.guest_remaining);
-        if (responseData.guest_daily_limit !== undefined) setGuestDailyLimit(responseData.guest_daily_limit);
-
-        const nextSessionId = responseData.sessionId || (Array.isArray(responseData) ? responseData[0]?.sessionId : undefined);
-        if (nextSessionId && nextSessionId !== currentSessionIdRef.current) {
-          syncCurrentSessionId(nextSessionId);
-        }
-
-        const claudeResponse: ClaudeResponse = responseData.response || responseData;
-        const textContent = extractText(claudeResponse);
-        const toolCalls = extractToolCalls(claudeResponse);
-
-        if (textContent) {
-          setConversationHistory(prev => [...prev, { role: "assistant", text: textContent }]);
-          setMessages(prev => {
-            const newMessages = [...prev, { role: "cira" as const, text: textContent }];
-            setTypingMsgIndex(newMessages.length - 1);
-            setTimeout(() => persistSession(newMessages), 100);
-            return newMessages;
-          });
-        }
-
-        if (toolCalls.length > 0) {
-          processToolCalls(toolCalls);
-          if (!textContent) {
-            setMessages(prev => [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }]);
-          }
+      if (toolCalls.length > 0) {
+        processToolCalls(toolCalls);
+        if (!textContent) {
+          setMessages(prev => [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }]);
         }
       }
     } catch (err: any) {
@@ -722,9 +600,6 @@ const FreeChat = () => {
                             ) : (
                               <span className="whitespace-pre-line">
                                 {renderFormattedText(msg.text)}
-                                {streamingMsgIndex === i && (
-                                  <span className="inline-block w-[2px] h-[1em] bg-foreground/40 ml-0.5 align-text-bottom animate-pulse" />
-                                )}
                               </span>
                             )}
                           </p>
