@@ -467,6 +467,7 @@ const Chat = () => {
         }
       }
 
+      setStreamingMsgIndex(null);
       if (fullText) {
         setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
       }
