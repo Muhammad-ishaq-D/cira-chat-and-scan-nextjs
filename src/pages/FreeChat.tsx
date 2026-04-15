@@ -37,18 +37,46 @@ const ThinkingLabel = () => {
   return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
 };
 
-const TypewriterText = ({ text, speed = 3, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const LiveTypewriterText = ({
+  text,
+  speed = 3,
+  formatted = false,
+  isComplete = false,
+  onComplete,
+}: {
+  text: string;
+  speed?: number;
+  formatted?: boolean;
+  isComplete?: boolean;
+  onComplete?: () => void;
+}) => {
   const [displayed, setDisplayed] = useState("");
-  const indexRef = useRef(0);
+  const targetRef = useRef(text);
+  const completionFiredRef = useRef(false);
+
   useEffect(() => {
-    setDisplayed(""); indexRef.current = 0;
-    const interval = setInterval(() => {
-      indexRef.current += 1;
-      setDisplayed(text.slice(0, indexRef.current));
-      if (indexRef.current >= text.length) { clearInterval(interval); onComplete?.(); }
+    targetRef.current = text;
+    completionFiredRef.current = false;
+    setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
+  }, [text]);
+
+  useEffect(() => {
+    if (!isComplete || displayed.length < text.length || completionFiredRef.current) return;
+    completionFiredRef.current = true;
+    onComplete?.();
+  }, [displayed, text, isComplete, onComplete]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setDisplayed((prev) => {
+        const target = targetRef.current;
+        if (prev.length >= target.length) return prev;
+        return target.slice(0, prev.length + 1);
+      });
     }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
+    return () => window.clearInterval(interval);
+  }, [speed]);
+
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
@@ -84,6 +112,8 @@ const FreeChat = () => {
   const [showTooltip, setShowTooltip] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
+  const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
@@ -289,6 +319,7 @@ const FreeChat = () => {
       setMessages(prev => {
         const updated = [...prev, { role: "cira" as const, text: "" }];
         msgIdx.current = updated.length - 1;
+        setStreamingMsgIndex(updated.length - 1);
         return updated;
       });
       setIsTyping(false);
@@ -385,6 +416,11 @@ const FreeChat = () => {
           } catch { /* skip malformed SSE */ }
         }
       }
+
+      if (msgIdx.current >= 0) {
+        setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
+      }
+      setStreamingMsgIndex(null);
 
       if (fullText) {
         setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
@@ -491,6 +527,8 @@ const FreeChat = () => {
       syncCurrentSessionId(null);
       setMessages([]);
       setConversationHistory([]);
+      setStreamingMsgIndex(null);
+      setCompletedStreamingMsgIndices({});
       syncChatMode("none");
     }
     toast.success("Chat deleted");
@@ -709,8 +747,23 @@ const FreeChat = () => {
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
                         <div className="text-foreground">
                           <p className="text-[14px] md:text-[15px] leading-7 font-body">
-                            {typingMsgIndex === i ? (
-                              <TypewriterText text={msg.text} speed={15} onComplete={() => setTypingMsgIndex(null)} formatted />
+                            {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
+                              <LiveTypewriterText
+                                text={msg.text}
+                                speed={13}
+                                formatted
+                                isComplete={streamingMsgIndex !== i}
+                                onComplete={() => {
+                                  setCompletedStreamingMsgIndices((prev) => {
+                                    if (!prev[i]) return prev;
+                                    const next = { ...prev };
+                                    delete next[i];
+                                    return next;
+                                  });
+                                }}
+                              />
+                            ) : typingMsgIndex === i ? (
+                              <LiveTypewriterText text={msg.text} speed={15} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
                             ) : (
                               <span className="whitespace-pre-line">
                                 {renderFormattedText(msg.text)}
