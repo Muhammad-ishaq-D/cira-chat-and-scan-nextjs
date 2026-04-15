@@ -287,9 +287,10 @@ const Reports = () => {
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
-                                className="h-8 px-3 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
+                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
-                                <Download size={13} />Download
+                                {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                                {isBasicPlan ? "Upgrade to Download" : "Download"}
                               </button>
                             </div>
                           </div>
@@ -428,6 +429,10 @@ const Reports = () => {
                           {/* Download single */}
                           <button
                             onClick={async () => {
+                              if (isBasicPlan) {
+                                toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+                                return;
+                              }
                               try {
                                 await downloadSingleScanPdf(scan);
                                 toast.success("Scan PDF downloaded");
@@ -435,10 +440,10 @@ const Reports = () => {
                                 toast.error("Failed to generate PDF");
                               }
                             }}
-                            className="shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium text-foreground hover:bg-accent transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100"
+                            className={`shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100 ${isBasicPlan ? "text-muted-foreground" : "text-foreground hover:bg-accent"}`}
                           >
-                            <Download size={13} />
-                            <span className="hidden sm:inline">PDF</span>
+                            {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                            <span className="hidden sm:inline">{isBasicPlan ? "Pro" : "PDF"}</span>
                           </button>
                         </div>
                       </div>
