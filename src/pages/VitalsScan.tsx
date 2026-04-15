@@ -17,7 +17,6 @@ const navItems = [
   { icon: Sparkles, label: "Ask Cira", id: "chat" },
   { icon: ScanFace, label: "Scan", id: "scan" },
   { icon: FileText, label: "Reports", id: "reports" },
-  { icon: UserRound, label: "Doctor", id: "doctor" },
 ];
 
 const CANVAS_ID = "shenai-canvas";
