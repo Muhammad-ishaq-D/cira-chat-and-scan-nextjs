@@ -30,6 +30,16 @@ const renderFormattedText = (text: string) => {
   });
 };
 
+const THINKING_PHRASES = ["Thinking...", "Looking into it...", "Processing...", "One moment..."];
+const ThinkingLabel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % THINKING_PHRASES.length), 2000);
+    return () => clearInterval(t);
+  }, []);
+  return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
+};
+
 // Typewriter component — streams text character by character
 const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
@@ -931,18 +941,12 @@ const Chat = () => {
                   </div>
                 )}
 
-                {/* Typing indicator */}
+                {/* Thinking indicator */}
                 {isTyping && (
                   <div className="flex justify-start animate-fade-in">
                     <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2">
-                        <AiSparkleIcon size={20} active />
-                      </div>
-                      <div className="flex items-center gap-1.5 py-1">
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
+                      <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
+                      <ThinkingLabel />
                     </div>
                   </div>
                 )}
