@@ -52,7 +52,7 @@ const App = () => (
           <Route path="/vitals-scan" element={<VitalsScan />} />
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
-          <Route path="/doctor" element={<ProtectedRoute><Doctor /></ProtectedRoute>} />
+          {/* Doctor page removed — using Air Doctor referral link instead */}
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
