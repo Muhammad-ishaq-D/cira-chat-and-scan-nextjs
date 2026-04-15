@@ -450,6 +450,7 @@ const Chat = () => {
       setActiveChat(null);
       syncCurrentSessionId(null);
       setConversationHistory([]);
+      prepPayloadSentRef.current = false;
 
       if (pendingLandingMessage) {
         setMessages([{ role: "user", text: pendingLandingMessage }]);
@@ -458,14 +459,9 @@ const Chat = () => {
         return;
       }
 
-      setMessages((prev) => {
-        const lastMessage = prev[prev.length - 1];
-        if (lastMessage?.role === "cira" && lastMessage.text === FREE_CHAT_WELCOME) {
-          return prev;
-        }
-
-        return [...prev, { role: "cira", text: FREE_CHAT_WELCOME }];
-      });
+      const userText = "💬 I just want to chat";
+      setMessages([{ role: "user", text: userText }]);
+      callClaude(userText);
       return;
     }
 
