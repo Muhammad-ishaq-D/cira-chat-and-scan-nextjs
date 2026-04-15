@@ -574,6 +574,20 @@ const Chat = () => {
         }
       }
 
+      // Finalize any pending tool block that wasn't closed
+      if (pendingToolBlock) {
+        console.log("[SSE] Finalizing unclosed tool at stream end:", pendingToolBlock.name);
+        try {
+          const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+          toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+        } catch (e) {
+          console.error("[SSE] Failed to parse unclosed tool input JSON:", e);
+        }
+        pendingToolBlock = null;
+      }
+
+      console.log("[SSE] Stream complete. Tool calls found:", toolCalls.length, toolCalls.map(t => t.name));
+
       if (msgIdx.current >= 0) {
         setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
       }
