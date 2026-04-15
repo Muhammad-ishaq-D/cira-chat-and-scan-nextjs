@@ -505,19 +505,34 @@ const Chat = () => {
               pendingToolBlock.inputJson += event.delta.partial_json || "";
             }
 
-            // Tool use streaming: finalize on content_block_stop
+             // Tool use streaming: finalize on content_block_stop
             if (event.type === "content_block_stop") {
               if (event.content_block?.type === "tool_use") {
                 // Backend sent the full block in content_block_stop
+                console.log("[SSE] Tool from content_block_stop:", event.content_block.name);
                 toolCalls.push(event.content_block as ToolUse);
+                pendingToolBlock = null;
               } else if (pendingToolBlock) {
                 // Build tool from accumulated deltas
+                console.log("[SSE] Tool from deltas:", pendingToolBlock.name, "json:", pendingToolBlock.inputJson.slice(0, 200));
                 try {
                   const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
                   toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
                 } catch (e) {
                   console.error("[SSE] Failed to parse tool input JSON:", e);
                 }
+                pendingToolBlock = null;
+              }
+            }
+
+            // Also finalize pending tool on message_delta with stop_reason
+            if (event.type === "message_delta" && event.delta?.stop_reason && pendingToolBlock) {
+              console.log("[SSE] Tool from message_delta fallback:", pendingToolBlock.name);
+              try {
+                const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+                toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+              } catch (e) {
+                console.error("[SSE] Failed to parse tool input JSON (fallback):", e);
               }
               pendingToolBlock = null;
             }
