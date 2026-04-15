@@ -79,7 +79,7 @@ const buildFreeChatPrompt = (userText: string) => [
 const FreeChat = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport }[]>([]);
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report" | "action_buttons"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport; buttons?: Array<{ id: string; label: string; description?: string }> }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [chatMode, setChatMode] = useState<ChatMode>("none");
   const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
@@ -191,6 +191,11 @@ const FreeChat = () => {
               callClaude(followUp, undefined, true);
             }, 500);
           }
+          break;
+        }
+        case "render_action_buttons": {
+          const buttons = tool.input?.buttons || [];
+          setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
           break;
         }
       }
