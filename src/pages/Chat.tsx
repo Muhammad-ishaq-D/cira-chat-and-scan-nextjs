@@ -717,9 +717,6 @@ const Chat = () => {
       // User-initiated abort — don't show an error toast
       if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
         console.log("[Chat] Request aborted by user");
-        if (msgIdx.current >= 0) {
-          setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
-        }
         setStreamingMsgIndex(null);
       } else {
         const msg = err?.message || "Something went wrong";
