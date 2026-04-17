@@ -85,14 +85,16 @@ const VitalsScan = () => {
       if (cancelled) return false;
 
       if (!navigator.serviceWorker.controller || !isDocumentCrossOriginIsolated()) {
-        if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY)) {
+        // Only reload ONCE — if reload didn't fix isolation (e.g., preview iframe blocks SW),
+        // bail out instead of looping.
+        if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY, 30000)) {
           markDocumentReload(VITALS_SCAN_RELOAD_KEY);
           reloadTimer = window.setTimeout(() => {
             window.location.reload();
           }, 250);
         } else {
-          clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
-          console.error("[VitalsScan] COI service worker is active, but the page is still not cross-origin isolated.");
+          console.error("[VitalsScan] COI service worker is active, but the page is still not cross-origin isolated. Stopping reload loop.");
+          // Keep the reload marker so we don't try again this session
         }
 
         return false;
