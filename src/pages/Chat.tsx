@@ -807,6 +807,8 @@ const Chat = () => {
   };
 
   const selectMode = (mode: ChatMode) => {
+    // Hide the welcome-with-buttons card once the user picks an option
+    setMessages((prev) => prev.filter((m) => m.text !== "WELCOME_WITH_BUTTONS"));
     if (mode === "vitals") {
       syncChatMode(mode);
       setShowModeSelection(false);

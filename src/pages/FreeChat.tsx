@@ -552,6 +552,8 @@ const FreeChat = () => {
   };
 
   const selectMode = async (mode: ChatMode) => {
+    // Hide the welcome-with-buttons card once the user picks an option
+    setMessages((prev) => prev.filter((m) => m.text !== "WELCOME_WITH_BUTTONS"));
     if (mode === "vitals") {
       try {
         const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
