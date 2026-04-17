@@ -8,6 +8,7 @@ import faceNormal from "@/assets/face-normal.jpg";
 import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { isAuthenticated, getUser } from "@/lib/auth";
 
 
 
@@ -167,9 +168,46 @@ const Index = () => {
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
-        <button onClick={() => navigate("/login")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
-          Login
-        </button>
+        {isAuthenticated() ? (
+          (() => {
+            const user = getUser();
+            const initials = (user?.name || user?.email || "U")
+              .split(" ")
+              .map((n) => n[0])
+              .filter(Boolean)
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
+            return (
+              <button
+                onClick={() => navigate("/dashboard")}
+                aria-label="Go to dashboard"
+                className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-border/60 bg-background/60 backdrop-blur-sm hover:bg-accent hover:scale-[1.02] transition-all duration-200"
+              >
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name || "Profile"}
+                    width={28}
+                    height={28}
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center">
+                    {initials}
+                  </span>
+                )}
+                <span className="text-sm font-medium font-body text-foreground hidden sm:inline max-w-[140px] truncate">
+                  {user?.name?.split(" ")[0] || "Account"}
+                </span>
+              </button>
+            );
+          })()
+        ) : (
+          <button onClick={() => navigate("/login")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
+            Login
+          </button>
+        )}
       </nav>
 
       {/* Hero */}
