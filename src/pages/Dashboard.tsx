@@ -103,16 +103,26 @@ const Dashboard = () => {
               return match ? { ...item, value: match.value } : item;
             }));
           } else if (v.heart_rate !== undefined) {
+            const num = (x: any) => (x == null || x === "" ? null : Number(x));
+            const sys = num(v.systolic_bp);
+            const dia = num(v.diastolic_bp);
+            const hr = num(v.heart_rate);
+            const hrv = num(v.hrv_sdnn);
+            const cw = num(v.cardiac_workload);
+            const br = num(v.breathing_rate);
+            const si = num(v.stress_index);
+            const bmi = num(v.bmi);
+            const para = num(v.parasympathetic_activity);
             setVitals(prev => prev.map(item => {
               const map: Record<string, string> = {
-                "Blood Pressure": v.systolic_bp && v.diastolic_bp ? `${Math.round(v.systolic_bp)}/${Math.round(v.diastolic_bp)}` : "--",
-                "Heart Rate": v.heart_rate ? String(Math.round(v.heart_rate)) : "--",
-                "Heart Rate Variability": v.hrv_sdnn ? String(Math.round(v.hrv_sdnn)) : "--",
-                "Cardiac Workload": v.cardiac_workload != null ? String(Math.round(v.cardiac_workload)) : "--",
-                "Breathing Rate": v.breathing_rate ? String(Math.round(v.breathing_rate)) : "--",
-                "Stress Index": v.stress_index != null ? String(Math.round(v.stress_index)) : "--",
-                "Body Mass Index": v.bmi != null ? Number(v.bmi).toFixed(1) : "--",
-                "Parasympathetic Activity": v.parasympathetic_activity != null ? String(Math.round(v.parasympathetic_activity)) : "--",
+                "Blood Pressure": sys && dia ? `${Math.round(sys)}/${Math.round(dia)}` : "--",
+                "Heart Rate": hr ? String(Math.round(hr)) : "--",
+                "Heart Rate Variability": hrv ? String(Math.round(hrv)) : "--",
+                "Cardiac Workload": cw != null ? String(Math.round(cw)) : "--",
+                "Breathing Rate": br ? String(Math.round(br)) : "--",
+                "Stress Index": si != null ? String(Math.round(si)) : "--",
+                "Body Mass Index": bmi != null ? bmi.toFixed(1) : "--",
+                "Parasympathetic Activity": para != null ? String(Math.round(para)) : "--",
               };
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
@@ -123,15 +133,25 @@ const Dashboard = () => {
               return match ? { ...item, value: match.value } : item;
             }));
           } else if (v.vascular_age !== undefined || v.wellness_score !== undefined) {
+            const num = (x: any) => (x == null || x === "" ? null : Number(x));
+            const vasc = num(v.vascular_age);
+            const wellness = num(v.wellness_score);
+            const wthr = num(v.waist_to_height_ratio);
+            const bf = num(v.body_fat_percentage);
+            const bmr = num(v.basal_metabolic_rate);
+            const bsi = num(v.body_shape_index);
+            const tdee = num(v.total_daily_energy_expenditure);
             setHealthIndices(prev => prev.map(item => {
               const map: Record<string, string> = {
-                "Vascular Age": v.vascular_age != null ? String(Math.round(v.vascular_age)) : "--",
-                "Wellness Score": v.wellness_score != null ? String(Math.round(v.wellness_score)) : "--",
-                "Waist-to-Height Ratio": v.waist_to_height_ratio != null ? Number(v.waist_to_height_ratio).toFixed(2) : "--",
-                "Body Fat Percentage": v.body_fat_percentage != null ? Number(v.body_fat_percentage).toFixed(1) : "--",
-                "Basal Metabolic Rate": v.basal_metabolic_rate != null ? String(Math.round(v.basal_metabolic_rate)) : "--",
-                "Body Shape Index": v.body_shape_index != null ? Number(v.body_shape_index).toFixed(3) : "--",
-                "Total Daily Energy": v.total_daily_energy_expenditure != null ? String(Math.round(v.total_daily_energy_expenditure)) : "--",
+                "Vascular Age": vasc != null && vasc > 0 ? String(Math.round(vasc)) : "--",
+                // Hide invalid wellness scores (0 = no signal)
+                "Wellness Score": wellness != null && wellness > 0 ? String(Math.round(wellness)) : "--",
+                "Waist-to-Height Ratio": wthr != null ? wthr.toFixed(2) : "--",
+                // Clinical body fat range: 2%-60%. Anything outside is sensor error.
+                "Body Fat Percentage": bf != null && bf >= 2 && bf <= 60 ? bf.toFixed(1) : "--",
+                "Basal Metabolic Rate": bmr != null ? String(Math.round(bmr)) : "--",
+                "Body Shape Index": bsi != null ? bsi.toFixed(3) : "--",
+                "Total Daily Energy": tdee != null ? String(Math.round(tdee)) : "--",
               };
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
             }));
