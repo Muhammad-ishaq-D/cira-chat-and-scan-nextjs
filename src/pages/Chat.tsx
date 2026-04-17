@@ -1142,7 +1142,7 @@ const Chat = () => {
                         <div className="mb-2"><AiSparkleIcon size={20} active /></div>
                         <div className="text-foreground">
                           <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
-                            Hey there! 👋🏼{"\n\n"}I'm <strong>Cira</strong>, your personal AI health nurse 🩺✨{"\n\n"}How would you like to get started? 💙
+                            How would you like to get started? 💙
                           </p>
                           <div className="flex flex-col gap-2 mt-3">
                             <button
