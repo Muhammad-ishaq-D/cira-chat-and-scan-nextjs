@@ -137,9 +137,9 @@ const ConsultSummaryCard = ({ data }: Props) => {
 
         {/* Summary */}
         <div className="px-4 py-3 bg-accent/10">
-          <p className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+          <div className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
             {formatText(data.summary)}
-          </p>
+          </div>
         </div>
 
         {/* Possible Conditions */}
