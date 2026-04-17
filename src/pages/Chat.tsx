@@ -12,7 +12,6 @@ import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicato
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
-import { preloadShenAI } from "@/lib/preloadShenAI";
 import { toast } from "sonner";
 
 // Render basic markdown: **bold**, *italic*, `code`
@@ -242,8 +241,6 @@ const Chat = () => {
 
   useEffect(() => {
     loadChatHistory();
-    // Warm up the Shen AI WASM in the background so /vitals-scan opens fast
-    preloadShenAI();
   }, [loadChatHistory]);
 
   // Auto-scroll to bottom when messages change or typing starts

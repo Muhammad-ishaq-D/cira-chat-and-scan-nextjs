@@ -7,7 +7,6 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { userApi, vitalsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
-import { preloadShenAI } from "@/lib/preloadShenAI";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -82,8 +81,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Warm up the Shen AI WASM in the background so /vitals-scan opens fast
-    preloadShenAI();
     const load = async () => {
       try {
         const [profileData, vitalsData] = await Promise.allSettled([
