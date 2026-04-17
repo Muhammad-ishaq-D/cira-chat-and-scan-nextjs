@@ -242,6 +242,8 @@ const Chat = () => {
 
   useEffect(() => {
     loadChatHistory();
+    // Warm up the Shen AI WASM in the background so /vitals-scan opens fast
+    preloadShenAI();
   }, [loadChatHistory]);
 
   // Auto-scroll to bottom when messages change or typing starts
