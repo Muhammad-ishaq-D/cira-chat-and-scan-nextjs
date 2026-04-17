@@ -211,7 +211,10 @@ const Chat = () => {
   const syncCurrentSessionId = (sessionId: string | null) => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
-    if (!sessionId) prepPayloadSentRef.current = false;
+    if (!sessionId) {
+      prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
+    }
   };
 
   const clearLiveTypingState = () => {
