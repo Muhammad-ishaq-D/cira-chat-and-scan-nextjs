@@ -204,7 +204,7 @@ const FreeChat = () => {
 
   const stripPendingProcessingMessage = (prevMessages: typeof messages) => {
     const lastMessage = prevMessages[prevMessages.length - 1];
-    return lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙"
+    return lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__"
       ? prevMessages.slice(0, -1)
       : prevMessages;
   };
