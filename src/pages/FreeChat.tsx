@@ -298,6 +298,13 @@ const FreeChat = () => {
     if (!hidden) setIsTyping(true);
     setIsApiLoading(true);
 
+    // Cancel any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     // Ensure a session ID exists
     if (!currentSessionIdRef.current) {
       const newId = `free_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -321,6 +328,7 @@ const FreeChat = () => {
         method: "POST",
         headers: { ...headers, Accept: "text/event-stream" },
         body: payloadBody,
+        signal: controller.signal,
       });
 
       if (!res.ok) {
