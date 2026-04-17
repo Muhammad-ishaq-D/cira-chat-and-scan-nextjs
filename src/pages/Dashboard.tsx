@@ -7,6 +7,7 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { userApi, vitalsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
+import { preloadShenAI } from "@/lib/preloadShenAI";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
