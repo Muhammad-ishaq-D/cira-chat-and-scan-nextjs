@@ -482,11 +482,22 @@ const Chat = () => {
               }
               pendingToolBlock = null;
             }
-            if (event.type === "message_stop" && event.message) {
-              const msg = event.message as ClaudeResponse;
-              const finalTools = extractToolCalls(msg);
-              if (finalTools.length > 0) toolCalls = finalTools;
-              if (!fullText) fullText = extractText(msg);
+            if (event.type === "message_stop") {
+              const topLevelTools: any[] = Array.isArray(event.toolCalls) ? event.toolCalls : [];
+              const populatedTopLevel = topLevelTools.filter(
+                (tc) => tc?.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0
+              );
+              if (populatedTopLevel.length > 0 && toolCalls.length === 0) {
+                toolCalls = populatedTopLevel as ToolUse[];
+              }
+              if (event.message) {
+                const msg = event.message as ClaudeResponse;
+                const finalTools = extractToolCalls(msg).filter(
+                  (tc) => tc.input && Object.keys(tc.input).length > 0
+                );
+                if (finalTools.length > 0 && toolCalls.length === 0) toolCalls = finalTools;
+                if (!fullText) fullText = extractText(msg);
+              }
             }
             if (event.type === "tool_use" && event.name && event.input) {
               toolCalls.push(event as ToolUse);
