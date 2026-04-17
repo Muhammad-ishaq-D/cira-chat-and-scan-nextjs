@@ -182,24 +182,21 @@ const Index = () => {
               <button
                 onClick={() => navigate("/dashboard")}
                 aria-label="Go to dashboard"
-                className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-border/60 bg-background/60 backdrop-blur-sm hover:bg-accent hover:scale-[1.02] transition-all duration-200"
+                className="rounded-full hover:scale-105 transition-transform duration-200"
               >
                 {user?.avatar ? (
                   <img
                     src={user.avatar}
                     alt={user.name || "Profile"}
-                    width={28}
-                    height={28}
-                    className="w-7 h-7 rounded-full object-cover"
+                    width={36}
+                    height={36}
+                    className="w-9 h-9 rounded-full object-cover border border-border/60"
                   />
                 ) : (
-                  <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center">
+                  <span className="w-9 h-9 rounded-full bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center border border-border/60">
                     {initials}
                   </span>
                 )}
-                <span className="text-sm font-medium font-body text-foreground hidden sm:inline max-w-[140px] truncate">
-                  {user?.name?.split(" ")[0] || "Account"}
-                </span>
               </button>
             );
           })()
