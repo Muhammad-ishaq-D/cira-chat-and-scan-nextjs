@@ -30,7 +30,8 @@ const splitNumberedItems = (text: string): string[] | null => {
   return items.filter(Boolean);
 };
 
-const formatText = (text: string) => {
+const formatText = (text: string | undefined | null) => {
+  if (!text || typeof text !== "string") return null;
   const cleaned = text.replace(/\\n/g, "\n");
 
   // Split by blank lines into blocks; within each block detect lists
