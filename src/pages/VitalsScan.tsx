@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -447,9 +448,36 @@ const VitalsScan = () => {
           <div className="relative z-10 flex-1 overflow-y-auto">
             <div className="max-w-3xl mx-auto px-4 md:px-6 pt-4 md:py-8 pb-24 md:pb-8">
               {/* Header */}
-              <div className="mb-4 md:mb-8">
-                <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Scan Results</h1>
-                <p className="text-[11px] md:text-sm text-muted-foreground font-body">Your vitals have been analyzed</p>
+              <div className="mb-4 md:mb-8 flex items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Scan Results</h1>
+                  <p className="text-[11px] md:text-sm text-muted-foreground font-body">Your vitals have been analyzed</p>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-border/60 bg-card/80 backdrop-blur-sm text-[10px] md:text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      aria-label="Accuracy information"
+                    >
+                      <Info size={11} />
+                      Accuracy
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-72 p-3 text-[11px] leading-relaxed">
+                    <p className="font-semibold text-foreground mb-1.5 text-[12px]">Clinically validated accuracy</p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li><span className="text-foreground font-medium">Heart Rate:</span> ±2 BPM vs ECG</li>
+                      <li><span className="text-foreground font-medium">Blood Pressure:</span> ±5 mmHg vs cuff</li>
+                      <li><span className="text-foreground font-medium">SpO₂:</span> ±2% vs pulse oximeter</li>
+                      <li><span className="text-foreground font-medium">Respiratory Rate:</span> ±2 breaths/min</li>
+                      <li><span className="text-foreground font-medium">HRV / Stress:</span> validated vs ECG</li>
+                    </ul>
+                    <p className="mt-2 pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
+                      Screening tool only — not a substitute for medical diagnosis. Best with good lighting & a still face.
+                    </p>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-3 md:p-6 mb-3 md:mb-6 shadow-sm">
