@@ -1,5 +1,5 @@
 import { FileText } from "lucide-react";
-import { AiSparkleIcon } from "./AiSparkleIcon";
+import AiSparkleIcon from "./AiSparkleIcon";
 
 /**
  * Animated indicator shown while Cira is generating an assessment report.
