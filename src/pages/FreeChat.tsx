@@ -130,6 +130,7 @@ const FreeChat = () => {
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [guestRemaining, setGuestRemaining] = useState<number>(20);
