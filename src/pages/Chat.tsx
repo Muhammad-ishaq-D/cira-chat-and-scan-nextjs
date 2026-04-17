@@ -482,11 +482,22 @@ const Chat = () => {
               }
               pendingToolBlock = null;
             }
-            if (event.type === "message_stop" && event.message) {
-              const msg = event.message as ClaudeResponse;
-              const finalTools = extractToolCalls(msg);
-              if (finalTools.length > 0) toolCalls = finalTools;
-              if (!fullText) fullText = extractText(msg);
+            if (event.type === "message_stop") {
+              const topLevelTools: any[] = Array.isArray(event.toolCalls) ? event.toolCalls : [];
+              const populatedTopLevel = topLevelTools.filter(
+                (tc) => tc?.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0
+              );
+              if (populatedTopLevel.length > 0 && toolCalls.length === 0) {
+                toolCalls = populatedTopLevel as ToolUse[];
+              }
+              if (event.message) {
+                const msg = event.message as ClaudeResponse;
+                const finalTools = extractToolCalls(msg).filter(
+                  (tc) => tc.input && Object.keys(tc.input).length > 0
+                );
+                if (finalTools.length > 0 && toolCalls.length === 0) toolCalls = finalTools;
+                if (!fullText) fullText = extractText(msg);
+              }
             }
             if (event.type === "tool_use" && event.name && event.input) {
               toolCalls.push(event as ToolUse);
@@ -611,16 +622,27 @@ const Chat = () => {
               pendingToolBlock = null;
             }
 
-            // Backend sends full message in message_stop (fallback if no deltas)
-            if (event.type === "message_stop" && event.message) {
-              const msg = event.message as ClaudeResponse;
-              const finalTools = extractToolCalls(msg);
-              if (finalTools.length > 0) toolCalls = finalTools;
-              const responseText = extractText(msg);
-              if (!fullText) {
-                const msgText = responseText;
-                if (msgText) {
-                  fullText = msgText;
+            // Backend sends full message/toolCalls in message_stop (fallback if no deltas)
+            if (event.type === "message_stop") {
+              // Prefer top-level toolCalls (pre-assembled by backend) but only if populated
+              const topLevelTools: any[] = Array.isArray(event.toolCalls) ? event.toolCalls : [];
+              const populatedTopLevel = topLevelTools.filter(
+                (tc) => tc?.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0
+              );
+              if (populatedTopLevel.length > 0 && toolCalls.length === 0) {
+                toolCalls = populatedTopLevel as ToolUse[];
+              }
+              if (event.message) {
+                const msg = event.message as ClaudeResponse;
+                const finalTools = extractToolCalls(msg).filter(
+                  (tc) => tc.input && Object.keys(tc.input).length > 0
+                );
+                if (finalTools.length > 0 && toolCalls.length === 0) {
+                  toolCalls = finalTools;
+                }
+                const responseText = extractText(msg);
+                if (!fullText && responseText) {
+                  fullText = responseText;
                   setMessages((prev) => {
                     const updated = [...prev];
                     if (msgIdx.current >= 0 && updated[msgIdx.current]) {
@@ -632,14 +654,16 @@ const Chat = () => {
               }
             }
 
-            // Catch-all: backend may send tool_use as a standalone event or nested differently
-            if (event.type === "tool_use" && event.name && event.input) {
+            // Catch-all: backend may send tool_use as a standalone event
+            if (event.type === "tool_use" && event.name && event.input && Object.keys(event.input).length > 0) {
               toolCalls.push(event as ToolUse);
             }
-            // Some backends send toolCalls array directly on an event
-            if (Array.isArray(event.toolCalls)) {
+            // Some backends send toolCalls array on a non-message_stop event
+            if (event.type !== "message_stop" && Array.isArray(event.toolCalls)) {
               for (const tc of event.toolCalls) {
-                if (tc.type === "tool_use" && tc.name) toolCalls.push(tc);
+                if (tc.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0) {
+                  toolCalls.push(tc);
+                }
               }
             }
 
