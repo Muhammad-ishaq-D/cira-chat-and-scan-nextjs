@@ -6,6 +6,7 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
+import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { toast } from "sonner";
 import {
@@ -204,7 +205,7 @@ const FreeChat = () => {
 
   const stripPendingProcessingMessage = (prevMessages: typeof messages) => {
     const lastMessage = prevMessages[prevMessages.length - 1];
-    return lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙"
+    return lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__"
       ? prevMessages.slice(0, -1)
       : prevMessages;
   };
@@ -490,17 +491,17 @@ const FreeChat = () => {
             abortControllerRef.current = null;
           }
           setMessages(prev =>
-            prev.filter(m => !(m.role === "cira" && /processing your information/i.test(m.text || "")))
+            prev.filter(m => !(m.role === "cira" && m.text === "__GENERATING_REPORT__"))
           );
         }
         const shouldShowProcessing = processToolCalls(toolCalls, fullText);
         if (!fullText && shouldShowProcessing && !renderedReport) {
           setMessages(prev => {
             const lastMessage = prev[prev.length - 1];
-            if (lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙") {
+            if (lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__") {
               return prev;
             }
-            return [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }];
+            return [...prev, { role: "cira" as const, text: "__GENERATING_REPORT__" }];
           });
         }
       }
@@ -762,6 +763,8 @@ const FreeChat = () => {
                           ))}
                         </div>
                       </div>
+                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                      <ReportGeneratingIndicator />
                     ) : msg.role === "user" ? (
                       <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
                         <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>

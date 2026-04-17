@@ -8,6 +8,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
+import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
@@ -724,18 +725,19 @@ const Chat = () => {
             try { abortControllerRef.current.abort(); } catch {}
             abortControllerRef.current = null;
           }
-          // Remove any "processing..." placeholder messages
+          // Remove any "generating report" placeholder messages
           setMessages((prev) =>
-            prev.filter((m) => !(m.role === "cira" && /processing your information/i.test(m.text || "")))
+            prev.filter((m) => !(m.role === "cira" && m.text === "__GENERATING_REPORT__"))
           );
         }
         processToolCalls(toolCalls, fullText);
-        // Only show "processing" placeholder if no report rendered AND no text was streamed
+        // Only show the generating-report indicator if no report rendered AND no text was streamed
         if (!fullText && !renderedReport) {
-          setMessages((prev) => [
-            ...prev,
-            { role: "cira" as const, text: "I'm processing your information... Let me continue with my assessment. 💙" },
-          ]);
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "cira" && last.text === "__GENERATING_REPORT__") return prev;
+            return [...prev, { role: "cira" as const, text: "__GENERATING_REPORT__" }];
+          });
         }
       }
 
@@ -1129,6 +1131,8 @@ const Chat = () => {
                           ))}
                         </div>
                       </div>
+                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                      <ReportGeneratingIndicator />
                     ) : msg.role === "user" ? (
                       /* User bubble — light gray pill, right-aligned */
                       <div
