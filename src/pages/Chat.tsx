@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2 } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2, Square } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -189,6 +189,7 @@ const Chat = () => {
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -417,6 +418,13 @@ const Chat = () => {
     }
     setIsApiLoading(true);
 
+    // Cancel any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
       const token = getToken();
@@ -432,6 +440,7 @@ const Chat = () => {
         method: "POST",
         headers: { ...headers, Accept: "text/event-stream" },
         body: payload,
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -705,28 +714,45 @@ const Chat = () => {
       }
 
     } catch (err: any) {
-      const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
-        toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
-          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
-          duration: 8000,
-        });
-        setMessages((prev) => [
-          ...prev,
-          { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
-        ]);
-      } else if (msg.startsWith("OVERLOADED")) {
-        toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
-          action: { label: "Retry", onClick: () => callClaude(userText, image) },
-        });
+      // User-initiated abort — don't show an error toast
+      if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
+        console.log("[Chat] Request aborted by user");
+        setStreamingMsgIndex(null);
       } else {
-        toast.error("Failed to get response: " + msg);
+        const msg = err?.message || "Something went wrong";
+        if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
+          toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
+            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            duration: 8000,
+          });
+          setMessages((prev) => [
+            ...prev,
+            { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
+          ]);
+        } else if (msg.startsWith("OVERLOADED")) {
+          toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
+            action: { label: "Retry", onClick: () => callClaude(userText, image) },
+          });
+        } else {
+          toast.error("Failed to get response: " + msg);
+        }
+        console.error("[Claude Error]", err);
       }
-      console.error("[Claude Error]", err);
     } finally {
       setIsTyping(false);
       setIsApiLoading(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+      abortControllerRef.current = null;
+    }
+    setIsApiLoading(false);
+    setIsTyping(false);
+    setStreamingMsgIndex(null);
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -1282,15 +1308,28 @@ const Chat = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
                   className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
-                  disabled={isApiLoading || chatMode === "none"}
+                  disabled={chatMode === "none"}
                 />
-                <button
-                  type="submit"
-                  disabled={isApiLoading || !message.trim()}
-                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
-                >
-                  <Send size={18} strokeWidth={1.5} />
-                </button>
+                {isApiLoading ? (
+                  <button
+                    type="button"
+                    onClick={handleStop}
+                    aria-label="Stop generating"
+                    title="Stop generating"
+                    className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
+                  >
+                    <Square size={14} strokeWidth={2.5} fill="currentColor" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!message.trim()}
+                    aria-label="Send message"
+                    className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
+                  >
+                    <Send size={18} strokeWidth={1.5} />
+                  </button>
+                )}
               </div>
             </form>
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal } from "lucide-react";
+import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal, Square } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
@@ -130,6 +130,7 @@ const FreeChat = () => {
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [guestRemaining, setGuestRemaining] = useState<number>(20);
@@ -297,6 +298,13 @@ const FreeChat = () => {
     if (!hidden) setIsTyping(true);
     setIsApiLoading(true);
 
+    // Cancel any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     // Ensure a session ID exists
     if (!currentSessionIdRef.current) {
       const newId = `free_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -320,6 +328,7 @@ const FreeChat = () => {
         method: "POST",
         headers: { ...headers, Accept: "text/event-stream" },
         body: payloadBody,
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -485,23 +494,38 @@ const FreeChat = () => {
       }
 
     } catch (err: any) {
-      const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("RATE_LIMITED")) {
-        toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
-        setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
-      } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
-        toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
-        setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
-      } else if (msg.startsWith("OVERLOADED")) {
-        toast.error("Service busy. Try again shortly.", { action: { label: "Retry", onClick: () => callClaude(userText, image) } });
+      // User-initiated abort — don't show an error toast
+      if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
+        console.log("[FreeChat] Request aborted by user");
       } else {
-        toast.error("Failed: " + msg);
+        const msg = err?.message || "Something went wrong";
+        if (msg.startsWith("RATE_LIMITED")) {
+          toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
+        } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
+          toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
+        } else if (msg.startsWith("OVERLOADED")) {
+          toast.error("Service busy. Try again shortly.", { action: { label: "Retry", onClick: () => callClaude(userText, image) } });
+        } else {
+          toast.error("Failed: " + msg);
+        }
+        console.error("[FreeChat Claude Error]", err);
       }
-      console.error("[FreeChat Claude Error]", err);
     } finally {
       setIsTyping(false);
       setIsApiLoading(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+      abortControllerRef.current = null;
+    }
+    setIsApiLoading(false);
+    setIsTyping(false);
   };
 
   const handleSend = (e: React.FormEvent) => {
@@ -888,11 +912,23 @@ const FreeChat = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
                 className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
-                disabled={isApiLoading || chatMode === "none"}
+                disabled={chatMode === "none"}
               />
-              <button type="submit" disabled={isApiLoading || !message.trim()} className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30">
-                <Send size={18} strokeWidth={1.5} />
-              </button>
+              {isApiLoading ? (
+                <button
+                  type="button"
+                  onClick={handleStop}
+                  aria-label="Stop generating"
+                  title="Stop generating"
+                  className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
+                >
+                  <Square size={14} strokeWidth={2.5} fill="currentColor" />
+                </button>
+              ) : (
+                <button type="submit" disabled={!message.trim()} aria-label="Send message" className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30">
+                  <Send size={18} strokeWidth={1.5} />
+                </button>
+              )}
             </div>
           </form>
           {/* Daily limit counter */}
