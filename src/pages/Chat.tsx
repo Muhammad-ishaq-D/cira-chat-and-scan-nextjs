@@ -322,6 +322,7 @@ const Chat = () => {
           break;
         case "render_ai_consult_summary": {
           const summaryData = tool.input as ConsultSummary;
+          reportRecoveryAttemptsRef.current = 0;
           setMessages((prev) => [
             ...prev,
             { role: "summary" as const, text: "", summaryData },
