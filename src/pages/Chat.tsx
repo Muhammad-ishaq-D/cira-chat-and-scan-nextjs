@@ -1308,15 +1308,28 @@ const Chat = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
                   className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
-                  disabled={isApiLoading || chatMode === "none"}
+                  disabled={chatMode === "none"}
                 />
-                <button
-                  type="submit"
-                  disabled={isApiLoading || !message.trim()}
-                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
-                >
-                  <Send size={18} strokeWidth={1.5} />
-                </button>
+                {isApiLoading ? (
+                  <button
+                    type="button"
+                    onClick={handleStop}
+                    aria-label="Stop generating"
+                    title="Stop generating"
+                    className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
+                  >
+                    <Square size={14} strokeWidth={2.5} fill="currentColor" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!message.trim()}
+                    aria-label="Send message"
+                    className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
+                  >
+                    <Send size={18} strokeWidth={1.5} />
+                  </button>
+                )}
               </div>
             </form>
           </div>
