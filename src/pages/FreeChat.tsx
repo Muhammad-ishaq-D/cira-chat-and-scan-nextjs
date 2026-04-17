@@ -494,23 +494,38 @@ const FreeChat = () => {
       }
 
     } catch (err: any) {
-      const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("RATE_LIMITED")) {
-        toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
-        setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
-      } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
-        toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
-        setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
-      } else if (msg.startsWith("OVERLOADED")) {
-        toast.error("Service busy. Try again shortly.", { action: { label: "Retry", onClick: () => callClaude(userText, image) } });
+      // User-initiated abort — don't show an error toast
+      if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
+        console.log("[FreeChat] Request aborted by user");
       } else {
-        toast.error("Failed: " + msg);
+        const msg = err?.message || "Something went wrong";
+        if (msg.startsWith("RATE_LIMITED")) {
+          toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
+        } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
+          toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
+        } else if (msg.startsWith("OVERLOADED")) {
+          toast.error("Service busy. Try again shortly.", { action: { label: "Retry", onClick: () => callClaude(userText, image) } });
+        } else {
+          toast.error("Failed: " + msg);
+        }
+        console.error("[FreeChat Claude Error]", err);
       }
-      console.error("[FreeChat Claude Error]", err);
     } finally {
       setIsTyping(false);
       setIsApiLoading(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+      abortControllerRef.current = null;
+    }
+    setIsApiLoading(false);
+    setIsTyping(false);
   };
 
   const handleSend = (e: React.FormEvent) => {
