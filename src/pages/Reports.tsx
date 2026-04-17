@@ -56,12 +56,7 @@ const Reports = () => {
     };
     loadReports();
     loadScans();
-    billingApi.getSubscription()
-      .then((sub) => {
-        const plan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
-        setIsBasicPlan(plan === "basic" || plan === "free");
-      })
-      .catch(() => setIsBasicPlan(true));
+    // Downloads are available on all plans — no plan check needed
   }, []);
 
   const filteredReports = reports.filter((r: any) =>
