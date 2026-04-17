@@ -196,6 +196,7 @@ const Chat = () => {
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
   const prepPayloadSentRef = useRef(false);
+  const reportRecoveryAttemptsRef = useRef(0);
   // Keep ref in sync with state so async callbacks always read latest value
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
