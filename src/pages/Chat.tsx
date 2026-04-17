@@ -714,28 +714,48 @@ const Chat = () => {
       }
 
     } catch (err: any) {
-      const msg = err?.message || "Something went wrong";
-      if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
-        toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
-          action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
-          duration: 8000,
-        });
-        setMessages((prev) => [
-          ...prev,
-          { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
-        ]);
-      } else if (msg.startsWith("OVERLOADED")) {
-        toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
-          action: { label: "Retry", onClick: () => callClaude(userText, image) },
-        });
+      // User-initiated abort — don't show an error toast
+      if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
+        console.log("[Chat] Request aborted by user");
+        if (msgIdx.current >= 0) {
+          setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
+        }
+        setStreamingMsgIndex(null);
       } else {
-        toast.error("Failed to get response: " + msg);
+        const msg = err?.message || "Something went wrong";
+        if (msg.startsWith("CREDITS_EXHAUSTED") || msg.startsWith("BILLING_ERROR")) {
+          toast.error("You've run out of chat credits. Upgrade your plan to continue.", {
+            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            duration: 8000,
+          });
+          setMessages((prev) => [
+            ...prev,
+            { role: "cira" as const, text: "⚠️ You've used all your chat credits for this plan. Please upgrade to continue our conversation." },
+          ]);
+        } else if (msg.startsWith("OVERLOADED")) {
+          toast.error("Claude is currently overloaded. Please try again in a few seconds.", {
+            action: { label: "Retry", onClick: () => callClaude(userText, image) },
+          });
+        } else {
+          toast.error("Failed to get response: " + msg);
+        }
+        console.error("[Claude Error]", err);
       }
-      console.error("[Claude Error]", err);
     } finally {
       setIsTyping(false);
       setIsApiLoading(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+      abortControllerRef.current = null;
+    }
+    setIsApiLoading(false);
+    setIsTyping(false);
+    setStreamingMsgIndex(null);
   };
 
   const handleSend = (e: React.FormEvent) => {
