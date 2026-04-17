@@ -481,8 +481,20 @@ const FreeChat = () => {
       }
 
       if (toolCalls.length > 0) {
+        const renderedReport = toolCalls.some(
+          (t) => t.name === "render_ai_consult_summary" || t.name === "render_detailed_report"
+        );
+        if (renderedReport) {
+          if (abortControllerRef.current) {
+            try { abortControllerRef.current.abort(); } catch {}
+            abortControllerRef.current = null;
+          }
+          setMessages(prev =>
+            prev.filter(m => !(m.role === "cira" && /processing your information/i.test(m.text || "")))
+          );
+        }
         const shouldShowProcessing = processToolCalls(toolCalls, fullText);
-        if (!fullText && shouldShowProcessing) {
+        if (!fullText && shouldShowProcessing && !renderedReport) {
           setMessages(prev => {
             const lastMessage = prev[prev.length - 1];
             if (lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙") {
