@@ -82,6 +82,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Warm up the Shen AI WASM in the background so /vitals-scan opens fast
+    preloadShenAI();
     const load = async () => {
       try {
         const [profileData, vitalsData] = await Promise.allSettled([
