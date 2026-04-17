@@ -1,14 +1,92 @@
 import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
 import type { ConsultSummary } from "@/lib/chatApi";
 
-const formatText = (text: string) => {
-  // Replace literal \n with real newlines, then parse markdown bold
-  const cleaned = text.replace(/\\n/g, "\n");
-  const parts = cleaned.split(/(\*\*[^*]+\*\*)/g);
+const renderInline = (text: string, keyPrefix = "") => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
-    return part;
+    if (part.startsWith("**") && part.endsWith("**"))
+      return <strong key={`${keyPrefix}-${i}`} className="font-semibold">{part.slice(2, -2)}</strong>;
+    return <span key={`${keyPrefix}-${i}`}>{part}</span>;
   });
+};
+
+// Detect numbered list items: "1. ...", "2) ...", supports inline runs like "1. foo 2. bar"
+const splitNumberedItems = (text: string): string[] | null => {
+  const trimmed = text.trim();
+  // Split on patterns like " 1. " / " 2) " preceded by start or space
+  const regex = /(?:^|\s)(\d+)[.)]\s+/g;
+  const matches: { index: number; len: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(trimmed)) !== null) {
+    matches.push({ index: m.index + (m[0].startsWith(" ") ? 1 : 0), len: m[0].trimStart().length });
+  }
+  if (matches.length < 2) return null;
+  const items: string[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const start = matches[i].index + matches[i].len;
+    const end = i + 1 < matches.length ? matches[i + 1].index : trimmed.length;
+    items.push(trimmed.slice(start, end).trim());
+  }
+  return items.filter(Boolean);
+};
+
+const formatText = (text: string) => {
+  const cleaned = text.replace(/\\n/g, "\n");
+
+  // Split by blank lines into blocks; within each block detect lists
+  const blocks = cleaned.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
+
+  return (
+    <div className="space-y-2.5">
+      {blocks.map((block, bi) => {
+        // First try newline-separated numbered items
+        const lineItems = block.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const allNumbered = lineItems.length > 1 && lineItems.every((l) => /^\d+[.)]\s+/.test(l));
+        let items: string[] | null = allNumbered
+          ? lineItems.map((l) => l.replace(/^\d+[.)]\s+/, ""))
+          : splitNumberedItems(block);
+
+        if (items && items.length > 1) {
+          return (
+            <ol key={bi} className="space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className="flex gap-2.5">
+                  <span className="flex-none w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold flex items-center justify-center mt-0.5">
+                    {i + 1}
+                  </span>
+                  <span className="flex-1 text-[12px] leading-relaxed">{renderInline(item, `${bi}-${i}`)}</span>
+                </li>
+              ))}
+            </ol>
+          );
+        }
+
+        // Bullet list (-, •, *)
+        const bulletItems = lineItems.filter((l) => /^[-•*]\s+/.test(l));
+        if (bulletItems.length > 1 && bulletItems.length === lineItems.length) {
+          return (
+            <ul key={bi} className="space-y-1.5">
+              {bulletItems.map((item, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="flex-none w-1 h-1 rounded-full bg-primary mt-2" />
+                  <span className="flex-1 text-[12px] leading-relaxed">
+                    {renderInline(item.replace(/^[-•*]\s+/, ""), `${bi}-${i}`)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        // Plain paragraph (preserve internal single line breaks)
+        return (
+          <p key={bi} className="text-[12px] leading-relaxed whitespace-pre-line">
+            {renderInline(block, `${bi}`)}
+          </p>
+        );
+      })}
+    </div>
+  );
 };
 
 interface Props {
