@@ -418,6 +418,13 @@ const Chat = () => {
     }
     setIsApiLoading(true);
 
+    // Cancel any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch {}
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
       const token = getToken();
@@ -433,6 +440,7 @@ const Chat = () => {
         method: "POST",
         headers: { ...headers, Accept: "text/event-stream" },
         body: payload,
+        signal: controller.signal,
       });
 
       if (!res.ok) {
