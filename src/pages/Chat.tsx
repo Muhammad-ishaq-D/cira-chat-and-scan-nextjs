@@ -704,8 +704,23 @@ const Chat = () => {
       }
 
       if (toolCalls.length > 0) {
+        const renderedReport = toolCalls.some(
+          (t) => t.name === "render_ai_consult_summary" || t.name === "render_detailed_report"
+        );
+        // If the assessment report was rendered, abort any further follow-ups and stop here
+        if (renderedReport) {
+          if (abortControllerRef.current) {
+            try { abortControllerRef.current.abort(); } catch {}
+            abortControllerRef.current = null;
+          }
+          // Remove any "processing..." placeholder messages
+          setMessages((prev) =>
+            prev.filter((m) => !(m.role === "cira" && /processing your information/i.test(m.text || "")))
+          );
+        }
         processToolCalls(toolCalls, fullText);
-        if (!fullText) {
+        // Only show "processing" placeholder if no report rendered AND no text was streamed
+        if (!fullText && !renderedReport) {
           setMessages((prev) => [
             ...prev,
             { role: "cira" as const, text: "I'm processing your information... Let me continue with my assessment. 💙" },
