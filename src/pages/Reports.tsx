@@ -27,7 +27,8 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
-  const [isBasicPlan, setIsBasicPlan] = useState(true);
+  // Downloads available on all plans (including Basic)
+  const [isBasicPlan, setIsBasicPlan] = useState(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -55,12 +56,7 @@ const Reports = () => {
     };
     loadReports();
     loadScans();
-    billingApi.getSubscription()
-      .then((sub) => {
-        const plan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
-        setIsBasicPlan(plan === "basic" || plan === "free");
-      })
-      .catch(() => setIsBasicPlan(true));
+    // Downloads are available on all plans — no plan check needed
   }, []);
 
   const filteredReports = reports.filter((r: any) =>
