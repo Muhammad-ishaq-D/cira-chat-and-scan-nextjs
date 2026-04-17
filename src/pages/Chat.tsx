@@ -348,6 +348,7 @@ const Chat = () => {
         }
         case "render_detailed_report": {
           const detailedData = tool.input as DetailedReport;
+          reportRecoveryAttemptsRef.current = 0;
           setMessages((prev) => [
             ...prev,
             { role: "detailed_report" as const, text: "", detailedData },
