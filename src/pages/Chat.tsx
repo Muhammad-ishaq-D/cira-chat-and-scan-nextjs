@@ -189,6 +189,7 @@ const Chat = () => {
   
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
