@@ -100,6 +100,19 @@ const buildFreeChatPrompt = (userText: string) => [
   "Do not begin a structured intake unless the user asks for one.",
 ].join("\n");
 
+const buildAssessmentToolFollowUp = (payload: any, isRetry = false) => {
+  const pathway = payload?.pathway;
+  const payloadJson = JSON.stringify(payload, null, 2);
+  const renderTool = pathway === "detailed" ? "render_detailed_report" : "render_ai_consult_summary";
+  const reportLabel = pathway === "detailed" ? "detailed clinical report" : "quick assessment summary";
+
+  if (isRetry) {
+    return `You already called prepare_consultation_payload. Do NOT call prepare_consultation_payload again.\n\nUsing ONLY the consultation payload below, your next response MUST contain exactly one tool call: ${renderTool}.\nDo not ask more questions.\nDo not output normal text.\n\nConsultation payload:\n${payloadJson}`;
+  }
+
+  return `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
+};
+
 const FreeChat = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -125,6 +138,7 @@ const FreeChat = () => {
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
   const prepPayloadSentRef = useRef(false);
+  const reportRecoveryAttemptsRef = useRef(0);
   const deviceId = useRef(getDeviceId());
 
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
@@ -134,7 +148,10 @@ const FreeChat = () => {
   const syncChatMode = (mode: ChatMode) => { chatModeRef.current = mode; setChatMode(mode); };
   const syncCurrentSessionId = (id: string | null) => {
     currentSessionIdRef.current = id; setCurrentSessionId(id);
-    if (!id) prepPayloadSentRef.current = false;
+    if (!id) {
+      prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
+    }
   };
 
   // Load local chat history
@@ -184,7 +201,15 @@ const FreeChat = () => {
     setChatHistory(getFreeChatHistory());
   }, []);
 
+  const stripPendingProcessingMessage = (prevMessages: typeof messages) => {
+    const lastMessage = prevMessages[prevMessages.length - 1];
+    return lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙"
+      ? prevMessages.slice(0, -1)
+      : prevMessages;
+  };
+
   const processToolCalls = (toolCalls: ToolUse[], fallbackText = "") => {
+    let shouldShowProcessing = false;
     const normalizedFallbackText = fallbackText.toLowerCase();
     const defaultButtons = [
       { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
@@ -212,12 +237,14 @@ const FreeChat = () => {
           break;
         case "render_ai_consult_summary": {
           const summaryData = tool.input as ConsultSummary;
-          setMessages(prev => [...prev, { role: "summary" as const, text: "", summaryData }]);
+          reportRecoveryAttemptsRef.current = 0;
+          setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "summary" as const, text: "", summaryData }]);
           break;
         }
         case "render_detailed_report": {
           const detailedData = tool.input as DetailedReport;
-          setMessages(prev => [...prev, { role: "detailed_report" as const, text: "", detailedData }]);
+          reportRecoveryAttemptsRef.current = 0;
+          setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "detailed_report" as const, text: "", detailedData }]);
           break;
         }
         case "disconnectAgent":
@@ -225,18 +252,19 @@ const FreeChat = () => {
           break;
         case "prepare_consultation_payload": {
           const payload = tool.input?.consultation_payload;
-          // Only trigger report generation after real intake (at least 3 user messages)
           const userMsgCount = messages.filter(m => m.role === "user").length;
-          if (payload?.reason && !prepPayloadSentRef.current && userMsgCount >= 3) {
-            prepPayloadSentRef.current = true;
-            setTimeout(() => {
-              const pathway = payload?.pathway;
-              const payloadJson = JSON.stringify(payload, null, 2);
-              const followUp = pathway === "detailed"
-                ? `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_detailed_report tool to generate the detailed clinical report. Do NOT call prepare_consultation_payload again. Use the render_detailed_report tool NOW.`
-                : `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_ai_consult_summary tool to generate the quick assessment summary. Do NOT call prepare_consultation_payload again. Use the render_ai_consult_summary tool NOW.`;
-              callClaude(followUp, undefined, true);
-            }, 500);
+          if (payload?.reason && userMsgCount >= 3) {
+            const isRetry = prepPayloadSentRef.current;
+            if (!isRetry || reportRecoveryAttemptsRef.current < 2) {
+              shouldShowProcessing = true;
+              prepPayloadSentRef.current = true;
+              reportRecoveryAttemptsRef.current += 1;
+              setTimeout(() => {
+                callClaude(buildAssessmentToolFollowUp(payload, isRetry), undefined, true);
+              }, isRetry ? 250 : 500);
+            } else {
+              setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "cira" as const, text: "I couldn't finish the assessment report. Please send one more message and I'll retry." }]);
+            }
           }
           break;
         }
@@ -247,6 +275,8 @@ const FreeChat = () => {
         }
       }
     }
+
+    return shouldShowProcessing;
   };
 
   const callClaude = async (userText: string, image?: string, hidden = false) => {
@@ -431,9 +461,15 @@ const FreeChat = () => {
       }
 
       if (toolCalls.length > 0) {
-        processToolCalls(toolCalls, fullText);
-        if (!fullText) {
-          setMessages(prev => [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }]);
+        const shouldShowProcessing = processToolCalls(toolCalls, fullText);
+        if (!fullText && shouldShowProcessing) {
+          setMessages(prev => {
+            const lastMessage = prev[prev.length - 1];
+            if (lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙") {
+              return prev;
+            }
+            return [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }];
+          });
         }
       }
 
