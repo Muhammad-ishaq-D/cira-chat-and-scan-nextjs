@@ -177,9 +177,9 @@ const ConsultSummaryCard = ({ data }: Props) => {
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
                 What to Do Next
               </p>
-              <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+              <div className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                 {formatText(data.self_care_advice)}
-              </p>
+              </div>
             </div>
           </div>
         </div>
