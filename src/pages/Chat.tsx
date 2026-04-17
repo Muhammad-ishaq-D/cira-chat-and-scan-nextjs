@@ -821,6 +821,7 @@ const Chat = () => {
       syncCurrentSessionId(null);
       setConversationHistory([]);
       prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
       clearLiveTypingState();
 
       if (pendingLandingMessage) {
