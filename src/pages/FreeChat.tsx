@@ -6,6 +6,7 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
+import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { toast } from "sonner";
 import {
