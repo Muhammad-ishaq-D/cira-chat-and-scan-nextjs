@@ -490,17 +490,17 @@ const FreeChat = () => {
             abortControllerRef.current = null;
           }
           setMessages(prev =>
-            prev.filter(m => !(m.role === "cira" && /processing your information/i.test(m.text || "")))
+            prev.filter(m => !(m.role === "cira" && m.text === "__GENERATING_REPORT__"))
           );
         }
         const shouldShowProcessing = processToolCalls(toolCalls, fullText);
         if (!fullText && shouldShowProcessing && !renderedReport) {
           setMessages(prev => {
             const lastMessage = prev[prev.length - 1];
-            if (lastMessage?.role === "cira" && lastMessage.text === "I'm processing your information... 💙") {
+            if (lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__") {
               return prev;
             }
-            return [...prev, { role: "cira" as const, text: "I'm processing your information... 💙" }];
+            return [...prev, { role: "cira" as const, text: "__GENERATING_REPORT__" }];
           });
         }
       }
