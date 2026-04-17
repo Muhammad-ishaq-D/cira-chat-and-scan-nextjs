@@ -371,20 +371,23 @@ const Chat = () => {
             syncChatMode("none");
           }
           break;
-        case "prepare_consultation_payload":
+        case "prepare_consultation_payload": {
           console.log(`[Tool: ${tool.name}]`, tool.input);
+          const payload = tool.input?.consultation_payload;
           // Send a follow-up ONCE so the agent generates the actual report
-          if (!prepPayloadSentRef.current) {
+          if (payload?.reason && !prepPayloadSentRef.current) {
             prepPayloadSentRef.current = true;
             setTimeout(() => {
-              const pathway = tool.input?.consultation_payload?.pathway;
+              const pathway = payload?.pathway;
+              const payloadJson = JSON.stringify(payload, null, 2);
               const followUp = pathway === "detailed"
-                ? "Tool result received. Now generate the detailed report using render_detailed_report."
-                : "Tool result received. Now generate the quick assessment using render_ai_consult_summary.";
+                ? `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_detailed_report tool to generate the detailed clinical report. Do NOT call prepare_consultation_payload again. Use the render_detailed_report tool NOW.`
+                : `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_ai_consult_summary tool to generate the quick assessment summary. Do NOT call prepare_consultation_payload again. Use the render_ai_consult_summary tool NOW.`;
               callClaude(followUp, undefined, true);
             }, 500);
           }
           break;
+        }
         case "render_action_buttons": {
           const buttons = resolveButtons(tool.input?.buttons);
           setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
