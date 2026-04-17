@@ -763,6 +763,8 @@ const FreeChat = () => {
                           ))}
                         </div>
                       </div>
+                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                      <ReportGeneratingIndicator />
                     ) : msg.role === "user" ? (
                       <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
                         <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>

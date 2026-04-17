@@ -1131,6 +1131,8 @@ const Chat = () => {
                           ))}
                         </div>
                       </div>
+                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                      <ReportGeneratingIndicator />
                     ) : msg.role === "user" ? (
                       /* User bubble — light gray pill, right-aligned */
                       <div
