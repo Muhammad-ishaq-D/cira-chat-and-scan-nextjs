@@ -196,6 +196,7 @@ const Chat = () => {
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
   const prepPayloadSentRef = useRef(false);
+  const reportRecoveryAttemptsRef = useRef(0);
   // Keep ref in sync with state so async callbacks always read latest value
   useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
   useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
@@ -210,7 +211,10 @@ const Chat = () => {
   const syncCurrentSessionId = (sessionId: string | null) => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
-    if (!sessionId) prepPayloadSentRef.current = false;
+    if (!sessionId) {
+      prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
+    }
   };
 
   const clearLiveTypingState = () => {
@@ -318,6 +322,7 @@ const Chat = () => {
           break;
         case "render_ai_consult_summary": {
           const summaryData = tool.input as ConsultSummary;
+          reportRecoveryAttemptsRef.current = 0;
           setMessages((prev) => [
             ...prev,
             { role: "summary" as const, text: "", summaryData },
@@ -343,6 +348,7 @@ const Chat = () => {
         }
         case "render_detailed_report": {
           const detailedData = tool.input as DetailedReport;
+          reportRecoveryAttemptsRef.current = 0;
           setMessages((prev) => [
             ...prev,
             { role: "detailed_report" as const, text: "", detailedData },
@@ -375,15 +381,20 @@ const Chat = () => {
         case "prepare_consultation_payload": {
           console.log(`[Tool: ${tool.name}]`, tool.input);
           const payload = tool.input?.consultation_payload;
-          // Send a follow-up ONCE so the agent generates the actual report
-          if (payload?.reason && !prepPayloadSentRef.current) {
+          // Send a follow-up so the agent generates the actual report.
+          // Allow up to 2 retry attempts in case the model loops back to prepare instead of render.
+          if (payload?.reason && reportRecoveryAttemptsRef.current < 2) {
+            const isRetry = prepPayloadSentRef.current;
             prepPayloadSentRef.current = true;
+            reportRecoveryAttemptsRef.current += 1;
             setTimeout(() => {
               const pathway = payload?.pathway;
+              const renderTool = pathway === "detailed" ? "render_detailed_report" : "render_ai_consult_summary";
+              const reportLabel = pathway === "detailed" ? "detailed clinical report" : "quick assessment summary";
               const payloadJson = JSON.stringify(payload, null, 2);
-              const followUp = pathway === "detailed"
-                ? `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_detailed_report tool to generate the detailed clinical report. Do NOT call prepare_consultation_payload again. Use the render_detailed_report tool NOW.`
-                : `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nNow you MUST call the render_ai_consult_summary tool to generate the quick assessment summary. Do NOT call prepare_consultation_payload again. Use the render_ai_consult_summary tool NOW.`;
+              const followUp = isRetry
+                ? `You already called prepare_consultation_payload. Do NOT call prepare_consultation_payload again.\n\nUsing ONLY the consultation payload below, your next response MUST contain exactly one tool call: ${renderTool}.\nDo not ask more questions.\nDo not output normal text.\n\nConsultation payload:\n${payloadJson}`
+                : `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
               callClaude(followUp, undefined, true);
             }, 500);
           }
@@ -810,6 +821,7 @@ const Chat = () => {
       syncCurrentSessionId(null);
       setConversationHistory([]);
       prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
       clearLiveTypingState();
 
       if (pendingLandingMessage) {
