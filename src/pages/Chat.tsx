@@ -875,14 +875,25 @@ const Chat = () => {
         const apiHistory: ApiMessage[] = [];
         for (const m of msgs) {
           const content = m.content || m.text || "";
+          // Filter out internal technical follow-up messages
+          if (content.startsWith("Tool result for prepare_consultation_payload") || 
+              content.startsWith("You already called prepare_consultation_payload")) {
+            continue;
+          }
           const role = m.role === "user" ? "user" : "assistant";
           apiHistory.push({ role, text: content });
           uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: content });
         }
         setConversationHistory(apiHistory);
         setMessages(uiMessages);
+
         if (uiMessages.length === 0) {
           toast.info("No messages found in this session");
+        } else {
+          // AUTO-SUMMARY TRIGGER ON RESUME
+          // Ask Claude for a brief summary of the previous session to help the user resume
+          const resumePrompt = "I have resumed this chat session. Based on our previous discussion above, please provide a very brief (1-2 sentence) summary of what we discussed, and then ask me if there are any new symptoms or if I'd like to continue.";
+          callClaude(resumePrompt, undefined, true);
         }
       } catch (e: any) {
         console.error("[Load session messages failed]", e);
@@ -1208,6 +1219,7 @@ const Chat = () => {
                       </div>
                     ) : (
                       /* Cira response — no bubble, just text with sparkle icon */
+                      (msg.text === "Tool Call Executed" || (!msg.text?.trim() && streamingMsgIndex !== i)) ? null : (
                       <div className="max-w-[95%] md:max-w-[80%]">
                         <div className="mb-2">
                           <AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} />
@@ -1247,6 +1259,7 @@ const Chat = () => {
                           </p>
                         </div>
                       </div>
+                    )
                     )}
                   </div>
                 ))}
