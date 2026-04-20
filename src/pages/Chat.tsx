@@ -192,7 +192,9 @@ const Chat = () => {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(
+    () => sessionStorage.getItem("cira_active_session") || null
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
@@ -212,7 +214,11 @@ const Chat = () => {
   const syncCurrentSessionId = (sessionId: string | null) => {
     currentSessionIdRef.current = sessionId;
     setCurrentSessionId(sessionId);
-    if (!sessionId) {
+    // Persist to sessionStorage so navigation within the tab doesn't lose the session
+    if (sessionId) {
+      sessionStorage.setItem("cira_active_session", sessionId);
+    } else {
+      sessionStorage.removeItem("cira_active_session");
       prepPayloadSentRef.current = false;
       reportRecoveryAttemptsRef.current = 0;
     }
