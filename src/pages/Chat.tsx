@@ -313,6 +313,7 @@ const Chat = () => {
       return rawButtons;
     };
 
+    const hasReportItem = toolCalls.some(t => t.name === "render_ai_consult_summary" || t.name === "render_detailed_report");
     for (const tool of toolCalls) {
       switch (tool.name) {
         case "openModal":
@@ -384,7 +385,8 @@ const Chat = () => {
           const payload = tool.input?.consultation_payload;
           // Send a follow-up so the agent generates the actual report.
           // Allow up to 2 retry attempts in case the model loops back to prepare instead of render.
-          if (payload?.reason && reportRecoveryAttemptsRef.current < 2) {
+          // CRITICAL: If the model already sent a report in this same batch (hasReportItem), skip follow-up.
+          if (payload?.reason && reportRecoveryAttemptsRef.current < 2 && !hasReportItem) {
             const isRetry = prepPayloadSentRef.current;
             prepPayloadSentRef.current = true;
             reportRecoveryAttemptsRef.current += 1;
