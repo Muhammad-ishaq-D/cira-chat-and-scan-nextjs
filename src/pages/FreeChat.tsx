@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal, Square } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -114,7 +114,7 @@ const buildAssessmentToolFollowUp = (payload: any, isRetry = false) => {
   return `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
 };
 
-const FreeChat = () => {
+const FreeChat = forwardRef<HTMLDivElement>((_props, ref) => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report" | "action_buttons"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport; buttons?: Array<{ id: string; label: string; description?: string }> }[]>([]);
@@ -622,7 +622,7 @@ const FreeChat = () => {
   };
 
   return (
-    <div className="flex bg-background" style={{ height: "100dvh" }}>
+    <div ref={ref} className="flex bg-background" style={{ height: "100dvh" }}>
       {/* Chat history drawer */}
       {showHistory && (
         <>
@@ -956,6 +956,8 @@ const FreeChat = () => {
       </div>
     </div>
   );
-};
+});
+
+FreeChat.displayName = "FreeChat";
 
 export default FreeChat;
