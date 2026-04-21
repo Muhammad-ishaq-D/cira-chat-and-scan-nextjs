@@ -5,11 +5,17 @@
 
 const DEVICE_ID_KEY = "cira_device_id";
 const FREE_CREDITS_KEY = "cira_free_credits";
+const FREE_CREDITS_DATE_KEY = "cira_free_credits_date";
 const FREE_SCANS_KEY = "cira_free_scans";
 const FREE_CHAT_HISTORY_KEY = "cira_free_chat_history";
 
-const INITIAL_CREDITS = 200;
+const INITIAL_CREDITS = 200; // per day
 const INITIAL_SCANS = 1;
+
+function todayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
 
 function generateUUID(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -29,13 +35,22 @@ export function getDeviceId(): string {
 }
 
 export function getFreeCredits(): number {
+  const today = todayKey();
+  const storedDate = localStorage.getItem(FREE_CREDITS_DATE_KEY);
+
+  // Daily reset: if no date or different day, reset to INITIAL_CREDITS
+  if (storedDate !== today) {
+    localStorage.setItem(FREE_CREDITS_DATE_KEY, today);
+    localStorage.setItem(FREE_CREDITS_KEY, String(INITIAL_CREDITS));
+    return INITIAL_CREDITS;
+  }
+
   const val = localStorage.getItem(FREE_CREDITS_KEY);
   if (val === null) {
     localStorage.setItem(FREE_CREDITS_KEY, String(INITIAL_CREDITS));
     return INITIAL_CREDITS;
   }
   const current = parseInt(val, 10);
-  // Cap to new limit if previously had higher allowance
   if (current > INITIAL_CREDITS) {
     localStorage.setItem(FREE_CREDITS_KEY, String(INITIAL_CREDITS));
     return INITIAL_CREDITS;
