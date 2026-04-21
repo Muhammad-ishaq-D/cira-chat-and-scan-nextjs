@@ -1,5 +1,6 @@
 import { Stethoscope, Calendar, ChevronRight } from "lucide-react";
 import { getDeviceId } from "@/lib/freeCredits";
+import { getUser } from "@/lib/auth";
 
 const AIR_DOCTOR_URL = "https://airdoctor.biz/Cira";
 
@@ -8,17 +9,20 @@ interface Props {
 }
 
 const readStoredUser = (): any => {
-  try {
-    const raw =
-      sessionStorage.getItem("user") ||
-      localStorage.getItem("user") ||
-      sessionStorage.getItem("cira_user") ||
-      localStorage.getItem("cira_user") ||
-      "{}";
-    return JSON.parse(raw);
-  } catch {
-    return {};
+  const authUser = getUser();
+  if (authUser) return authUser;
+
+  for (const store of [sessionStorage, localStorage]) {
+    for (const key of ["cira_user", "user"]) {
+      try {
+        const raw = store.getItem(key);
+        if (!raw || raw === "{}" || raw === "null" || raw === "undefined") continue;
+        const parsed = JSON.parse(raw);
+        if (parsed && (parsed.id || parsed.email)) return parsed;
+      } catch { /* continue */ }
+    }
   }
+  return {};
 };
 
 const BookDoctorCTA = ({ source = "report_card" }: Props) => {
