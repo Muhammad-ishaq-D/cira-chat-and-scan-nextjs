@@ -298,7 +298,12 @@ const FreeChat = () => {
     const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current ? buildFreeChatPrompt(userText) : userText;
 
     setConversationHistory(updatedHistory);
-    if (!hidden) setIsTyping(true);
+    if (!hidden) {
+      setIsTyping(true);
+      // Deduct one credit locally per outgoing message
+      const remaining = deductFreeCredits(1);
+      setGuestRemaining(remaining);
+    }
     setIsApiLoading(true);
 
     // Cancel any in-flight request before starting a new one
