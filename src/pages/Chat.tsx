@@ -158,15 +158,24 @@ const navItems = [
 
 const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
 
-const buildFreeChatPrompt = (userText: string) => [
-  userText,
-  "",
+const JUST_CHAT_INSTRUCTIONS = [
   "Just Chat mode selected.",
   "Reply conversationally as Cira.",
   "Do not ask the user to choose Assessment or Vital Scan.",
   "Do not call the openModal tool unless the user explicitly asks for an assessment or scan.",
   "Do not begin a structured intake unless the user asks for one.",
 ].join("\n");
+
+const buildFreeChatPrompt = (userText: string) =>
+  [userText, "", JUST_CHAT_INSTRUCTIONS].join("\n");
+
+// Strip the appended Just Chat instructions when displaying historical messages
+const stripJustChatInstructions = (text: string): string => {
+  if (!text) return text;
+  const idx = text.indexOf("Just Chat mode selected.");
+  if (idx === -1) return text;
+  return text.slice(0, idx).trimEnd();
+};
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -921,15 +930,17 @@ const Chat = () => {
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
         for (const m of msgs) {
-          const content = m.content || m.text || "";
+          const rawContent = m.content || m.text || "";
           // Filter out internal technical follow-up messages
-          if (content.startsWith("Tool result for prepare_consultation_payload") || 
-              content.startsWith("You already called prepare_consultation_payload")) {
+          if (rawContent.startsWith("Tool result for prepare_consultation_payload") || 
+              rawContent.startsWith("You already called prepare_consultation_payload")) {
             continue;
           }
-          const role = m.role === "user" ? "user" : "assistant";
+          const isUser = m.role === "user";
+          const content = isUser ? stripJustChatInstructions(rawContent) : rawContent;
+          const role = isUser ? "user" : "assistant";
           apiHistory.push({ role, text: content });
-          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: content });
+          uiMessages.push({ role: isUser ? "user" : "cira", text: content });
         }
         setConversationHistory(apiHistory);
         setMessages(uiMessages);
