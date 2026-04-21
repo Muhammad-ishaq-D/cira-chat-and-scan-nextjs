@@ -1,5 +1,6 @@
 import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
 import type { ConsultSummary } from "@/lib/chatApi";
+import BookDoctorCTA from "./BookDoctorCTA";
 
 const renderInline = (text: string, keyPrefix = "") => {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -185,6 +186,8 @@ const ConsultSummaryCard = ({ data }: Props) => {
           </div>
         </div>
 
+
+        <BookDoctorCTA source="consult_summary_card" />
 
         <div className="px-4 py-2 border-t border-border/20 bg-amber-50/50">
           <div className="flex items-center gap-1.5">

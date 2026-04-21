@@ -1,5 +1,6 @@
 import { AlertTriangle, Activity, Heart, Brain, Pill, Stethoscope, ClipboardList, ShieldCheck, TrendingUp, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import BookDoctorCTA from "./BookDoctorCTA";
 
 export interface DetailedReport {
   patient_summary: string;
@@ -213,6 +214,8 @@ const DetailedReportCard = ({ data }: Props) => {
             </ul>
           </div>
         )}
+
+        <BookDoctorCTA source="detailed_report_card" />
 
         {/* Disclaimer */}
         <div className="px-4 py-2 border-t border-border/20 bg-amber-50/50">
