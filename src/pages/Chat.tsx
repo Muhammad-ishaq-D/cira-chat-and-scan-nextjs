@@ -930,15 +930,17 @@ const Chat = () => {
         const uiMessages: typeof messages = [];
         const apiHistory: ApiMessage[] = [];
         for (const m of msgs) {
-          const content = m.content || m.text || "";
+          const rawContent = m.content || m.text || "";
           // Filter out internal technical follow-up messages
-          if (content.startsWith("Tool result for prepare_consultation_payload") || 
-              content.startsWith("You already called prepare_consultation_payload")) {
+          if (rawContent.startsWith("Tool result for prepare_consultation_payload") || 
+              rawContent.startsWith("You already called prepare_consultation_payload")) {
             continue;
           }
-          const role = m.role === "user" ? "user" : "assistant";
+          const isUser = m.role === "user";
+          const content = isUser ? stripJustChatInstructions(rawContent) : rawContent;
+          const role = isUser ? "user" : "assistant";
           apiHistory.push({ role, text: content });
-          uiMessages.push({ role: m.role === "user" ? "user" : "cira", text: content });
+          uiMessages.push({ role: isUser ? "user" : "cira", text: content });
         }
         setConversationHistory(apiHistory);
         setMessages(uiMessages);
