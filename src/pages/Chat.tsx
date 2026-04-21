@@ -249,6 +249,28 @@ const Chat = () => {
     loadChatHistory();
   }, [loadChatHistory]);
 
+  // Cache user profile (age, biological_sex) for inclusion in chat requests
+  useEffect(() => {
+    if (!getToken()) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { userApi } = await import("@/lib/apiClient");
+        const p = await userApi.getProfile();
+        if (cancelled || !p) return;
+        const cached = {
+          name: p.name || localUser?.name || null,
+          age: p.age ?? null,
+          biological_sex: p.biological_sex ?? null,
+        };
+        sessionStorage.setItem("cira_profile_cache", JSON.stringify(cached));
+      } catch {
+        /* non-fatal — fall back to whatever's already cached */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   // Auto-scroll to bottom when messages change or typing starts
   useEffect(() => {
     if (scrollRef.current) {
