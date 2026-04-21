@@ -14,6 +14,8 @@ import {
   getFreeChatHistory,
   saveFreeChatSession,
   deleteFreeChatSession,
+  getFreeCredits,
+  deductFreeCredits,
   type FreeChatSession,
 } from "@/lib/freeCredits";
 
@@ -134,8 +136,8 @@ const FreeChat = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [guestRemaining, setGuestRemaining] = useState<number>(20);
-  const [guestDailyLimit, setGuestDailyLimit] = useState<number>(20);
+  const [guestRemaining, setGuestRemaining] = useState<number>(() => getFreeCredits());
+  const [guestDailyLimit, setGuestDailyLimit] = useState<number>(200);
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
   const currentSessionIdRef = useRef<string | null>(null);
