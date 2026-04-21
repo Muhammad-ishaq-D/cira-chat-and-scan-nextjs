@@ -1,25 +1,37 @@
 import { Stethoscope } from "lucide-react";
-import { getUser } from "@/lib/auth";
 import { getDeviceId } from "@/lib/freeCredits";
 
 const AIR_DOCTOR_URL = "https://airdoctor.biz/Cira";
 
+const readStoredUser = (): any => {
+  try {
+    const raw =
+      sessionStorage.getItem("user") ||
+      localStorage.getItem("user") ||
+      sessionStorage.getItem("cira_user") ||
+      localStorage.getItem("cira_user") ||
+      "{}";
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+};
+
 const AirDoctorButton = () => {
   const handleClick = () => {
-    // Collect tracking details
-    const user = getUser();
+    const user = readStoredUser();
+    const deviceId = getDeviceId();
     const trackingData = {
-      timestamp: new Date().toISOString(),
-      userId: user?.id || null,
-      userName: user?.name || null,
-      userEmail: user?.email || null,
-      userPlan: (user as any)?.plan || "free",
-      deviceId: getDeviceId(),
+      clicked_at: new Date().toISOString(),
       page: window.location.pathname,
-      source: "floating_button",
-      referrer: document.referrer || null,
-      userAgent: navigator.userAgent,
-      screenSize: `${window.innerWidth}x${window.innerHeight}`,
+      source: "welcome_button",
+      user_agent: navigator.userAgent,
+      screen_size: `${window.screen.width}x${window.screen.height}`,
+      user_id: user?.id || null,
+      user_name: user?.name || null,
+      user_email: user?.email || null,
+      user_plan: user?.plan || "free",
+      device_id: deviceId || null,
     };
 
     // Log to console for debugging & analytics
