@@ -473,9 +473,26 @@ const Chat = () => {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
+      // Build userProfile from cache (logged-in only); include only non-null fields
+      let userProfile: Record<string, string | number> | undefined;
+      if (token) {
+        let cached: any = null;
+        try { cached = JSON.parse(sessionStorage.getItem("cira_profile_cache") || "null"); } catch {}
+        const candidate = {
+          name: cached?.name ?? localUser?.name ?? null,
+          age: cached?.age ?? null,
+          biological_sex: cached?.biological_sex ?? null,
+        };
+        const filtered = Object.fromEntries(
+          Object.entries(candidate).filter(([, v]) => v !== null && v !== undefined && v !== "")
+        );
+        if (Object.keys(filtered).length > 0) userProfile = filtered as any;
+      }
+
       const payload = JSON.stringify({
         message: outboundText,
         sessionId: currentSessionIdRef.current || undefined,
+        ...(userProfile ? { userProfile } : {}),
       });
 
       const res = await fetch(`${API_BASE}/api/anthropic/chat/stream`, {
