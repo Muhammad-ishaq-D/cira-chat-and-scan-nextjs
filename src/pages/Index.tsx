@@ -9,6 +9,7 @@ import faceHeatmap from "@/assets/face-heatmap.jpg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { isAuthenticated, getUser } from "@/lib/auth";
+import ConsentBanner from "@/components/ConsentBanner";
 
 
 
@@ -765,6 +766,7 @@ const Index = () => {
         </p>
         <p>© 2026 Cira — askainurse.com</p>
       </footer>
+      <ConsentBanner />
     </div>
   );
 };
