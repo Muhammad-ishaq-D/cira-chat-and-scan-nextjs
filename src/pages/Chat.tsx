@@ -4,6 +4,7 @@ import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, Me
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import ConsentBanner from "@/components/ConsentBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
@@ -1436,8 +1437,12 @@ const Chat = () => {
                 )}
               </div>
             </form>
+            <div className="text-center px-3 pb-1">
+              <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
+            </div>
           </div>
       </div>
+      <ConsentBanner />
 
       {/* Face Scan Modal */}
       {showScanModal && (
