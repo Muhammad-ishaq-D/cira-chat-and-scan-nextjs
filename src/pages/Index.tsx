@@ -493,7 +493,10 @@ const Index = () => {
           <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body whitespace-pre-line">
             {"Cira uses clinically validated camera technology\nto read 30+ vital signs from your face in 30 seconds.\n\nBlood pressure. Heart rate. HRV.\nStress index. Breathing rate.\nNo hardware. No wearables.\nJust your camera."}
           </p>
-          <button className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3">
+          <button
+            onClick={() => navigate("/vitals-scan")}
+            className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3"
+          >
             Start your scan →
           </button>
           <p className="text-xs text-muted-foreground mt-3 font-body">
