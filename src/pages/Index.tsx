@@ -760,9 +760,9 @@ const Index = () => {
         <p>Cira does not replace professional medical advice.</p>
         <p>Clinically validated vitals · Licensed physicians</p>
         <p>
-          <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+          <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Privacy</button>
           {" · "}
-          <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+          <button onClick={() => navigate("/terms")} className="hover:text-foreground transition-colors">Terms</button>
         </p>
         <p>© 2026 Cira — askainurse.com</p>
       </footer>

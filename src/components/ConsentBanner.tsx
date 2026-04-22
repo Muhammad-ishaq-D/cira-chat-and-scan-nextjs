@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "cira_consent_v1";
@@ -29,8 +30,9 @@ const ConsentBanner = () => {
       <div className="rounded-xl border border-border bg-card/95 backdrop-blur p-3 shadow-lg">
         <div className="flex items-start gap-2">
           <p className="text-[11px] leading-relaxed text-muted-foreground flex-1">
-            Cira stores your health data to power your assessments. By using Cira you consent to processing
-            of your vitals & chats. Not a medical service.
+            Cira stores your health data to power your assessments. By continuing you agree to our{" "}
+            <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link> and{" "}
+            <Link to="/terms" className="underline hover:text-foreground">Terms</Link>. Not a medical service.
           </p>
           <button
             onClick={accept}
