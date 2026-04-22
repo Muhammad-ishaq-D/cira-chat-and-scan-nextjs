@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal, Square } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import ConsentBanner from "@/components/ConsentBanner";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
@@ -955,12 +956,14 @@ const FreeChat = () => {
               )}
             </div>
           </form>
-          {/* Daily limit counter */}
-          <div className="text-center">
+          {/* Disclaimer + Daily limit counter */}
+          <div className="text-center px-3 space-y-0.5">
+            <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
             <p className="text-[9px] text-muted-foreground/50">{guestRemaining}/{guestDailyLimit} free messages today · <button onClick={() => navigate("/login")} className="text-primary hover:underline">Login for unlimited</button></p>
           </div>
         </div>
       </div>
+      <ConsentBanner />
     </div>
   );
 };

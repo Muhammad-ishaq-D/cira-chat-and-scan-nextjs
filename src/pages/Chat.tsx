@@ -4,6 +4,7 @@ import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, Me
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import ConsentBanner from "@/components/ConsentBanner";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
