@@ -766,6 +766,7 @@ const Index = () => {
         </p>
         <p>© 2026 Cira — askainurse.com</p>
       </footer>
+      <ConsentBanner />
     </div>
   );
 };
