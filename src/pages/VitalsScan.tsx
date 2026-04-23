@@ -403,9 +403,33 @@ const VitalsScan = () => {
 
           {/* Error overlay */}
           {error && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
-              <AlertCircle size={40} className="text-destructive mb-3 opacity-70" />
-              <p className="text-white/80 text-sm font-body mb-4 max-w-xs text-center px-4">{error}</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-10 px-6">
+              <AlertCircle size={40} className={`mb-3 opacity-80 ${status === "unsupported" ? "text-amber-400" : "text-destructive"}`} />
+              <h3 className="text-white text-base font-heading font-semibold mb-2 text-center">
+                {status === "unsupported" ? "Browser not supported" : "Something went wrong"}
+              </h3>
+              <p className="text-white/70 text-xs md:text-sm font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
+              {status === "unsupported" && (
+                <div className="text-[11px] text-white/50 font-body mb-5 max-w-xs text-center leading-relaxed">
+                  Tip: copy the link and open it in <span className="text-white/80">Safari</span> or <span className="text-white/80">Chrome</span> directly.
+                </div>
+              )}
+              <div className="flex gap-2.5">
+                <button
+                  onClick={() => navigate(isGuest ? "/" : "/dashboard")}
+                  className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs md:text-sm font-medium transition-all"
+                >
+                  Go back
+                </button>
+                {status !== "unsupported" && (
+                  <button
+                    onClick={reset}
+                    className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-medium transition-all"
+                  >
+                    Try again
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
