@@ -138,7 +138,7 @@ const Index = () => {
     if (heroMessage.trim()) {
       sessionStorage.setItem("cira_landing_message", heroMessage.trim());
     }
-    navigate("/free-chat");
+    navigate(isAuthenticated() ? "/chat" : "/free-chat");
   };
 
   useEffect(() => {
