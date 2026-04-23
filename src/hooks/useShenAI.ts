@@ -3,7 +3,34 @@ import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
-export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "finished" | "error";
+export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "finished" | "error" | "unsupported";
+
+/**
+ * The Shen AI WASM is built with the WebAssembly exception-handling proposal
+ * (uses the `exn` value type). Older browsers / in-app webviews (Facebook,
+ * Instagram, older Safari < 17.4, older Android WebView, older Chrome) will
+ * throw "CompileError: invalid value type 'exn'" when instantiating.
+ *
+ * This module-level check validates support BEFORE we attempt to load the
+ * 5MB+ WASM, so we can show a clean "browser not supported" message instead
+ * of a cryptic compile error.
+ */
+function isWasmExceptionHandlingSupported(): boolean {
+  if (typeof WebAssembly === "undefined" || !WebAssembly.validate) return false;
+  try {
+    // Minimal WASM module that uses the exception-handling `try`/`catch` opcodes.
+    // Bytes encode: (module (func (try (catch_all)) end))
+    const bytes = new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+      0x01, 0x04, 0x01, 0x60, 0x00, 0x00,
+      0x03, 0x02, 0x01, 0x00,
+      0x0a, 0x09, 0x01, 0x07, 0x00, 0x06, 0x40, 0x19, 0x0b, 0x0b,
+    ]);
+    return WebAssembly.validate(bytes);
+  } catch {
+    return false;
+  }
+}
 
 export interface VitalResults {
   heartRate: number;
@@ -216,6 +243,16 @@ export function useShenAI() {
     setResults(null);
     setProgress(0);
 
+    // Pre-flight: detect WASM exception-handling support.
+    if (!isWasmExceptionHandlingSupported()) {
+      console.warn("[ShenAI] WebAssembly exception handling not supported on this browser.");
+      setError(
+        "Your browser doesn't support the technology needed for the face scan. Please open Cira in the latest Chrome, Safari (17.4+), Edge, or Firefox — and avoid in-app browsers (Facebook, Instagram, etc.)."
+      );
+      setStatus("unsupported");
+      return;
+    }
+
     try {
       const ShenAI = (await import("shenai-sdk")).default;
       const sdk: ShenaiSDK = await ShenAI({
@@ -275,8 +312,23 @@ export function useShenAI() {
       });
     } catch (err: any) {
       console.error("[ShenAI] init error:", err);
-      setError(err.message || "Failed to load Shen AI SDK");
-      setStatus("error");
+      const msg = String(err?.message || err || "");
+      // Catch the "invalid value type 'exn'" CompileError that slips through
+      // when validate() lies (some WebViews) or when other WASM features fail.
+      if (
+        msg.includes("invalid value type") ||
+        msg.includes("CompileError") ||
+        msg.includes("exn") ||
+        err?.name === "CompileError"
+      ) {
+        setError(
+          "Your browser doesn't support the technology needed for the face scan. Please open Cira in the latest Chrome, Safari (17.4+), Edge, or Firefox — and avoid in-app browsers (Facebook, Instagram, etc.)."
+        );
+        setStatus("unsupported");
+      } else {
+        setError(err.message || "Failed to load Shen AI SDK");
+        setStatus("error");
+      }
     }
   }, [cleanup]);
 
