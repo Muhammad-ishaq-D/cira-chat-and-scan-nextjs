@@ -1,7 +1,30 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle } from "lucide-react";
+import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
+
+interface RawUser {
+  id: string | number;
+  name?: string;
+  full_name?: string;
+  email?: string;
+  avatar?: string | null;
+  avatar_url?: string | null;
+  is_suspended?: number | boolean | null;
+  suspended?: number | boolean | null;
+  status?: string | null;
+  plan?: string | null;
+  plan_tier?: string | null;
+  plan_name?: string | null;
+  tier?: string | null;
+  credits?: number | { balance?: number; remaining?: number; total?: number } | null;
+  credits_balance?: number | null;
+  credits_remaining?: number | null;
+  balance?: number | null;
+  created_at?: string;
+  createdAt?: string;
+  joined_at?: string;
+}
 
 interface User {
   id: string;
@@ -9,8 +32,39 @@ interface User {
   email: string;
   avatar: string | null;
   is_suspended: number;
+  plan: string;
+  credits: number;
   created_at: string;
 }
+
+const normalizeUser = (raw: RawUser): User => {
+  const id = String(raw.id ?? "");
+  const name = raw.name || raw.full_name || raw.email || "Unnamed";
+  const email = raw.email || "";
+  const avatar = (raw.avatar ?? raw.avatar_url) || null;
+
+  // Suspension can come as 0/1, true/false, or status string
+  let suspended = 0;
+  if (raw.is_suspended === true || raw.is_suspended === 1 || (raw.is_suspended as any) === "1") suspended = 1;
+  else if (raw.suspended === true || raw.suspended === 1 || (raw.suspended as any) === "1") suspended = 1;
+  else if (typeof raw.status === "string" && /suspend|inactive|disabled|banned/i.test(raw.status)) suspended = 1;
+
+  const plan =
+    raw.plan_tier || raw.plan || raw.plan_name || raw.tier || "Free";
+
+  // Credits can be number, object, or alt fields
+  let credits = 0;
+  if (typeof raw.credits === "number") credits = raw.credits;
+  else if (raw.credits && typeof raw.credits === "object") {
+    credits = raw.credits.balance ?? raw.credits.remaining ?? raw.credits.total ?? 0;
+  } else if (typeof raw.credits_balance === "number") credits = raw.credits_balance;
+  else if (typeof raw.credits_remaining === "number") credits = raw.credits_remaining;
+  else if (typeof raw.balance === "number") credits = raw.balance;
+
+  const created_at = raw.created_at || raw.createdAt || raw.joined_at || "";
+
+  return { id, name, email, avatar, is_suspended: suspended, plan: String(plan), credits, created_at };
+};
 
 const AdminUsers = () => {
   const [search, setSearch] = useState("");
@@ -20,8 +74,9 @@ const AdminUsers = () => {
 
   const loadUsers = async () => {
     try {
-      const data = await adminApi.getUsers();
-      setUsers(Array.isArray(data) ? data : data.users || []);
+      const data: any = await adminApi.getUsers();
+      const list: RawUser[] = Array.isArray(data) ? data : (data?.users || data?.data || []);
+      setUsers(list.map(normalizeUser));
     } catch (e: any) {
       toast.error("Failed to load users");
     } finally {
@@ -43,8 +98,9 @@ const AdminUsers = () => {
       } else {
         await adminApi.activateUser(id);
       }
-      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, is_suspended: isSuspended === 0 ? 1 : 0 } : u)));
-      if (selectedUser?.id === id) setSelectedUser(prev => prev ? { ...prev, is_suspended: isSuspended === 0 ? 1 : 0 } : null);
+      const next = isSuspended === 0 ? 1 : 0;
+      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, is_suspended: next } : u)));
+      if (selectedUser?.id === id) setSelectedUser(prev => prev ? { ...prev, is_suspended: next } : null);
       toast.success("User status updated");
     } catch (e: any) {
       toast.error(e.message || "Failed to update status");
@@ -57,6 +113,7 @@ const AdminUsers = () => {
       try {
         await adminApi.adjustCredits(id, Number(amount), "Admin adjustment");
         toast.success("Credits added");
+        loadUsers();
       } catch (e: any) {
         toast.error(e.message || "Failed to add credits");
       }
@@ -69,6 +126,7 @@ const AdminUsers = () => {
       try {
         await adminApi.changeUserPlan(id, plan);
         toast.success("Plan updated");
+        setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, plan } : u)));
       } catch (e: any) {
         toast.error(e.message || "Failed to change plan");
       }
@@ -79,12 +137,22 @@ const AdminUsers = () => {
   const suspendedCount = users.filter((u) => u.is_suspended === 1).length;
 
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return "—";
     try {
-      return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    } catch { return dateStr; }
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "—";
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    } catch { return "—"; }
   };
 
   const getInitials = (name: string) => name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
+  const planBadgeClass = (plan: string) => {
+    const p = plan.toLowerCase();
+    if (p.includes("enterprise")) return "bg-purple-50 text-purple-600";
+    if (p.includes("pro")) return "bg-blue-50 text-blue-600";
+    return "bg-muted text-muted-foreground";
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-5">
@@ -122,6 +190,8 @@ const AdminUsers = () => {
                 <thead>
                   <tr className="border-b border-border bg-muted/20">
                     <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">User</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">Plan</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">Credits</th>
                     <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">Joined</th>
                     <th className="text-center px-4 py-3 font-medium text-muted-foreground text-xs">Status</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">Actions</th>
@@ -142,6 +212,10 @@ const AdminUsers = () => {
                           <div><p className="font-medium text-foreground">{u.name}</p><p className="text-xs text-muted-foreground">{u.email}</p></div>
                         </div>
                       </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right text-xs font-medium text-foreground">${u.credits.toFixed(2)}</td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
@@ -159,6 +233,9 @@ const AdminUsers = () => {
                       </td>
                     </tr>
                   ))}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">No users found</td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -181,6 +258,11 @@ const AdminUsers = () => {
                     {u.is_suspended ? "Suspended" : "Active"}
                   </span>
                 </div>
+                <div className="flex items-center gap-2 mb-3 text-xs">
+                  <span className={`px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-foreground font-medium">${u.credits.toFixed(2)}</span>
+                </div>
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
                   <div className="flex gap-1">
@@ -193,6 +275,9 @@ const AdminUsers = () => {
                 </div>
               </div>
             ))}
+            {filtered.length === 0 && (
+              <div className="bg-card/80 border border-border/50 rounded-xl p-8 text-center text-sm text-muted-foreground">No users found</div>
+            )}
           </div>
         </>
       )}
@@ -223,13 +308,17 @@ const AdminUsers = () => {
                 <span className={`text-xs font-medium px-3 py-1 rounded-full ${selectedUser.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
                   {selectedUser.is_suspended ? "Suspended" : "Active"}
                 </span>
+                <span className={`text-xs font-medium px-3 py-1 rounded-full ${planBadgeClass(selectedUser.plan)}`}>{selectedUser.plan}</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm"><Mail size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.email}</span></div>
+                <div className="flex items-center gap-3 text-sm"><Wallet size={14} className="text-muted-foreground" /><span className="text-foreground">${selectedUser.credits.toFixed(2)} credits</span></div>
+                <div className="flex items-center gap-3 text-sm"><Crown size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.plan} plan</span></div>
                 <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">Joined {formatDate(selectedUser.created_at)}</span></div>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => addCredits(selectedUser.id)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><CreditCard size={14} />Add Credits</button>
+                <button onClick={() => changePlan(selectedUser.id)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />Change Plan</button>
                 <button onClick={() => toggleStatus(selectedUser.id, selectedUser.is_suspended)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2">
                   {selectedUser.is_suspended ? <><CheckCircle size={14} />Activate</> : <><Ban size={14} />Suspend</>}
                 </button>
