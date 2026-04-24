@@ -45,8 +45,8 @@ const normalizeUser = (raw: RawUser): User => {
 
   // Suspension can come as 0/1, true/false, or status string
   let suspended = 0;
-  if (raw.is_suspended === true || raw.is_suspended === 1 || raw.is_suspended === "1") suspended = 1;
-  else if (raw.suspended === true || raw.suspended === 1 || raw.suspended === "1") suspended = 1;
+  if (raw.is_suspended === true || raw.is_suspended === 1 || (raw.is_suspended as any) === "1") suspended = 1;
+  else if (raw.suspended === true || raw.suspended === 1 || (raw.suspended as any) === "1") suspended = 1;
   else if (typeof raw.status === "string" && /suspend|inactive|disabled|banned/i.test(raw.status)) suspended = 1;
 
   const plan =
