@@ -495,6 +495,8 @@ const Index = () => {
           </p>
           <button
             onClick={() => navigate("/vitals-scan")}
+            onMouseEnter={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch {} }}
+            onTouchStart={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch {} }}
             className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3"
           >
             Start your scan →
