@@ -219,9 +219,9 @@ export function useShenAI() {
     try {
       const ShenAI = (await import("shenai-sdk")).default;
       const sdk: ShenaiSDK = await ShenAI({
-        enablePreloadDisplay: true,
-        preloadDisplayCanvasId: canvasId,
-        hidePreloadDisplayLogo: true,
+        // Disable SDK's internal preload canvas — we render our own React loader,
+        // and skipping this avoids extra canvas rendering work during WASM init.
+        enablePreloadDisplay: false,
         locateFile: (filename: string) => {
           if (filename.endsWith(".wasm")) return "/wasm/shenai_sdk.wasm";
           return filename;

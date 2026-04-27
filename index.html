@@ -13,8 +13,20 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <!-- Warm-prefetch the Shen AI WASM (34MB) so the face scan loads faster.
-         Uses low priority so it doesn't compete with critical resources. -->
-    <link rel="prefetch" href="/wasm/shenai_sdk.wasm" as="fetch" type="application/wasm" crossorigin="anonymous">
+         Uses low priority so it doesn't compete with critical resources.
+         On /vitals-scan we upgrade this to a high-priority preload via JS below. -->
+    <link rel="prefetch" id="shenai-wasm-hint" href="/wasm/shenai_sdk.wasm" as="fetch" type="application/wasm" crossorigin="anonymous">
+    <script>
+      // Route-aware: on the scan page, upgrade prefetch -> preload (high priority).
+      (function () {
+        try {
+          if (location.pathname.startsWith('/vitals-scan')) {
+            var hint = document.getElementById('shenai-wasm-hint');
+            if (hint) hint.setAttribute('rel', 'preload');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
     <script>
