@@ -135,35 +135,34 @@ const VitalsScan = () => {
         return;
       }
 
+      // Use cached profile to start SDK init immediately (no network wait).
+      // The 34MB WASM download dominates load time, so kick it off ASAP.
+      const cachedUser = getUser() as any;
+      initialize(CANVAS_ID, {
+        age: cachedUser?.age || undefined,
+        height: cachedUser?.height || undefined,
+        weight: cachedUser?.weight || undefined,
+        gender: cachedUser?.biological_sex || cachedUser?.gender || undefined,
+      });
+
+      // Fetch history + fresh profile in parallel (non-blocking)
       vitalsApi.getHistory()
         .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
         .catch(() => {});
 
-      try {
-        const freshProfile = await userApi.getProfile();
-        if (cancelled) return;
-
-        setUserProfile(freshProfile);
-        const scansLeft = freshProfile?.credits?.face_scans;
-        if (scansLeft !== "Unlimited" && typeof scansLeft === "number" && scansLeft <= 0) {
-          toast.error("No scan credits remaining. Upgrade your plan.", {
-            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
-            duration: 8000,
-          });
-          return;
-        }
-
-        initialize(CANVAS_ID, {
-          age: freshProfile?.age || undefined,
-          height: freshProfile?.height || undefined,
-          weight: freshProfile?.weight || undefined,
-          gender: freshProfile?.biological_sex || undefined,
-        });
-      } catch {
-        if (!cancelled) {
-          initialize(CANVAS_ID);
-        }
-      }
+      userApi.getProfile()
+        .then((freshProfile) => {
+          if (cancelled) return;
+          setUserProfile(freshProfile);
+          const scansLeft = freshProfile?.credits?.face_scans;
+          if (scansLeft !== "Unlimited" && typeof scansLeft === "number" && scansLeft <= 0) {
+            toast.error("No scan credits remaining. Upgrade your plan.", {
+              action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+              duration: 8000,
+            });
+          }
+        })
+        .catch(() => {});
     };
 
     void init();
