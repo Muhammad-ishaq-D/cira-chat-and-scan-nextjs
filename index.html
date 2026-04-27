@@ -12,6 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <!-- Warm-prefetch the Shen AI WASM (34MB) so the face scan loads faster.
+         Uses low priority so it doesn't compete with critical resources. -->
+    <link rel="prefetch" href="/wasm/shenai_sdk.wasm" as="fetch" type="application/wasm" crossorigin="anonymous">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
     <script>
