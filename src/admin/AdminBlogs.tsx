@@ -69,6 +69,7 @@ const AdminBlogs = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<BlogPost> | null>(null);
+  const [viewing, setViewing] = useState<BlogPost | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
