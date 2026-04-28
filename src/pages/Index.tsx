@@ -839,28 +839,88 @@ const Index = () => {
       {/* ═══════════════════════════════════════════ */}
       {/* ABOUT US */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="about" className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
-        <p className="text-xs text-primary font-body mb-4 tracking-wide uppercase">About us</p>
-        <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-6">
-          Health, made personal.
+      <section id="about" className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        <p className="text-xs text-primary font-body mb-4 tracking-wide uppercase text-center">About us</p>
+        <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-6 text-center">
+          Your AI health nurse — anytime, anywhere.
         </h2>
-        <p className="scroll-fade text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6 font-body">
-          Cira was born in Bangkok from a simple frustration:
-          patients arrive at the doctor's office with nothing —
-          no data, no record, just memory.
+        <p className="scroll-fade text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-12 font-body text-center">
+          askainurse.com is a clinical-grade AI health platform that combines a
+          conversational AI nurse with a 60-second face scan. We help you
+          understand your vitals, document symptoms, and walk into every
+          doctor's appointment prepared — all from your phone.
         </p>
-        <p className="scroll-fade text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body">
-          We combine clinically validated face-scan vitals with an
-          AI nurse trained on real clinical protocols — so you can
-          understand your body, document what matters, and walk
-          into every appointment prepared.
+
+        {/* What we do */}
+        <div className="scroll-fade grid sm:grid-cols-3 gap-6 mb-12">
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="text-primary font-heading text-xl font-semibold mb-2">01</div>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-2">Talk to Cira</h3>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed">
+              Chat with our AI nurse 24/7 in 16+ languages. Describe your
+              symptoms, ask health questions, get clinically grounded guidance.
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="text-primary font-heading text-xl font-semibold mb-2">02</div>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-2">Scan your vitals</h3>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed">
+              A 60-second face scan measures heart rate, blood pressure, HRV,
+              stress, breathing, and 10+ other vitals — using your camera only.
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="text-primary font-heading text-xl font-semibold mb-2">03</div>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-2">Get a real report</h3>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed">
+              Receive a downloadable clinical PDF with your vitals, AI
+              assessment, and recommendations — ready to share with your doctor.
+            </p>
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="scroll-fade bg-muted/30 rounded-2xl p-6 sm:p-10 mb-10">
+          <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground mb-6 text-center">
+            How it works
+          </h3>
+          <div className="space-y-4 max-w-2xl mx-auto text-sm sm:text-base font-body text-muted-foreground leading-relaxed">
+            <p>
+              <span className="text-foreground font-medium">1. Open Cira</span> — no app
+              download. Works in your browser on any phone or laptop.
+            </p>
+            <p>
+              <span className="text-foreground font-medium">2. Face scan</span> — our
+              clinically validated rPPG technology (the same signal-fusion approach used in
+              hospital studies) reads your vitals from subtle skin-color changes captured by
+              your camera. 100% on-device — no video leaves your phone.
+            </p>
+            <p>
+              <span className="text-foreground font-medium">3. AI consultation</span> —
+              Cira analyzes your vitals alongside your symptoms, asks the right follow-up
+              questions, and provides a structured clinical assessment.
+            </p>
+            <p>
+              <span className="text-foreground font-medium">4. Doctor-ready report</span> —
+              every consultation generates a PDF report you can save, track over time, or
+              share with a licensed physician through our doctor network.
+            </p>
+          </div>
+        </div>
+
+        <p className="scroll-fade text-xs text-muted-foreground text-center max-w-2xl mx-auto mb-6 font-body">
+          Cira is an AI health nurse — not a replacement for a licensed doctor.
+          For emergencies, always call your local emergency services.
         </p>
-        <button
-          onClick={() => navigate("/our-story")}
-          className="text-primary text-sm font-body hover:underline transition-colors"
-        >
-          Read our full story →
-        </button>
+
+        <div className="text-center">
+          <button
+            onClick={() => navigate("/our-story")}
+            className="text-primary text-sm font-body hover:underline transition-colors"
+          >
+            Read our founder's story →
+          </button>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
