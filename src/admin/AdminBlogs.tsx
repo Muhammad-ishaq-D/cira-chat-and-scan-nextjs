@@ -281,13 +281,59 @@ const AdminBlogs = () => {
               </Field>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="Cover image URL">
+                <Field label="Cover image">
                   <input
-                    value={editing.cover_image || ""}
-                    onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })}
-                    className="input"
-                    placeholder="https://..."
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleCoverFile(e.target.files?.[0])}
+                    className="hidden"
                   />
+                  {editing.cover_image ? (
+                    <div className="flex items-stretch gap-3">
+                      <div className="w-24 h-16 rounded-lg overflow-hidden bg-muted border border-border shrink-0">
+                        <img src={editing.cover_image} alt="cover preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          disabled={uploadingCover}
+                          className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          {uploadingCover ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditing({ ...editing, cover_image: "" })}
+                          className="text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 inline-flex items-center gap-1.5"
+                        >
+                          <Trash2 size={12} /> Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploadingCover}
+                      className="w-full h-24 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-accent/30 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground transition disabled:opacity-50"
+                    >
+                      {uploadingCover ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          <span>Processing image...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ImageIcon size={18} />
+                          <span>Click to upload cover image</span>
+                          <span className="text-[10px]">JPG, PNG, WEBP — max 8 MB</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </Field>
                 <Field label="Author">
                   <input
@@ -297,6 +343,7 @@ const AdminBlogs = () => {
                   />
                 </Field>
               </div>
+
 
               <div className="grid sm:grid-cols-3 gap-3">
                 <Field label="Tags (comma separated)">
