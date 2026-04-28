@@ -472,7 +472,7 @@ const AdminBlogs = () => {
               </details>
             </div>
 
-            <div className="sticky bottom-0 bg-card border-t border-border px-5 py-3 flex justify-end gap-2">
+            <div className="bg-card border-t border-border px-4 md:px-5 py-3 flex justify-end gap-2 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]">
               <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-lg text-sm border border-border hover:bg-accent">
                 Cancel
               </button>
