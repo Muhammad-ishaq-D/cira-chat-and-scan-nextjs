@@ -319,4 +319,22 @@ export const adminApi = {
   updateSettings: (settings: any) => adminPut("/api/admin/settings", settings),
   getCreditLimits: () => adminGet("/api/admin/settings/credits"),
   updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
+
+  // Blogs
+  getBlogs: () => adminGet<{ blogs?: BlogPost[] } | BlogPost[]>("/api/admin/blogs"),
+  getBlog: (id: string | number) => adminGet<BlogPost | { blog: BlogPost }>(`/api/admin/blogs/${id}`),
+  createBlog: (data: Partial<BlogPost>) => adminPost<BlogPost | { blog: BlogPost }>("/api/admin/blogs", data),
+  updateBlog: (id: string | number, data: Partial<BlogPost>) =>
+    adminPut<BlogPost | { blog: BlogPost }>(`/api/admin/blogs/${id}`, data),
+  deleteBlog: async (id: string | number) => {
+    const res = await fetch(`${API_BASE}/api/admin/blogs/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", ...adminHeaders() },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    return res.status === 204 ? {} : res.json().catch(() => ({}));
+  },
 };
