@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { blogsApi, type BlogPost as BlogPostType } from "@/lib/apiClient";
+import ciraLogo from "@/assets/cira-logo.svg";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -43,7 +44,10 @@ const BlogPost = () => {
         <Link to="/blog" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={16} /> All articles
         </Link>
-        <button onClick={() => navigate("/")} className="font-heading text-lg">Cira</button>
+        <button onClick={() => navigate("/")} className="flex items-center gap-2">
+          <img src={ciraLogo} alt="Cira" width={24} height={24} />
+          <span className="font-heading text-base font-semibold text-foreground">Cira</span>
+        </button>
       </header>
 
       {loading ? (
