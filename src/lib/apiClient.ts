@@ -205,6 +205,30 @@ export const doctorApi = {
   book: (doctorId: string, data: any) => post(`/api/doctors/${doctorId}/book`, data),
 };
 
+// ─── Blogs (public) ─────────────────────────────────────────────
+export interface BlogPost {
+  id: string | number;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  content: string;
+  cover_image?: string;
+  author?: string;
+  tags?: string[] | string;
+  status?: "draft" | "published";
+  meta_title?: string;
+  meta_description?: string;
+  reading_time?: number;
+  published_at?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const blogsApi = {
+  getAll: () => get<{ blogs?: BlogPost[] } | BlogPost[]>("/api/blogs"),
+  getBySlug: (slug: string) => get<BlogPost | { blog: BlogPost }>(`/api/blogs/${slug}`),
+};
+
 // ─── Admin ──────────────────────────────────────────────────────
 function adminHeaders() {
   const token = localStorage.getItem("cira_admin_token");
