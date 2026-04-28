@@ -71,6 +71,27 @@ const AdminBlogs = () => {
   const [editing, setEditing] = useState<Partial<BlogPost> | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleCoverFile = async (file: File | undefined | null) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image is too large (max 8 MB)");
+      return;
+    }
+    setUploadingCover(true);
+    try {
+      const dataUrl = await compressCoverImage(file);
+      setEditing((prev) => (prev ? { ...prev, cover_image: dataUrl } : prev));
+      toast.success("Cover image ready");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to process image");
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
 
   const load = async () => {
     setLoading(true);
