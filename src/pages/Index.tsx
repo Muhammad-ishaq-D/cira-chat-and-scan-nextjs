@@ -10,6 +10,34 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import ConsentBanner from "@/components/ConsentBanner";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+const faqs = [
+  {
+    q: "Is Cira a replacement for my doctor?",
+    a: "No. Cira is an AI health nurse, trained on clinical protocols. She helps you understand your symptoms, track your vitals, and arrive prepared at your doctor's office — but she never replaces professional medical advice.",
+  },
+  {
+    q: "How accurate is the face scan?",
+    a: "Cira uses the Shen AI SDK, a clinically validated rPPG technology that measures heart rate, blood pressure, breathing rate, and 15+ other vitals from a 60-second face scan. It is used in regulated health settings worldwide.",
+  },
+  {
+    q: "Is my data private?",
+    a: "Yes. The face scan is processed 100% on-device — your video never leaves your phone. Your conversations and vitals are encrypted and stored securely. We never sell your data.",
+  },
+  {
+    q: "How much does it cost?",
+    a: "You can chat with Cira and run one face scan completely free, no signup required. Paid plans unlock unlimited scans, conversation history, and detailed clinical reports.",
+  },
+  {
+    q: "Which languages does Cira speak?",
+    a: "Cira speaks 16+ languages including English, Spanish, French, Mandarin, Arabic, Hindi, Portuguese, German, Japanese, and more.",
+  },
+  {
+    q: "Can I see a real doctor through Cira?",
+    a: "Yes. After your assessment, you can book a licensed physician across specialties including GP, Pediatrics, Psychology, Cardiology, and more — available globally, 24/7.",
+  },
+];
 
 
 
