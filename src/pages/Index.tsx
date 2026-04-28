@@ -10,6 +10,34 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import ConsentBanner from "@/components/ConsentBanner";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+const faqs = [
+  {
+    q: "Is Cira a replacement for my doctor?",
+    a: "No. Cira is an AI health nurse, trained on clinical protocols. She helps you understand your symptoms, track your vitals, and arrive prepared at your doctor's office — but she never replaces professional medical advice.",
+  },
+  {
+    q: "How accurate is the face scan?",
+    a: "Cira uses the Shen AI SDK, a clinically validated rPPG technology that measures heart rate, blood pressure, breathing rate, and 15+ other vitals from a 60-second face scan. It is used in regulated health settings worldwide.",
+  },
+  {
+    q: "Is my data private?",
+    a: "Yes. The face scan is processed 100% on-device — your video never leaves your phone. Your conversations and vitals are encrypted and stored securely. We never sell your data.",
+  },
+  {
+    q: "How much does it cost?",
+    a: "You can chat with Cira and run one face scan completely free, no signup required. Paid plans unlock unlimited scans, conversation history, and detailed clinical reports.",
+  },
+  {
+    q: "Which languages does Cira speak?",
+    a: "Cira speaks 16+ languages including English, Spanish, French, Mandarin, Arabic, Hindi, Portuguese, German, Japanese, and more.",
+  },
+  {
+    q: "Can I see a real doctor through Cira?",
+    a: "Yes. After your assessment, you can book a licensed physician across specialties including GP, Pediatrics, Psychology, Cardiology, and more — available globally, 24/7.",
+  },
+];
 
 
 
@@ -808,7 +836,58 @@ const Index = () => {
         </div>
       </section>
 
+      {/* ═══════════════════════════════════════════ */}
+      {/* ABOUT US */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="about" className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
+        <p className="text-xs text-primary font-body mb-4 tracking-wide uppercase">About us</p>
+        <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-6">
+          Health, made personal.
+        </h2>
+        <p className="scroll-fade text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6 font-body">
+          Cira was born in Bangkok from a simple frustration:
+          patients arrive at the doctor's office with nothing —
+          no data, no record, just memory.
+        </p>
+        <p className="scroll-fade text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-body">
+          We combine clinically validated face-scan vitals with an
+          AI nurse trained on real clinical protocols — so you can
+          understand your body, document what matters, and walk
+          into every appointment prepared.
+        </p>
+        <button
+          onClick={() => navigate("/our-story")}
+          className="text-primary text-sm font-body hover:underline transition-colors"
+        >
+          Read our full story →
+        </button>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* FAQ */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        <p className="text-xs text-primary font-body mb-4 tracking-wide uppercase text-center">FAQ</p>
+        <h2 className="scroll-fade font-heading text-[28px] sm:text-[38px] font-semibold text-foreground leading-tight mb-10 text-center">
+          Frequently asked questions.
+        </h2>
+
+        <Accordion type="single" collapsible className="scroll-fade w-full">
+          {faqs.map((item, i) => (
+            <AccordionItem key={i} value={`item-${i}`} className="border-border">
+              <AccordionTrigger className="text-left font-body text-base text-foreground hover:no-underline">
+                {item.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground font-body text-[15px] leading-relaxed">
+                {item.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
+
       {/* Footer */}
+
       <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
         <p>Cira does not replace professional medical advice.</p>
         <p>Clinically validated vitals · Licensed physicians</p>
