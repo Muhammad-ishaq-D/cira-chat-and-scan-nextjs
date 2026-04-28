@@ -29,6 +29,9 @@ import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminBilling from "./admin/AdminBilling.tsx";
 import AdminAnalytics from "./admin/AdminAnalytics.tsx";
 import AdminSettings from "./admin/AdminSettings.tsx";
+import AdminBlogs from "./admin/AdminBlogs.tsx";
+import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +51,8 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Protected user routes */}
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -65,6 +70,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/billing" element={<AdminBilling />} />
+            <Route path="/admin/blogs" element={<AdminBlogs />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
