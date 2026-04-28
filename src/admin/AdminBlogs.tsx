@@ -241,6 +241,57 @@ const AdminBlogs = () => {
         </div>
       )}
 
+      {/* View modal */}
+      {viewing && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => setViewing(null)}>
+          <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between z-10">
+              <div className="min-w-0">
+                <h2 className="font-heading text-lg truncate">Preview</h2>
+                <p className="text-xs text-muted-foreground truncate">/{viewing.slug}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { const b = viewing; setViewing(null); openEdit(b); }}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5"
+                >
+                  <Pencil size={12} /> Edit
+                </button>
+                <button onClick={() => setViewing(null)} className="p-1.5 rounded-lg hover:bg-accent">
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            <div className="p-5 md:p-8">
+              {viewing.cover_image && (
+                <div className="aspect-[16/9] rounded-xl overflow-hidden bg-muted mb-6">
+                  <img src={viewing.cover_image} alt={viewing.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <span className={`text-[10px] uppercase font-medium px-1.5 py-0.5 rounded ${viewing.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
+                  {viewing.status || "published"}
+                </span>
+                {viewing.author && <span className="text-xs text-muted-foreground">By {viewing.author}</span>}
+                {viewing.reading_time && <span className="text-xs text-muted-foreground">· {viewing.reading_time} min read</span>}
+              </div>
+              <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
+              {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
+              <div className="prose prose-neutral max-w-none">
+                <ReactMarkdown>{viewing.content || ""}</ReactMarkdown>
+              </div>
+              {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
+                  {viewing.tags.map((t) => (
+                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">#{t}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Editor modal */}
       {editing && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
