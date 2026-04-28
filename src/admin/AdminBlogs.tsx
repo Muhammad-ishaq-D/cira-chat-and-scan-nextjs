@@ -295,8 +295,8 @@ const AdminBlogs = () => {
       {/* Editor modal */}
       {editing && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-          <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto">
-            <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between z-10">
+          <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-4xl h-[100dvh] md:h-auto md:max-h-[95vh] flex flex-col overflow-hidden">
+            <div className="bg-card border-b border-border px-4 md:px-5 py-3 flex items-center justify-between shrink-0">
               <h2 className="font-heading text-lg">{editing.id ? "Edit post" : "New post"}</h2>
               <div className="flex items-center gap-2">
                 <button
