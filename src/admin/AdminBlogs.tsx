@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
@@ -28,6 +28,42 @@ function slugify(s: string) {
     .replace(/-+/g, "-");
 }
 
+// Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
+function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("Please select an image file"));
+      return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width: w, height: h } = img;
+      if (w > maxWidth) {
+        h = Math.round((h * maxWidth) / w);
+        w = maxWidth;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      const useJpeg = file.type !== "image/png";
+      resolve(canvas.toDataURL(useJpeg ? "image/jpeg" : "image/png", quality));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+    img.src = url;
+  });
+}
+
 const AdminBlogs = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +71,27 @@ const AdminBlogs = () => {
   const [editing, setEditing] = useState<Partial<BlogPost> | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleCoverFile = async (file: File | undefined | null) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image is too large (max 8 MB)");
+      return;
+    }
+    setUploadingCover(true);
+    try {
+      const dataUrl = await compressCoverImage(file);
+      setEditing((prev) => (prev ? { ...prev, cover_image: dataUrl } : prev));
+      toast.success("Cover image ready");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to process image");
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -224,13 +281,59 @@ const AdminBlogs = () => {
               </Field>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="Cover image URL">
+                <Field label="Cover image">
                   <input
-                    value={editing.cover_image || ""}
-                    onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })}
-                    className="input"
-                    placeholder="https://..."
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleCoverFile(e.target.files?.[0])}
+                    className="hidden"
                   />
+                  {editing.cover_image ? (
+                    <div className="flex items-stretch gap-3">
+                      <div className="w-24 h-16 rounded-lg overflow-hidden bg-muted border border-border shrink-0">
+                        <img src={editing.cover_image} alt="cover preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          disabled={uploadingCover}
+                          className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          {uploadingCover ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditing({ ...editing, cover_image: "" })}
+                          className="text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 inline-flex items-center gap-1.5"
+                        >
+                          <Trash2 size={12} /> Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploadingCover}
+                      className="w-full h-24 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-accent/30 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground transition disabled:opacity-50"
+                    >
+                      {uploadingCover ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          <span>Processing image...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ImageIcon size={18} />
+                          <span>Click to upload cover image</span>
+                          <span className="text-[10px]">JPG, PNG, WEBP — max 8 MB</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </Field>
                 <Field label="Author">
                   <input
@@ -240,6 +343,7 @@ const AdminBlogs = () => {
                   />
                 </Field>
               </div>
+
 
               <div className="grid sm:grid-cols-3 gap-3">
                 <Field label="Tags (comma separated)">
