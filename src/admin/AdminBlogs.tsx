@@ -69,6 +69,7 @@ const AdminBlogs = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<BlogPost> | null>(null);
+  const [viewing, setViewing] = useState<BlogPost | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -193,33 +194,40 @@ const AdminBlogs = () => {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
-        {loading ? (
-          <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
-        ) : filtered.length === 0 ? (
-          <div className="p-10 text-center text-sm text-muted-foreground">
-            No blog posts yet. Click "New post" to create one.
-          </div>
-        ) : (
-          <div className="divide-y divide-border">
-            {filtered.map((b) => (
-              <div key={b.id} className="flex items-center gap-4 p-4 hover:bg-accent/30 transition">
-                <div className="w-14 h-14 rounded-lg bg-muted overflow-hidden shrink-0">
-                  {b.cover_image && <img src={b.cover_image} alt="" className="w-full h-full object-cover" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="font-medium truncate">{b.title}</h3>
-                    <span className={`text-[10px] uppercase px-1.5 py-0.5 rounded ${b.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
-                      {b.status || "published"}
-                    </span>
+      {loading ? (
+        <div className="bg-card border border-border rounded-2xl p-8 flex justify-center">
+          <Loader2 className="animate-spin text-muted-foreground" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-card border border-border rounded-2xl p-10 text-center text-sm text-muted-foreground">
+          No blog posts yet. Click "New post" to create one.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((b) => (
+            <div key={b.id} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition group">
+              <div className="aspect-[16/9] bg-muted overflow-hidden relative">
+                {b.cover_image ? (
+                  <img src={b.cover_image} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    <ImageIcon size={28} />
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">/{b.slug}</p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Link to={`/blog/${b.slug}`} target="_blank" className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
+                )}
+                <span className={`absolute top-2 left-2 text-[10px] uppercase font-medium px-1.5 py-0.5 rounded ${b.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
+                  {b.status || "published"}
+                </span>
+              </div>
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="font-medium line-clamp-2 mb-1">{b.title}</h3>
+                <p className="text-xs text-muted-foreground truncate mb-2">/{b.slug}</p>
+                {b.excerpt && (
+                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{b.excerpt}</p>
+                )}
+                <div className="mt-auto flex items-center justify-end gap-1 pt-2 border-t border-border">
+                  <button onClick={() => setViewing(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
                     <Eye size={16} />
-                  </Link>
+                  </button>
                   <button onClick={() => openEdit(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
                     <Pencil size={16} />
                   </button>
@@ -228,10 +236,61 @@ const AdminBlogs = () => {
                   </button>
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* View modal */}
+      {viewing && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => setViewing(null)}>
+          <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between z-10">
+              <div className="min-w-0">
+                <h2 className="font-heading text-lg truncate">Preview</h2>
+                <p className="text-xs text-muted-foreground truncate">/{viewing.slug}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { const b = viewing; setViewing(null); openEdit(b); }}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5"
+                >
+                  <Pencil size={12} /> Edit
+                </button>
+                <button onClick={() => setViewing(null)} className="p-1.5 rounded-lg hover:bg-accent">
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            <div className="p-5 md:p-8">
+              {viewing.cover_image && (
+                <div className="aspect-[16/9] rounded-xl overflow-hidden bg-muted mb-6">
+                  <img src={viewing.cover_image} alt={viewing.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <span className={`text-[10px] uppercase font-medium px-1.5 py-0.5 rounded ${viewing.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
+                  {viewing.status || "published"}
+                </span>
+                {viewing.author && <span className="text-xs text-muted-foreground">By {viewing.author}</span>}
+                {viewing.reading_time && <span className="text-xs text-muted-foreground">· {viewing.reading_time} min read</span>}
+              </div>
+              <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
+              {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
+              <div className="prose prose-neutral max-w-none">
+                <ReactMarkdown>{viewing.content || ""}</ReactMarkdown>
+              </div>
+              {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
+                  {viewing.tags.map((t) => (
+                    <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">#{t}</span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Editor modal */}
       {editing && (
