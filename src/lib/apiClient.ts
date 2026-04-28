@@ -205,6 +205,30 @@ export const doctorApi = {
   book: (doctorId: string, data: any) => post(`/api/doctors/${doctorId}/book`, data),
 };
 
+// ─── Blogs (public) ─────────────────────────────────────────────
+export interface BlogPost {
+  id: string | number;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  content: string;
+  cover_image?: string;
+  author?: string;
+  tags?: string[] | string;
+  status?: "draft" | "published";
+  meta_title?: string;
+  meta_description?: string;
+  reading_time?: number;
+  published_at?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const blogsApi = {
+  getAll: () => get<{ blogs?: BlogPost[] } | BlogPost[]>("/api/blogs"),
+  getBySlug: (slug: string) => get<BlogPost | { blog: BlogPost }>(`/api/blogs/${slug}`),
+};
+
 // ─── Admin ──────────────────────────────────────────────────────
 function adminHeaders() {
   const token = localStorage.getItem("cira_admin_token");
@@ -295,4 +319,22 @@ export const adminApi = {
   updateSettings: (settings: any) => adminPut("/api/admin/settings", settings),
   getCreditLimits: () => adminGet("/api/admin/settings/credits"),
   updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
+
+  // Blogs
+  getBlogs: () => adminGet<{ blogs?: BlogPost[] } | BlogPost[]>("/api/admin/blogs"),
+  getBlog: (id: string | number) => adminGet<BlogPost | { blog: BlogPost }>(`/api/admin/blogs/${id}`),
+  createBlog: (data: Partial<BlogPost>) => adminPost<BlogPost | { blog: BlogPost }>("/api/admin/blogs", data),
+  updateBlog: (id: string | number, data: Partial<BlogPost>) =>
+    adminPut<BlogPost | { blog: BlogPost }>(`/api/admin/blogs/${id}`, data),
+  deleteBlog: async (id: string | number) => {
+    const res = await fetch(`${API_BASE}/api/admin/blogs/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", ...adminHeaders() },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    return res.status === 204 ? {} : res.json().catch(() => ({}));
+  },
 };

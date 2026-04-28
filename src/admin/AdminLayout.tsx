@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell } from "lucide-react";
+import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { icon: Users, label: "Users", id: "users", path: "/admin/users" },
   { icon: TrendingUp, label: "Analytics", id: "analytics", path: "/admin/analytics" },
   { icon: CreditCard, label: "Billing", id: "billing", path: "/admin/billing" },
+  { icon: FileText, label: "Blogs", id: "blogs", path: "/admin/blogs" },
   { icon: Settings, label: "Settings", id: "settings", path: "/admin/settings" },
 ];
 
