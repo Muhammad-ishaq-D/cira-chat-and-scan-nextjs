@@ -311,7 +311,7 @@ const AdminBlogs = () => {
               </div>
             </div>
 
-            <div className="p-5 space-y-4">
+            <div className="p-4 md:p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div className="grid sm:grid-cols-2 gap-3">
                 <Field label="Title *">
                   <input
