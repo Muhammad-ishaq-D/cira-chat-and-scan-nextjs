@@ -203,28 +203,32 @@ const AdminBlogs = () => {
           No blog posts yet. Click "New post" to create one.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((b) => (
-            <div key={b.id} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col hover:shadow-md transition group">
-              <div className="aspect-[16/9] bg-muted overflow-hidden relative">
-                {b.cover_image ? (
-                  <img src={b.cover_image} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    <ImageIcon size={28} />
+        <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
+          {filtered.map((b) => {
+            const preview = b.excerpt || (b.content ? b.content.replace(/[#*`_>\-]/g, "").replace(/\s+/g, " ").trim() : "");
+            return (
+              <div key={b.id} className="flex items-center gap-4 p-3 sm:p-4 hover:bg-accent/30 transition group">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-muted overflow-hidden shrink-0 border border-border">
+                  {b.cover_image ? (
+                    <img src={b.cover_image} alt={b.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <ImageIcon size={20} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="font-medium truncate">{b.title}</h3>
+                    <span className={`text-[10px] uppercase font-medium px-1.5 py-0.5 rounded shrink-0 ${b.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
+                      {b.status || "published"}
+                    </span>
                   </div>
-                )}
-                <span className={`absolute top-2 left-2 text-[10px] uppercase font-medium px-1.5 py-0.5 rounded ${b.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
-                  {b.status || "published"}
-                </span>
-              </div>
-              <div className="p-4 flex flex-col flex-1">
-                <h3 className="font-medium line-clamp-2 mb-1">{b.title}</h3>
-                <p className="text-xs text-muted-foreground truncate mb-2">/{b.slug}</p>
-                {b.excerpt && (
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{b.excerpt}</p>
-                )}
-                <div className="mt-auto flex items-center justify-end gap-1 pt-2 border-t border-border">
+                  {preview && (
+                    <p className="text-xs text-muted-foreground line-clamp-2">{preview}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
                   <button onClick={() => setViewing(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
                     <Eye size={16} />
                   </button>
@@ -236,8 +240,8 @@ const AdminBlogs = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
