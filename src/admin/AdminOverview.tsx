@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, MessageSquare, ScanFace, CreditCard, TrendingUp, ArrowUpRight, Activity, Loader2 } from "lucide-react";
+import { Users, MessageSquare, ScanFace, CreditCard, TrendingUp, ArrowUpRight, Activity, Loader2, FileText, DollarSign } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminOverview = () => {
@@ -43,7 +43,9 @@ const AdminOverview = () => {
     { label: "Active Consultations", value: dashboard?.active_consultations ?? "—", icon: Activity, color: "bg-emerald-50 text-emerald-600" },
     { label: "Total Scans", value: dashboard?.total_scans ?? dashboard?.scans_completed ?? "—", icon: ScanFace, color: "bg-purple-50 text-purple-600" },
     { label: "Active Subscriptions", value: dashboard?.active_subscriptions ?? "—", icon: TrendingUp, color: "bg-primary/10 text-primary" },
-    { label: "Revenue", value: dashboard?.total_revenue != null ? `$${dashboard.total_revenue.toLocaleString()}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Total Revenue", value: dashboard?.total_revenue != null ? `$${Number(dashboard.total_revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—", icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Today Revenue", value: dashboard?.today_revenue != null ? `$${Number(dashboard.today_revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—", icon: DollarSign, color: "bg-green-50 text-green-600" },
+    { label: "Total Reports", value: dashboard?.total_reports ?? "—", icon: FileText, color: "bg-indigo-50 text-indigo-600" },
   ];
 
   return (
