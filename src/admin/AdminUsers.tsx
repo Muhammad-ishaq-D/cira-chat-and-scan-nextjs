@@ -310,7 +310,9 @@ const AdminUsers = () => {
                       <td className="px-4 py-3">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
                       </td>
-                      <td className="px-4 py-3 text-right text-xs font-medium text-foreground">${u.credits.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-right text-xs font-medium text-foreground">
+                        <span className="inline-flex items-center gap-1 justify-end"><Coins size={12} className="text-amber-500" />{formatCredits(u.credits)}</span>
+                      </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
