@@ -30,8 +30,10 @@ import AdminBilling from "./admin/AdminBilling.tsx";
 import AdminAnalytics from "./admin/AdminAnalytics.tsx";
 import AdminSettings from "./admin/AdminSettings.tsx";
 import AdminBlogs from "./admin/AdminBlogs.tsx";
+import AdminActivity from "./admin/AdminActivity.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
+import RouteTracker from "./components/RouteTracker.tsx";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <RouteTracker />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
@@ -71,6 +74,7 @@ const App = () => (
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/billing" element={<AdminBilling />} />
             <Route path="/admin/blogs" element={<AdminBlogs />} />
+            <Route path="/admin/activity" element={<AdminActivity />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
