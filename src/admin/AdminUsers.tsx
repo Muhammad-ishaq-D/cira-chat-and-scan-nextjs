@@ -470,7 +470,7 @@ const AdminUsers = () => {
                         <span className="text-xs text-muted-foreground">{plan.period}</span>
                       </div>
                       <div className="text-[11px] text-muted-foreground mb-3">
-                        Adds <span className="font-medium text-foreground">+${plan.credits.toLocaleString()}</span> credits
+                        Adds <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={11} className="text-amber-500" />+{plan.credits.toLocaleString()}</span> credits
                       </div>
                       <ul className="space-y-2 mb-5">
                         {plan.features.map((f) => (
