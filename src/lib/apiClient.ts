@@ -320,19 +320,6 @@ export const adminApi = {
   getCreditLimits: () => adminGet("/api/admin/settings/credits"),
   updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
 
-  // Activity tracking
-  getActivitySessions: (params?: { search?: string; from?: string; to?: string }) => {
-    const qs = new URLSearchParams();
-    if (params?.search) qs.set("search", params.search);
-    if (params?.from) qs.set("from", params.from);
-    if (params?.to) qs.set("to", params.to);
-    const query = qs.toString();
-    return adminGet(`/api/admin/activity/sessions${query ? `?${query}` : ""}`);
-  },
-  getActivitySession: (sessionId: string) =>
-    adminGet(`/api/admin/activity/sessions/${sessionId}`),
-  getActivityAggregate: () => adminGet("/api/admin/activity/aggregate"),
-
   // Blogs
   getBlogs: () => adminGet<{ blogs?: BlogPost[] } | BlogPost[]>("/api/admin/blogs"),
   getBlog: (id: string | number) => adminGet<BlogPost | { blog: BlogPost }>(`/api/admin/blogs/${id}`),
