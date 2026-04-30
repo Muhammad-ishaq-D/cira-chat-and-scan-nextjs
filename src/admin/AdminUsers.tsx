@@ -1,7 +1,56 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown } from "lucide-react";
+import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
+
+interface PlanOption {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  desc: string;
+  credits: number;
+  popular?: boolean;
+  features: string[];
+}
+
+const PLAN_OPTIONS: PlanOption[] = [
+  {
+    id: "Pro",
+    name: "Pro",
+    price: "$29.99",
+    period: "/mo",
+    desc: "Advanced monitoring for health-conscious individuals",
+    credits: 500000,
+    popular: true,
+    features: [
+      "20 Face Scans / month",
+      "500,000 Chat Credits",
+      "All Vital Signs + Trends",
+      "Detailed Health Indices",
+      "3 Doctor Consults",
+      "Export Reports (PDF)",
+      "Priority Support",
+    ],
+  },
+  {
+    id: "Enterprise",
+    name: "Enterprise",
+    price: "$99.99",
+    period: "/mo",
+    desc: "Complete health intelligence for professionals",
+    credits: 2000000,
+    features: [
+      "Unlimited Face Scans",
+      "Unlimited Chat Credits",
+      "10 Doctor Consults",
+      "Advanced AI Diagnostics",
+      "Priority Support",
+      "All Reports",
+      "HIPAA Compliance",
+    ],
+  },
+];
 
 interface RawUser {
   id: string | number;
