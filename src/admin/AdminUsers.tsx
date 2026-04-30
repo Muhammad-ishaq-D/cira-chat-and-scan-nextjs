@@ -357,7 +357,7 @@ const AdminUsers = () => {
                 <div className="flex items-center gap-2 mb-3 text-xs">
                   <span className={`px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
                   <span className="text-muted-foreground">•</span>
-                  <span className="text-foreground font-medium">${u.credits.toFixed(2)}</span>
+                  <span className="text-foreground font-medium inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(u.credits)}</span>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
