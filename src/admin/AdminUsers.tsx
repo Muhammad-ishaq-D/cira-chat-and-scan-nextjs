@@ -395,6 +395,85 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+
+      {/* Change Plan Modal */}
+      {planModalUser && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={() => !applyingPlan && setPlanModalUser(null)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-1">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Change Plan</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground">${planModalUser.credits.toFixed(2)}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => !applyingPlan && setPlanModalUser(null)}
+                  className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-accent transition-colors"
+                  disabled={!!applyingPlan}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="text-xs text-muted-foreground mb-5">Selecting a plan will change the user's plan and add the plan's credits to their existing balance.</p>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {PLAN_OPTIONS.map((plan) => {
+                  const Icon = plan.id === "Pro" ? Zap : Crown;
+                  const isCurrent = planModalUser.plan.toLowerCase() === plan.id.toLowerCase();
+                  const isApplying = applyingPlan === plan.id;
+                  return (
+                    <div key={plan.id} className={`relative bg-background/60 border rounded-2xl p-5 transition-all ${plan.popular ? "border-primary/40 ring-2 ring-primary/10" : "border-border/60"}`}>
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
+                            <Star size={10} /> Most Popular
+                          </span>
+                        </div>
+                      )}
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-3 ${plan.id === "Pro" ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-600"}`}>
+                        <Icon size={20} />
+                      </div>
+                      <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-3">{plan.desc}</p>
+                      <div className="mb-4">
+                        <span className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.price}</span>
+                        <span className="text-xs text-muted-foreground">{plan.period}</span>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground mb-3">
+                        Adds <span className="font-medium text-foreground">+${plan.credits.toLocaleString()}</span> credits
+                      </div>
+                      <ul className="space-y-2 mb-5">
+                        {plan.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-xs text-foreground">
+                            <Check size={13} className="text-emerald-500 mt-0.5 shrink-0" />{f}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        onClick={() => applyPlan(plan)}
+                        disabled={!!applyingPlan || isCurrent}
+                        className={`w-full h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                          isCurrent
+                            ? "bg-secondary text-muted-foreground cursor-default"
+                            : plan.popular
+                              ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+                              : "border border-border/60 text-foreground hover:bg-accent"
+                        } disabled:opacity-60`}
+                      >
+                        {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Select ${plan.name}`}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
