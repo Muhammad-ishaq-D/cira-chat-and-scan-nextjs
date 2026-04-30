@@ -363,7 +363,7 @@ const AdminUsers = () => {
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
                   <div className="flex gap-1">
                     <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
-                    <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
+                    <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
                       {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                     </button>
                   </div>
