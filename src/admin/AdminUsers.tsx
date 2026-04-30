@@ -163,6 +163,25 @@ const AdminUsers = () => {
     }
   };
 
+  const requestToggleStatus = (user: User) => {
+    if (user.is_suspended === 0) {
+      setSuspendConfirmUser(user);
+    } else {
+      toggleStatus(user.id, user.is_suspended);
+    }
+  };
+
+  const confirmSuspend = async () => {
+    if (!suspendConfirmUser) return;
+    setSuspending(true);
+    try {
+      await toggleStatus(suspendConfirmUser.id, suspendConfirmUser.is_suspended);
+      setSuspendConfirmUser(null);
+    } finally {
+      setSuspending(false);
+    }
+  };
+
   const addCredits = async (id: string) => {
     const amount = prompt("Enter credits to add:");
     if (amount && !isNaN(Number(amount))) {
