@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X } from "lucide-react";
+import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
