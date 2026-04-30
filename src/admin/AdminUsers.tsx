@@ -171,16 +171,36 @@ const AdminUsers = () => {
     }
   };
 
-  const changePlan = async (id: string) => {
-    const plan = prompt("Enter new plan (Free / Pro / Enterprise):");
-    if (plan && ["Free", "Pro", "Enterprise"].includes(plan)) {
+  const openPlanModal = (user: User) => {
+    setPlanModalUser(user);
+  };
+
+  const applyPlan = async (plan: PlanOption) => {
+    if (!planModalUser) return;
+    setApplyingPlan(plan.id);
+    try {
+      await adminApi.changeUserPlan(planModalUser.id, plan.id);
       try {
-        await adminApi.changeUserPlan(id, plan);
-        toast.success("Plan updated");
-        setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, plan } : u)));
+        await adminApi.adjustCredits(planModalUser.id, plan.credits, `Plan upgrade to ${plan.name}`);
       } catch (e: any) {
-        toast.error(e.message || "Failed to change plan");
+        // plan changed but credits failed — surface but continue
+        toast.error(e.message || "Plan changed but credits not added");
       }
+      const newCredits = planModalUser.credits + plan.credits;
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === planModalUser.id ? { ...u, plan: plan.id, credits: newCredits } : u,
+        ),
+      );
+      if (selectedUser?.id === planModalUser.id) {
+        setSelectedUser((prev) => (prev ? { ...prev, plan: plan.id, credits: newCredits } : null));
+      }
+      toast.success(`Plan changed to ${plan.name}`);
+      setPlanModalUser(null);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to change plan");
+    } finally {
+      setApplyingPlan(null);
     }
   };
 
