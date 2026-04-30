@@ -432,7 +432,7 @@ const AdminUsers = () => {
                 <div>
                   <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Change Plan</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground">${planModalUser.credits.toFixed(2)}</span>
+                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(planModalUser.credits)}</span>
                   </p>
                 </div>
                 <button
