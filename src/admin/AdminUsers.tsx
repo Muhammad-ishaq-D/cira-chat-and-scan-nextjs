@@ -126,7 +126,7 @@ const AdminUsers = () => {
   const [suspending, setSuspending] = useState(false);
 
   const formatCredits = (n: number) =>
-    `${Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} cr`;
+    `${Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   const loadUsers = async () => {
     try {
@@ -203,14 +203,8 @@ const AdminUsers = () => {
     if (!planModalUser) return;
     setApplyingPlan(plan.id);
     try {
-      await adminApi.changeUserPlan(planModalUser.id, plan.id);
-      try {
-        await adminApi.adjustCredits(planModalUser.id, plan.credits, `Plan upgrade to ${plan.name}`);
-      } catch (e: any) {
-        // plan changed but credits failed — surface but continue
-        toast.error(e.message || "Plan changed but credits not added");
-      }
-      const newCredits = planModalUser.credits + plan.credits;
+      const res: any = await adminApi.changeUserPlan(planModalUser.id, plan.id);
+      const newCredits = res.credits ?? (planModalUser.credits + plan.credits);
       setUsers((prev) =>
         prev.map((u) =>
           u.id === planModalUser.id ? { ...u, plan: plan.id, credits: newCredits } : u,
@@ -482,13 +476,12 @@ const AdminUsers = () => {
                       <button
                         onClick={() => applyPlan(plan)}
                         disabled={!!applyingPlan || isCurrent}
-                        className={`w-full h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                          isCurrent
-                            ? "bg-secondary text-muted-foreground cursor-default"
-                            : plan.popular
-                              ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
-                              : "border border-border/60 text-foreground hover:bg-accent"
-                        } disabled:opacity-60`}
+                        className={`w-full h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${isCurrent
+                          ? "bg-secondary text-muted-foreground cursor-default"
+                          : plan.popular
+                            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+                            : "border border-border/60 text-foreground hover:bg-accent"
+                          } disabled:opacity-60`}
                       >
                         {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Select ${plan.name}`}
                       </button>
