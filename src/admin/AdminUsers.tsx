@@ -500,6 +500,44 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+
+      {/* Suspend Confirmation Modal */}
+      {suspendConfirmUser && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => !suspending && setSuspendConfirmUser(null)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Suspend this user?</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Are you sure you want to suspend <span className="font-medium text-foreground">{suspendConfirmUser.name}</span>? They will lose access to their account until reactivated.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => setSuspendConfirmUser(null)}
+                  disabled={suspending}
+                  className="px-4 py-2 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmSuspend}
+                  disabled={suspending}
+                  className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-60"
+                >
+                  {suspending ? <><Loader2 size={14} className="animate-spin" />Suspending...</> : <><Ban size={14} />Suspend User</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
