@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X } from "lucide-react";
+import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -122,6 +122,11 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [planModalUser, setPlanModalUser] = useState<User | null>(null);
   const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
+  const [suspendConfirmUser, setSuspendConfirmUser] = useState<User | null>(null);
+  const [suspending, setSuspending] = useState(false);
+
+  const formatCredits = (n: number) =>
+    `${Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} cr`;
 
   const loadUsers = async () => {
     try {
@@ -155,6 +160,25 @@ const AdminUsers = () => {
       toast.success("User status updated");
     } catch (e: any) {
       toast.error(e.message || "Failed to update status");
+    }
+  };
+
+  const requestToggleStatus = (user: User) => {
+    if (user.is_suspended === 0) {
+      setSuspendConfirmUser(user);
+    } else {
+      toggleStatus(user.id, user.is_suspended);
+    }
+  };
+
+  const confirmSuspend = async () => {
+    if (!suspendConfirmUser) return;
+    setSuspending(true);
+    try {
+      await toggleStatus(suspendConfirmUser.id, suspendConfirmUser.is_suspended);
+      setSuspendConfirmUser(null);
+    } finally {
+      setSuspending(false);
     }
   };
 
@@ -286,7 +310,9 @@ const AdminUsers = () => {
                       <td className="px-4 py-3">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
                       </td>
-                      <td className="px-4 py-3 text-right text-xs font-medium text-foreground">${u.credits.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-right text-xs font-medium text-foreground">
+                        <span className="inline-flex items-center gap-1 justify-end"><Coins size={12} className="text-amber-500" />{formatCredits(u.credits)}</span>
+                      </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
@@ -296,7 +322,7 @@ const AdminUsers = () => {
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Change plan"><Edit3 size={14} className="text-muted-foreground" /></button>
-                          <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Toggle status">
+                          <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Toggle status">
                             {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                           </button>
                         </div>
@@ -331,13 +357,13 @@ const AdminUsers = () => {
                 <div className="flex items-center gap-2 mb-3 text-xs">
                   <span className={`px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
                   <span className="text-muted-foreground">•</span>
-                  <span className="text-foreground font-medium">${u.credits.toFixed(2)}</span>
+                  <span className="text-foreground font-medium inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(u.credits)}</span>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
                   <div className="flex gap-1">
                     <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
-                    <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
+                    <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
                       {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                     </button>
                   </div>
@@ -381,13 +407,13 @@ const AdminUsers = () => {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm"><Mail size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.email}</span></div>
-                <div className="flex items-center gap-3 text-sm"><Wallet size={14} className="text-muted-foreground" /><span className="text-foreground">${selectedUser.credits.toFixed(2)} credits</span></div>
+                <div className="flex items-center gap-3 text-sm"><Coins size={14} className="text-amber-500" /><span className="text-foreground">{formatCredits(selectedUser.credits)}</span></div>
                 <div className="flex items-center gap-3 text-sm"><Crown size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.plan} plan</span></div>
                 <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">Joined {formatDate(selectedUser.created_at)}</span></div>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => openPlanModal(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />Change Plan</button>
-                <button onClick={() => toggleStatus(selectedUser.id, selectedUser.is_suspended)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2">
+                <button onClick={() => requestToggleStatus(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2">
                   {selectedUser.is_suspended ? <><CheckCircle size={14} />Activate</> : <><Ban size={14} />Suspend</>}
                 </button>
               </div>
@@ -406,7 +432,7 @@ const AdminUsers = () => {
                 <div>
                   <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Change Plan</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground">${planModalUser.credits.toFixed(2)}</span>
+                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(planModalUser.credits)}</span>
                   </p>
                 </div>
                 <button
@@ -444,7 +470,7 @@ const AdminUsers = () => {
                         <span className="text-xs text-muted-foreground">{plan.period}</span>
                       </div>
                       <div className="text-[11px] text-muted-foreground mb-3">
-                        Adds <span className="font-medium text-foreground">+${plan.credits.toLocaleString()}</span> credits
+                        Adds <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={11} className="text-amber-500" />+{plan.credits.toLocaleString()}</span> credits
                       </div>
                       <ul className="space-y-2 mb-5">
                         {plan.features.map((f) => (
@@ -469,6 +495,44 @@ const AdminUsers = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Suspend Confirmation Modal */}
+      {suspendConfirmUser && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => !suspending && setSuspendConfirmUser(null)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Suspend this user?</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Are you sure you want to suspend <span className="font-medium text-foreground">{suspendConfirmUser.name}</span>? They will lose access to their account until reactivated.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => setSuspendConfirmUser(null)}
+                  disabled={suspending}
+                  className="px-4 py-2 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmSuspend}
+                  disabled={suspending}
+                  className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-60"
+                >
+                  {suspending ? <><Loader2 size={14} className="animate-spin" />Suspending...</> : <><Ban size={14} />Suspend User</>}
+                </button>
               </div>
             </div>
           </div>
