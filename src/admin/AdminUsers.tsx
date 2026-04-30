@@ -120,6 +120,8 @@ const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [planModalUser, setPlanModalUser] = useState<User | null>(null);
+  const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
 
   const loadUsers = async () => {
     try {
