@@ -407,7 +407,7 @@ const AdminUsers = () => {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm"><Mail size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.email}</span></div>
-                <div className="flex items-center gap-3 text-sm"><Wallet size={14} className="text-muted-foreground" /><span className="text-foreground">${selectedUser.credits.toFixed(2)} credits</span></div>
+                <div className="flex items-center gap-3 text-sm"><Coins size={14} className="text-amber-500" /><span className="text-foreground">{formatCredits(selectedUser.credits)}</span></div>
                 <div className="flex items-center gap-3 text-sm"><Crown size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.plan} plan</span></div>
                 <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">Joined {formatDate(selectedUser.created_at)}</span></div>
               </div>
