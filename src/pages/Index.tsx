@@ -299,6 +299,55 @@ const Index = () => {
       </main>
 
       {/* ═══════════════════════════════════════════ */}
+      {/* MULTI-LANGUAGE */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16 text-center">
+        <h2 className="scroll-fade font-heading text-[26px] sm:text-[36px] font-semibold text-foreground leading-tight mb-6">
+          Talk to Cira in your language.
+        </h2>
+
+        <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
+          Cira understands and replies in 30+ languages —<br />
+          so you can describe how you feel in the words that come naturally.
+        </p>
+
+        {/* Language chips */}
+        <div className="scroll-fade flex flex-wrap justify-center gap-2 sm:gap-3 max-w-3xl mx-auto mb-8">
+          {[
+            { label: "English", native: "Hello" },
+            { label: "Español", native: "Hola" },
+            { label: "Français", native: "Bonjour" },
+            { label: "Deutsch", native: "Hallo" },
+            { label: "Italiano", native: "Ciao" },
+            { label: "Português", native: "Olá" },
+            { label: "中文", native: "你好" },
+            { label: "日本語", native: "こんにちは" },
+            { label: "한국어", native: "안녕하세요" },
+            { label: "ภาษาไทย", native: "สวัสดี" },
+            { label: "Tiếng Việt", native: "Xin chào" },
+            { label: "Bahasa", native: "Halo" },
+            { label: "हिन्दी", native: "नमस्ते" },
+            { label: "العربية", native: "مرحبا" },
+            { label: "Türkçe", native: "Merhaba" },
+            { label: "Русский", native: "Привет" },
+          ].map((lang) => (
+            <div
+              key={lang.label}
+              className="px-3 py-2 rounded-full border border-border bg-card text-xs sm:text-sm font-body text-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              <span className="font-medium">{lang.native}</span>
+              <span className="text-muted-foreground ml-2">{lang.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground italic font-body">
+          "Health is personal. Cira meets you in your own words."
+        </p>
+      </section>
+
+
+      {/* ═══════════════════════════════════════════ */}
       {/* CIRA'S INTELLIGENCE */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-card py-12 sm:py-20">
@@ -711,54 +760,6 @@ const Index = () => {
 
         <p className="text-sm text-muted-foreground mt-6 italic font-body">
           "For the first time — arrive at your doctor's with real data in your hands."
-        </p>
-      </section>
-
-      {/* ═══════════════════════════════════════════ */}
-      {/* MULTI-LANGUAGE */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 pt-12 sm:pt-16 text-center">
-        <h2 className="scroll-fade font-heading text-[26px] sm:text-[36px] font-semibold text-foreground leading-tight mb-6">
-          Talk to Cira in your language.
-        </h2>
-
-        <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 font-body">
-          Cira understands and replies in 30+ languages —<br />
-          so you can describe how you feel in the words that come naturally.
-        </p>
-
-        {/* Language chips */}
-        <div className="scroll-fade flex flex-wrap justify-center gap-2 sm:gap-3 max-w-3xl mx-auto mb-8">
-          {[
-            { label: "English", native: "Hello" },
-            { label: "Español", native: "Hola" },
-            { label: "Français", native: "Bonjour" },
-            { label: "Deutsch", native: "Hallo" },
-            { label: "Italiano", native: "Ciao" },
-            { label: "Português", native: "Olá" },
-            { label: "中文", native: "你好" },
-            { label: "日本語", native: "こんにちは" },
-            { label: "한국어", native: "안녕하세요" },
-            { label: "ภาษาไทย", native: "สวัสดี" },
-            { label: "Tiếng Việt", native: "Xin chào" },
-            { label: "Bahasa", native: "Halo" },
-            { label: "हिन्दी", native: "नमस्ते" },
-            { label: "العربية", native: "مرحبا" },
-            { label: "Türkçe", native: "Merhaba" },
-            { label: "Русский", native: "Привет" },
-          ].map((lang) => (
-            <div
-              key={lang.label}
-              className="px-3 py-2 rounded-full border border-border bg-card text-xs sm:text-sm font-body text-foreground hover:border-primary hover:text-primary transition-colors"
-            >
-              <span className="font-medium">{lang.native}</span>
-              <span className="text-muted-foreground ml-2">{lang.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-sm text-muted-foreground italic font-body">
-          "Health is personal. Cira meets you in your own words."
         </p>
       </section>
 
