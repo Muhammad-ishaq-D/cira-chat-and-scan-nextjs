@@ -1,7 +1,56 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown } from "lucide-react";
+import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
+
+interface PlanOption {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  desc: string;
+  credits: number;
+  popular?: boolean;
+  features: string[];
+}
+
+const PLAN_OPTIONS: PlanOption[] = [
+  {
+    id: "Pro",
+    name: "Pro",
+    price: "$29.99",
+    period: "/mo",
+    desc: "Advanced monitoring for health-conscious individuals",
+    credits: 500000,
+    popular: true,
+    features: [
+      "20 Face Scans / month",
+      "500,000 Chat Credits",
+      "All Vital Signs + Trends",
+      "Detailed Health Indices",
+      "3 Doctor Consults",
+      "Export Reports (PDF)",
+      "Priority Support",
+    ],
+  },
+  {
+    id: "Enterprise",
+    name: "Enterprise",
+    price: "$99.99",
+    period: "/mo",
+    desc: "Complete health intelligence for professionals",
+    credits: 2000000,
+    features: [
+      "Unlimited Face Scans",
+      "Unlimited Chat Credits",
+      "10 Doctor Consults",
+      "Advanced AI Diagnostics",
+      "Priority Support",
+      "All Reports",
+      "HIPAA Compliance",
+    ],
+  },
+];
 
 interface RawUser {
   id: string | number;
@@ -71,6 +120,8 @@ const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [planModalUser, setPlanModalUser] = useState<User | null>(null);
+  const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
 
   const loadUsers = async () => {
     try {
@@ -120,16 +171,36 @@ const AdminUsers = () => {
     }
   };
 
-  const changePlan = async (id: string) => {
-    const plan = prompt("Enter new plan (Free / Pro / Enterprise):");
-    if (plan && ["Free", "Pro", "Enterprise"].includes(plan)) {
+  const openPlanModal = (user: User) => {
+    setPlanModalUser(user);
+  };
+
+  const applyPlan = async (plan: PlanOption) => {
+    if (!planModalUser) return;
+    setApplyingPlan(plan.id);
+    try {
+      await adminApi.changeUserPlan(planModalUser.id, plan.id);
       try {
-        await adminApi.changeUserPlan(id, plan);
-        toast.success("Plan updated");
-        setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, plan } : u)));
+        await adminApi.adjustCredits(planModalUser.id, plan.credits, `Plan upgrade to ${plan.name}`);
       } catch (e: any) {
-        toast.error(e.message || "Failed to change plan");
+        // plan changed but credits failed — surface but continue
+        toast.error(e.message || "Plan changed but credits not added");
       }
+      const newCredits = planModalUser.credits + plan.credits;
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === planModalUser.id ? { ...u, plan: plan.id, credits: newCredits } : u,
+        ),
+      );
+      if (selectedUser?.id === planModalUser.id) {
+        setSelectedUser((prev) => (prev ? { ...prev, plan: plan.id, credits: newCredits } : null));
+      }
+      toast.success(`Plan changed to ${plan.name}`);
+      setPlanModalUser(null);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to change plan");
+    } finally {
+      setApplyingPlan(null);
     }
   };
 
@@ -224,8 +295,7 @@ const AdminUsers = () => {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={(e) => { e.stopPropagation(); addCredits(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Add credits"><CreditCard size={14} className="text-muted-foreground" /></button>
-                          <button onClick={(e) => { e.stopPropagation(); changePlan(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Change plan"><Edit3 size={14} className="text-muted-foreground" /></button>
+                          <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Change plan"><Edit3 size={14} className="text-muted-foreground" /></button>
                           <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Toggle status">
                             {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                           </button>
@@ -266,8 +336,7 @@ const AdminUsers = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
                   <div className="flex gap-1">
-                    <button onClick={(e) => { e.stopPropagation(); addCredits(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><CreditCard size={14} className="text-muted-foreground" /></button>
-                    <button onClick={(e) => { e.stopPropagation(); changePlan(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
                     <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
                       {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                     </button>
@@ -317,11 +386,89 @@ const AdminUsers = () => {
                 <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">Joined {formatDate(selectedUser.created_at)}</span></div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => addCredits(selectedUser.id)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><CreditCard size={14} />Add Credits</button>
-                <button onClick={() => changePlan(selectedUser.id)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />Change Plan</button>
+                <button onClick={() => openPlanModal(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />Change Plan</button>
                 <button onClick={() => toggleStatus(selectedUser.id, selectedUser.is_suspended)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2">
                   {selectedUser.is_suspended ? <><CheckCircle size={14} />Activate</> : <><Ban size={14} />Suspend</>}
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Plan Modal */}
+      {planModalUser && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={() => !applyingPlan && setPlanModalUser(null)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-1">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Change Plan</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground">${planModalUser.credits.toFixed(2)}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => !applyingPlan && setPlanModalUser(null)}
+                  className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-accent transition-colors"
+                  disabled={!!applyingPlan}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="text-xs text-muted-foreground mb-5">Selecting a plan will change the user's plan and add the plan's credits to their existing balance.</p>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {PLAN_OPTIONS.map((plan) => {
+                  const Icon = plan.id === "Pro" ? Zap : Crown;
+                  const isCurrent = planModalUser.plan.toLowerCase() === plan.id.toLowerCase();
+                  const isApplying = applyingPlan === plan.id;
+                  return (
+                    <div key={plan.id} className={`relative bg-background/60 border rounded-2xl p-5 transition-all ${plan.popular ? "border-primary/40 ring-2 ring-primary/10" : "border-border/60"}`}>
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
+                            <Star size={10} /> Most Popular
+                          </span>
+                        </div>
+                      )}
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-3 ${plan.id === "Pro" ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-600"}`}>
+                        <Icon size={20} />
+                      </div>
+                      <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-3">{plan.desc}</p>
+                      <div className="mb-4">
+                        <span className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.price}</span>
+                        <span className="text-xs text-muted-foreground">{plan.period}</span>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground mb-3">
+                        Adds <span className="font-medium text-foreground">+${plan.credits.toLocaleString()}</span> credits
+                      </div>
+                      <ul className="space-y-2 mb-5">
+                        {plan.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-xs text-foreground">
+                            <Check size={13} className="text-emerald-500 mt-0.5 shrink-0" />{f}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        onClick={() => applyPlan(plan)}
+                        disabled={!!applyingPlan || isCurrent}
+                        className={`w-full h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                          isCurrent
+                            ? "bg-secondary text-muted-foreground cursor-default"
+                            : plan.popular
+                              ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+                              : "border border-border/60 text-foreground hover:bg-accent"
+                        } disabled:opacity-60`}
+                      >
+                        {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Select ${plan.name}`}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
