@@ -122,6 +122,11 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [planModalUser, setPlanModalUser] = useState<User | null>(null);
   const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
+  const [suspendConfirmUser, setSuspendConfirmUser] = useState<User | null>(null);
+  const [suspending, setSuspending] = useState(false);
+
+  const formatCredits = (n: number) =>
+    `${Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} cr`;
 
   const loadUsers = async () => {
     try {
