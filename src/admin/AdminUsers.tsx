@@ -336,8 +336,7 @@ const AdminUsers = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
                   <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
                   <div className="flex gap-1">
-                    <button onClick={(e) => { e.stopPropagation(); addCredits(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><CreditCard size={14} className="text-muted-foreground" /></button>
-                    <button onClick={(e) => { e.stopPropagation(); changePlan(u.id); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
                     <button onClick={(e) => { e.stopPropagation(); toggleStatus(u.id, u.is_suspended); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
                       {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                     </button>
