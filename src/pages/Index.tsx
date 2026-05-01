@@ -953,6 +953,8 @@ const Index = () => {
         <p>Cira does not replace professional medical advice.</p>
         <p>Clinically validated vitals · Licensed physicians</p>
         <p>
+          <button onClick={() => navigate("/how-it-works")} className="hover:text-foreground transition-colors">How it works</button>
+          {" · "}
           <button onClick={() => navigate("/blog")} className="hover:text-foreground transition-colors">Blog</button>
           {" · "}
           <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Security &amp; Privacy</button>
