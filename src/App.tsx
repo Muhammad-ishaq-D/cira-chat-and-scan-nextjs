@@ -21,6 +21,7 @@ import Profile from "./pages/Profile.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import Privacy from "./pages/Privacy.tsx";
 import Terms from "./pages/Terms.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
@@ -52,7 +53,8 @@ const App = () => (
           <Route path="/free-chat" element={<FreeChat />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
