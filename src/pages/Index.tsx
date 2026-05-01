@@ -1,4 +1,4 @@
-import ciraLogo from "@/assets/cira-logo.svg"; 
+import ciraLogo from "@/assets/cira-logo.svg";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import doctor1 from "@/assets/doctor-1.jpg";
@@ -138,9 +138,8 @@ const HeroChatPreview = () => {
       <div ref={scrollRef} className="space-y-1.5 h-[90px] overflow-hidden">
         {visibleMessages.map((msg, i) => (
           <div key={i} className={`animate-fade-in ${msg.role === "user" ? "flex justify-end" : ""}`}>
-            <div className={`px-2.5 py-1.5 text-[11px] font-body leading-relaxed max-w-[90%] rounded-lg ${
-              msg.role === "cira" ? "bg-primary/5 rounded-tl-none text-foreground" : "bg-primary/10 rounded-tr-none text-foreground"
-            }`}>
+            <div className={`px-2.5 py-1.5 text-[11px] font-body leading-relaxed max-w-[90%] rounded-lg ${msg.role === "cira" ? "bg-primary/5 rounded-tl-none text-foreground" : "bg-primary/10 rounded-tr-none text-foreground"
+              }`}>
               {msg.text}
             </div>
           </div>
@@ -269,7 +268,7 @@ const Index = () => {
                 <span className="absolute -bottom-1 -right-1 bg-card border border-border text-[7px] sm:text-[8px] font-body text-muted-foreground px-1 py-px rounded-full shadow">You</span>
               </div>
               <div className="flex flex-col items-center gap-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 <span className="text-[7px] text-muted-foreground font-body">30s</span>
               </div>
               <div className="relative">
@@ -572,8 +571,8 @@ const Index = () => {
           </p>
           <button
             onClick={() => navigate("/vitals-scan")}
-            onMouseEnter={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch {} }}
-            onTouchStart={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch {} }}
+            onMouseEnter={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch { } }}
+            onTouchStart={() => { try { fetch("/wasm/shenai_sdk.wasm", { priority: "high" as any, credentials: "omit" }); } catch { } }}
             className="bg-primary text-primary-foreground py-3 px-8 rounded-xl text-base font-medium hover:opacity-90 transition-opacity font-body mb-3"
           >
             Start your scan →
@@ -959,7 +958,7 @@ const Index = () => {
           {" · "}
           <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Security &amp; Privacy</button>
           {" · "}
-          <button onClick={() => navigate("/privacy-policy")} className="hover:text-foreground transition-colors">Privacy Policy</button>
+          {/* <button onClick={() => navigate("/privacy-policy")} className="hover:text-foreground transition-colors">Privacy Policy</button> */}
           {" · "}
           <button onClick={() => navigate("/terms")} className="hover:text-foreground transition-colors">Terms</button>
         </p>
