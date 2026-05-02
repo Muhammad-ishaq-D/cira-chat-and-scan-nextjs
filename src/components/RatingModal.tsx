@@ -40,7 +40,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
             <div className="w-full max-w-sm bg-card rounded-[2.5rem] p-8 shadow-2xl shadow-black/20 border border-border/50 animate-in zoom-in-95 duration-300">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">Rate HelloGenie</h2>
+                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">Rate Cira</h2>
                         <p className="text-sm text-muted-foreground font-body">Please share your rating and feedback.</p>
                     </div>
                     <button
@@ -53,7 +53,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
 
                 <div className="space-y-6">
                     <div>
-                        <p className="text-sm font-medium font-body text-foreground mb-4">How was your HelloGenie experience?</p>
+                        <p className="text-sm font-medium font-body text-foreground mb-4">How was your Cira experience?</p>
                         <div className="flex justify-between gap-2">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
@@ -63,15 +63,15 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                                     onMouseLeave={() => setHover(0)}
                                     onClick={() => setRating(star)}
                                     className={`p-3 rounded-2xl border transition-all duration-200 ${(hover || rating) >= star
-                                            ? "bg-primary/10 border-primary shadow-sm"
-                                            : "bg-muted/50 border-border"
+                                        ? "bg-primary/10 border-primary shadow-sm"
+                                        : "bg-muted/50 border-border"
                                         }`}
                                 >
                                     <Star
                                         size={24}
                                         className={`transition-all duration-200 ${(hover || rating) >= star
-                                                ? "fill-primary text-primary"
-                                                : "text-muted-foreground/40"
+                                            ? "fill-primary text-primary"
+                                            : "text-muted-foreground/40"
                                             }`}
                                     />
                                 </button>
