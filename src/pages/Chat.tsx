@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2, Square } from "lucide-react";
+import { Home, Menu, LogOut, Send, Plus, Sparkles, Clock, ScanFace, Activity, MessageCircle, FileText, Stethoscope, ShieldAlert, UserRound, Heart, Wind, Brain, Zap, Scale, X, Camera, RotateCcw, Trash2, Square, ChevronDown } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -200,6 +200,172 @@ const Chat = () => {
   const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+
+  const languages = [
+    { id: "en", label: "English", flag: "🇺🇸" },
+    { id: "fr", label: "Français", flag: "🇫🇷" },
+    { id: "de", label: "Deutsch", flag: "🇩🇪" },
+    { id: "hi", label: "हिन्दी", flag: "🇮🇳" },
+    { id: "id", label: "Indonesia", flag: "🇮🇩" },
+    { id: "it", label: "Italiano", flag: "🇮🇹" },
+    { id: "ja", label: "日本語", flag: "🇯🇵" },
+    { id: "ko", label: "한국어", flag: "🇰🇷" },
+    { id: "pt-br", label: "P'tuês (BR)", flag: "🇧🇷" },
+    { id: "es-la", label: "Español (LA)", flag: "🌎" },
+    { id: "es-es", label: "Español (ES)", flag: "🇪🇸" },
+  ];
+
+  const UI_STRINGS: Record<string, Record<string, string>> = {
+    en: {
+      welcome: "How would you like to get started? 💙",
+      just_chat: "💬 Just Chat",
+      just_chat_desc: "Ask anything — symptoms, wellness, or general health",
+      assessment: "🩺 Health Assessment",
+      assessment_desc: "Guided AI triage based on your symptoms",
+      scan: "📸 Face Scan",
+      scan_desc: "30-second scan captures real vitals from your face",
+      book: "🏥 Book a Doctor",
+      book_desc: "Connect with a licensed doctor near you",
+      just_chat_msg: "💬 I just want to chat",
+      assessment_msg: "🩺 I'd like a health assessment",
+      placeholder: "Ask Cira anything..."
+    },
+    fr: {
+      welcome: "Comment aimeriez-vous commencer ? 💙",
+      just_chat: "💬 Juste discuter",
+      just_chat_desc: "Demandez n'importe quoi — symptômes, bien-être ou santé générale",
+      assessment: "🩺 Évaluation de santé",
+      assessment_desc: "Triage guidé par IA basé sur vos symptômes",
+      scan: "📸 Scan du visage",
+      scan_desc: "Un scan de 30 secondes capture vos signes vitaux",
+      book: "🏥 Prendre RDV",
+      book_desc: "Connectez-vous avec un médecin près de chez vous",
+      just_chat_msg: "💬 Je veux juste discuter",
+      assessment_msg: "🩺 Je voudrais une évaluation de santé",
+      placeholder: "Demandez n'importe quoi à Cira..."
+    },
+    es: {
+      welcome: "¿Cómo te gustaría empezar? 💙",
+      just_chat: "💬 Solo chatear",
+      just_chat_desc: "Pregunta cualquier cosa: síntomas, bienestar o salud general",
+      assessment: "🩺 Evaluación de salud",
+      assessment_desc: "Triaje guidado por IA basado en tus síntomas",
+      scan: "📸 Escaneo facial",
+      scan_desc: "El escaneo de 30 segundos captura tus signos vitales",
+      book: "🏥 Reservar médico",
+      book_desc: "Conéctate con un médico licenciado cerca de ti",
+      just_chat_msg: "💬 Solo quiero chatear",
+      assessment_msg: "🩺 Me gustaría una evaluación de salud",
+      placeholder: "Pregúntale a Cira cualquier cosa..."
+    },
+    de: {
+      welcome: "Wie möchten Sie beginnen? 💙",
+      just_chat: "💬 Einfach chatten",
+      just_chat_desc: "Fragen Sie alles — Symptome, Wellness oder allgemeine Gesundheit",
+      assessment: "🩺 Gesundheitsbewertung",
+      assessment_desc: "Geführte KI-Triage basierend auf Ihren Symptomen",
+      scan: "📸 Gesichtsscan",
+      scan_desc: "Ein 30-sekündiger Scan erfasst Ihre Vitalwerte",
+      book: "🏥 Arzt buchen",
+      book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
+      just_chat_msg: "💬 Ich möchte nur chatten",
+      assessment_msg: "🩺 Ich hätte gerne eine Gesundheitsbewertung",
+      placeholder: "Fragen Sie Cira alles..."
+    },
+    it: {
+      welcome: "Come vorresti iniziare? 💙",
+      just_chat: "💬 Solo chat",
+      just_chat_desc: "Chiedi qualsiasi cosa: sintomi, benessere o salute generale",
+      assessment: "🩺 Valutazione della salute",
+      assessment_desc: "Triage guidato dall'IA basato sui tuoi sintomi",
+      scan: "📸 Scansione facciale",
+      scan_desc: "Una scansione di 30 secondi cattura i tuoi parametri vitali",
+      book: "🏥 Prenota un medico",
+      book_desc: "Connettiti con un medico autorizzato vicino a te",
+      just_chat_msg: "💬 Voglio solo chiacchierare",
+      assessment_msg: "🩺 Vorrei una valutazione della salute",
+      placeholder: "Chiedi qualsiasi cosa a Cira..."
+    },
+    pt: {
+      welcome: "Como você gostaria de começar? 💙",
+      just_chat: "💬 Apenas conversar",
+      just_chat_desc: "Pergunte qualquer coisa: sintomas, bem-estar ou saúde geral",
+      assessment: "🩺 Avaliação de saúde",
+      assessment_desc: "Triagem guiada por IA baseada em seus sintomas",
+      scan: "📸 Escaneamento facial",
+      scan_desc: "O escaneamento de 30 segundos captura seus sinais vitais",
+      book: "🏥 Agendar médico",
+      book_desc: "Conecte-se com um médico licenciado perto de você",
+      just_chat_msg: "💬 Eu só quero conversar",
+      assessment_msg: "🩺 Eu gostaria de uma avaliação de saúde",
+      placeholder: "Pergunte qualquer coisa à Cira..."
+    },
+    hi: {
+      welcome: "आप कैसे शुरू करना चाहेंगे? 💙",
+      just_chat: "💬 बस चैट करें",
+      just_chat_desc: "कुछ भी पूछें — लक्षण, कल्याण, या सामान्य स्वास्थ्य",
+      assessment: "🩺 स्वास्थ्य मूल्यांकन",
+      assessment_desc: "आपके लक्षणों के आधार पर निर्देशित AI ट्राइएज",
+      scan: "📸 फेस स्कैन",
+      scan_desc: "30-सेकंड का स्कैन आपके चेहरे से महत्वपूर्ण संकेत कैप्चर करता है",
+      book: "🏥 डॉक्टर बुक करें",
+      book_desc: "अपने पास के लाइसेंस प्राप्त डॉक्टर से जुड़ें",
+      just_chat_msg: "💬 मैं बस चैट करना चाहता हूँ",
+      assessment_msg: "🩺 मुझे स्वास्थ्य मूल्यांकन चाहिए",
+      placeholder: "सीरा से कुछ भी पूछें..."
+    },
+    id: {
+      welcome: "Bagaimana Anda ingin memulai? 💙",
+      just_chat: "💬 Langsung Chat",
+      just_chat_desc: "Tanya apa saja — gejala, kebugaran, atau kesehatan umum",
+      assessment: "🩺 Penilaian Kesehatan",
+      assessment_desc: "Triage AI berdasarkan gejala Anda",
+      scan: "📸 Scan Wajah",
+      scan_desc: "Scan 30 detik untuk mengambil tanda vital Anda",
+      book: "🏥 Pesan Dokter",
+      book_desc: "Terhubung dengan dokter berlisensi di dekat Anda",
+      just_chat_msg: "💬 Saya hanya ingin mengobrol",
+      assessment_msg: "🩺 Saya ingin penilaian kesehatan",
+      placeholder: "Tanya Cira apa saja..."
+    },
+    ja: {
+      welcome: "どのように始めますか？ 💙",
+      just_chat: "💬 チャットのみ",
+      just_chat_desc: "症状、ウェルネス、または一般的な健康について何でも聞いてください",
+      assessment: "🩺 健康診断",
+      assessment_desc: "症状に基づいたガイド付きAIトリアージ",
+      scan: "📸 フェイススキャン",
+      scan_desc: "30秒のスキャンで顔からバイタルデータを取得します",
+      book: "🏥 医師を予約",
+      book_desc: "お近くの公認医師に相談してください",
+      just_chat_msg: "💬 チャットしたいだけです",
+      assessment_msg: "🩺 健康診断をお願いします",
+      placeholder: "Ciraにお聞きください..."
+    },
+    ko: {
+      welcome: "어떻게 시작할까요? 💙",
+      just_chat: "💬 대화하기",
+      just_chat_desc: "증상, 웰니스 또는 일반적인 건강에 대해 무엇이든 물어보세요",
+      assessment: "🩺 건강 평가",
+      assessment_desc: "귀하의 증상에 기반한 가이드형 AI 트리아제",
+      scan: "📸 페이스 스캔",
+      scan_desc: "30초 스캔으로 얼굴에서 생체 신호를 캡처합니다",
+      book: "🏥 의사 예약",
+      book_desc: "가까운 공인 의사와 연결하세요",
+      just_chat_msg: "💬 그냥 대화하고 싶어요",
+      assessment_msg: "🩺 건강 평가를 받고 싶습니다",
+      placeholder: "Cira에게 무엇이든 물어보세요..."
+    }
+  };
+
+  const getT = () => {
+    const lang = selectedLanguage.startsWith('es') ? 'es' :
+      selectedLanguage.startsWith('pt') ? 'pt' :
+        selectedLanguage;
+    return UI_STRINGS[lang] || UI_STRINGS.en;
+  };
+  const t = getT();
 
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
@@ -515,6 +681,7 @@ const Chat = () => {
       const payload = JSON.stringify({
         message: outboundText,
         sessionId: currentSessionIdRef.current || undefined,
+        language: selectedLanguage,
         ...(userProfile ? { userProfile } : {}),
       });
 
@@ -905,7 +1072,7 @@ const Chat = () => {
         return;
       }
 
-      const userText = "💬 I just want to chat";
+      const userText = t.just_chat_msg;
       setMessages([{ role: "user", text: userText }]);
       callClaude(userText);
       return;
@@ -914,8 +1081,8 @@ const Chat = () => {
     setPendingLandingMessage(null);
 
     // Map mode selection to the text Claude expects
-    const pathwayMessages: Record<ChatMode, string> = {
-      assessment: "🩺 I'd like a health assessment",
+    const pathwayMessages: Record<string, string> = {
+      assessment: t.assessment_msg,
       chat: "",
       vitals: "",
       none: "",
@@ -1229,29 +1396,29 @@ const Chat = () => {
                       <div className="mb-2"><AiSparkleIcon size={20} active /></div>
                       <div className="text-foreground">
                         <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
-                          How would you like to get started? 💙
+                          {t.welcome}
                         </p>
                         <div className="flex flex-col gap-2 mt-3">
                           <button
                             onClick={() => selectMode("chat")}
                             className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                           >
-                            <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
-                            <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
+                            <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
                           </button>
                           <button
                             onClick={() => selectMode("assessment")}
                             className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                           >
-                            <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
-                            <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
+                            <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
                           </button>
                           <button
                             onClick={() => selectMode("vitals")}
                             className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                           >
-                            <span className="text-[12px] font-medium text-foreground">📸 Face Scan</span>
-                            <span className="text-[10px] text-muted-foreground">30-second scan captures real vitals from your face</span>
+                            <span className="text-[12px] font-medium text-foreground">{t.scan}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
                           </button>
                           <button
                             onClick={() => {
@@ -1281,8 +1448,8 @@ const Chat = () => {
                             }}
                             className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
                           >
-                            <span className="text-[12px] font-medium text-foreground">🏥 Book a Doctor</span>
-                            <span className="text-[10px] text-muted-foreground">Connect with a real doctor near you via Air Doctor</span>
+                            <span className="text-[12px] font-medium text-foreground">{t.book}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
                           </button>
                         </div>
                       </div>
@@ -1417,13 +1584,33 @@ const Chat = () => {
         {/* Bottom input — Gemini-style clean pill */}
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
-            <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
+            <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30 px-2">
+              {/* Language Selector Dropdown inside input */}
+              <div className="relative shrink-0">
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="appearance-none bg-transparent hover:bg-secondary/20 text-foreground text-[12px] font-medium py-2 pl-2 pr-6 rounded-xl cursor-pointer transition-all outline-none"
+                >
+                  {languages.map(lang => (
+                    <option key={lang.id} value={lang.id}>
+                      {lang.id.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                  <ChevronDown size={10} />
+                </div>
+              </div>
+
+              <div className="w-px h-4 bg-border/40 mx-1" />
+
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
-                className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
+                placeholder={chatMode === "none" ? "☝️" : t.placeholder}
+                className="flex-1 py-3 px-2 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
                 disabled={chatMode === "none"}
               />
               {isApiLoading ? (

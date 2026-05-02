@@ -101,6 +101,7 @@ export async function sendChatMessage(
     model?: string;
     max_tokens?: number;
     temperature?: number;
+    language?: string;
   }
 ): Promise<ClaudeResponse> {
   const token = getToken();
@@ -123,6 +124,7 @@ export async function sendChatMessage(
       model: options?.model || "claude-sonnet-4-6",
       max_tokens: options?.max_tokens || 4096,
       temperature: options?.temperature ?? 1,
+      language: options?.language || "en",
     }),
   });
 
