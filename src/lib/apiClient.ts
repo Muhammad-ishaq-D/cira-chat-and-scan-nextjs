@@ -66,7 +66,7 @@ async function post<T = any>(endpoint: string, body?: any): Promise<T> {
     })() : {};
     const errorMsg = typeof err.error === 'string' ? err.error
       : typeof err.message === 'string' ? err.message
-      : JSON.stringify(err) || `Request failed (${res.status})`;
+        : JSON.stringify(err) || `Request failed (${res.status})`;
     throw new Error(errorMsg);
   }
 
@@ -146,6 +146,7 @@ export const userApi = {
     const result = await put("/api/user/profile", { avatar: base64 });
     return { avatar: result.avatar || base64 };
   },
+  submitRating: (data: { rating: number; feedback?: string }) => post("/api/user/rate", data),
 };
 
 // ─── Chat Sessions ──────────────────────────────────────────────

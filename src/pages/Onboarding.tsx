@@ -15,9 +15,11 @@ const Onboarding = () => {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [sex, setSex] = useState<Sex>("");
+  const [language, setLanguage] = useState("en");
   const [saving, setSaving] = useState(false);
 
   const steps = [
+    { key: "language", label: "Preferred Language", sub: "Select your preferred language for the consultation", icon: User },
     { key: "sex", label: "Biological Sex", sub: "This helps us personalize your health metrics", icon: User },
     { key: "age", label: "How old are you?", sub: "Age is used for risk assessments and vitals analysis", icon: Calendar },
     { key: "height", label: "Your height", sub: "Height in centimeters for BMI and body metrics", icon: Ruler },
@@ -29,15 +31,16 @@ const Onboarding = () => {
   };
 
   const canProceed = () => {
-    if (step === 0) return sex !== "";
-    if (step === 1) return age !== "" && Number(age) >= 10 && Number(age) <= 120;
-    if (step === 2) return height !== "" && Number(height) >= 50 && Number(height) <= 300;
-    if (step === 3) return weight !== "" && Number(weight) >= 10 && Number(weight) <= 500;
+    if (step === 0) return language !== "";
+    if (step === 1) return sex !== "";
+    if (step === 2) return age !== "" && Number(age) >= 10 && Number(age) <= 120;
+    if (step === 3) return height !== "" && Number(height) >= 50 && Number(height) <= 300;
+    if (step === 4) return weight !== "" && Number(weight) >= 10 && Number(weight) <= 500;
     return false;
   };
 
   const handleNext = async () => {
-    if (step < 3) {
+    if (step < 4) {
       setStep(step + 1);
       return;
     }
@@ -49,6 +52,7 @@ const Onboarding = () => {
         height: Number(height),
         weight: Number(weight),
         biological_sex: sex,
+        preferred_language: language,
       });
       toast.success("Profile updated!");
       completeOnboarding();
@@ -104,16 +108,38 @@ const Onboarding = () => {
           {/* Input area */}
           <div className="mb-8">
             {step === 0 && (
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  { id: "en", label: "English", flag: "🇺🇸" },
+                  { id: "ar", label: "العربية (Arabic)", flag: "🇦🇪" },
+                  { id: "fr", label: "Français (French)", flag: "🇫🇷" },
+                  { id: "es", label: "Español (Spanish)", flag: "🇪🇸" },
+                ].map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => setLanguage(option.id)}
+                    className={`py-4 px-6 rounded-xl border-2 text-sm font-medium font-body transition-all flex items-center justify-between ${language === option.id
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border bg-card text-foreground hover:border-primary/30"
+                      }`}
+                  >
+                    <span>{option.flag} {option.label}</span>
+                    {language === option.id && <div className="w-2 h-2 rounded-full bg-primary" />}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {step === 1 && (
               <div className="grid grid-cols-2 gap-3">
                 {(["male", "female"] as const).map((option) => (
                   <button
                     key={option}
                     onClick={() => setSex(option)}
-                    className={`py-4 px-4 rounded-xl border-2 text-sm font-medium font-body transition-all ${
-                      sex === option
+                    className={`py-4 px-4 rounded-xl border-2 text-sm font-medium font-body transition-all ${sex === option
                         ? "border-primary bg-primary/5 text-primary"
                         : "border-border bg-card text-foreground hover:border-primary/30"
-                    }`}
+                      }`}
                   >
                     {option === "male" ? "♂ Male" : "♀ Female"}
                   </button>
@@ -121,7 +147,7 @@ const Onboarding = () => {
               </div>
             )}
 
-            {step === 1 && (
+            {step === 2 && (
               <div className="relative">
                 <input
                   type="number"
@@ -138,7 +164,7 @@ const Onboarding = () => {
               </div>
             )}
 
-            {step === 2 && (
+            {step === 3 && (
               <div className="relative">
                 <input
                   type="number"
@@ -155,7 +181,7 @@ const Onboarding = () => {
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div className="relative">
                 <input
                   type="number"
@@ -179,7 +205,7 @@ const Onboarding = () => {
             disabled={!canProceed() || saving}
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body shadow-lg shadow-primary/20 hover:shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {saving ? "Saving..." : step < 3 ? "Continue" : "Finish Setup"}
+            {saving ? "Saving..." : step < 4 ? "Continue" : "Finish Setup"}
             {!saving && <ChevronRight size={16} />}
           </button>
 
@@ -195,9 +221,8 @@ const Onboarding = () => {
             {steps.map((_, i) => (
               <div
                 key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === step ? "w-6 bg-primary" : i < step ? "w-1.5 bg-primary/40" : "w-1.5 bg-border"
-                }`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === step ? "w-6 bg-primary" : i < step ? "w-1.5 bg-primary/40" : "w-1.5 bg-border"
+                  }`}
               />
             ))}
           </div>

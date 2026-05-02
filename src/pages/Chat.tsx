@@ -11,8 +11,9 @@ import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
 import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
-import { chatApi } from "@/lib/apiClient";
+import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
+import RatingModal from "@/components/RatingModal";
 import { toast } from "sonner";
 
 // Render basic markdown: **bold**, *italic*, `code`
@@ -197,7 +198,9 @@ const Chat = () => {
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
   const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
-  
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -265,9 +268,9 @@ const Chat = () => {
     let cancelled = false;
     (async () => {
       try {
-        const { userApi } = await import("@/lib/apiClient");
         const p = await userApi.getProfile();
         if (cancelled || !p) return;
+        setUserProfile(p);
         const cached = {
           name: p.name || localUser?.name || null,
           age: p.age ?? null,
@@ -384,6 +387,11 @@ const Chat = () => {
               }).catch((e) => console.error("Failed to save report:", e));
             }
           } catch (e) { console.error("Report save error:", e); }
+
+          // Trigger rating modal if this is the first chat and not yet rated
+          if (userProfile && !userProfile.first_chat_rated) {
+            setTimeout(() => setShowRatingModal(true), 2000);
+          }
           break;
         }
         case "render_detailed_report": {
@@ -410,6 +418,11 @@ const Chat = () => {
               }).catch((e) => console.error("Failed to save report:", e));
             }
           } catch (e) { console.error("Report save error:", e); }
+
+          // Trigger rating modal if this is the first chat and not yet rated
+          if (userProfile && !userProfile.first_chat_rated) {
+            setTimeout(() => setShowRatingModal(true), 2000);
+          }
           break;
         }
         case "disconnectAgent":
@@ -472,7 +485,7 @@ const Chat = () => {
 
     // Cancel any in-flight request before starting a new one
     if (abortControllerRef.current) {
-      try { abortControllerRef.current.abort(); } catch {}
+      try { abortControllerRef.current.abort(); } catch { }
     }
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -487,7 +500,7 @@ const Chat = () => {
       let userProfile: Record<string, string | number> | undefined;
       if (token) {
         let cached: any = null;
-        try { cached = JSON.parse(sessionStorage.getItem("cira_profile_cache") || "null"); } catch {}
+        try { cached = JSON.parse(sessionStorage.getItem("cira_profile_cache") || "null"); } catch { }
         const candidate = {
           name: cached?.name ?? localUser?.name ?? null,
           age: cached?.age ?? null,
@@ -556,7 +569,7 @@ const Chat = () => {
                 try {
                   const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
                   toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
-                } catch {}
+                } catch { }
               }
               pendingToolBlock = null;
             }
@@ -580,13 +593,13 @@ const Chat = () => {
             if (event.type === "tool_use" && event.name && event.input) {
               toolCalls.push(event as ToolUse);
             }
-          } catch {}
+          } catch { }
         }
         if (pendingToolBlock) {
           try {
             const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
             toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
-          } catch {}
+          } catch { }
         }
         console.log("[Chat] Fallback parsed:", { textLen: fullText.length, tools: toolCalls.map(t => t.name) });
         if (fullText) {
@@ -668,7 +681,7 @@ const Chat = () => {
               pendingToolBlock.inputJson += event.delta.partial_json || "";
             }
 
-             // Tool use streaming: finalize on content_block_stop
+            // Tool use streaming: finalize on content_block_stop
             if (event.type === "content_block_stop") {
               if (event.content_block?.type === "tool_use") {
                 // Backend sent the full block in content_block_stop
@@ -779,7 +792,7 @@ const Chat = () => {
         // If the assessment report was rendered, abort any further follow-ups and stop here
         if (renderedReport) {
           if (abortControllerRef.current) {
-            try { abortControllerRef.current.abort(); } catch {}
+            try { abortControllerRef.current.abort(); } catch { }
             abortControllerRef.current = null;
           }
           // Remove any "generating report" placeholder messages
@@ -832,7 +845,7 @@ const Chat = () => {
 
   const handleStop = () => {
     if (abortControllerRef.current) {
-      try { abortControllerRef.current.abort(); } catch {}
+      try { abortControllerRef.current.abort(); } catch { }
       abortControllerRef.current = null;
     }
     setIsApiLoading(false);
@@ -933,8 +946,8 @@ const Chat = () => {
         for (const m of msgs) {
           const rawContent = m.content || m.text || "";
           // Filter out internal technical follow-up messages
-          if (rawContent.startsWith("Tool result for prepare_consultation_payload") || 
-              rawContent.startsWith("You already called prepare_consultation_payload")) {
+          if (rawContent.startsWith("Tool result for prepare_consultation_payload") ||
+            rawContent.startsWith("You already called prepare_consultation_payload")) {
             continue;
           }
           const isUser = m.role === "user";
@@ -1011,15 +1024,14 @@ const Chat = () => {
                   setActiveNav(item.id);
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
-                   if (item.id === "scan") navigate("/vitals-scan");
-                   if (item.id === "reports") navigate("/reports");
-                   if (item.id === "doctor") navigate("/doctor");
+                  if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "reports") navigate("/reports");
+                  if (item.id === "doctor") navigate("/doctor");
                 }}
-                className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
-                  activeNav === item.id
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}
+                className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${activeNav === item.id
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
               >
                 {item.id === "chat" ? (
                   <AiSparkleIcon size={18} active={activeNav === item.id} />
@@ -1076,7 +1088,7 @@ const Chat = () => {
                   onClick={() => setShowHistory(false)}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18" /><path d="M6 6l12 12" /></svg>
                 </button>
               </div>
             </div>
@@ -1087,11 +1099,10 @@ const Chat = () => {
               ) : chatHistory.map((chat: any) => (
                 <div
                   key={chat.id}
-                  className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${
-                    activeChat === chat.id
-                      ? "bg-primary/10 text-foreground border border-primary/20"
-                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                  }`}
+                  className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${activeChat === chat.id
+                    ? "bg-primary/10 text-foreground border border-primary/20"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                    }`}
                   onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
                 >
                   <div className="flex-1 min-w-0 text-left">
@@ -1127,158 +1138,158 @@ const Chat = () => {
           className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-            {/* Chat messages — white bg with soft gradients */}
-            <div className="relative min-h-full bg-white">
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
-              </div>
-              <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6 pb-28 md:pb-6">
-                {messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
-                    {/* Summary card */}
-                    {msg.role === "summary" && msg.summaryData ? (
-                      <ConsultSummaryCard data={msg.summaryData} />
-                    ) : msg.role === "detailed_report" && msg.detailedData ? (
-                      <DetailedReportCard data={msg.detailedData} />
-                    ) : msg.role === "vitals" && msg.vitalsData ? (
-                      <div className="w-full max-w-sm md:max-w-md">
-                        <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
-                          <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
-                                <Activity size={12} className="text-white" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Your Vitals</p>
-                                <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
-                              </div>
+          {/* Chat messages — white bg with soft gradients */}
+          <div className="relative min-h-full bg-white">
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
+              <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
+            </div>
+            <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6 pb-28 md:pb-6">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                  {/* Summary card */}
+                  {msg.role === "summary" && msg.summaryData ? (
+                    <ConsultSummaryCard data={msg.summaryData} />
+                  ) : msg.role === "detailed_report" && msg.detailedData ? (
+                    <DetailedReportCard data={msg.detailedData} />
+                  ) : msg.role === "vitals" && msg.vitalsData ? (
+                    <div className="w-full max-w-sm md:max-w-md">
+                      <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+                        <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
+                              <Activity size={12} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Your Vitals</p>
+                              <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
-                            {msg.vitalsData.map((vital) => {
-                              // Map icon from label for vitals coming from sessionStorage (no icon property)
-                              const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
-                              const VIcon = vital.icon || iconMap[vital.label] || Activity;
-                              return (
-                                <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
-                                  <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
-                                    <VIcon size={13} />
-                                  </div>
-                                  <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
-                                  <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
-                                  <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
+                          {msg.vitalsData.map((vital) => {
+                            // Map icon from label for vitals coming from sessionStorage (no icon property)
+                            const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
+                            const VIcon = vital.icon || iconMap[vital.label] || Activity;
+                            return (
+                              <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
+                                <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
+                                  <VIcon size={13} />
                                 </div>
-                              );
-                            })}
-                          </div>
-                          <div className="px-4 py-2 border-t border-border/20">
-                            <p className="text-[9px] text-emerald-600 font-medium text-center">✓ All vitals within healthy range</p>
-                          </div>
+                                <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
+                                <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
+                                <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="px-4 py-2 border-t border-border/20">
+                          <p className="text-[9px] text-emerald-600 font-medium text-center">✓ All vitals within healthy range</p>
                         </div>
                       </div>
-                    ) : msg.role === "action_buttons" && msg.buttons ? (
-                      <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
-                        <div className="flex flex-col gap-2">
-                          {msg.buttons.map((btn) => (
-                            <button
-                              key={btn.id}
-                              onClick={() => {
-                                if (btn.id === "face_scan") selectMode("vitals");
-                                else if (btn.id === "book_doctor") {
-                                  const user = getUser();
-                                  const trackingData = { timestamp: new Date().toISOString(), userId: user?.id || null, userName: user?.name || null, userEmail: user?.email || null, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
-                                  console.log("[AirDoctor] Referral click:", trackingData);
-                                  try { const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {}); } catch {}
-                                  try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch {}
-                                  window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
-                                }
-                              }}
-                              className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
-                              {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
-                      <ReportGeneratingIndicator />
-                    ) : msg.role === "user" ? (
-                      /* User bubble — light gray pill, right-aligned */
-                      <div
-                        className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]"
-                        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-                      >
-                        <p className="text-[14px] leading-6 whitespace-pre-line">{renderFormattedText(msg.text)}</p>
-                      </div>
-                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
-                      <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
-                        <div className="text-foreground">
-                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
-                            How would you like to get started? 💙
-                          </p>
-                          <div className="flex flex-col gap-2 mt-3">
-                            <button
-                              onClick={() => selectMode("chat")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
-                              <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("assessment")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
-                              <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("vitals")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">📸 Face Scan</span>
-                              <span className="text-[10px] text-muted-foreground">30-second scan captures real vitals from your face</span>
-                            </button>
-                            <button
-                              onClick={() => {
+                    </div>
+                  ) : msg.role === "action_buttons" && msg.buttons ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="flex flex-col gap-2">
+                        {msg.buttons.map((btn) => (
+                          <button
+                            key={btn.id}
+                            onClick={() => {
+                              if (btn.id === "face_scan") selectMode("vitals");
+                              else if (btn.id === "book_doctor") {
                                 const user = getUser();
-                                const trackingData = {
-                                  timestamp: new Date().toISOString(),
-                                  userId: user?.id || null,
-                                  userName: user?.name || null,
-                                  userEmail: user?.email || null,
-                                  userPlan: (user as any)?.plan || "free",
-                                  page: window.location.pathname,
-                                  source: "welcome_button",
-                                  userAgent: navigator.userAgent,
-                                  screenSize: `${window.innerWidth}x${window.innerHeight}`,
-                                };
+                                const trackingData = { timestamp: new Date().toISOString(), userId: user?.id || null, userName: user?.name || null, userEmail: user?.email || null, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
                                 console.log("[AirDoctor] Referral click:", trackingData);
-                                try {
-                                  const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
-                                  fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {});
-                                } catch {}
-                                try {
-                                  const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
-                                  clicks.push(trackingData);
-                                  localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
-                                } catch {}
+                                try { const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { }); } catch { }
+                                try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
                                 window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
-                              }}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">🏥 Book a Doctor</span>
-                              <span className="text-[10px] text-muted-foreground">Connect with a real doctor near you via Air Doctor</span>
-                            </button>
-                          </div>
+                              }
+                            }}
+                            className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
+                            {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                    <ReportGeneratingIndicator />
+                  ) : msg.role === "user" ? (
+                    /* User bubble — light gray pill, right-aligned */
+                    <div
+                      className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]"
+                      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                    >
+                      <p className="text-[14px] leading-6 whitespace-pre-line">{renderFormattedText(msg.text)}</p>
+                    </div>
+                  ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="text-foreground">
+                        <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                          How would you like to get started? 💙
+                        </p>
+                        <div className="flex flex-col gap-2 mt-3">
+                          <button
+                            onClick={() => selectMode("chat")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">💬 Just Chat</span>
+                            <span className="text-[10px] text-muted-foreground">Ask anything — symptoms, wellness, or general health</span>
+                          </button>
+                          <button
+                            onClick={() => selectMode("assessment")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">🩺 Health Assessment</span>
+                            <span className="text-[10px] text-muted-foreground">Guided AI triage based on your symptoms</span>
+                          </button>
+                          <button
+                            onClick={() => selectMode("vitals")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">📸 Face Scan</span>
+                            <span className="text-[10px] text-muted-foreground">30-second scan captures real vitals from your face</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const user = getUser();
+                              const trackingData = {
+                                timestamp: new Date().toISOString(),
+                                userId: user?.id || null,
+                                userName: user?.name || null,
+                                userEmail: user?.email || null,
+                                userPlan: (user as any)?.plan || "free",
+                                page: window.location.pathname,
+                                source: "welcome_button",
+                                userAgent: navigator.userAgent,
+                                screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                              };
+                              console.log("[AirDoctor] Referral click:", trackingData);
+                              try {
+                                const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+                                fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { });
+                              } catch { }
+                              try {
+                                const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                clicks.push(trackingData);
+                                localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                              } catch { }
+                              window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                            }}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">🏥 Book a Doctor</span>
+                            <span className="text-[10px] text-muted-foreground">Connect with a real doctor near you via Air Doctor</span>
+                          </button>
                         </div>
                       </div>
-                    ) : (
-                      /* Cira response — no bubble, just text with sparkle icon */
-                      (msg.text === "Tool Call Executed" || (!msg.text?.trim() && streamingMsgIndex !== i)) ? null : (
+                    </div>
+                  ) : (
+                    /* Cira response — no bubble, just text with sparkle icon */
+                    (msg.text === "Tool Call Executed" || (!msg.text?.trim() && streamingMsgIndex !== i)) ? null : (
                       <div className="max-w-[95%] md:max-w-[80%]">
                         <div className="mb-2">
                           <AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} />
@@ -1319,128 +1330,128 @@ const Chat = () => {
                         </div>
                       </div>
                     )
-                    )}
-                  </div>
-                ))}
+                  )}
+                </div>
+              ))}
 
-                {/* Inline mode selection after landing message */}
-                {showModeSelection && (
-                  <div className="animate-fade-in">
-                    <div className="space-y-2.5 w-full">
-                      {/* Hero — Vital Scan (compact) */}
-                      <button
-                        onClick={() => selectMode("vitals")}
-                        className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                        <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
-                        <div className="relative z-10 p-3 flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
-                            <ScanFace size={18} className="text-white" />
-                            <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 flex items-center justify-center">
-                              <Sparkles size={6} className="text-white" />
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
-                              <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
-                            </div>
-                            <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
-                          </div>
-                          <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              {/* Inline mode selection after landing message */}
+              {showModeSelection && (
+                <div className="animate-fade-in">
+                  <div className="space-y-2.5 w-full">
+                    {/* Hero — Vital Scan (compact) */}
+                    <button
+                      onClick={() => selectMode("vitals")}
+                      className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                      <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+                      <div className="relative z-10 p-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
+                          <ScanFace size={18} className="text-white" />
+                          <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white/20 flex items-center justify-center">
+                            <Sparkles size={6} className="text-white" />
                           </div>
                         </div>
-                      </button>
-
-                      {/* Assessment */}
-                      {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                        const Icon = mode.icon;
-                        return (
-                          <button
-                            key={mode.id}
-                            onClick={() => selectMode(mode.id)}
-                            className="group w-full bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
-                          >
-                            <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
-                              <Icon size={13} style={{ color: "#3b82f6" }} />
-                            </div>
-                            <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                            <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
-                          </button>
-                        );
-                      })}
-
-                      {/* Just chat */}
-                      <button
-                        onClick={() => selectMode("chat")}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full"
-                      >
-                        <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
-                          <MessageCircle size={12} className="text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                            <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
+                          </div>
+                          <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
                         </div>
-                        <div className="text-left">
-                          <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
-                          <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
+                        <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                         </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
+                      </div>
+                    </button>
 
-                {/* Thinking indicator */}
-                {isTyping && (
-                  <div className="flex justify-start animate-fade-in">
-                    <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
-                      
-                    </div>
+                    {/* Assessment */}
+                    {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                      const Icon = mode.icon;
+                      return (
+                        <button
+                          key={mode.id}
+                          onClick={() => selectMode(mode.id)}
+                          className="group w-full bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
+                        >
+                          <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                            <Icon size={13} style={{ color: "#3b82f6" }} />
+                          </div>
+                          <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
+                          <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
+                        </button>
+                      );
+                    })}
+
+                    {/* Just chat */}
+                    <button
+                      onClick={() => selectMode("chat")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full"
+                    >
+                      <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+                        <MessageCircle size={12} className="text-muted-foreground" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
+                        <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
+                      </div>
+                    </button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Thinking indicator */}
+              {isTyping && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="max-w-[95%] md:max-w-[80%]">
+                    <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
+
+                  </div>
+                </div>
+              )}
             </div>
+          </div>
         </div>
 
         {/* Bottom input — Gemini-style clean pill */}
-          <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
-            <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
-              <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
-                  className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
-                  disabled={chatMode === "none"}
-                />
-                {isApiLoading ? (
-                  <button
-                    type="button"
-                    onClick={handleStop}
-                    aria-label="Stop generating"
-                    title="Stop generating"
-                    className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
-                  >
-                    <Square size={14} strokeWidth={2.5} fill="currentColor" />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={!message.trim()}
-                    aria-label="Send message"
-                    className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
-                  >
-                    <Send size={18} strokeWidth={1.5} />
-                  </button>
-                )}
-              </div>
-            </form>
-            <div className="text-center px-3 pb-1">
-              <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
+        <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+          <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
+            <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={chatMode === "none" ? "Select an option above to start ☝️" : "Ask Cira anything..."}
+                className="flex-1 py-3 px-4 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
+                disabled={chatMode === "none"}
+              />
+              {isApiLoading ? (
+                <button
+                  type="button"
+                  onClick={handleStop}
+                  aria-label="Stop generating"
+                  title="Stop generating"
+                  className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
+                >
+                  <Square size={14} strokeWidth={2.5} fill="currentColor" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!message.trim()}
+                  aria-label="Send message"
+                  className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30"
+                >
+                  <Send size={18} strokeWidth={1.5} />
+                </button>
+              )}
             </div>
+          </form>
+          <div className="text-center px-3 pb-1">
+            <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
           </div>
+        </div>
       </div>
       <ConsentBanner />
 
@@ -1514,7 +1525,7 @@ const Chat = () => {
                 {scanComplete && (
                   <div className="relative z-10 flex flex-col items-center gap-3">
                     <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-fade-in">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                     </div>
                     <p className="text-white text-sm font-semibold">Scan Complete!</p>
                   </div>
@@ -1580,6 +1591,15 @@ const Chat = () => {
         </div>
       )}
       <MobileBottomNav />
+
+      <RatingModal
+        isOpen={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        onSuccess={() => {
+          setShowRatingModal(false);
+          setUserProfile((prev: any) => ({ ...prev, first_chat_rated: 1 }));
+        }}
+      />
     </div>
   );
 };
