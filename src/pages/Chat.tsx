@@ -201,19 +201,32 @@ const Chat = () => {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLangDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const languages = [
-    { id: "en", label: "English", flag: "🇺🇸" },
-    { id: "fr", label: "Français", flag: "🇫🇷" },
-    { id: "de", label: "Deutsch", flag: "🇩🇪" },
-    { id: "hi", label: "हिन्दी", flag: "🇮🇳" },
-    { id: "id", label: "Indonesia", flag: "🇮🇩" },
-    { id: "it", label: "Italiano", flag: "🇮🇹" },
-    { id: "ja", label: "日本語", flag: "🇯🇵" },
-    { id: "ko", label: "한국어", flag: "🇰🇷" },
-    { id: "pt-br", label: "P'tuês (BR)", flag: "🇧🇷" },
-    { id: "es-la", label: "Español (LA)", flag: "🌎" },
-    { id: "es-es", label: "Español (ES)", flag: "🇪🇸" },
+    { id: "en", label: "English", flag: "🇺🇸", country: "us" },
+    { id: "fr", label: "Français", flag: "🇫🇷", country: "fr" },
+    { id: "de", label: "Deutsch", flag: "🇩🇪", country: "de" },
+    { id: "hi", label: "हिन्दी", flag: "🇮🇳", country: "in" },
+    { id: "id", label: "Indonesia", flag: "🇮🇩", country: "id" },
+    { id: "it", label: "Italiano", flag: "🇮🇹", country: "it" },
+    { id: "ja", label: "日本語", flag: "🇯🇵", country: "jp" },
+    { id: "ko", label: "한국어", flag: "🇰🇷", country: "kr" },
+    { id: "pt-br", label: "P'tuês (BR)", flag: "🇧🇷", country: "br" },
+    { id: "es-la", label: "Español (LA)", flag: "🌎", country: "mx" },
+    { id: "es-es", label: "Español (ES)", flag: "🇪🇸", country: "es" },
   ];
 
   const UI_STRINGS: Record<string, Record<string, string>> = {
@@ -1584,23 +1597,45 @@ const Chat = () => {
         {/* Bottom input — Gemini-style clean pill */}
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
-            <div className="bg-secondary/60 rounded-full flex items-center overflow-hidden border border-border/30 px-2">
+            <div className="bg-secondary/60 rounded-full flex items-center border border-border/30 px-2">
               {/* Language Selector Dropdown inside input */}
-              <div className="relative shrink-0">
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
-                  className="appearance-none bg-transparent hover:bg-secondary/20 text-foreground text-[12px] font-medium py-2 pl-2 pr-6 rounded-xl cursor-pointer transition-all outline-none"
+              <div className="relative shrink-0" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowLangDropdown(!showLangDropdown)}
+                  className="flex items-center gap-1.5 bg-transparent hover:bg-secondary/40 text-foreground text-[12px] font-medium py-2 pl-2 pr-2 rounded-xl cursor-pointer transition-all outline-none h-full"
                 >
-                  {languages.map(lang => (
-                    <option key={lang.id} value={lang.id}>
-                      {lang.id.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                  <ChevronDown size={10} />
-                </div>
+                  {(() => {
+                    const selLang = languages.find(l => l.id === selectedLanguage) || languages[0];
+                    return (
+                      <>
+                        <img src={`https://flagcdn.com/w20/${selLang.country}.png`} srcSet={`https://flagcdn.com/w40/${selLang.country}.png 2x`} width="16" alt={`${selLang.label} flag`} className="rounded-[2px]" />
+                        <span className="hidden sm:inline-block">{selLang.label}</span>
+                        <span className="sm:hidden">{selLang.id.toUpperCase()}</span>
+                      </>
+                    );
+                  })()}
+                  <ChevronDown size={10} className="opacity-50 ml-0.5" />
+                </button>
+
+                {showLangDropdown && (
+                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] bg-card rounded-xl border border-border shadow-lg overflow-hidden py-1.5 z-50 animate-fade-in origin-bottom-left">
+                    {languages.map(lang => (
+                      <button
+                        key={lang.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLanguage(lang.id);
+                          setShowLangDropdown(false);
+                        }}
+                        className={`w-full text-left flex items-center gap-2.5 px-3 py-2 text-[12px] hover:bg-accent transition-colors ${selectedLanguage === lang.id ? 'bg-accent/50 font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
+                      >
+                        <img src={`https://flagcdn.com/w20/${lang.country}.png`} srcSet={`https://flagcdn.com/w40/${lang.country}.png 2x`} width="16" alt={`${lang.label} flag`} className="rounded-[2px] shadow-sm drop-shadow-sm" />
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="w-px h-4 bg-border/40 mx-1" />
