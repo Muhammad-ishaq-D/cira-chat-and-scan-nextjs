@@ -954,6 +954,8 @@ const Index = () => {
         <p>
           <button onClick={() => navigate("/how-it-works")} className="hover:text-foreground transition-colors">How it works</button>
           {" · "}
+          <button onClick={() => navigate("/technology")} className="hover:text-foreground transition-colors">Technology</button>
+          {" · "}
           <button onClick={() => navigate("/blog")} className="hover:text-foreground transition-colors">Blog</button>
           {" · "}
           <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Security &amp; Privacy</button>
