@@ -958,6 +958,8 @@ const Index = () => {
           {" · "}
           <button onClick={() => navigate("/what-cira-helps-with")} className="hover:text-foreground transition-colors">What Cira helps with</button>
           {" · "}
+          <button onClick={() => navigate("/pricing")} className="hover:text-foreground transition-colors">Pricing</button>
+          {" · "}
           <button onClick={() => navigate("/blog")} className="hover:text-foreground transition-colors">Blog</button>
           {" · "}
           <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Security &amp; Privacy</button>
