@@ -26,6 +26,7 @@ import HowItWorks from "./pages/HowItWorks.tsx";
 import Technology from "./pages/Technology.tsx";
 import WhatCiraHelpsWith from "./pages/WhatCiraHelpsWith.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import RealDoctors from "./pages/RealDoctors.tsx";
 import Terms from "./pages/Terms.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
@@ -63,6 +64,7 @@ const App = () => (
           <Route path="/technology" element={<Technology />} />
           <Route path="/what-cira-helps-with" element={<WhatCiraHelpsWith />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/real-doctors" element={<RealDoctors />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
