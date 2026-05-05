@@ -44,7 +44,7 @@ const ThinkingLabel = () => {
 };
 
 // Typewriter component — types full text character by character
-const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
   const indexRef = useRef(0);
 
@@ -71,7 +71,7 @@ const TypewriterText = ({ text, speed = 18, onComplete, formatted = false }: { t
 
 const LiveTypewriterText = ({
   text,
-  speed = 18,
+  speed = 4,
   formatted = false,
   isComplete = false,
   onComplete,
@@ -1480,9 +1480,9 @@ const Chat = () => {
                         >
                           <p className="text-[14px] md:text-[15px] leading-7">
                             {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
-                              <LiveTypewriterText
+                                <LiveTypewriterText
                                 text={msg.text}
-                                speed={13}
+                                speed={4}
                                 formatted
                                 isComplete={streamingMsgIndex !== i}
                                 onComplete={() => {
@@ -1497,7 +1497,7 @@ const Chat = () => {
                             ) : typingMsgIndex === i ? (
                               <TypewriterText
                                 text={msg.text}
-                                speed={13}
+                                speed={4}
                                 onComplete={() => setTypingMsgIndex(null)}
                                 formatted
                               />

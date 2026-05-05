@@ -43,7 +43,7 @@ const ThinkingLabel = () => {
 
 const LiveTypewriterText = ({
   text,
-  speed = 18,
+  speed = 4,
   formatted = false,
   isComplete = false,
   onComplete,
@@ -847,7 +847,7 @@ const FreeChat = () => {
                             {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
                               <LiveTypewriterText
                                 text={msg.text}
-                                speed={13}
+                                speed={4}
                                 formatted
                                 isComplete={streamingMsgIndex !== i}
                                 onComplete={() => {
@@ -860,7 +860,7 @@ const FreeChat = () => {
                                 }}
                               />
                             ) : typingMsgIndex === i ? (
-                              <LiveTypewriterText text={msg.text} speed={15} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
+                              <LiveTypewriterText text={msg.text} speed={4} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
                             ) : (
                               <span className="whitespace-pre-line">
                                 {renderFormattedText(msg.text)}
