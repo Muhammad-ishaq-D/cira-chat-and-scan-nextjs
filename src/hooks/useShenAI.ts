@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks, RisksFactors } from "shenai-sdk";
 
-const SHENAI_API_KEY = import.meta.env.VITE_SHENAI_API_KEY as string;
+const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
 export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "finished" | "error" | "unsupported";
 
@@ -201,7 +201,7 @@ export function useShenAI() {
       pollRef.current = null;
     }
     if (sdkRef.current) {
-      try { sdkRef.current.deinitialize(); } catch {}
+      try { sdkRef.current.deinitialize(); } catch { }
       sdkRef.current = null;
     }
     riskProfileRef.current = undefined;
@@ -359,7 +359,7 @@ export function useShenAI() {
           setStatus("finished");
 
           // Stop camera after scan is done
-          try { sdk.deinitialize(); } catch {}
+          try { sdk.deinitialize(); } catch { }
           sdkRef.current = null;
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
@@ -380,7 +380,7 @@ export function useShenAI() {
         sdk.stopMeasurement();
         sdk.resetMeasurementSession();
         sdk.setOperatingMode(sdk.OperatingMode.POSITIONING);
-      } catch {}
+      } catch { }
     }
     if (pollRef.current) {
       clearInterval(pollRef.current);

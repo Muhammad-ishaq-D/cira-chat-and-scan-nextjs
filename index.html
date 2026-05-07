@@ -1,89 +1,114 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- ⚠️ DevTools detection — runs synchronously before React loads -->
-    <script>
-      (function () {
-        var THRESHOLD = 160;
-        function devToolsOpen() {
-          return (
-            window.outerWidth - window.innerWidth > THRESHOLD ||
-            window.outerHeight - window.innerHeight > THRESHOLD
-          );
-        }
-        
-        // Skip if developer mode is already active
-        if (sessionStorage.getItem("cira_dev_mode") === "true") return;
 
-        if (devToolsOpen()) {
-          // Inject full-screen block overlay into raw HTML before React mounts
-          document.write(
-            '<div id="devtools-block-overlay" style="' +
-              'position:fixed;inset:0;width:100vw;height:100vh;' +
-              'background:rgba(0,0,0,0.95);z-index:2147483647;' +
-              'pointer-events:all;cursor:not-allowed;user-select:none;' +
-            '"></div>'
-          );
+<head>
+  <!-- ⚠️ DevTools detection — runs synchronously before React loads -->
+  <script>
+    (function () {
+      var THRESHOLD = 160;
+      function devToolsOpen() {
+        return (
+          window.outerWidth - window.innerWidth > THRESHOLD ||
+          window.outerHeight - window.innerHeight > THRESHOLD
+        );
+      }
 
-          // Use prompt to allow key entry
-          var devKey = prompt("\uD83D\uDEAB Developer Tools detected. Enter developer key to continue, or click Cancel to exit:");
-          var correctKey = "%VITE_DEVELOPER_KEY%";
+      // Skip if developer mode is already active
+      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
 
-          if (devKey === correctKey && correctKey !== "%VITE_DEVELOPER_KEY%") {
-            sessionStorage.setItem("cira_dev_mode", "true");
-            var overlay = document.getElementById("devtools-block-overlay");
-            if (overlay) overlay.remove();
-            return; // Allow access
-          } else if (devKey !== null) {
-            alert("\u274C Incorrect developer key.");
+      if (devToolsOpen()) {
+        // Inject full-screen block overlay into raw HTML before React mounts
+        document.write(
+          '<div id="devtools-block-overlay" style="' +
+          'position:fixed;inset:0;width:100vw;height:100vh;' +
+          'background:rgba(0,0,0,0.95);z-index:2147483647;' +
+          'pointer-events:all;cursor:not-allowed;user-select:none;' +
+          '"></div>'
+        );
+
+        // Use prompt to allow key entry
+        var devKey = prompt("\uD83D\uDEAB Developer Tools detected. Enter developer key to continue, or click Cancel to exit:");
+
+        // Fetch the key from backend synchronously to compare
+        var correctKey = null;
+        try {
+          var API_BASE = "https://askainurse.com"; // Fallback
+          // If in dev mode or custom URL, we might need to handle it, 
+          // but for index.html we'll use a reliable base or relative path if possible.
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", API_BASE + "/api/guest/dev-key", false); // Synchronous
+          xhr.send();
+          if (xhr.status === 200) {
+            correctKey = JSON.parse(xhr.responseText).developerKey;
           }
-
-          window.stop();
-          window.location.replace('about:blank');
+        } catch (e) {
+          console.error("Failed to fetch dev key early:", e);
         }
-      })();
-    </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <!-- Note: We intentionally do NOT prefetch/preload shenai_sdk.wasm here.
+
+        if (devKey === correctKey && correctKey) {
+          sessionStorage.setItem("cira_dev_mode", "true");
+          var overlay = document.getElementById("devtools-block-overlay");
+          if (overlay) overlay.remove();
+          return; // Allow access
+        } else if (devKey !== null) {
+          alert("\u274C Incorrect developer key.");
+        }
+
+        window.stop();
+        window.location.replace('about:blank');
+      }
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Note: We intentionally do NOT prefetch/preload shenai_sdk.wasm here.
          The coi-serviceworker intercepts the SDK's fetch in a separate context,
          so a page-level prefetch would download the 10MB WASM twice (once for
          the page cache, once through the SW). Nginx already serves the file
          with immutable cache + gzip, so the SW fetch is fast on repeat visits. -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KQ560MCJ9Y');
-    </script>
-    <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-KQ560MCJ9Y');
+  </script>
+  <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
-    <meta property="og:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
+
+  <meta property="og:type" content="website" />
+  <meta property="og:image"
+    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@Lovable" />
+  <meta name="twitter:image"
+    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+  <meta property="og:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
   <meta name="twitter:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
-  <meta property="og:description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-  <meta name="twitter:description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <meta property="og:description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <meta name="twitter:description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
 </head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

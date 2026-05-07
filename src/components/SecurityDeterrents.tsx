@@ -1,16 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * SecurityDeterrents component adds light deterrents to prevent casual code inspection.
  * Note: These can be bypassed by determined users and are purely cosmetic.
  */
 const SecurityDeterrents = () => {
+  const [correctKey, setCorrectKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch developer key from backend
+    const fetchDevKey = async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+        const res = await fetch(`${API_BASE}/api/guest/dev-key`);
+        const data = await res.json();
+        if (data.developerKey) {
+          setCorrectKey(data.developerKey);
+        }
+      } catch (err) {
+        console.error("Failed to fetch developer key:", err);
+      }
+    };
+    fetchDevKey();
+  }, []);
+
   useEffect(() => {
     let devToolsAlertShown = false;
 
     // ── DevTools detection ───────────────────────────────────────────────────
-    // Technique: docked DevTools reduces window.innerWidth/Height compared to outerWidth/Height.
-    // Threshold of 160px covers typical DevTools panel widths/heights.
     const isDevToolsOpen = (): boolean => {
       const widthGap = window.outerWidth - window.innerWidth > 160;
       const heightGap = window.outerHeight - window.innerHeight > 160;
@@ -43,9 +60,8 @@ const SecurityDeterrents = () => {
         // Use prompt instead of alert to allow key entry
         const defaultMsg = "🚫 Developer Tools detected. Enter developer key to continue, or click Cancel to exit:";
         const devKey = prompt(customMsg || defaultMsg);
-        
-        const correctKey = import.meta.env.VITE_DEVELOPER_KEY;
 
+        // Use the key fetched from backend
         if (devKey === correctKey && correctKey) {
           sessionStorage.setItem("cira_dev_mode", "true");
           overlay.remove();
@@ -91,10 +107,10 @@ const SecurityDeterrents = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (sessionStorage.getItem("cira_dev_mode") === "true") return;
 
-      const isInspector = 
-        e.key === "F12" || 
+      const isInspector =
+        e.key === "F12" ||
         ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C"));
-      
+
       const isViewSource = (e.ctrlKey || e.metaKey) && e.key === "u";
       const isSavePage = (e.ctrlKey || e.metaKey) && e.key === "s";
 
@@ -114,7 +130,7 @@ const SecurityDeterrents = () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [correctKey]); // Re-bind listeners if key changes (though it shouldn't)
 
   return null;
 };
