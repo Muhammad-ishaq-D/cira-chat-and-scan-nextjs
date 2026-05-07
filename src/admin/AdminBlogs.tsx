@@ -703,6 +703,20 @@ const AdminBlogs = () => {
   );
 };
 
+const ToolbarBtn = ({ children, onClick, title }: { children: React.ReactNode; onClick: () => void; title: string }) => (
+  <button
+    type="button"
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={onClick}
+    title={title}
+    className="p-1.5 rounded hover:bg-accent text-foreground/80 hover:text-foreground transition"
+  >
+    {children}
+  </button>
+);
+
+const ToolbarSep = () => <div className="w-px h-5 bg-border mx-1" />;
+
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <label className="block">
     <span className="text-xs font-medium text-muted-foreground mb-1 block">{label}</span>
