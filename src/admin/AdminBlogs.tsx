@@ -228,14 +228,13 @@ const AdminBlogs = () => {
     const range = getEditorRange();
     if (!range) return;
     const selectedText = range.toString();
-    const lines = selectedText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     const block = document.createElement(tagName);
 
     if (tagName === "ul" || tagName === "ol") {
-      const items = lines.length ? lines : [""];
-      items.forEach((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
+      const items = createListItemsFromRange(range);
+      if (!items.length) items.push(document.createElement("li"));
+      items.forEach((li) => {
+        if (!hasMeaningfulContent(li)) li.appendChild(document.createElement("br"));
         block.appendChild(li);
       });
     } else if (tagName === "pre") {
