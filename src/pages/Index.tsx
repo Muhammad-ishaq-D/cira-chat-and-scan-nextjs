@@ -948,19 +948,19 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t border-border/60 bg-card/30 mt-10 font-body">
-        <div className="max-w-6xl mx-auto px-6 py-14">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <button onClick={() => navigate("/")} className="flex items-center gap-2 mb-4">
-                <img src={ciraLogo} alt="Cira" width={28} height={28} />
-                <span className="font-heading text-lg font-semibold text-foreground">Cira</span>
-              </button>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                Your AI health nurse — clinically validated vitals, available anytime.
-              </p>
-            </div>
+        <div className="max-w-5xl mx-auto px-6 py-14 text-center">
+          {/* Brand */}
+          <div className="flex flex-col items-center mb-12">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 mb-4">
+              <img src={ciraLogo} alt="Cira" width={32} height={32} />
+              <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
+            </button>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+              Your AI health nurse — clinically validated vitals, available anytime.
+            </p>
+          </div>
 
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-10 mb-12 justify-items-center text-center">
             {/* Product */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Product</h4>
