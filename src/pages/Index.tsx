@@ -947,30 +947,60 @@ const Index = () => {
       </section>
 
       {/* Footer */}
+      <footer className="border-t border-border/60 bg-card/30 mt-10 font-body">
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <button onClick={() => navigate("/")} className="flex items-center gap-2 mb-4">
+                <img src={ciraLogo} alt="Cira" width={28} height={28} />
+                <span className="font-heading text-lg font-semibold text-foreground">Cira</span>
+              </button>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+                Your AI health nurse — clinically validated vitals, available anytime.
+              </p>
+            </div>
 
-      <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2 font-body">
-        <p>Cira does not replace professional medical advice.</p>
-        <p>Clinically validated vitals · Licensed physicians</p>
-        <p>
-          <button onClick={() => navigate("/how-it-works")} className="hover:text-foreground transition-colors">How it works</button>
-          {" · "}
-          <button onClick={() => navigate("/technology")} className="hover:text-foreground transition-colors">Technology</button>
-          {" · "}
-          <button onClick={() => navigate("/what-cira-helps-with")} className="hover:text-foreground transition-colors">What Cira helps with</button>
-          {" · "}
-          <button onClick={() => navigate("/pricing")} className="hover:text-foreground transition-colors">Pricing</button>
-          {" · "}
-          <button onClick={() => navigate("/real-doctors")} className="hover:text-foreground transition-colors">Real doctors</button>
-          {" · "}
-          <button onClick={() => navigate("/blog")} className="hover:text-foreground transition-colors">Blog</button>
-          {" · "}
-          <button onClick={() => navigate("/privacy")} className="hover:text-foreground transition-colors">Security &amp; Privacy</button>
-          {" · "}
-          <button onClick={() => navigate("/privacy-policy")} className="hover:text-foreground transition-colors">Privacy Policy</button>
-          {" · "}
-          <button onClick={() => navigate("/terms")} className="hover:text-foreground transition-colors">Terms</button>
-        </p>
-        <p>© 2026 Cira — askainurse.com</p>
+            {/* Product */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Product</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">How it works</button></li>
+                <li><button onClick={() => navigate("/technology")} className="text-muted-foreground hover:text-primary transition-colors">Technology</button></li>
+                <li><button onClick={() => navigate("/what-cira-helps-with")} className="text-muted-foreground hover:text-primary transition-colors">What Cira helps with</button></li>
+                <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">Pricing</button></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Company</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">Real doctors</button></li>
+                <li><button onClick={() => navigate("/blog")} className="text-muted-foreground hover:text-primary transition-colors">Blog</button></li>
+                <li><a href="mailto:hello@askainurse.com" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Legal</h4>
+              <ul className="space-y-2.5 text-sm">
+                <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">Security &amp; Privacy</button></li>
+                <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</button></li>
+                <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">Terms</button></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+            <p>© 2026 Cira · askainurse.com</p>
+            <p className="text-center md:text-right">
+              Clinically validated vitals · Licensed physicians ·{" "}
+              <span className="italic">Cira does not replace professional medical advice.</span>
+            </p>
+          </div>
+        </div>
       </footer>
       <ConsentBanner />
     </div>
