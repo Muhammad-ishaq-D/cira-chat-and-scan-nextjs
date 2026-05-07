@@ -169,12 +169,18 @@ const AdminBlogs = () => {
     return !!el && el.contains(range.commonAncestorContainer);
   };
 
-  const getEditorRange = () => {
-    restoreSelection();
+  const getCurrentEditorRange = () => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return null;
     const range = sel.getRangeAt(0);
     return editorContainsRange(range) ? range : null;
+  };
+
+  const getEditorRange = () => {
+    const currentRange = getCurrentEditorRange();
+    if (currentRange) return currentRange;
+    restoreSelection();
+    return getCurrentEditorRange();
   };
 
   // Save the current selection range if it's inside the editor
@@ -196,6 +202,8 @@ const AdminBlogs = () => {
     el.focus();
     const sel = window.getSelection();
     if (!sel) return;
+    const currentRange = getCurrentEditorRange();
+    if (currentRange) return;
     if (savedRangeRef.current) {
       sel.removeAllRanges();
       sel.addRange(savedRangeRef.current);
