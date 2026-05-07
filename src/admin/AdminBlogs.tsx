@@ -1026,13 +1026,14 @@ const AdminBlogs = () => {
   );
 };
 
-const ToolbarBtn = ({ children, onClick, title }: { children: React.ReactNode; onClick: () => void; title: string }) => (
+const ToolbarBtn = ({ children, onClick, title, active }: { children: React.ReactNode; onClick: () => void; title: string; active?: boolean }) => (
   <button
     type="button"
     onMouseDown={(e) => e.preventDefault()}
     onClick={onClick}
     title={title}
-    className="p-1.5 rounded hover:bg-accent text-foreground/80 hover:text-foreground transition"
+    aria-pressed={active ? true : undefined}
+    className={`p-1.5 rounded transition ${active ? "bg-primary/15 text-primary" : "hover:bg-accent text-foreground/80 hover:text-foreground"}`}
   >
     {children}
   </button>
