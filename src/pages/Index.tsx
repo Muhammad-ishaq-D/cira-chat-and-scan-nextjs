@@ -948,7 +948,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t border-border/60 bg-card/30 mt-10 font-body">
-        <div className="max-w-6xl mx-auto px-6 py-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
