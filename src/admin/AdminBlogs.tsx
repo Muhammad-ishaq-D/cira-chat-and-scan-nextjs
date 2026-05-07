@@ -893,42 +893,37 @@ const AdminBlogs = () => {
                       <ToolbarSep />
                       <select
                         title="Font family"
-                        defaultValue=""
+                        value={currentFont}
                         onMouseDown={saveSelection}
                         onChange={(e) => {
                           const ff = e.target.value;
                           if (!ff) return;
                           exec("fontName", ff);
-                          e.target.value = "";
+                          setCurrentFont(ff);
                         }}
                         className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Font</option>
-                        <option value="Inter, sans-serif">Inter</option>
-                        <option value="Georgia, serif">Georgia</option>
-                        <option value="'Playfair Display', serif">Playfair</option>
-                        <option value="'Times New Roman', serif">Times New Roman</option>
-                        <option value="Arial, sans-serif">Arial</option>
-                        <option value="'Courier New', monospace">Courier</option>
+                        {fontOptions.map((o) => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
                       </select>
                       <select
                         title="Text size"
-                        defaultValue=""
+                        value={currentSize}
                         onMouseDown={saveSelection}
                         onChange={(e) => {
                           const fs = e.target.value;
                           if (!fs) return;
                           wrapSelectionWithStyle(`font-size:${fs}`);
-                          e.target.value = "";
+                          setCurrentSize(fs);
                         }}
                         className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Size</option>
-                        <option value="12px">Small</option>
-                        <option value="16px">Normal</option>
-                        <option value="20px">Large</option>
-                        <option value="28px">XL</option>
-                        <option value="36px">XXL</option>
+                        {sizeOptions.map((o) => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
                       </select>
                       <label className="inline-flex items-center gap-1 text-xs px-1.5 py-1 rounded hover:bg-accent cursor-pointer" title="Text color">
                         <Palette size={14} />
