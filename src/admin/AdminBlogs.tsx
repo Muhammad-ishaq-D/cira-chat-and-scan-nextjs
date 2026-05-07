@@ -688,7 +688,7 @@ const AdminBlogs = () => {
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
               <div
-                className="prose prose-neutral max-w-none"
+                className={renderedBlogContentClassName}
                 dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(viewing.content || "") }}
               />
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
@@ -897,7 +897,7 @@ const AdminBlogs = () => {
               <Field label="Content *">
                 {previewMode ? (
                   <div
-                    className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background"
+                    className={`${renderedBlogContentClassName} border border-border rounded-lg p-4 min-h-[300px] bg-background`}
                     dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || "<p><em>Nothing to preview</em></p>") }}
                   />
                 ) : (
