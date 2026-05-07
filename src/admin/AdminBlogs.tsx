@@ -115,12 +115,14 @@ const AdminBlogs = () => {
     [blogs, search]
   );
 
-  const openNew = () => { setEditing({ ...emptyPost }); setPreviewMode(false); };
+  const openNew = () => { setEditing({ ...emptyPost, tags: [] as any }); setPreviewMode(false); };
   const openEdit = (b: BlogPost) => {
-    setEditing({
-      ...b,
-      tags: Array.isArray(b.tags) ? b.tags.join(", ") : b.tags || "",
-    });
+    const tagsArr = Array.isArray(b.tags)
+      ? b.tags
+      : typeof b.tags === "string" && b.tags
+        ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
+        : [];
+    setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
   };
 
