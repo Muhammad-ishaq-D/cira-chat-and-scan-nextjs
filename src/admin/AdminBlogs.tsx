@@ -125,6 +125,23 @@ const sanitizeBlogHtml = (html: string) => {
   return doc.body.innerHTML;
 };
 
+const normalizeBlogForEditor = (post: Partial<BlogPost> | null | undefined): Partial<BlogPost> => {
+  const raw = (post || {}) as Partial<BlogPost> & Record<string, any>;
+  const tagsArr = Array.isArray(raw.tags)
+    ? raw.tags
+    : typeof raw.tags === "string" && raw.tags
+      ? raw.tags.split(",").map((t) => t.trim()).filter(Boolean)
+      : [];
+
+  return {
+    ...raw,
+    tags: tagsArr as any,
+    content: raw.content ?? raw.body ?? "",
+    meta_title: raw.meta_title ?? raw.metaTitle ?? raw.seo_title ?? raw.seoTitle ?? "",
+    meta_description: raw.meta_description ?? raw.metaDescription ?? raw.seo_description ?? raw.seoDescription ?? "",
+  };
+};
+
 // Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
 function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
