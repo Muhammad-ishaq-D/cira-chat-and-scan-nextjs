@@ -703,8 +703,12 @@ const AdminBlogs = () => {
                         const el = contentRef.current;
                         if (!el) return;
                         lastLoadedContentRef.current = el.innerHTML;
+                        saveSelection();
                         syncContentFromDom();
                       }}
+                      onMouseUp={saveSelection}
+                      onKeyUp={saveSelection}
+                      onBlur={saveSelection}
                       onPaste={(e) => {
                         e.preventDefault();
                         const text = e.clipboardData.getData("text/plain");
