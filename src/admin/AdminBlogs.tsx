@@ -138,7 +138,7 @@ const AdminBlogs = () => {
   const wrapSelectionWithStyle = (style: string) => {
     const el = contentRef.current;
     if (!el) return;
-    el.focus();
+    restoreSelection();
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) return;
     const range = sel.getRangeAt(0);
@@ -148,11 +148,11 @@ const AdminBlogs = () => {
     try {
       span.appendChild(range.extractContents());
       range.insertNode(span);
-      // Reselect the inserted span content
       const newRange = document.createRange();
       newRange.selectNodeContents(span);
       sel.removeAllRanges();
       sel.addRange(newRange);
+      savedRangeRef.current = newRange.cloneRange();
     } catch {}
     syncContentFromDom();
   };
