@@ -169,12 +169,18 @@ const AdminBlogs = () => {
     return !!el && el.contains(range.commonAncestorContainer);
   };
 
-  const getEditorRange = () => {
-    restoreSelection();
+  const getCurrentEditorRange = () => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return null;
     const range = sel.getRangeAt(0);
     return editorContainsRange(range) ? range : null;
+  };
+
+  const getEditorRange = () => {
+    const currentRange = getCurrentEditorRange();
+    if (currentRange) return currentRange;
+    restoreSelection();
+    return getCurrentEditorRange();
   };
 
   // Save the current selection range if it's inside the editor
@@ -196,6 +202,8 @@ const AdminBlogs = () => {
     el.focus();
     const sel = window.getSelection();
     if (!sel) return;
+    const currentRange = getCurrentEditorRange();
+    if (currentRange) return;
     if (savedRangeRef.current) {
       sel.removeAllRanges();
       sel.addRange(savedRangeRef.current);
@@ -227,6 +235,11 @@ const AdminBlogs = () => {
   const replaceSelectionWithBlock = (tagName: "ul" | "ol" | "blockquote" | "pre") => {
     const range = getEditorRange();
     if (!range) return;
+    const listCommand = tagName === "ul" ? "insertUnorderedList" : tagName === "ol" ? "insertOrderedList" : null;
+    if (listCommand && document.queryCommandEnabled(listCommand)) {
+      exec(listCommand);
+      return;
+    }
     const selectedText = range.toString();
     const block = document.createElement(tagName);
 
@@ -247,10 +260,6 @@ const AdminBlogs = () => {
 
     range.deleteContents();
     range.insertNode(block);
-    const spacer = document.createElement("p");
-    spacer.appendChild(document.createElement("br"));
-    block.after(spacer);
-
     const nextRange = document.createRange();
     nextRange.selectNodeContents(block);
     const sel = window.getSelection();
