@@ -133,7 +133,9 @@ const AdminBlogs = () => {
     const useCss = command !== "insertUnorderedList" && command !== "insertOrderedList";
     try {
       document.execCommand("styleWithCSS", false, useCss ? "true" : "false");
-    } catch {}
+    } catch {
+      // Some browsers ignore styleWithCSS; the formatting command can still run.
+    }
     document.execCommand(command, false, value);
     saveSelection();
     syncContentFromDom();
@@ -203,7 +205,9 @@ const AdminBlogs = () => {
       sel.removeAllRanges();
       sel.addRange(newRange);
       savedRangeRef.current = newRange.cloneRange();
-    } catch {}
+    } catch {
+      toast.error("Select text inside the content field first");
+    }
     syncContentFromDom();
   };
 
