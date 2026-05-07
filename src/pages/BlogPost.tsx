@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { blogsApi, type BlogPost as BlogPostType } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
 
