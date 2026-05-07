@@ -87,7 +87,7 @@ const BlogPost = () => {
           )}
 
           <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-heading prose-a:text-primary">
-            <ReactMarkdown>{post.content || ""}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content || ""}</ReactMarkdown>
           </div>
 
           {tags.length > 0 && (
