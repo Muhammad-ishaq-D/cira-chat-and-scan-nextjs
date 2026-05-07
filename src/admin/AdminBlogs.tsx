@@ -79,25 +79,50 @@ const AdminBlogs = () => {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const lastLoadedContentRef = useRef<string | null>(null);
   const slugManuallyEditedRef = useRef<boolean>(false);
+  const savedRangeRef = useRef<Range | null>(null);
+
+  // Save the current selection range if it's inside the editor
+  const saveSelection = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (el.contains(range.commonAncestorContainer)) {
+      savedRangeRef.current = range.cloneRange();
+    }
+  };
+
+  // Restore the saved selection back into the editor
+  const restoreSelection = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    if (!sel) return;
+    if (savedRangeRef.current) {
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
+    } else {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  };
 
   // Run a document.execCommand on the editor's current selection
   const exec = (command: string, value?: string) => {
     const el = contentRef.current;
     if (!el) return;
-    el.focus();
-    // Make sure selection is inside the editor; if not, place caret at end
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) {
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      sel?.removeAllRanges();
-      sel?.addRange(range);
-    }
+    restoreSelection();
+    const useCss = command !== "insertUnorderedList" && command !== "insertOrderedList";
     try {
-      document.execCommand("styleWithCSS", false, "true");
+      document.execCommand("styleWithCSS", false, useCss ? "true" : "false");
     } catch {}
     document.execCommand(command, false, value);
+    saveSelection();
     syncContentFromDom();
   };
 
