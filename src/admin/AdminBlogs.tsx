@@ -29,6 +29,89 @@ function slugify(s: string) {
     .replace(/-+/g, "-");
 }
 
+const listBlockSelector = "p,div,h1,h2,h3,h4,h5,h6,li,blockquote,pre";
+
+const hasMeaningfulContent = (node: Node) =>
+  Boolean(node.textContent?.replace(/\u00a0/g, " ").trim()) ||
+  (node instanceof Element && Boolean(node.querySelector("img,video,iframe")));
+
+const cloneChildrenInto = (target: HTMLElement, source: Node) => {
+  if (source instanceof HTMLElement) {
+    Array.from(source.childNodes).forEach((child) => target.appendChild(child.cloneNode(true)));
+  } else {
+    target.appendChild(source.cloneNode(true));
+  }
+};
+
+const createListItemsFromRange = (range: Range) => {
+  const container = document.createElement("div");
+  container.appendChild(range.cloneContents());
+  const items: HTMLLIElement[] = [];
+  let inlineItem = document.createElement("li");
+
+  const flushInlineItem = () => {
+    if (hasMeaningfulContent(inlineItem)) items.push(inlineItem);
+    inlineItem = document.createElement("li");
+  };
+
+  const pushBlockItem = (element: HTMLElement) => {
+    if (element.querySelector("br")) {
+      let splitItem = document.createElement("li");
+      Array.from(element.childNodes).forEach((child) => {
+        if (child.nodeName === "BR") {
+          if (hasMeaningfulContent(splitItem)) items.push(splitItem);
+          splitItem = document.createElement("li");
+        } else {
+          splitItem.appendChild(child.cloneNode(true));
+        }
+      });
+      if (hasMeaningfulContent(splitItem)) items.push(splitItem);
+      return;
+    }
+
+    const item = document.createElement("li");
+    cloneChildrenInto(item, element);
+    if (hasMeaningfulContent(item)) items.push(item);
+  };
+
+  const walk = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parts = (node.textContent || "").split(/\r?\n/);
+      parts.forEach((part, index) => {
+        if (index > 0) flushInlineItem();
+        if (part.trim()) inlineItem.appendChild(document.createTextNode(part));
+      });
+      return;
+    }
+
+    if (!(node instanceof HTMLElement)) return;
+
+    if (node.nodeName === "BR") {
+      flushInlineItem();
+      return;
+    }
+
+    if (node.matches(listBlockSelector)) {
+      flushInlineItem();
+      const nestedBlocks = Array.from(node.children).some(
+        (child) => child instanceof HTMLElement && (child.matches(listBlockSelector) || Boolean(child.querySelector(listBlockSelector)))
+      );
+      if (nestedBlocks && node.nodeName === "DIV") {
+        Array.from(node.childNodes).forEach(walk);
+      } else {
+        pushBlockItem(node);
+      }
+      return;
+    }
+
+    inlineItem.appendChild(node.cloneNode(true));
+  };
+
+  Array.from(container.childNodes).forEach(walk);
+  flushInlineItem();
+  return items;
+};
+
 // Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
 function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
