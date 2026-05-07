@@ -32,7 +32,8 @@
         // Fetch the key from backend synchronously to compare
         var correctKey = null;
         try {
-          var API_BASE = "https://askainurse.com"; // Fallback
+          var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+          var API_BASE = isLocal ? "http://localhost:3000" : "https://askainurse.com";
           // If in dev mode or custom URL, we might need to handle it, 
           // but for index.html we'll use a reliable base or relative path if possible.
           var xhr = new XMLHttpRequest();
