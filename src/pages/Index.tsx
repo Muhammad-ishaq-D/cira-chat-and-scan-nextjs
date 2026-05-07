@@ -993,9 +993,9 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="pt-8 border-t border-border/60 flex flex-col items-center justify-center gap-2 text-xs text-muted-foreground text-center">
             <p>© 2026 Cira · askainurse.com</p>
-            <p className="text-center md:text-right">
+            <p>
               Clinically validated vitals · Licensed physicians ·{" "}
               <span className="italic">Cira does not replace professional medical advice.</span>
             </p>
