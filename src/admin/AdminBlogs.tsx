@@ -235,8 +235,9 @@ const AdminBlogs = () => {
   const replaceSelectionWithBlock = (tagName: "ul" | "ol" | "blockquote" | "pre") => {
     const range = getEditorRange();
     if (!range) return;
-    if ((tagName === "ul" || tagName === "ol") && document.queryCommandEnabled("insertUnorderedList")) {
-      exec(tagName === "ul" ? "insertUnorderedList" : "insertOrderedList");
+    const listCommand = tagName === "ul" ? "insertUnorderedList" : tagName === "ol" ? "insertOrderedList" : null;
+    if (listCommand && document.queryCommandEnabled(listCommand)) {
+      exec(listCommand);
       return;
     }
     const selectedText = range.toString();
