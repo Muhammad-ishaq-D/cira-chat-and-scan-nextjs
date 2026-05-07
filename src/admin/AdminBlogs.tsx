@@ -534,7 +534,7 @@ const AdminBlogs = () => {
                   }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
                     <Eye size={16} />
                   </button>
-                  <button onClick={() => openEdit(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
+                  <button onClick={() => { void openEdit(b); }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
                     <Pencil size={16} />
                   </button>
                   <button onClick={() => handleDelete(b)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive" title="Delete">
@@ -558,7 +558,7 @@ const AdminBlogs = () => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { const b = viewing; setViewing(null); openEdit(b); }}
+                  onClick={() => { const b = viewing; setViewing(null); void openEdit(b); }}
                   className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5"
                 >
                   <Pencil size={12} /> Edit
