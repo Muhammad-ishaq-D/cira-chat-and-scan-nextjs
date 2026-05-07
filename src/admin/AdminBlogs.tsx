@@ -551,9 +551,10 @@ const AdminBlogs = () => {
               </div>
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
-              <div className="prose prose-neutral max-w-none">
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{viewing.content || ""}</ReactMarkdown>
-              </div>
+              <div
+                className="prose prose-neutral max-w-none"
+                dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(viewing.content || "") }}
+              />
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
                   {viewing.tags.map((t) => (
@@ -759,9 +760,10 @@ const AdminBlogs = () => {
 
               <Field label="Content *">
                 {previewMode ? (
-                  <div className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
-                  </div>
+                  <div
+                    className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background"
+                    dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || "<p><em>Nothing to preview</em></p>") }}
+                  />
                 ) : (
                   <div className="border border-border rounded-lg overflow-hidden bg-background">
                     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
