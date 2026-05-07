@@ -76,56 +76,59 @@ const AdminBlogs = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const coverInputRef = useRef<HTMLInputElement | null>(null);
-  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const lastLoadedContentRef = useRef<string | null>(null);
 
-  const wrapSelection = (before: string, after: string = before, placeholder: string = "text") => {
-    const ta = contentRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const value = ta.value;
-    const selected = value.slice(start, end) || placeholder;
-    const newValue = value.slice(0, start) + before + selected + after + value.slice(end);
-    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
-    requestAnimationFrame(() => {
-      ta.focus();
-      const cursor = start + before.length + selected.length;
-      ta.setSelectionRange(cursor, cursor);
-    });
+  // Run a document.execCommand on the editor's current selection
+  const exec = (command: string, value?: string) => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.focus();
+    // Make sure selection is inside the editor; if not, place caret at end
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    try {
+      document.execCommand("styleWithCSS", false, "true");
+    } catch {}
+    document.execCommand(command, false, value);
+    syncContentFromDom();
   };
 
-  const insertAtLineStart = (prefix: string) => {
-    const ta = contentRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const value = ta.value;
-    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
-    const newValue = value.slice(0, lineStart) + prefix + value.slice(lineStart);
-    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
-    requestAnimationFrame(() => {
-      ta.focus();
-      const cursor = start + prefix.length;
-      ta.setSelectionRange(cursor, cursor);
-    });
+  const syncContentFromDom = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    const html = el.innerHTML;
+    setEditing((prev) => (prev ? { ...prev, content: html } : prev));
   };
 
-  const insertBlock = (text: string) => {
-    const ta = contentRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const value = ta.value;
-    const newValue = value.slice(0, start) + text + value.slice(end);
-    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
-    requestAnimationFrame(() => {
-      ta.focus();
-      const cursor = start + text.length;
-      ta.setSelectionRange(cursor, cursor);
-    });
-  };
-
-  const wrapBlockAlign = (align: "left" | "center" | "right" | "justify") => {
-    wrapSelection(`<div style="text-align:${align}">\n\n`, `\n\n</div>`, "your text here");
+  // Wrap current selection in an inline span with the given inline style.
+  // Preserves the selection so the user sees the result applied.
+  const wrapSelectionWithStyle = (style: string) => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) return;
+    const range = sel.getRangeAt(0);
+    if (range.collapsed) return;
+    const span = document.createElement("span");
+    span.setAttribute("style", style);
+    try {
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+      // Reselect the inserted span content
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    } catch {}
+    syncContentFromDom();
   };
 
   const addTag = (raw: string) => {
