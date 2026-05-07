@@ -29,6 +29,89 @@ function slugify(s: string) {
     .replace(/-+/g, "-");
 }
 
+const listBlockSelector = "p,div,h1,h2,h3,h4,h5,h6,li,blockquote,pre";
+
+const hasMeaningfulContent = (node: Node) =>
+  Boolean(node.textContent?.replace(/\u00a0/g, " ").trim()) ||
+  (node instanceof Element && Boolean(node.querySelector("img,video,iframe")));
+
+const cloneChildrenInto = (target: HTMLElement, source: Node) => {
+  if (source instanceof HTMLElement) {
+    Array.from(source.childNodes).forEach((child) => target.appendChild(child.cloneNode(true)));
+  } else {
+    target.appendChild(source.cloneNode(true));
+  }
+};
+
+const createListItemsFromRange = (range: Range) => {
+  const container = document.createElement("div");
+  container.appendChild(range.cloneContents());
+  const items: HTMLLIElement[] = [];
+  let inlineItem = document.createElement("li");
+
+  const flushInlineItem = () => {
+    if (hasMeaningfulContent(inlineItem)) items.push(inlineItem);
+    inlineItem = document.createElement("li");
+  };
+
+  const pushBlockItem = (element: HTMLElement) => {
+    if (element.querySelector("br")) {
+      let splitItem = document.createElement("li");
+      Array.from(element.childNodes).forEach((child) => {
+        if (child.nodeName === "BR") {
+          if (hasMeaningfulContent(splitItem)) items.push(splitItem);
+          splitItem = document.createElement("li");
+        } else {
+          splitItem.appendChild(child.cloneNode(true));
+        }
+      });
+      if (hasMeaningfulContent(splitItem)) items.push(splitItem);
+      return;
+    }
+
+    const item = document.createElement("li");
+    cloneChildrenInto(item, element);
+    if (hasMeaningfulContent(item)) items.push(item);
+  };
+
+  const walk = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parts = (node.textContent || "").split(/\r?\n/);
+      parts.forEach((part, index) => {
+        if (index > 0) flushInlineItem();
+        if (part.trim()) inlineItem.appendChild(document.createTextNode(part));
+      });
+      return;
+    }
+
+    if (!(node instanceof HTMLElement)) return;
+
+    if (node.nodeName === "BR") {
+      flushInlineItem();
+      return;
+    }
+
+    if (node.matches(listBlockSelector)) {
+      flushInlineItem();
+      const nestedBlocks = Array.from(node.children).some(
+        (child) => child instanceof HTMLElement && (child.matches(listBlockSelector) || Boolean(child.querySelector(listBlockSelector)))
+      );
+      if (nestedBlocks && node.nodeName === "DIV") {
+        Array.from(node.childNodes).forEach(walk);
+      } else {
+        pushBlockItem(node);
+      }
+      return;
+    }
+
+    inlineItem.appendChild(node.cloneNode(true));
+  };
+
+  Array.from(container.childNodes).forEach(walk);
+  flushInlineItem();
+  return items;
+};
+
 // Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
 function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -145,14 +228,13 @@ const AdminBlogs = () => {
     const range = getEditorRange();
     if (!range) return;
     const selectedText = range.toString();
-    const lines = selectedText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     const block = document.createElement(tagName);
 
     if (tagName === "ul" || tagName === "ol") {
-      const items = lines.length ? lines : [""];
-      items.forEach((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
+      const items = createListItemsFromRange(range);
+      if (!items.length) items.push(document.createElement("li"));
+      items.forEach((li) => {
+        if (!hasMeaningfulContent(li)) li.appendChild(document.createElement("br"));
         block.appendChild(li);
       });
     } else if (tagName === "pre") {
@@ -371,7 +453,7 @@ const AdminBlogs = () => {
       ) : (
         <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
           {filtered.map((b) => {
-            const preview = b.excerpt || (b.content ? b.content.replace(/[#*`_>\-]/g, "").replace(/\s+/g, " ").trim() : "");
+            const preview = b.excerpt || (b.content ? b.content.replace(/[-#*`_>]/g, "").replace(/\s+/g, " ").trim() : "");
             return (
               <div key={b.id} className="flex items-center gap-4 p-3 sm:p-4 hover:bg-accent/30 transition group">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-muted overflow-hidden shrink-0 border border-border">
