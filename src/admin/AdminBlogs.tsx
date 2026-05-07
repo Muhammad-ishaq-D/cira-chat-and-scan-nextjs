@@ -191,13 +191,18 @@ const AdminBlogs = () => {
     [blogs, search]
   );
 
-  const openNew = () => { setEditing({ ...emptyPost, tags: [] as any }); setPreviewMode(false); };
+  const openNew = () => {
+    lastLoadedContentRef.current = null;
+    setEditing({ ...emptyPost, tags: [] as any });
+    setPreviewMode(false);
+  };
   const openEdit = (b: BlogPost) => {
     const tagsArr = Array.isArray(b.tags)
       ? b.tags
       : typeof b.tags === "string" && b.tags
         ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
         : [];
+    lastLoadedContentRef.current = null;
     setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
   };
