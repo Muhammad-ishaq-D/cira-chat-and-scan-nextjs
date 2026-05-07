@@ -667,10 +667,10 @@ const AdminBlogs = () => {
                       <ToolbarBtn title="Underline" onClick={() => exec("underline")}><Underline size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Strikethrough" onClick={() => exec("strikeThrough")}><Strikethrough size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bulleted list" onClick={() => exec("insertUnorderedList")}><List size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Numbered list" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Quote" onClick={() => exec("formatBlock", "BLOCKQUOTE")}><Quote size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Code block" onClick={() => exec("formatBlock", "PRE")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bulleted list" onClick={() => replaceSelectionWithBlock("ul")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" onClick={() => replaceSelectionWithBlock("ol")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" onClick={() => replaceSelectionWithBlock("blockquote")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Code block" onClick={() => replaceSelectionWithBlock("pre")}><Code size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <ToolbarBtn title="Align left" onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Align center" onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></ToolbarBtn>
