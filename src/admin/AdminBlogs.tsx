@@ -78,6 +78,7 @@ const AdminBlogs = () => {
   const coverInputRef = useRef<HTMLInputElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const lastLoadedContentRef = useRef<string | null>(null);
+  const slugManuallyEditedRef = useRef<boolean>(false);
 
   // Run a document.execCommand on the editor's current selection
   const exec = (command: string, value?: string) => {
@@ -193,6 +194,7 @@ const AdminBlogs = () => {
 
   const openNew = () => {
     lastLoadedContentRef.current = null;
+    slugManuallyEditedRef.current = false;
     setEditing({ ...emptyPost, tags: [] as any });
     setPreviewMode(false);
   };
@@ -203,6 +205,7 @@ const AdminBlogs = () => {
         ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
         : [];
     lastLoadedContentRef.current = null;
+    slugManuallyEditedRef.current = true;
     setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
   };
@@ -404,7 +407,14 @@ const AdminBlogs = () => {
                 <Field label="Title *">
                   <input
                     value={editing.title || ""}
-                    onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      setEditing({
+                        ...editing,
+                        title: newTitle,
+                        slug: slugManuallyEditedRef.current ? editing.slug : slugify(newTitle),
+                      });
+                    }}
                     className="input"
                     placeholder="e.g. 5 ways AI is changing preventive healthcare"
                   />
@@ -412,7 +422,10 @@ const AdminBlogs = () => {
                 <Field label="Slug">
                   <input
                     value={editing.slug || ""}
-                    onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })}
+                    onChange={(e) => {
+                      slugManuallyEditedRef.current = true;
+                      setEditing({ ...editing, slug: slugify(e.target.value) });
+                    }}
                     className="input"
                     placeholder="auto-generated from title"
                   />
