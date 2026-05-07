@@ -3,64 +3,8 @@
 
 <head>
   <!-- ⚠️ DevTools detection — runs synchronously before React loads -->
-  <script>
-    (function () {
-      var THRESHOLD = 160;
-      function devToolsOpen() {
-        return (
-          window.outerWidth - window.innerWidth > THRESHOLD ||
-          window.outerHeight - window.innerHeight > THRESHOLD
-        );
-      }
-
-      // Skip if developer mode is already active
-      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
-
-      if (devToolsOpen()) {
-        // Inject full-screen block overlay into raw HTML before React mounts
-        document.write(
-          '<div id="devtools-block-overlay" style="' +
-          'position:fixed;inset:0;width:100vw;height:100vh;' +
-          'background:rgba(0,0,0,0.95);z-index:2147483647;' +
-          'pointer-events:all;cursor:not-allowed;user-select:none;' +
-          '"></div>'
-        );
-
-        // Use prompt to allow key entry
-        var devKey = prompt("\uD83D\uDEAB Developer Tools detected. Enter developer key to continue, or click Cancel to exit:");
-
-        // Fetch the key from backend synchronously to compare
-        var correctKey = null;
-        try {
-          var isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-          var API_BASE = isLocal ? "http://localhost:3000" : "https://askainurse.com";
-          // If in dev mode or custom URL, we might need to handle it, 
-          // but for index.html we'll use a reliable base or relative path if possible.
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", API_BASE + "/api/guest/dev-key", false); // Synchronous
-          xhr.send();
-          if (xhr.status === 200) {
-            correctKey = JSON.parse(xhr.responseText).developerKey;
-          }
-        } catch (e) {
-          console.error("Failed to fetch dev key early:", e);
-        }
-
-        if (devKey === correctKey && correctKey) {
-          sessionStorage.setItem("cira_dev_mode", "true");
-          var overlay = document.getElementById("devtools-block-overlay");
-          if (overlay) overlay.remove();
-          return; // Allow access
-        } else if (devKey !== null) {
-          alert("\u274C Incorrect developer key.");
-        }
-
-        window.stop();
-        window.location.replace('about:blank');
-      }
-    })();
-  </script>
   <meta charset="UTF-8" />
+
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />

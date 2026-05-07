@@ -27,6 +27,11 @@ const SecurityDeterrents = () => {
   useEffect(() => {
     let devToolsAlertShown = false;
 
+    const isDevModeActive = () => {
+      const storedKey = localStorage.getItem("cira_dev_key");
+      return storedKey && storedKey === correctKey;
+    };
+
     // ── DevTools detection ───────────────────────────────────────────────────
     const isDevToolsOpen = (): boolean => {
       const widthGap = window.outerWidth - window.innerWidth > 160;
@@ -36,7 +41,7 @@ const SecurityDeterrents = () => {
 
     const handleDevToolsDetected = (customMsg?: string) => {
       // Skip if developer mode is already active
-      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
+      if (isDevModeActive()) return;
 
       if (!devToolsAlertShown) {
         devToolsAlertShown = true;
@@ -63,7 +68,7 @@ const SecurityDeterrents = () => {
 
         // Use the key fetched from backend
         if (devKey === correctKey && correctKey) {
-          sessionStorage.setItem("cira_dev_mode", "true");
+          localStorage.setItem("cira_dev_key", devKey);
           overlay.remove();
           devToolsAlertShown = false;
           return; // Allow access
@@ -77,20 +82,20 @@ const SecurityDeterrents = () => {
     };
 
     // Check immediately on page load (catches the case of pre-opened DevTools)
-    if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
+    if (isDevToolsOpen() && !isDevModeActive()) {
       handleDevToolsDetected();
     }
 
     // Poll every second to detect DevTools opened mid-session
     const pollInterval = setInterval(() => {
-      if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
+      if (isDevToolsOpen() && !isDevModeActive()) {
         handleDevToolsDetected();
       }
     }, 1000);
 
     // Also re-check whenever the window is resized (docking/undocking DevTools triggers resize)
     const handleResize = () => {
-      if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
+      if (isDevToolsOpen() && !isDevModeActive()) {
         handleDevToolsDetected();
       }
     };
@@ -98,14 +103,14 @@ const SecurityDeterrents = () => {
 
     // ── Right-click ──────────────────────────────────────────────────────────
     const handleContextMenu = (e: MouseEvent) => {
-      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
+      if (isDevModeActive()) return;
       e.preventDefault();
       handleDevToolsDetected("🚫 Right-click is disabled. Enter developer key to continue:");
     };
 
     // ── Keyboard shortcuts ───────────────────────────────────────────────────
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
+      if (isDevModeActive()) return;
 
       const isInspector =
         e.key === "F12" ||
@@ -120,6 +125,7 @@ const SecurityDeterrents = () => {
         handleDevToolsDetected(`${msg} Enter developer key to continue:`);
       }
     };
+
 
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("keydown", handleKeyDown);
