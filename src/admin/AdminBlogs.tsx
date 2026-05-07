@@ -81,6 +81,19 @@ const AdminBlogs = () => {
   const slugManuallyEditedRef = useRef<boolean>(false);
   const savedRangeRef = useRef<Range | null>(null);
 
+  const editorContainsRange = (range: Range) => {
+    const el = contentRef.current;
+    return !!el && el.contains(range.commonAncestorContainer);
+  };
+
+  const getEditorRange = () => {
+    restoreSelection();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return null;
+    const range = sel.getRangeAt(0);
+    return editorContainsRange(range) ? range : null;
+  };
+
   // Save the current selection range if it's inside the editor
   const saveSelection = () => {
     const el = contentRef.current;
@@ -123,6 +136,43 @@ const AdminBlogs = () => {
     } catch {}
     document.execCommand(command, false, value);
     saveSelection();
+    syncContentFromDom();
+  };
+
+  const replaceSelectionWithBlock = (tagName: "ul" | "ol" | "blockquote" | "pre") => {
+    const range = getEditorRange();
+    if (!range) return;
+    const selectedText = range.toString();
+    const lines = selectedText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const block = document.createElement(tagName);
+
+    if (tagName === "ul" || tagName === "ol") {
+      const items = lines.length ? lines : [""];
+      items.forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        block.appendChild(li);
+      });
+    } else if (tagName === "pre") {
+      const code = document.createElement("code");
+      code.textContent = selectedText || " ";
+      block.appendChild(code);
+    } else {
+      block.textContent = selectedText || " ";
+    }
+
+    range.deleteContents();
+    range.insertNode(block);
+    const spacer = document.createElement("p");
+    spacer.appendChild(document.createElement("br"));
+    block.after(spacer);
+
+    const nextRange = document.createRange();
+    nextRange.selectNodeContents(block);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(nextRange);
+    savedRangeRef.current = nextRange.cloneRange();
     syncContentFromDom();
   };
 
