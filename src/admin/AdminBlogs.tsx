@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon, Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Code, Link2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Type, Undo, Redo, Palette } from "lucide-react";
 import { Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -110,6 +108,21 @@ const createListItemsFromRange = (range: Range) => {
   Array.from(container.childNodes).forEach(walk);
   flushInlineItem();
   return items;
+};
+
+const sanitizeBlogHtml = (html: string) => {
+  const doc = new DOMParser().parseFromString(html || "", "text/html");
+  doc.querySelectorAll("script,style,iframe,object,embed").forEach((node) => node.remove());
+  doc.body.querySelectorAll("*").forEach((node) => {
+    Array.from(node.attributes).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value.trim().toLowerCase();
+      if (name.startsWith("on") || ((name === "href" || name === "src") && value.startsWith("javascript:"))) {
+        node.removeAttribute(attr.name);
+      }
+    });
+  });
+  return doc.body.innerHTML;
 };
 
 // Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
@@ -538,9 +551,10 @@ const AdminBlogs = () => {
               </div>
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
-              <div className="prose prose-neutral max-w-none">
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{viewing.content || ""}</ReactMarkdown>
-              </div>
+              <div
+                className="prose prose-neutral max-w-none"
+                dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(viewing.content || "") }}
+              />
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
                   {viewing.tags.map((t) => (
@@ -746,9 +760,10 @@ const AdminBlogs = () => {
 
               <Field label="Content *">
                 {previewMode ? (
-                  <div className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
-                  </div>
+                  <div
+                    className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background"
+                    dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || "<p><em>Nothing to preview</em></p>") }}
+                  />
                 ) : (
                   <div className="border border-border rounded-lg overflow-hidden bg-background">
                     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
