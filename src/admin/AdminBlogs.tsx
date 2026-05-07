@@ -1003,7 +1003,7 @@ const AdminBlogs = () => {
                         document.execCommand("insertText", false, text);
                       }}
                       data-placeholder="Start writing your post... Select text and use the toolbar to format."
-                      className="prose prose-neutral max-w-none w-full px-3 py-3 bg-background outline-none text-sm min-h-[320px] empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground"
+                      className="prose prose-neutral max-w-none w-full px-3 py-3 bg-background outline-none text-sm min-h-[320px] empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic"
                     />
                   </div>
                 )}
