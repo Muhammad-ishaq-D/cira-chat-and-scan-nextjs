@@ -78,6 +78,7 @@ const AdminBlogs = () => {
   const coverInputRef = useRef<HTMLInputElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const lastLoadedContentRef = useRef<string | null>(null);
+  const slugManuallyEditedRef = useRef<boolean>(false);
 
   // Run a document.execCommand on the editor's current selection
   const exec = (command: string, value?: string) => {
