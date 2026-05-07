@@ -193,6 +193,69 @@ const AdminBlogs = () => {
   const lastLoadedContentRef = useRef<string | null>(null);
   const slugManuallyEditedRef = useRef<boolean>(false);
   const savedRangeRef = useRef<Range | null>(null);
+  const [currentFont, setCurrentFont] = useState<string>("");
+  const [currentSize, setCurrentSize] = useState<string>("");
+
+  const fontOptions = [
+    { value: "Inter, sans-serif", label: "Inter" },
+    { value: "Georgia, serif", label: "Georgia" },
+    { value: "'Playfair Display', serif", label: "Playfair" },
+    { value: "'Times New Roman', serif", label: "Times New Roman" },
+    { value: "Arial, sans-serif", label: "Arial" },
+    { value: "'Courier New', monospace", label: "Courier" },
+  ];
+  const sizeOptions = [
+    { value: "12px", label: "Small" },
+    { value: "16px", label: "Normal" },
+    { value: "20px", label: "Large" },
+    { value: "28px", label: "XL" },
+    { value: "36px", label: "XXL" },
+  ];
+
+  const normalizeFont = (raw: string) => raw.replace(/["']/g, "").replace(/\s+/g, "").toLowerCase();
+  const matchFont = (fontFamily: string): string => {
+    if (!fontFamily) return "";
+    const first = normalizeFont(fontFamily.split(",")[0] || "");
+    const found = fontOptions.find((o) => {
+      const optFirst = normalizeFont(o.value.split(",")[0] || "");
+      return optFirst === first;
+    });
+    return found?.value || "";
+  };
+  const matchSize = (px: string): string => {
+    if (!px) return "";
+    const n = parseFloat(px);
+    if (!isFinite(n)) return "";
+    let best = "";
+    let bestDiff = Infinity;
+    for (const o of sizeOptions) {
+      const diff = Math.abs(parseFloat(o.value) - n);
+      if (diff < bestDiff) { bestDiff = diff; best = o.value; }
+    }
+    return bestDiff <= 2 ? best : "";
+  };
+
+  const detectCurrentStyles = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (!el.contains(range.commonAncestorContainer)) return;
+    let node: Node | null = range.startContainer;
+    if (node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    if (!(node instanceof Element)) return;
+    const cs = window.getComputedStyle(node as Element);
+    setCurrentFont(matchFont(cs.fontFamily || ""));
+    setCurrentSize(matchSize(cs.fontSize || ""));
+  };
+
+  useEffect(() => {
+    if (!editing) return;
+    const handler = () => detectCurrentStyles();
+    document.addEventListener("selectionchange", handler);
+    return () => document.removeEventListener("selectionchange", handler);
+  }, [editing]);
 
   const editorContainsRange = (range: Range) => {
     const el = contentRef.current;
