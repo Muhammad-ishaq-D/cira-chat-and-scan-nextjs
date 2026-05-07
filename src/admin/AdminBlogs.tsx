@@ -499,7 +499,16 @@ const AdminBlogs = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button onClick={() => setViewing(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
+                  <button onClick={async () => {
+                    setViewing(b);
+                    try {
+                      const res: any = await adminApi.getBlog(b.id);
+                      const full = (res?.blog ?? res) as BlogPost;
+                      if (full && (full.content || "").length >= (b.content || "").length) {
+                        setViewing(full);
+                      }
+                    } catch {}
+                  }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
                     <Eye size={16} />
                   </button>
                   <button onClick={() => openEdit(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
