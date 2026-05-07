@@ -553,19 +553,98 @@ const AdminBlogs = () => {
                 </Field>
               </div>
 
-              <Field label="Content (Markdown) *">
+              <Field label="Content *">
                 {previewMode ? (
                   <div className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background">
-                    <ReactMarkdown>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
+                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
                   </div>
                 ) : (
-                  <textarea
-                    value={editing.content || ""}
-                    onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                    rows={14}
-                    className="input font-mono text-sm"
-                    placeholder="# Heading&#10;&#10;Write in markdown..."
-                  />
+                  <div className="border border-border rounded-lg overflow-hidden bg-background">
+                    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
+                      <ToolbarBtn title="Heading 1" onClick={() => insertAtLineStart("# ")}><Heading1 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 2" onClick={() => insertAtLineStart("## ")}><Heading2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 3" onClick={() => insertAtLineStart("### ")}><Heading3 size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Bold" onClick={() => wrapSelection("**", "**", "bold text")}><Bold size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Italic" onClick={() => wrapSelection("*", "*", "italic text")}><Italic size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Underline" onClick={() => wrapSelection("<u>", "</u>", "underlined text")}><Underline size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Strikethrough" onClick={() => wrapSelection("~~", "~~", "strikethrough")}><Strikethrough size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Bulleted list" onClick={() => insertAtLineStart("- ")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" onClick={() => insertAtLineStart("1. ")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" onClick={() => insertAtLineStart("> ")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Inline code" onClick={() => wrapSelection("`", "`", "code")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Align left" onClick={() => wrapBlockAlign("left")}><AlignLeft size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align center" onClick={() => wrapBlockAlign("center")}><AlignCenter size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align right" onClick={() => wrapBlockAlign("right")}><AlignRight size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Justify" onClick={() => wrapBlockAlign("justify")}><AlignJustify size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Link" onClick={() => {
+                        const url = window.prompt("Enter URL", "https://");
+                        if (url) wrapSelection("[", `](${url})`, "link text");
+                      }}><Link2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Image" onClick={() => {
+                        const url = window.prompt("Image URL", "https://");
+                        if (url) insertBlock(`![alt text](${url})`);
+                      }}><ImageIcon size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <select
+                        title="Font family"
+                        onChange={(e) => {
+                          const ff = e.target.value;
+                          if (!ff) return;
+                          wrapSelection(`<span style="font-family:${ff}">`, `</span>`, "your text");
+                          e.target.value = "";
+                        }}
+                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                      >
+                        <option value="">Font</option>
+                        <option value="Inter, sans-serif">Inter</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Playfair Display', serif">Playfair</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Courier New', monospace">Courier</option>
+                      </select>
+                      <select
+                        title="Text size"
+                        onChange={(e) => {
+                          const fs = e.target.value;
+                          if (!fs) return;
+                          wrapSelection(`<span style="font-size:${fs}">`, `</span>`, "your text");
+                          e.target.value = "";
+                        }}
+                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                      >
+                        <option value="">Size</option>
+                        <option value="12px">Small</option>
+                        <option value="16px">Normal</option>
+                        <option value="20px">Large</option>
+                        <option value="28px">XL</option>
+                        <option value="36px">XXL</option>
+                      </select>
+                      <label className="inline-flex items-center gap-1 text-xs px-1.5 py-1 rounded hover:bg-accent cursor-pointer" title="Text color">
+                        <Palette size={14} />
+                        <input
+                          type="color"
+                          onChange={(e) => {
+                            wrapSelection(`<span style="color:${e.target.value}">`, `</span>`, "your text");
+                            e.target.value = "#000000";
+                          }}
+                          className="w-4 h-4 border-0 bg-transparent cursor-pointer p-0"
+                        />
+                      </label>
+                    </div>
+                    <textarea
+                      ref={contentRef}
+                      value={editing.content || ""}
+                      onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+                      rows={16}
+                      className="w-full px-3 py-2 bg-background outline-none font-mono text-sm resize-y"
+                      placeholder="# Start writing your post...&#10;&#10;Select text and use the toolbar to format. Markdown and HTML are both supported."
+                    />
+                  </div>
                 )}
               </Field>
 
