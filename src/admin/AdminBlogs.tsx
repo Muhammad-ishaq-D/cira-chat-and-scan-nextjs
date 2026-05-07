@@ -900,25 +900,25 @@ const AdminBlogs = () => {
                 ) : (
                   <div className="border border-border rounded-lg overflow-hidden bg-background">
                     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
-                      <ToolbarBtn title="Heading 1" onClick={() => exec("formatBlock", "H1")}><Heading1 size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Heading 2" onClick={() => exec("formatBlock", "H2")}><Heading2 size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Heading 3" onClick={() => exec("formatBlock", "H3")}><Heading3 size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Paragraph" onClick={() => exec("formatBlock", "P")}><Type size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 1" active={activeBlock === "H1"} onClick={() => exec("formatBlock", "H1")}><Heading1 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 2" active={activeBlock === "H2"} onClick={() => exec("formatBlock", "H2")}><Heading2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 3" active={activeBlock === "H3"} onClick={() => exec("formatBlock", "H3")}><Heading3 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Paragraph" active={activeBlock === "P"} onClick={() => exec("formatBlock", "P")}><Type size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bold" onClick={() => exec("bold")}><Bold size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Italic" onClick={() => exec("italic")}><Italic size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Underline" onClick={() => exec("underline")}><Underline size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Strikethrough" onClick={() => exec("strikeThrough")}><Strikethrough size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bold" active={!!activeFormats.bold} onClick={() => exec("bold")}><Bold size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Italic" active={!!activeFormats.italic} onClick={() => exec("italic")}><Italic size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Underline" active={!!activeFormats.underline} onClick={() => exec("underline")}><Underline size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Strikethrough" active={!!activeFormats.strikeThrough} onClick={() => exec("strikeThrough")}><Strikethrough size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bulleted list" onClick={() => replaceSelectionWithBlock("ul")}><List size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Numbered list" onClick={() => replaceSelectionWithBlock("ol")}><ListOrdered size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Quote" onClick={() => replaceSelectionWithBlock("blockquote")}><Quote size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Code block" onClick={() => replaceSelectionWithBlock("pre")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bulleted list" active={!!activeFormats.insertUnorderedList} onClick={() => replaceSelectionWithBlock("ul")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" active={!!activeFormats.insertOrderedList} onClick={() => replaceSelectionWithBlock("ol")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" active={activeBlock === "BLOCKQUOTE"} onClick={() => replaceSelectionWithBlock("blockquote")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Code block" active={activeBlock === "PRE"} onClick={() => replaceSelectionWithBlock("pre")}><Code size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Align left" onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Align center" onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Align right" onClick={() => exec("justifyRight")}><AlignRight size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Justify" onClick={() => exec("justifyFull")}><AlignJustify size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align left" active={activeAlign === "left"} onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align center" active={activeAlign === "center"} onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align right" active={activeAlign === "right"} onClick={() => exec("justifyRight")}><AlignRight size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Justify" active={activeAlign === "full"} onClick={() => exec("justifyFull")}><AlignJustify size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <ToolbarBtn title="Link" onClick={() => {
                         const url = window.prompt("Enter URL", "https://");
