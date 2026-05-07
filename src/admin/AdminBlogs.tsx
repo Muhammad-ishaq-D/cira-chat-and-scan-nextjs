@@ -81,6 +81,19 @@ const AdminBlogs = () => {
   const slugManuallyEditedRef = useRef<boolean>(false);
   const savedRangeRef = useRef<Range | null>(null);
 
+  const editorContainsRange = (range: Range) => {
+    const el = contentRef.current;
+    return !!el && el.contains(range.commonAncestorContainer);
+  };
+
+  const getEditorRange = () => {
+    restoreSelection();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return null;
+    const range = sel.getRangeAt(0);
+    return editorContainsRange(range) ? range : null;
+  };
+
   // Save the current selection range if it's inside the editor
   const saveSelection = () => {
     const el = contentRef.current;
@@ -120,9 +133,48 @@ const AdminBlogs = () => {
     const useCss = command !== "insertUnorderedList" && command !== "insertOrderedList";
     try {
       document.execCommand("styleWithCSS", false, useCss ? "true" : "false");
-    } catch {}
+    } catch {
+      // Some browsers ignore styleWithCSS; the formatting command can still run.
+    }
     document.execCommand(command, false, value);
     saveSelection();
+    syncContentFromDom();
+  };
+
+  const replaceSelectionWithBlock = (tagName: "ul" | "ol" | "blockquote" | "pre") => {
+    const range = getEditorRange();
+    if (!range) return;
+    const selectedText = range.toString();
+    const lines = selectedText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const block = document.createElement(tagName);
+
+    if (tagName === "ul" || tagName === "ol") {
+      const items = lines.length ? lines : [""];
+      items.forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        block.appendChild(li);
+      });
+    } else if (tagName === "pre") {
+      const code = document.createElement("code");
+      code.textContent = selectedText || " ";
+      block.appendChild(code);
+    } else {
+      block.textContent = selectedText || " ";
+    }
+
+    range.deleteContents();
+    range.insertNode(block);
+    const spacer = document.createElement("p");
+    spacer.appendChild(document.createElement("br"));
+    block.after(spacer);
+
+    const nextRange = document.createRange();
+    nextRange.selectNodeContents(block);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(nextRange);
+    savedRangeRef.current = nextRange.cloneRange();
     syncContentFromDom();
   };
 
@@ -153,7 +205,9 @@ const AdminBlogs = () => {
       sel.removeAllRanges();
       sel.addRange(newRange);
       savedRangeRef.current = newRange.cloneRange();
-    } catch {}
+    } catch {
+      toast.error("Select text inside the content field first");
+    }
     syncContentFromDom();
   };
 
@@ -617,10 +671,10 @@ const AdminBlogs = () => {
                       <ToolbarBtn title="Underline" onClick={() => exec("underline")}><Underline size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Strikethrough" onClick={() => exec("strikeThrough")}><Strikethrough size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bulleted list" onClick={() => exec("insertUnorderedList")}><List size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Numbered list" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Quote" onClick={() => exec("formatBlock", "BLOCKQUOTE")}><Quote size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Code block" onClick={() => exec("formatBlock", "PRE")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bulleted list" onClick={() => replaceSelectionWithBlock("ul")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" onClick={() => replaceSelectionWithBlock("ol")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" onClick={() => replaceSelectionWithBlock("blockquote")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Code block" onClick={() => replaceSelectionWithBlock("pre")}><Code size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <ToolbarBtn title="Align left" onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Align center" onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></ToolbarBtn>
