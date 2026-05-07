@@ -638,14 +638,15 @@ const AdminBlogs = () => {
                       <ToolbarSep />
                       <select
                         title="Font family"
-                        onMouseDown={(e) => e.preventDefault()}
+                        defaultValue=""
+                        onMouseDown={saveSelection}
                         onChange={(e) => {
                           const ff = e.target.value;
                           if (!ff) return;
                           exec("fontName", ff);
                           e.target.value = "";
                         }}
-                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                        className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Font</option>
                         <option value="Inter, sans-serif">Inter</option>
@@ -657,14 +658,15 @@ const AdminBlogs = () => {
                       </select>
                       <select
                         title="Text size"
-                        onMouseDown={(e) => e.preventDefault()}
+                        defaultValue=""
+                        onMouseDown={saveSelection}
                         onChange={(e) => {
                           const fs = e.target.value;
                           if (!fs) return;
                           wrapSelectionWithStyle(`font-size:${fs}`);
                           e.target.value = "";
                         }}
-                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                        className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Size</option>
                         <option value="12px">Small</option>
@@ -677,7 +679,7 @@ const AdminBlogs = () => {
                         <Palette size={14} />
                         <input
                           type="color"
-                          onMouseDown={(e) => e.stopPropagation()}
+                          onMouseDown={() => saveSelection()}
                           onChange={(e) => {
                             exec("foreColor", e.target.value);
                             e.target.value = "#000000";
