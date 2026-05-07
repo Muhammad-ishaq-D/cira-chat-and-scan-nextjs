@@ -407,7 +407,14 @@ const AdminBlogs = () => {
                 <Field label="Title *">
                   <input
                     value={editing.title || ""}
-                    onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      setEditing({
+                        ...editing,
+                        title: newTitle,
+                        slug: slugManuallyEditedRef.current ? editing.slug : slugify(newTitle),
+                      });
+                    }}
                     className="input"
                     placeholder="e.g. 5 ways AI is changing preventive healthcare"
                   />
@@ -415,7 +422,10 @@ const AdminBlogs = () => {
                 <Field label="Slug">
                   <input
                     value={editing.slug || ""}
-                    onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })}
+                    onChange={(e) => {
+                      slugManuallyEditedRef.current = true;
+                      setEditing({ ...editing, slug: slugify(e.target.value) });
+                    }}
                     className="input"
                     placeholder="auto-generated from title"
                   />
