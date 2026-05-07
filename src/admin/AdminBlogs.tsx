@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon, Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Code, Link2, AlignLeft, AlignCenter, AlignRight, Type } from "lucide-react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
