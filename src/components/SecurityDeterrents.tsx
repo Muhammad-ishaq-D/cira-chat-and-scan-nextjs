@@ -17,7 +17,10 @@ const SecurityDeterrents = () => {
       return widthGap || heightGap;
     };
 
-    const handleDevToolsDetected = () => {
+    const handleDevToolsDetected = (customMsg?: string) => {
+      // Skip if developer mode is already active
+      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
+
       if (!devToolsAlertShown) {
         devToolsAlertShown = true;
 
@@ -37,29 +40,41 @@ const SecurityDeterrents = () => {
         `;
         document.body.appendChild(overlay);
 
-        // alert() is synchronous — overlay renders first, blocks everything beneath
-        alert("🚫 Developer Tools detected. This page is not accessible with DevTools open.");
+        // Use prompt instead of alert to allow key entry
+        const defaultMsg = "🚫 Developer Tools detected. Enter developer key to continue, or click Cancel to exit:";
+        const devKey = prompt(customMsg || defaultMsg);
+        
+        const correctKey = import.meta.env.VITE_DEVELOPER_KEY;
 
-        // Redirect after OK is clicked — replace() removes page from history
+        if (devKey === correctKey && correctKey) {
+          sessionStorage.setItem("cira_dev_mode", "true");
+          overlay.remove();
+          devToolsAlertShown = false;
+          return; // Allow access
+        } else if (devKey !== null) {
+          alert("❌ Incorrect developer key.");
+        }
+
+        // Redirect after OK is clicked or wrong key entered
         window.location.replace("about:blank");
       }
     };
 
     // Check immediately on page load (catches the case of pre-opened DevTools)
-    if (isDevToolsOpen()) {
+    if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
       handleDevToolsDetected();
     }
 
     // Poll every second to detect DevTools opened mid-session
     const pollInterval = setInterval(() => {
-      if (isDevToolsOpen()) {
+      if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
         handleDevToolsDetected();
       }
     }, 1000);
 
     // Also re-check whenever the window is resized (docking/undocking DevTools triggers resize)
     const handleResize = () => {
-      if (isDevToolsOpen()) {
+      if (isDevToolsOpen() && sessionStorage.getItem("cira_dev_mode") !== "true") {
         handleDevToolsDetected();
       }
     };
@@ -67,46 +82,26 @@ const SecurityDeterrents = () => {
 
     // ── Right-click ──────────────────────────────────────────────────────────
     const handleContextMenu = (e: MouseEvent) => {
+      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
       e.preventDefault();
-      alert("🚫 Right-click is disabled on this page.");
+      handleDevToolsDetected("🚫 Right-click is disabled. Enter developer key to continue:");
     };
 
     // ── Keyboard shortcuts ───────────────────────────────────────────────────
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F12
-      if (e.key === "F12") {
-        e.preventDefault();
-        alert("🚫 Developer Tools are disabled on this page.");
-      }
+      if (sessionStorage.getItem("cira_dev_mode") === "true") return;
 
-      // Ctrl+Shift+I or Cmd+Option+I
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "I") {
-        e.preventDefault();
-        alert("🚫 Developer Tools are disabled on this page.");
-      }
+      const isInspector = 
+        e.key === "F12" || 
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C"));
+      
+      const isViewSource = (e.ctrlKey || e.metaKey) && e.key === "u";
+      const isSavePage = (e.ctrlKey || e.metaKey) && e.key === "s";
 
-      // Ctrl+Shift+J or Cmd+Option+J
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "J") {
+      if (isInspector || isViewSource || isSavePage) {
         e.preventDefault();
-        alert("🚫 Developer Tools are disabled on this page.");
-      }
-
-      // Ctrl+Shift+C (Inspect Element)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "C") {
-        e.preventDefault();
-        alert("🚫 Developer Tools are disabled on this page.");
-      }
-
-      // Ctrl+U (View Source)
-      if ((e.ctrlKey || e.metaKey) && e.key === "u") {
-        e.preventDefault();
-        alert("🚫 View Source is disabled on this page.");
-      }
-
-      // Ctrl+S (Save Page)
-      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-        e.preventDefault();
-        alert("🚫 Saving is disabled on this page.");
+        const msg = isInspector ? "🚫 Developer Tools are disabled." : (isViewSource ? "🚫 View Source is disabled." : "🚫 Saving is disabled.");
+        handleDevToolsDetected(`${msg} Enter developer key to continue:`);
       }
     };
 

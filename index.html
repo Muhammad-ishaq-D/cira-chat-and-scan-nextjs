@@ -11,6 +11,10 @@
             window.outerHeight - window.innerHeight > THRESHOLD
           );
         }
+        
+        // Skip if developer mode is already active
+        if (sessionStorage.getItem("cira_dev_mode") === "true") return;
+
         if (devToolsOpen()) {
           // Inject full-screen block overlay into raw HTML before React mounts
           document.write(
@@ -20,7 +24,20 @@
               'pointer-events:all;cursor:not-allowed;user-select:none;' +
             '"></div>'
           );
-          alert('\uD83D\uDEAB Developer Tools detected. This page is not accessible with DevTools open.');
+
+          // Use prompt to allow key entry
+          var devKey = prompt("\uD83D\uDEAB Developer Tools detected. Enter developer key to continue, or click Cancel to exit:");
+          var correctKey = "%VITE_DEVELOPER_KEY%";
+
+          if (devKey === correctKey && correctKey !== "%VITE_DEVELOPER_KEY%") {
+            sessionStorage.setItem("cira_dev_mode", "true");
+            var overlay = document.getElementById("devtools-block-overlay");
+            if (overlay) overlay.remove();
+            return; // Allow access
+          } else if (devKey !== null) {
+            alert("\u274C Incorrect developer key.");
+          }
+
           window.stop();
           window.location.replace('about:blank');
         }
