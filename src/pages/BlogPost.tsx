@@ -6,6 +6,8 @@ import rehypeRaw from "rehype-raw";
 import { blogsApi, type BlogPost as BlogPostType } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
 
+const blogContentClassName = "prose prose-neutral dark:prose-invert max-w-none prose-headings:font-heading prose-a:text-primary [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4 [&_li]:my-1 [&_li]:pl-1";
+
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -86,7 +88,7 @@ const BlogPost = () => {
             </div>
           )}
 
-          <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-heading prose-a:text-primary">
+          <div className={blogContentClassName}>
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content || ""}</ReactMarkdown>
           </div>
 
