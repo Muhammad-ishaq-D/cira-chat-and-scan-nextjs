@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon, Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Code, Link2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Type, Undo, Redo, Palette } from "lucide-react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -73,7 +74,80 @@ const AdminBlogs = () => {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [tagInput, setTagInput] = useState("");
   const coverInputRef = useRef<HTMLInputElement | null>(null);
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const wrapSelection = (before: string, after: string = before, placeholder: string = "text") => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
+    const selected = value.slice(start, end) || placeholder;
+    const newValue = value.slice(0, start) + before + selected + after + value.slice(end);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + before.length + selected.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const insertAtLineStart = (prefix: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const value = ta.value;
+    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    const newValue = value.slice(0, lineStart) + prefix + value.slice(lineStart);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + prefix.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const insertBlock = (text: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
+    const newValue = value.slice(0, start) + text + value.slice(end);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + text.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const wrapBlockAlign = (align: "left" | "center" | "right" | "justify") => {
+    wrapSelection(`<div style="text-align:${align}">\n\n`, `\n\n</div>`, "your text here");
+  };
+
+  const addTag = (raw: string) => {
+    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 0) return;
+    setEditing((prev) => {
+      if (!prev) return prev;
+      const current = Array.isArray(prev.tags) ? (prev.tags as string[]) : [];
+      const merged = [...current];
+      for (const p of parts) if (!merged.includes(p)) merged.push(p);
+      return { ...prev, tags: merged as any };
+    });
+    setTagInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    setEditing((prev) => {
+      if (!prev) return prev;
+      const current = Array.isArray(prev.tags) ? (prev.tags as string[]) : [];
+      return { ...prev, tags: current.filter((t) => t !== tag) as any };
+    });
+  };
 
   const handleCoverFile = async (file: File | undefined | null) => {
     if (!file) return;
@@ -114,12 +188,14 @@ const AdminBlogs = () => {
     [blogs, search]
   );
 
-  const openNew = () => { setEditing({ ...emptyPost }); setPreviewMode(false); };
+  const openNew = () => { setEditing({ ...emptyPost, tags: [] as any }); setPreviewMode(false); };
   const openEdit = (b: BlogPost) => {
-    setEditing({
-      ...b,
-      tags: Array.isArray(b.tags) ? b.tags.join(", ") : b.tags || "",
-    });
+    const tagsArr = Array.isArray(b.tags)
+      ? b.tags
+      : typeof b.tags === "string" && b.tags
+        ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
+        : [];
+    setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
   };
 
@@ -282,7 +358,7 @@ const AdminBlogs = () => {
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
               <div className="prose prose-neutral max-w-none">
-                <ReactMarkdown>{viewing.content || ""}</ReactMarkdown>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{viewing.content || ""}</ReactMarkdown>
               </div>
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
@@ -322,6 +398,7 @@ const AdminBlogs = () => {
                     value={editing.title || ""}
                     onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })}
                     className="input"
+                    placeholder="e.g. 5 ways AI is changing preventive healthcare"
                   />
                 </Field>
                 <Field label="Slug">
@@ -329,7 +406,7 @@ const AdminBlogs = () => {
                     value={editing.slug || ""}
                     onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })}
                     className="input"
-                    placeholder="auto-generated"
+                    placeholder="auto-generated from title"
                   />
                 </Field>
               </div>
@@ -340,6 +417,7 @@ const AdminBlogs = () => {
                   onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                   rows={2}
                   className="input"
+                  placeholder="A short summary (1-2 sentences) shown on the blog list and in social previews"
                 />
               </Field>
 
@@ -409,13 +487,50 @@ const AdminBlogs = () => {
 
 
               <div className="grid sm:grid-cols-3 gap-3">
-                <Field label="Tags (comma separated)">
-                  <input
-                    value={(editing.tags as string) || ""}
-                    onChange={(e) => setEditing({ ...editing, tags: e.target.value })}
-                    className="input"
-                    placeholder="health, ai, vitals"
-                  />
+                <Field label="Tags">
+                  <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-lg bg-background border border-border focus-within:ring-2 focus-within:ring-primary/30 min-h-[40px]">
+                    {(Array.isArray(editing.tags) ? (editing.tags as string[]) : []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="rounded-full hover:bg-primary/20 p-0.5"
+                          aria-label={`Remove ${tag}`}
+                        >
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      value={tagInput}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v.endsWith(",")) {
+                          addTag(v);
+                        } else {
+                          setTagInput(v);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                          if (tagInput.trim()) {
+                            e.preventDefault();
+                            addTag(tagInput);
+                          }
+                        } else if (e.key === "Backspace" && !tagInput) {
+                          const arr = Array.isArray(editing.tags) ? (editing.tags as string[]) : [];
+                          if (arr.length) removeTag(arr[arr.length - 1]);
+                        }
+                      }}
+                      onBlur={() => tagInput.trim() && addTag(tagInput)}
+                      placeholder={(Array.isArray(editing.tags) && editing.tags.length) ? "" : "Type and press Enter"}
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm py-1"
+                    />
+                  </div>
                 </Field>
                 <Field label="Status">
                   <select
@@ -438,19 +553,98 @@ const AdminBlogs = () => {
                 </Field>
               </div>
 
-              <Field label="Content (Markdown) *">
+              <Field label="Content *">
                 {previewMode ? (
                   <div className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background">
-                    <ReactMarkdown>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
+                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>{editing.content || "*Nothing to preview*"}</ReactMarkdown>
                   </div>
                 ) : (
-                  <textarea
-                    value={editing.content || ""}
-                    onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                    rows={14}
-                    className="input font-mono text-sm"
-                    placeholder="# Heading&#10;&#10;Write in markdown..."
-                  />
+                  <div className="border border-border rounded-lg overflow-hidden bg-background">
+                    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
+                      <ToolbarBtn title="Heading 1" onClick={() => insertAtLineStart("# ")}><Heading1 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 2" onClick={() => insertAtLineStart("## ")}><Heading2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 3" onClick={() => insertAtLineStart("### ")}><Heading3 size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Bold" onClick={() => wrapSelection("**", "**", "bold text")}><Bold size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Italic" onClick={() => wrapSelection("*", "*", "italic text")}><Italic size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Underline" onClick={() => wrapSelection("<u>", "</u>", "underlined text")}><Underline size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Strikethrough" onClick={() => wrapSelection("~~", "~~", "strikethrough")}><Strikethrough size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Bulleted list" onClick={() => insertAtLineStart("- ")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" onClick={() => insertAtLineStart("1. ")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" onClick={() => insertAtLineStart("> ")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Inline code" onClick={() => wrapSelection("`", "`", "code")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Align left" onClick={() => wrapBlockAlign("left")}><AlignLeft size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align center" onClick={() => wrapBlockAlign("center")}><AlignCenter size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align right" onClick={() => wrapBlockAlign("right")}><AlignRight size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Justify" onClick={() => wrapBlockAlign("justify")}><AlignJustify size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <ToolbarBtn title="Link" onClick={() => {
+                        const url = window.prompt("Enter URL", "https://");
+                        if (url) wrapSelection("[", `](${url})`, "link text");
+                      }}><Link2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Image" onClick={() => {
+                        const url = window.prompt("Image URL", "https://");
+                        if (url) insertBlock(`![alt text](${url})`);
+                      }}><ImageIcon size={14} /></ToolbarBtn>
+                      <ToolbarSep />
+                      <select
+                        title="Font family"
+                        onChange={(e) => {
+                          const ff = e.target.value;
+                          if (!ff) return;
+                          wrapSelection(`<span style="font-family:${ff}">`, `</span>`, "your text");
+                          e.target.value = "";
+                        }}
+                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                      >
+                        <option value="">Font</option>
+                        <option value="Inter, sans-serif">Inter</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="'Playfair Display', serif">Playfair</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Courier New', monospace">Courier</option>
+                      </select>
+                      <select
+                        title="Text size"
+                        onChange={(e) => {
+                          const fs = e.target.value;
+                          if (!fs) return;
+                          wrapSelection(`<span style="font-size:${fs}">`, `</span>`, "your text");
+                          e.target.value = "";
+                        }}
+                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                      >
+                        <option value="">Size</option>
+                        <option value="12px">Small</option>
+                        <option value="16px">Normal</option>
+                        <option value="20px">Large</option>
+                        <option value="28px">XL</option>
+                        <option value="36px">XXL</option>
+                      </select>
+                      <label className="inline-flex items-center gap-1 text-xs px-1.5 py-1 rounded hover:bg-accent cursor-pointer" title="Text color">
+                        <Palette size={14} />
+                        <input
+                          type="color"
+                          onChange={(e) => {
+                            wrapSelection(`<span style="color:${e.target.value}">`, `</span>`, "your text");
+                            e.target.value = "#000000";
+                          }}
+                          className="w-4 h-4 border-0 bg-transparent cursor-pointer p-0"
+                        />
+                      </label>
+                    </div>
+                    <textarea
+                      ref={contentRef}
+                      value={editing.content || ""}
+                      onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+                      rows={16}
+                      className="w-full px-3 py-2 bg-background outline-none font-mono text-sm resize-y"
+                      placeholder="# Start writing your post...&#10;&#10;Select text and use the toolbar to format. Markdown and HTML are both supported."
+                    />
+                  </div>
                 )}
               </Field>
 
@@ -508,6 +702,20 @@ const AdminBlogs = () => {
     </div>
   );
 };
+
+const ToolbarBtn = ({ children, onClick, title }: { children: React.ReactNode; onClick: () => void; title: string }) => (
+  <button
+    type="button"
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={onClick}
+    title={title}
+    className="p-1.5 rounded hover:bg-accent text-foreground/80 hover:text-foreground transition"
+  >
+    {children}
+  </button>
+);
+
+const ToolbarSep = () => <div className="w-px h-5 bg-border mx-1" />;
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <label className="block">
