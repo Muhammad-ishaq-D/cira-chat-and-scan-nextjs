@@ -487,13 +487,50 @@ const AdminBlogs = () => {
 
 
               <div className="grid sm:grid-cols-3 gap-3">
-                <Field label="Tags (comma separated)">
-                  <input
-                    value={(editing.tags as string) || ""}
-                    onChange={(e) => setEditing({ ...editing, tags: e.target.value })}
-                    className="input"
-                    placeholder="health, ai, vitals"
-                  />
+                <Field label="Tags">
+                  <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-lg bg-background border border-border focus-within:ring-2 focus-within:ring-primary/30 min-h-[40px]">
+                    {(Array.isArray(editing.tags) ? (editing.tags as string[]) : []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="rounded-full hover:bg-primary/20 p-0.5"
+                          aria-label={`Remove ${tag}`}
+                        >
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      value={tagInput}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v.endsWith(",")) {
+                          addTag(v);
+                        } else {
+                          setTagInput(v);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === "Tab") {
+                          if (tagInput.trim()) {
+                            e.preventDefault();
+                            addTag(tagInput);
+                          }
+                        } else if (e.key === "Backspace" && !tagInput) {
+                          const arr = Array.isArray(editing.tags) ? (editing.tags as string[]) : [];
+                          if (arr.length) removeTag(arr[arr.length - 1]);
+                        }
+                      }}
+                      onBlur={() => tagInput.trim() && addTag(tagInput)}
+                      placeholder={(Array.isArray(editing.tags) && editing.tags.length) ? "" : "Type and press Enter"}
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm py-1"
+                    />
+                  </div>
                 </Field>
                 <Field label="Status">
                   <select
