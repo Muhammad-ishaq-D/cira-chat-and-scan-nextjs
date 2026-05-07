@@ -79,25 +79,50 @@ const AdminBlogs = () => {
   const contentRef = useRef<HTMLDivElement | null>(null);
   const lastLoadedContentRef = useRef<string | null>(null);
   const slugManuallyEditedRef = useRef<boolean>(false);
+  const savedRangeRef = useRef<Range | null>(null);
+
+  // Save the current selection range if it's inside the editor
+  const saveSelection = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (el.contains(range.commonAncestorContainer)) {
+      savedRangeRef.current = range.cloneRange();
+    }
+  };
+
+  // Restore the saved selection back into the editor
+  const restoreSelection = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    if (!sel) return;
+    if (savedRangeRef.current) {
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
+    } else {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  };
 
   // Run a document.execCommand on the editor's current selection
   const exec = (command: string, value?: string) => {
     const el = contentRef.current;
     if (!el) return;
-    el.focus();
-    // Make sure selection is inside the editor; if not, place caret at end
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) {
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      sel?.removeAllRanges();
-      sel?.addRange(range);
-    }
+    restoreSelection();
+    const useCss = command !== "insertUnorderedList" && command !== "insertOrderedList";
     try {
-      document.execCommand("styleWithCSS", false, "true");
+      document.execCommand("styleWithCSS", false, useCss ? "true" : "false");
     } catch {}
     document.execCommand(command, false, value);
+    saveSelection();
     syncContentFromDom();
   };
 
@@ -113,7 +138,7 @@ const AdminBlogs = () => {
   const wrapSelectionWithStyle = (style: string) => {
     const el = contentRef.current;
     if (!el) return;
-    el.focus();
+    restoreSelection();
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) return;
     const range = sel.getRangeAt(0);
@@ -123,11 +148,11 @@ const AdminBlogs = () => {
     try {
       span.appendChild(range.extractContents());
       range.insertNode(span);
-      // Reselect the inserted span content
       const newRange = document.createRange();
       newRange.selectNodeContents(span);
       sel.removeAllRanges();
       sel.addRange(newRange);
+      savedRangeRef.current = newRange.cloneRange();
     } catch {}
     syncContentFromDom();
   };
@@ -613,14 +638,15 @@ const AdminBlogs = () => {
                       <ToolbarSep />
                       <select
                         title="Font family"
-                        onMouseDown={(e) => e.preventDefault()}
+                        defaultValue=""
+                        onMouseDown={saveSelection}
                         onChange={(e) => {
                           const ff = e.target.value;
                           if (!ff) return;
                           exec("fontName", ff);
                           e.target.value = "";
                         }}
-                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                        className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Font</option>
                         <option value="Inter, sans-serif">Inter</option>
@@ -632,14 +658,15 @@ const AdminBlogs = () => {
                       </select>
                       <select
                         title="Text size"
-                        onMouseDown={(e) => e.preventDefault()}
+                        defaultValue=""
+                        onMouseDown={saveSelection}
                         onChange={(e) => {
                           const fs = e.target.value;
                           if (!fs) return;
                           wrapSelectionWithStyle(`font-size:${fs}`);
                           e.target.value = "";
                         }}
-                        className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
+                        className="text-xs bg-background border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
                       >
                         <option value="">Size</option>
                         <option value="12px">Small</option>
@@ -652,7 +679,7 @@ const AdminBlogs = () => {
                         <Palette size={14} />
                         <input
                           type="color"
-                          onMouseDown={(e) => e.stopPropagation()}
+                          onMouseDown={() => saveSelection()}
                           onChange={(e) => {
                             exec("foreColor", e.target.value);
                             e.target.value = "#000000";
@@ -676,8 +703,12 @@ const AdminBlogs = () => {
                         const el = contentRef.current;
                         if (!el) return;
                         lastLoadedContentRef.current = el.innerHTML;
+                        saveSelection();
                         syncContentFromDom();
                       }}
+                      onMouseUp={saveSelection}
+                      onKeyUp={saveSelection}
+                      onBlur={saveSelection}
                       onPaste={(e) => {
                         e.preventDefault();
                         const text = e.clipboardData.getData("text/plain");
