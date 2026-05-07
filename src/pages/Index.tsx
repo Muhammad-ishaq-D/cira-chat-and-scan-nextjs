@@ -947,24 +947,47 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/60 bg-card/30 mt-10 font-body">
-        <div className="max-w-6xl mx-auto px-6 py-14">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+      <footer className="relative mt-16 border-t border-border/60 bg-gradient-to-b from-card/40 via-background to-background font-body">
+        <div className="max-w-6xl mx-auto px-6 pt-16 pb-8">
+          {/* Trust strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pb-12 mb-12 border-b border-border/60">
+            {[
+              { label: "Clinically validated", sub: "rPPG / rBCG fusion" },
+              { label: "Licensed physicians", sub: "Real doctor network" },
+              { label: "Private by design", sub: "On-device processing" },
+              { label: "Available 24 / 7", sub: "Anytime, anywhere" },
+            ].map((item) => (
+              <div key={item.label} className="text-center md:text-left">
+                <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                <p className="text-xs text-muted-foreground mt-1">{item.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Main grid */}
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-10 mb-12">
             {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <button onClick={() => navigate("/")} className="flex items-center gap-2 mb-4">
-                <img src={ciraLogo} alt="Cira" width={28} height={28} />
-                <span className="font-heading text-lg font-semibold text-foreground">Cira</span>
+            <div className="col-span-2 md:col-span-4">
+              <button onClick={() => navigate("/")} className="flex items-center gap-2.5 mb-4">
+                <img src={ciraLogo} alt="Cira" width={32} height={32} />
+                <span className="font-heading text-xl font-semibold text-foreground tracking-tight">Cira</span>
               </button>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                Your AI health nurse — clinically validated vitals, available anytime.
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mb-6">
+                Your AI health nurse — clinically validated vitals and clear guidance, anytime you need it.
               </p>
+              <button
+                onClick={() => navigate("/free-chat")}
+                className="inline-flex items-center gap-2 text-sm font-medium text-foreground border border-border rounded-full px-4 py-2 hover:border-primary hover:text-primary transition-colors"
+              >
+                Start free check
+                <span aria-hidden>→</span>
+              </button>
             </div>
 
             {/* Product */}
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Product</h4>
-              <ul className="space-y-2.5 text-sm">
+            <div className="md:col-span-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground mb-4">Product</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">How it works</button></li>
                 <li><button onClick={() => navigate("/technology")} className="text-muted-foreground hover:text-primary transition-colors">Technology</button></li>
                 <li><button onClick={() => navigate("/what-cira-helps-with")} className="text-muted-foreground hover:text-primary transition-colors">What Cira helps with</button></li>
@@ -973,9 +996,9 @@ const Index = () => {
             </div>
 
             {/* Company */}
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Company</h4>
-              <ul className="space-y-2.5 text-sm">
+            <div className="md:col-span-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground mb-4">Company</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">Real doctors</button></li>
                 <li><button onClick={() => navigate("/blog")} className="text-muted-foreground hover:text-primary transition-colors">Blog</button></li>
                 <li><a href="mailto:hello@askainurse.com" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
@@ -983,21 +1006,40 @@ const Index = () => {
             </div>
 
             {/* Legal */}
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Legal</h4>
-              <ul className="space-y-2.5 text-sm">
+            <div className="md:col-span-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground mb-4">Legal</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">Security &amp; Privacy</button></li>
                 <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</button></li>
                 <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">Terms</button></li>
               </ul>
             </div>
+
+            {/* Connect */}
+            <div className="md:col-span-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground mb-4">Connect</h4>
+              <ul className="space-y-3 text-sm">
+                <li><a href="https://x.com/askainurse" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">X / Twitter</a></li>
+                <li><a href="https://www.linkedin.com/company/cira" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">LinkedIn</a></li>
+                <li><a href="https://www.instagram.com/askainurse" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Instagram</a></li>
+              </ul>
+            </div>
           </div>
 
-          <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <p>© 2026 Cira · askainurse.com</p>
-            <p className="text-center md:text-right">
-              Clinically validated vitals · Licensed physicians ·{" "}
-              <span className="italic">Cira does not replace professional medical advice.</span>
+          {/* Disclaimer */}
+          <div className="rounded-xl border border-border/60 bg-muted/30 px-5 py-4 mb-8">
+            <p className="text-xs text-muted-foreground leading-relaxed text-center md:text-left">
+              <span className="font-semibold text-foreground">Medical disclaimer.</span>{" "}
+              Cira provides health information and is not a substitute for professional medical advice, diagnosis, or treatment.
+              Always seek the advice of your physician with any questions you may have regarding a medical condition.
+            </p>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="pt-6 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+            <p>© 2026 Cira. All rights reserved.</p>
+            <p>
+              Made with care · <a href="https://askainurse.com" className="hover:text-primary transition-colors">askainurse.com</a>
             </p>
           </div>
         </div>
