@@ -28,6 +28,7 @@ function slugify(s: string) {
 }
 
 const listBlockSelector = "p,div,h1,h2,h3,h4,h5,h6,li,blockquote,pre";
+const renderedBlogContentClassName = "prose prose-neutral max-w-none [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4 [&_li]:my-1 [&_li]:pl-1 [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic";
 
 const hasMeaningfulContent = (node: Node) =>
   Boolean(node.textContent?.replace(/\u00a0/g, " ").trim()) ||
@@ -261,14 +262,6 @@ const AdminBlogs = () => {
     if (!sel || sel.rangeCount === 0) return;
     if (!el.contains(sel.anchorNode)) return;
     const q = (cmd: string) => { try { return document.queryCommandState(cmd); } catch { return false; } };
-    setActiveFormats({
-      bold: q("bold"),
-      italic: q("italic"),
-      underline: q("underline"),
-      strikeThrough: q("strikeThrough"),
-      insertUnorderedList: q("insertUnorderedList"),
-      insertOrderedList: q("insertOrderedList"),
-    });
     setActiveAlign(
       q("justifyLeft") ? "left" :
       q("justifyCenter") ? "center" :
@@ -278,13 +271,23 @@ const AdminBlogs = () => {
     let node: Node | null = sel.getRangeAt(0).startContainer;
     if (node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
     let block = "";
+    let listTag = "";
     while (node && node !== el) {
       if (node instanceof HTMLElement) {
         const tag = node.tagName;
+        if (tag === "UL" || tag === "OL") listTag = tag;
         if (/^(H1|H2|H3|H4|H5|H6|P|BLOCKQUOTE|PRE)$/.test(tag)) { block = tag; break; }
       }
       node = node.parentNode;
     }
+    setActiveFormats({
+      bold: q("bold"),
+      italic: q("italic"),
+      underline: q("underline"),
+      strikeThrough: q("strikeThrough"),
+      insertUnorderedList: q("insertUnorderedList") || listTag === "UL",
+      insertOrderedList: q("insertOrderedList") || listTag === "OL",
+    });
     setActiveBlock(block);
   };
 
@@ -685,7 +688,7 @@ const AdminBlogs = () => {
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
               <div
-                className="prose prose-neutral max-w-none"
+                className={renderedBlogContentClassName}
                 dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(viewing.content || "") }}
               />
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
@@ -894,7 +897,7 @@ const AdminBlogs = () => {
               <Field label="Content *">
                 {previewMode ? (
                   <div
-                    className="prose prose-neutral max-w-none border border-border rounded-lg p-4 min-h-[300px] bg-background"
+                    className={`${renderedBlogContentClassName} border border-border rounded-lg p-4 min-h-[300px] bg-background`}
                     dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || "<p><em>Nothing to preview</em></p>") }}
                   />
                 ) : (
