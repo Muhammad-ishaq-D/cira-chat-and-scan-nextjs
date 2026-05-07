@@ -125,6 +125,23 @@ const sanitizeBlogHtml = (html: string) => {
   return doc.body.innerHTML;
 };
 
+const normalizeBlogForEditor = (post: Partial<BlogPost> | null | undefined): Partial<BlogPost> => {
+  const raw = (post || {}) as Partial<BlogPost> & Record<string, any>;
+  const tagsArr = Array.isArray(raw.tags)
+    ? raw.tags
+    : typeof raw.tags === "string" && raw.tags
+      ? raw.tags.split(",").map((t) => t.trim()).filter(Boolean)
+      : [];
+
+  return {
+    ...raw,
+    tags: tagsArr as any,
+    content: raw.content ?? raw.body ?? "",
+    meta_title: raw.meta_title ?? raw.metaTitle ?? raw.seo_title ?? raw.seoTitle ?? "",
+    meta_description: raw.meta_description ?? raw.metaDescription ?? raw.seo_description ?? raw.seoDescription ?? "",
+  };
+};
+
 // Compress an uploaded image to a JPEG data URL (max 1600px wide, ~0.82 quality)
 function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -381,16 +398,22 @@ const AdminBlogs = () => {
     setEditing({ ...emptyPost, tags: [] as any });
     setPreviewMode(false);
   };
-  const openEdit = (b: BlogPost) => {
-    const tagsArr = Array.isArray(b.tags)
-      ? b.tags
-      : typeof b.tags === "string" && b.tags
-        ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
-        : [];
+  const openEdit = async (b: BlogPost) => {
     lastLoadedContentRef.current = null;
     slugManuallyEditedRef.current = true;
-    setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
+    setEditing(normalizeBlogForEditor(b));
+
+    try {
+      const res: any = await adminApi.getBlog(b.id);
+      const full = (res?.blog ?? res) as BlogPost;
+      if (full) {
+        lastLoadedContentRef.current = null;
+        setEditing(normalizeBlogForEditor({ ...b, ...full }));
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to load full post content");
+    }
   };
 
   const handleSave = async () => {
@@ -511,7 +534,7 @@ const AdminBlogs = () => {
                   }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
                     <Eye size={16} />
                   </button>
-                  <button onClick={() => openEdit(b)} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
+                  <button onClick={() => { void openEdit(b); }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
                     <Pencil size={16} />
                   </button>
                   <button onClick={() => handleDelete(b)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive" title="Delete">
@@ -535,7 +558,7 @@ const AdminBlogs = () => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { const b = viewing; setViewing(null); openEdit(b); }}
+                  onClick={() => { const b = viewing; setViewing(null); void openEdit(b); }}
                   className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5"
                 >
                   <Pencil size={12} /> Edit
