@@ -453,7 +453,7 @@ const AdminBlogs = () => {
       ) : (
         <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
           {filtered.map((b) => {
-            const preview = b.excerpt || (b.content ? b.content.replace(/[#*`_>\-]/g, "").replace(/\s+/g, " ").trim() : "");
+            const preview = b.excerpt || (b.content ? b.content.replace(/[-#*`_>]/g, "").replace(/\s+/g, " ").trim() : "");
             return (
               <div key={b.id} className="flex items-center gap-4 p-3 sm:p-4 hover:bg-accent/30 transition group">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-muted overflow-hidden shrink-0 border border-border">
