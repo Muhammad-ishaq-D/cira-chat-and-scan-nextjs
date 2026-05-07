@@ -250,9 +250,47 @@ const AdminBlogs = () => {
     setCurrentSize(matchSize(cs.fontSize || ""));
   };
 
+  const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
+  const [activeBlock, setActiveBlock] = useState<string>("");
+  const [activeAlign, setActiveAlign] = useState<string>("");
+
+  const detectActiveFormats = () => {
+    const el = contentRef.current;
+    if (!el) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    if (!el.contains(sel.anchorNode)) return;
+    const q = (cmd: string) => { try { return document.queryCommandState(cmd); } catch { return false; } };
+    setActiveFormats({
+      bold: q("bold"),
+      italic: q("italic"),
+      underline: q("underline"),
+      strikeThrough: q("strikeThrough"),
+      insertUnorderedList: q("insertUnorderedList"),
+      insertOrderedList: q("insertOrderedList"),
+    });
+    setActiveAlign(
+      q("justifyLeft") ? "left" :
+      q("justifyCenter") ? "center" :
+      q("justifyRight") ? "right" :
+      q("justifyFull") ? "full" : ""
+    );
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    if (node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    let block = "";
+    while (node && node !== el) {
+      if (node instanceof HTMLElement) {
+        const tag = node.tagName;
+        if (/^(H1|H2|H3|H4|H5|H6|P|BLOCKQUOTE|PRE)$/.test(tag)) { block = tag; break; }
+      }
+      node = node.parentNode;
+    }
+    setActiveBlock(block);
+  };
+
   useEffect(() => {
     if (!editing) return;
-    const handler = () => detectCurrentStyles();
+    const handler = () => { detectCurrentStyles(); detectActiveFormats(); };
     document.addEventListener("selectionchange", handler);
     return () => document.removeEventListener("selectionchange", handler);
   }, [editing]);
