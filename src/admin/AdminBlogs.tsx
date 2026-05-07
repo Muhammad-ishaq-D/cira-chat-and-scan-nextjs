@@ -358,7 +358,7 @@ const AdminBlogs = () => {
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
               <div className="prose prose-neutral max-w-none">
-                <ReactMarkdown>{viewing.content || ""}</ReactMarkdown>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{viewing.content || ""}</ReactMarkdown>
               </div>
               {Array.isArray(viewing.tags) && viewing.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-8 pt-6 border-t border-border">
