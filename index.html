@@ -1,6 +1,31 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- ⚠️ DevTools detection — runs synchronously before React loads -->
+    <script>
+      (function () {
+        var THRESHOLD = 160;
+        function devToolsOpen() {
+          return (
+            window.outerWidth - window.innerWidth > THRESHOLD ||
+            window.outerHeight - window.innerHeight > THRESHOLD
+          );
+        }
+        if (devToolsOpen()) {
+          // Inject full-screen block overlay into raw HTML before React mounts
+          document.write(
+            '<div id="devtools-block-overlay" style="' +
+              'position:fixed;inset:0;width:100vw;height:100vh;' +
+              'background:rgba(0,0,0,0.95);z-index:2147483647;' +
+              'pointer-events:all;cursor:not-allowed;user-select:none;' +
+            '"></div>'
+          );
+          alert('\uD83D\uDEAB Developer Tools detected. This page is not accessible with DevTools open.');
+          window.stop();
+          window.location.replace('about:blank');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

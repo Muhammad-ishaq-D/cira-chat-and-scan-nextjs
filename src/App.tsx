@@ -40,6 +40,8 @@ import AdminActivity from "./admin/AdminActivity.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import RouteTracker from "./components/RouteTracker.tsx";
+import SecurityDeterrents from "./components/SecurityDeterrents.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <SecurityDeterrents />
       <BrowserRouter>
         <RouteTracker />
         <Routes>

@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks, RisksFactors } from "shenai-sdk";
 
-const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
+const SHENAI_API_KEY = import.meta.env.VITE_SHENAI_API_KEY as string;
 
 export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "finished" | "error" | "unsupported";
 
