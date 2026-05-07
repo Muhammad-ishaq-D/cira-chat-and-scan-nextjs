@@ -398,6 +398,7 @@ const AdminBlogs = () => {
                     value={editing.title || ""}
                     onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })}
                     className="input"
+                    placeholder="e.g. 5 ways AI is changing preventive healthcare"
                   />
                 </Field>
                 <Field label="Slug">
@@ -405,7 +406,7 @@ const AdminBlogs = () => {
                     value={editing.slug || ""}
                     onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })}
                     className="input"
-                    placeholder="auto-generated"
+                    placeholder="auto-generated from title"
                   />
                 </Field>
               </div>
@@ -416,6 +417,7 @@ const AdminBlogs = () => {
                   onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                   rows={2}
                   className="input"
+                  placeholder="A short summary (1-2 sentences) shown on the blog list and in social previews"
                 />
               </Field>
 
