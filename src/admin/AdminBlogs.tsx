@@ -564,40 +564,42 @@ const AdminBlogs = () => {
                 ) : (
                   <div className="border border-border rounded-lg overflow-hidden bg-background">
                     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/40">
-                      <ToolbarBtn title="Heading 1" onClick={() => insertAtLineStart("# ")}><Heading1 size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Heading 2" onClick={() => insertAtLineStart("## ")}><Heading2 size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Heading 3" onClick={() => insertAtLineStart("### ")}><Heading3 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 1" onClick={() => exec("formatBlock", "H1")}><Heading1 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 2" onClick={() => exec("formatBlock", "H2")}><Heading2 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Heading 3" onClick={() => exec("formatBlock", "H3")}><Heading3 size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Paragraph" onClick={() => exec("formatBlock", "P")}><Type size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bold" onClick={() => wrapSelection("**", "**", "bold text")}><Bold size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Italic" onClick={() => wrapSelection("*", "*", "italic text")}><Italic size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Underline" onClick={() => wrapSelection("<u>", "</u>", "underlined text")}><Underline size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Strikethrough" onClick={() => wrapSelection("~~", "~~", "strikethrough")}><Strikethrough size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bold" onClick={() => exec("bold")}><Bold size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Italic" onClick={() => exec("italic")}><Italic size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Underline" onClick={() => exec("underline")}><Underline size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Strikethrough" onClick={() => exec("strikeThrough")}><Strikethrough size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Bulleted list" onClick={() => insertAtLineStart("- ")}><List size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Numbered list" onClick={() => insertAtLineStart("1. ")}><ListOrdered size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Quote" onClick={() => insertAtLineStart("> ")}><Quote size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Inline code" onClick={() => wrapSelection("`", "`", "code")}><Code size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Bulleted list" onClick={() => exec("insertUnorderedList")}><List size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Numbered list" onClick={() => exec("insertOrderedList")}><ListOrdered size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Quote" onClick={() => exec("formatBlock", "BLOCKQUOTE")}><Quote size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Code block" onClick={() => exec("formatBlock", "PRE")}><Code size={14} /></ToolbarBtn>
                       <ToolbarSep />
-                      <ToolbarBtn title="Align left" onClick={() => wrapBlockAlign("left")}><AlignLeft size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Align center" onClick={() => wrapBlockAlign("center")}><AlignCenter size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Align right" onClick={() => wrapBlockAlign("right")}><AlignRight size={14} /></ToolbarBtn>
-                      <ToolbarBtn title="Justify" onClick={() => wrapBlockAlign("justify")}><AlignJustify size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align left" onClick={() => exec("justifyLeft")}><AlignLeft size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align center" onClick={() => exec("justifyCenter")}><AlignCenter size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Align right" onClick={() => exec("justifyRight")}><AlignRight size={14} /></ToolbarBtn>
+                      <ToolbarBtn title="Justify" onClick={() => exec("justifyFull")}><AlignJustify size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <ToolbarBtn title="Link" onClick={() => {
                         const url = window.prompt("Enter URL", "https://");
-                        if (url) wrapSelection("[", `](${url})`, "link text");
+                        if (url) exec("createLink", url);
                       }}><Link2 size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Image" onClick={() => {
                         const url = window.prompt("Image URL", "https://");
-                        if (url) insertBlock(`![alt text](${url})`);
+                        if (url) exec("insertImage", url);
                       }}><ImageIcon size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <select
                         title="Font family"
+                        onMouseDown={(e) => e.preventDefault()}
                         onChange={(e) => {
                           const ff = e.target.value;
                           if (!ff) return;
-                          wrapSelection(`<span style="font-family:${ff}">`, `</span>`, "your text");
+                          exec("fontName", ff);
                           e.target.value = "";
                         }}
                         className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
@@ -612,10 +614,11 @@ const AdminBlogs = () => {
                       </select>
                       <select
                         title="Text size"
+                        onMouseDown={(e) => e.preventDefault()}
                         onChange={(e) => {
                           const fs = e.target.value;
                           if (!fs) return;
-                          wrapSelection(`<span style="font-size:${fs}">`, `</span>`, "your text");
+                          wrapSelectionWithStyle(`font-size:${fs}`);
                           e.target.value = "";
                         }}
                         className="text-xs bg-transparent border border-border rounded px-1.5 py-1 hover:bg-accent cursor-pointer"
@@ -631,21 +634,39 @@ const AdminBlogs = () => {
                         <Palette size={14} />
                         <input
                           type="color"
+                          onMouseDown={(e) => e.stopPropagation()}
                           onChange={(e) => {
-                            wrapSelection(`<span style="color:${e.target.value}">`, `</span>`, "your text");
+                            exec("foreColor", e.target.value);
                             e.target.value = "#000000";
                           }}
                           className="w-4 h-4 border-0 bg-transparent cursor-pointer p-0"
                         />
                       </label>
+                      <ToolbarBtn title="Clear formatting" onClick={() => exec("removeFormat")}><X size={14} /></ToolbarBtn>
                     </div>
-                    <textarea
-                      ref={contentRef}
-                      value={editing.content || ""}
-                      onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                      rows={16}
-                      className="w-full px-3 py-2 bg-background outline-none font-mono text-sm resize-y"
-                      placeholder="# Start writing your post...&#10;&#10;Select text and use the toolbar to format. Markdown and HTML are both supported."
+                    <div
+                      ref={(el) => {
+                        contentRef.current = el;
+                        if (el && lastLoadedContentRef.current !== (editing.content || "")) {
+                          el.innerHTML = editing.content || "";
+                          lastLoadedContentRef.current = editing.content || "";
+                        }
+                      }}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onInput={() => {
+                        const el = contentRef.current;
+                        if (!el) return;
+                        lastLoadedContentRef.current = el.innerHTML;
+                        syncContentFromDom();
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const text = e.clipboardData.getData("text/plain");
+                        document.execCommand("insertText", false, text);
+                      }}
+                      data-placeholder="Start writing your post... Select text and use the toolbar to format."
+                      className="prose prose-neutral max-w-none w-full px-3 py-3 bg-background outline-none text-sm min-h-[320px] empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground"
                     />
                   </div>
                 )}
