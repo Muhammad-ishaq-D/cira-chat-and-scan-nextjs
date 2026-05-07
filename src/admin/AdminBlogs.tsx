@@ -193,6 +193,7 @@ const AdminBlogs = () => {
 
   const openNew = () => {
     lastLoadedContentRef.current = null;
+    slugManuallyEditedRef.current = false;
     setEditing({ ...emptyPost, tags: [] as any });
     setPreviewMode(false);
   };
@@ -203,6 +204,7 @@ const AdminBlogs = () => {
         ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
         : [];
     lastLoadedContentRef.current = null;
+    slugManuallyEditedRef.current = true;
     setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
   };
