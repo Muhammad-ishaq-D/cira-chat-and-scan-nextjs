@@ -235,6 +235,10 @@ const AdminBlogs = () => {
   const replaceSelectionWithBlock = (tagName: "ul" | "ol" | "blockquote" | "pre") => {
     const range = getEditorRange();
     if (!range) return;
+    if ((tagName === "ul" || tagName === "ol") && document.queryCommandEnabled("insertUnorderedList")) {
+      exec(tagName === "ul" ? "insertUnorderedList" : "insertOrderedList");
+      return;
+    }
     const selectedText = range.toString();
     const block = document.createElement(tagName);
 
@@ -255,10 +259,6 @@ const AdminBlogs = () => {
 
     range.deleteContents();
     range.insertNode(block);
-    const spacer = document.createElement("p");
-    spacer.appendChild(document.createElement("br"));
-    block.after(spacer);
-
     const nextRange = document.createRange();
     nextRange.selectNodeContents(block);
     const sel = window.getSelection();
