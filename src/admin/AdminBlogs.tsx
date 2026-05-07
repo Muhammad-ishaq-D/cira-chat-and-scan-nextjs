@@ -74,7 +74,80 @@ const AdminBlogs = () => {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [tagInput, setTagInput] = useState("");
   const coverInputRef = useRef<HTMLInputElement | null>(null);
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const wrapSelection = (before: string, after: string = before, placeholder: string = "text") => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
+    const selected = value.slice(start, end) || placeholder;
+    const newValue = value.slice(0, start) + before + selected + after + value.slice(end);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + before.length + selected.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const insertAtLineStart = (prefix: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const value = ta.value;
+    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    const newValue = value.slice(0, lineStart) + prefix + value.slice(lineStart);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + prefix.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const insertBlock = (text: string) => {
+    const ta = contentRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
+    const newValue = value.slice(0, start) + text + value.slice(end);
+    setEditing((prev) => (prev ? { ...prev, content: newValue } : prev));
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursor = start + text.length;
+      ta.setSelectionRange(cursor, cursor);
+    });
+  };
+
+  const wrapBlockAlign = (align: "left" | "center" | "right" | "justify") => {
+    wrapSelection(`<div style="text-align:${align}">\n\n`, `\n\n</div>`, "your text here");
+  };
+
+  const addTag = (raw: string) => {
+    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 0) return;
+    setEditing((prev) => {
+      if (!prev) return prev;
+      const current = Array.isArray(prev.tags) ? (prev.tags as string[]) : [];
+      const merged = [...current];
+      for (const p of parts) if (!merged.includes(p)) merged.push(p);
+      return { ...prev, tags: merged as any };
+    });
+    setTagInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    setEditing((prev) => {
+      if (!prev) return prev;
+      const current = Array.isArray(prev.tags) ? (prev.tags as string[]) : [];
+      return { ...prev, tags: current.filter((t) => t !== tag) as any };
+    });
+  };
 
   const handleCoverFile = async (file: File | undefined | null) => {
     if (!file) return;
