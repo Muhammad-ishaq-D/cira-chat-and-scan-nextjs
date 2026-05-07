@@ -398,16 +398,22 @@ const AdminBlogs = () => {
     setEditing({ ...emptyPost, tags: [] as any });
     setPreviewMode(false);
   };
-  const openEdit = (b: BlogPost) => {
-    const tagsArr = Array.isArray(b.tags)
-      ? b.tags
-      : typeof b.tags === "string" && b.tags
-        ? (b.tags as string).split(",").map((t) => t.trim()).filter(Boolean)
-        : [];
+  const openEdit = async (b: BlogPost) => {
     lastLoadedContentRef.current = null;
     slugManuallyEditedRef.current = true;
-    setEditing({ ...b, tags: tagsArr as any });
     setPreviewMode(false);
+    setEditing(normalizeBlogForEditor(b));
+
+    try {
+      const res: any = await adminApi.getBlog(b.id);
+      const full = (res?.blog ?? res) as BlogPost;
+      if (full) {
+        lastLoadedContentRef.current = null;
+        setEditing(normalizeBlogForEditor({ ...b, ...full }));
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to load full post content");
+    }
   };
 
   const handleSave = async () => {
