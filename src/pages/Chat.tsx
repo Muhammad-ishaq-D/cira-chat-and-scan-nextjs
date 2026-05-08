@@ -1535,10 +1535,10 @@ const Chat = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Scan + Assessment</p>
+                            <p className="text-[12px] font-bold text-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t.scan}</p>
                             <span className="px-1 py-px rounded-full bg-white/20 text-[6px] font-semibold text-white uppercase tracking-wider">AI</span>
                           </div>
-                          <p className="text-[9px] text-white/70 leading-snug mt-0.5">Face scan → 30+ vitals → AI analysis</p>
+                          <p className="text-[9px] text-white/70 leading-snug mt-0.5">{t.scan_desc}</p>
                         </div>
                         <div className="shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
                           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
@@ -1558,8 +1558,8 @@ const Chat = () => {
                           <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
                             <Icon size={13} style={{ color: "#3b82f6" }} />
                           </div>
-                          <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.title}</p>
-                          <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.desc}</p>
+                          <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{mode.id === 'assessment' ? t.assessment : mode.title}</p>
+                          <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{mode.id === 'assessment' ? t.assessment_desc : mode.desc}</p>
                         </button>
                       );
                     })}
@@ -1573,8 +1573,8 @@ const Chat = () => {
                         <MessageCircle size={12} className="text-muted-foreground" />
                       </div>
                       <div className="text-left">
-                        <p className="text-[10px] font-medium text-foreground">Just Continue Chatting</p>
-                        <p className="text-[8px] text-muted-foreground">No assessment — let's talk</p>
+                        <p className="text-[10px] font-medium text-foreground">{t.just_chat}</p>
+                        <p className="text-[8px] text-muted-foreground">{t.just_chat_desc}</p>
                       </div>
                     </button>
                   </div>
