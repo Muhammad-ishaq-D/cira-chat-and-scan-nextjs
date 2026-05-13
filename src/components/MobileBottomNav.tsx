@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, ScanFace, FileText, UserRound } from "lucide-react";
+import { Home, ScanFace, FileText, UserRound, Sparkles } from "lucide-react";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ProfilePopover from "@/components/ProfilePopover";
 import { isAuthenticated } from "@/lib/auth";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home", path: "/dashboard" },
-  { icon: null, label: "Ask Cira", id: "chat", path: "/chat" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat", path: "/chat" },
   { icon: ScanFace, label: "Scan", id: "scan", path: "/vitals-scan" },
   { icon: FileText, label: "Reports", id: "reports", path: "/reports" },
 ];
