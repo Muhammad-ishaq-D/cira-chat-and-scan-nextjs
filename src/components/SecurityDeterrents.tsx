@@ -25,6 +25,13 @@ const SecurityDeterrents = () => {
   }, []);
 
   useEffect(() => {
+    // Only run deterrents on the production domain. Skip in Lovable preview,
+    // localhost, and any other host to avoid false positives from editor panels.
+    const host = window.location.hostname;
+    const isProductionDomain =
+      host === "askainurse.com" || host === "www.askainurse.com";
+    if (!isProductionDomain) return;
+
     let devToolsAlertShown = false;
 
     const isDevModeActive = () => {
@@ -32,12 +39,8 @@ const SecurityDeterrents = () => {
       return storedKey && storedKey === correctKey;
     };
 
-    // ── DevTools detection ───────────────────────────────────────────────────
-    const isDevToolsOpen = (): boolean => {
-      const widthGap = window.outerWidth - window.innerWidth > 160;
-      const heightGap = window.outerHeight - window.innerHeight > 160;
-      return widthGap || heightGap;
-    };
+    // ── DevTools detection (size-gap heuristic disabled — too many false positives) ──
+    const isDevToolsOpen = (): boolean => false;
 
     const handleDevToolsDetected = (customMsg?: string) => {
       // Skip if developer mode is already active
