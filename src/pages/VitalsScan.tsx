@@ -8,10 +8,12 @@ import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useShenAI, type VitalResults, type HealthRisksData } from "@/hooks/useShenAI";
 import { vitalsApi, userApi } from "@/lib/apiClient";
-import { getUser, logout, isAuthenticated } from "@/lib/auth";
+import { getUser, logout, isAuthenticated, getToken } from "@/lib/auth";
 import { clearDocumentReload, hasRecentDocumentReload, isDocumentCrossOriginIsolated, markDocumentReload } from "@/lib/browserContext";
 import { getDeviceId } from "@/lib/freeCredits";
 import { toast } from "sonner";
+import { secureStorage } from "@/lib/storage";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -267,7 +269,7 @@ const VitalsScan = () => {
     const serializableVitals = [...displayVitals, ...displayHealthIndexes].map(v => ({
       label: v.label, value: v.value, unit: v.unit, color: v.color,
     }));
-    sessionStorage.setItem("cira_scan_vitals", JSON.stringify(serializableVitals));
+    secureStorage.set("scan_vitals", serializableVitals, true);
     navigate(isGuest ? "/free-chat" : "/chat");
   };
 

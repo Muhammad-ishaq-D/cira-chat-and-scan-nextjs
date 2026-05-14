@@ -13,6 +13,7 @@ import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicato
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
+import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
 import { toast } from "sonner";
 
@@ -408,9 +409,9 @@ const Chat = () => {
     setCurrentSessionId(sessionId);
     // Persist to sessionStorage so navigation within the tab doesn't lose the session
     if (sessionId) {
-      sessionStorage.setItem("cira_active_session", sessionId);
+      secureStorage.set("active_session", sessionId, true);
     } else {
-      sessionStorage.removeItem("cira_active_session");
+      secureStorage.remove("active_session", true);
       prepPayloadSentRef.current = false;
       reportRecoveryAttemptsRef.current = 0;
     }
@@ -455,7 +456,7 @@ const Chat = () => {
           age: p.age ?? null,
           biological_sex: p.biological_sex ?? null,
         };
-        sessionStorage.setItem("cira_profile_cache", JSON.stringify(cached));
+        secureStorage.set("profile_cache", cached, true);
       } catch {
         /* non-fatal — fall back to whatever's already cached */
       }
@@ -479,11 +480,11 @@ const Chat = () => {
   // Pick up message from landing page — send to Claude
   useEffect(() => {
     // Check for real scan vitals from VitalsScan page (Shen AI)
-    const scanVitalsJson = sessionStorage.getItem("cira_scan_vitals");
-    if (scanVitalsJson) {
-      sessionStorage.removeItem("cira_scan_vitals");
+    const scanVitals = secureStorage.get("scan_vitals", true);
+    if (scanVitals) {
+      secureStorage.remove("scan_vitals", true);
       try {
-        const realVitals = JSON.parse(scanVitalsJson);
+        const realVitals = scanVitals;
         syncChatMode("vitals");
         setShowModeSelection(false);
         setMessages([
@@ -499,9 +500,9 @@ const Chat = () => {
       return;
     }
 
-    const landingMsg = sessionStorage.getItem("cira_landing_message");
+    const landingMsg = secureStorage.get("landing_message", true);
     if (landingMsg) {
-      sessionStorage.removeItem("cira_landing_message");
+      secureStorage.remove("landing_message", true);
       setPendingLandingMessage(landingMsg);
       setMessages([{ role: "user", text: landingMsg }]);
       // Send the initial symptom to Claude — it will trigger TRIGGER 2 + openModal
@@ -679,7 +680,7 @@ const Chat = () => {
       let userProfile: Record<string, string | number> | undefined;
       if (token) {
         let cached: any = null;
-        try { cached = JSON.parse(sessionStorage.getItem("cira_profile_cache") || "null"); } catch { }
+        cached = secureStorage.get("profile_cache", true);
         const candidate = {
           name: cached?.name ?? localUser?.name ?? null,
           age: cached?.age ?? null,

@@ -41,6 +41,7 @@ import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import RouteTracker from "./components/RouteTracker.tsx";
 import SecurityDeterrents from "./components/SecurityDeterrents.tsx";
+import InactivityTimeout from "./components/InactivityTimeout.tsx";
 
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
       </svg>
       <BrowserRouter>
         <RouteTracker />
+        <InactivityTimeout />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />

@@ -9,6 +9,7 @@ import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
 import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
+import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
 import {
   getDeviceId,
@@ -343,11 +344,11 @@ const FreeChat = () => {
 
   // Auto-start with welcome message in chat mode
   useEffect(() => {
-    const scanVitalsJson = sessionStorage.getItem("cira_scan_vitals");
-    if (scanVitalsJson) {
-      sessionStorage.removeItem("cira_scan_vitals");
+    const scanVitals = secureStorage.get("scan_vitals", true);
+    if (scanVitals) {
+      secureStorage.remove("scan_vitals", true);
       try {
-        const realVitals = JSON.parse(scanVitalsJson);
+        const realVitals = scanVitals;
         syncChatMode("vitals");
         setMessages([{ role: "vitals", text: "Face Scan Results", vitalsData: realVitals }]);
         const vitalsText = realVitals.map((v: any) => `- ${v.label}: ${v.value} ${v.unit}`).join("\n");
@@ -355,9 +356,9 @@ const FreeChat = () => {
       } catch (e) { console.error("[FreeChat] Error processing scan vitals:", e); }
       return;
     }
-    const landingMsg = sessionStorage.getItem("cira_landing_message");
+    const landingMsg = secureStorage.get("landing_message", true);
     if (landingMsg) {
-      sessionStorage.removeItem("cira_landing_message");
+      secureStorage.remove("landing_message", true);
       setPendingLandingMessage(landingMsg);
       setMessages([{ role: "user", text: landingMsg }, { role: "cira", text: FREE_CHAT_WELCOME }]);
       callClaude(landingMsg);
