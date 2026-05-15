@@ -228,6 +228,10 @@ const Chat = () => {
     { id: "pt-br", label: "P'tuês (BR)", flag: "🇧🇷", country: "br" },
     { id: "es-la", label: "Español (LA)", flag: "🌎", country: "mx" },
     { id: "es-es", label: "Español (ES)", flag: "🇪🇸", country: "es" },
+    { id: "ar", label: "العربية", flag: "🇸🇦", country: "sa" },
+    { id: "zh", label: "中文", flag: "🇨🇳", country: "cn" },
+    { id: "ru", label: "Русский", flag: "🇷🇺", country: "ru" },
+    { id: "pl", label: "Polski", flag: "🇵🇱", country: "pl" },
   ];
 
   const UI_STRINGS: Record<string, Record<string, string>> = {
@@ -370,6 +374,62 @@ const Chat = () => {
       just_chat_msg: "💬 그냥 대화하고 싶어요",
       assessment_msg: "🩺 건강 평가를 받고 싶습니다",
       placeholder: "Cira에게 무엇이든 물어보세요..."
+    },
+    ar: {
+      welcome: "كيف تريد أن تبدأ؟ 💙",
+      just_chat: "💬 محادثة فقط",
+      just_chat_desc: "اسأل عن أي شيء — الأعراض أو العافية أو الصحة العامة",
+      assessment: "🩺 تقييم صحي",
+      assessment_desc: "تريتاج موجه بالذكاء الاصطناعي بناءً على أعراضك",
+      scan: "📸 مسح الوجه",
+      scan_desc: "مسح 30 ثانية يلتقط العلامات الحيوية من وجهك",
+      book: "🏥 احجز طبيباً",
+      book_desc: "تواصل مع طبيب مرخص بالقرب منك",
+      just_chat_msg: "💬 أريد فقط الدردشة",
+      assessment_msg: "🩺 أريد تقييماً صحياً",
+      placeholder: "اسأل سيرا أي شيء..."
+    },
+    zh: {
+      welcome: "您想如何开始？💙",
+      just_chat: "💬 直接聊天",
+      just_chat_desc: "询问任何问题 — 症状、健康或一般医疗",
+      assessment: "🩺 健康评估",
+      assessment_desc: "基于您症状的 AI 引导分诊",
+      scan: "📸 面部扫描",
+      scan_desc: "30 秒扫描从面部捕捉生命体征",
+      book: "🏥 预约医生",
+      book_desc: "与您附近的持牌医生联系",
+      just_chat_msg: "💬 我只想聊聊",
+      assessment_msg: "🩺 我想进行健康评估",
+      placeholder: "向 Cira 询问任何问题..."
+    },
+    ru: {
+      welcome: "Как вы хотите начать? 💙",
+      just_chat: "💬 Просто чат",
+      just_chat_desc: "Спросите о чём угодно — симптомы, здоровье или общее самочувствие",
+      assessment: "🩺 Оценка здоровья",
+      assessment_desc: "Управляемый AI-триаж на основе ваших симптомов",
+      scan: "📸 Сканирование лица",
+      scan_desc: "30-секундное сканирование фиксирует показатели жизнедеятельности",
+      book: "🏥 Записаться к врачу",
+      book_desc: "Свяжитесь с лицензированным врачом рядом с вами",
+      just_chat_msg: "💬 Я просто хочу пообщаться",
+      assessment_msg: "🩺 Я хочу пройти оценку здоровья",
+      placeholder: "Спросите Cira о чём угодно..."
+    },
+    pl: {
+      welcome: "Jak chciałbyś zacząć? 💙",
+      just_chat: "💬 Tylko chat",
+      just_chat_desc: "Zapytaj o cokolwiek — objawy, samopoczucie lub ogólne zdrowie",
+      assessment: "🩺 Ocena zdrowia",
+      assessment_desc: "Kierowany triażem AI na podstawie Twoich objawów",
+      scan: "📸 Skan twarzy",
+      scan_desc: "30-sekundowy skan uchwytuje parametry życiowe z Twojej twarzy",
+      book: "🏥 Zarezerwuj lekarza",
+      book_desc: "Połącz się z licencjonowanym lekarzem w pobliżu",
+      just_chat_msg: "💬 Chcę tylko porozmawiać",
+      assessment_msg: "🩺 Chciałbym ocenę zdrowia",
+      placeholder: "Zapytaj Cirę o cokolwiek..."
     }
   };
 
