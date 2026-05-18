@@ -326,6 +326,14 @@ export const adminApi = {
   getCreditLimits: () => adminGet("/api/admin/settings/credits"),
   updateCreditLimits: (limits: any) => adminPut("/api/admin/settings/credits", limits),
 
+  // Audit Logs
+  getAuditLogs: (params?: { search?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.search) qs.set("search", params.search);
+    const query = qs.toString();
+    return adminGet(`/api/admin/audit-logs${query ? `?${query}` : ""}`);
+  },
+
   // Activity tracking
   getActivitySessions: (params?: { search?: string; from?: string; to?: string }) => {
     const qs = new URLSearchParams();

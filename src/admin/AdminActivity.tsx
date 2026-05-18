@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Users, Eye, MousePointerClick, ScrollText, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, Filter, SortAsc, LayoutGrid, PieChart as PieChartIcon, ShieldCheck } from "lucide-react";
+import { Activity, Users, Eye, MousePointerClick, ScrollText, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, Filter, SortAsc, LayoutGrid, PieChart as PieChartIcon, ShieldCheck, RefreshCw } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, PieChart, Pie } from "recharts";
 import { adminApi } from "@/lib/apiClient";
 
@@ -84,7 +84,7 @@ const getEventColor = (type: string) => {
 };
 
 const AdminActivity = () => {
-  const [tab, setTab] = useState<"sessions" | "aggregate">("sessions");
+  const [tab, setTab] = useState<"sessions" | "aggregate" | "audit">("sessions");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [agg, setAgg] = useState<Aggregate | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,6 +95,11 @@ const AdminActivity = () => {
   const [deviceFilter, setDeviceFilter] = useState<string>("all");
   const [userFilter, setUserFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"recent" | "duration">("recent");
+
+  // HIPAA audit states
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditSearch, setAuditSearch] = useState("");
 
   const loadSessions = async () => {
     setLoading(true);
@@ -120,10 +125,29 @@ const AdminActivity = () => {
     }
   };
 
+  const loadAuditLogs = async () => {
+    setAuditLoading(true);
+    try {
+      const res: any = await adminApi.getAuditLogs(auditSearch ? { search: auditSearch } : undefined);
+      const list = Array.isArray(res) ? res : res?.logs || [];
+      setAuditLogs(list);
+    } catch (e) {
+      console.error("Audit logs load error", e);
+      setAuditLogs([]);
+    } finally {
+      setAuditLoading(false);
+    }
+  };
+
   useEffect(() => {
-    loadSessions();
-    loadAggregate();
-  }, []);
+    if (tab === "sessions") {
+      loadSessions();
+    } else if (tab === "aggregate") {
+      loadAggregate();
+    } else if (tab === "audit") {
+      loadAuditLogs();
+    }
+  }, [tab]);
 
   const openDrawer = async (s: SessionRow) => {
     setOpenSession(s);
@@ -220,16 +244,22 @@ const AdminActivity = () => {
         </div>
 
         <div className="flex items-center gap-2 bg-card/50 backdrop-blur-md border border-border/50 rounded-2xl p-1 shadow-sm">
-          {(["sessions", "aggregate"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === t ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              {t === "sessions" ? <Users size={14} /> : <LayoutGrid size={14} />}
-              {t === "sessions" ? "Live Sessions" : "Analytics"}
-            </button>
-          ))}
+          {(["sessions", "aggregate", "audit"] as const).map((t) => {
+            let label = "Live Sessions";
+            let Icon = Users;
+            if (t === "aggregate") { label = "Analytics"; Icon = LayoutGrid; }
+            else if (t === "audit") { label = "HIPAA Audit Trail"; Icon = ShieldCheck; }
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === t ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Icon size={14} />
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -530,6 +560,97 @@ const AdminActivity = () => {
             </div>
           ) : null}
 
+        </div>
+      )}
+
+      {tab === "audit" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
+            <div className="relative flex-1 w-full max-w-md">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={auditSearch}
+                onChange={(e) => setAuditSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && loadAuditLogs()}
+                placeholder="Search audit trail by user, action..."
+                className="w-full pl-9 pr-3 py-2 text-sm bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+            </div>
+            <button
+              onClick={loadAuditLogs}
+              className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-xl px-4 py-2 text-xs font-bold transition-all"
+            >
+              <RefreshCw size={14} className={auditLoading ? "animate-spin" : ""} />
+              Refresh Logs
+            </button>
+          </div>
+
+          <div className="bg-card/85 backdrop-blur-md border border-border/50 rounded-2xl overflow-hidden shadow-sm relative">
+            <div className="p-4 border-b border-border/40 bg-card/55 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={18} className="text-primary" />
+                <h3 className="text-sm font-bold text-foreground">Official HIPAA Security Audit Trail</h3>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-widest border border-emerald-100">Active</span>
+            </div>
+
+            {auditLoading ? (
+              <div className="p-12 flex flex-col items-center justify-center gap-3">
+                <Loader2 className="animate-spin text-primary" size={32} />
+                <p className="text-xs text-muted-foreground animate-pulse">Syncing secure logs...</p>
+              </div>
+            ) : auditLogs.length === 0 ? (
+              <div className="p-16 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><ShieldCheck size={20} className="text-muted-foreground/50" /></div>
+                <p className="text-sm text-foreground font-semibold">No audit logs found</p>
+                <p className="text-xs text-muted-foreground mt-1">Audit log is empty or search returned no results.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-border/50 bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <th className="p-4">User</th>
+                      <th className="p-4">Action</th>
+                      <th className="p-4">Target Record ID</th>
+                      <th className="p-4">IP Address</th>
+                      <th className="p-4">Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs">
+                    {auditLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-primary/[0.02] transition-colors border-b border-border/10">
+                        <td className="p-4">
+                          <div>
+                            <p className="font-bold text-foreground">{log.user_name || "Guest/Deleted"}</p>
+                            <p className="text-[10px] text-muted-foreground">{log.user_email || "N/A"}</p>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-0.5 rounded-full font-semibold text-[10px] uppercase tracking-wider ${
+                            log.action.includes("DELETE") ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                            log.action.includes("CREATE") || log.action.includes("SEND") ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
+                            "bg-blue-50 text-blue-600 border border-blue-100"
+                          }`}>
+                            {log.action.replace(/_/g, " ")}
+                          </span>
+                        </td>
+                        <td className="p-4 font-mono text-[10px] text-muted-foreground max-w-[150px] truncate" title={log.record_id}>
+                          {log.record_id || "—"}
+                        </td>
+                        <td className="p-4 font-mono text-[10px] text-muted-foreground">
+                          {log.ip_address || "—"}
+                        </td>
+                        <td className="p-4 text-muted-foreground">
+                          {new Date(log.timestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
