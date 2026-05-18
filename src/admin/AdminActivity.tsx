@@ -100,6 +100,32 @@ const AdminActivity = () => {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
   const [auditSearch, setAuditSearch] = useState("");
+  const [selectedUserLogs, setSelectedUserLogs] = useState<any[] | null>(null);
+  const [selectedUserMeta, setSelectedUserMeta] = useState<{ name: string; email: string } | null>(null);
+
+  const groupedAuditLogs = useMemo(() => {
+    const groups: { [key: string]: { user_name: string; user_email: string; logs: any[]; latest_timestamp: string; latest_action: string } } = {};
+    
+    auditLogs.forEach((log) => {
+      const key = log.user_id || log.user_email || 'guest';
+      if (!groups[key]) {
+        groups[key] = {
+          user_name: log.user_name || "Guest User",
+          user_email: log.user_email || log.user_id || "guest.cira.app",
+          logs: [],
+          latest_timestamp: log.timestamp,
+          latest_action: log.action
+        };
+      }
+      groups[key].logs.push(log);
+      if (new Date(log.timestamp) > new Date(groups[key].latest_timestamp)) {
+        groups[key].latest_timestamp = log.timestamp;
+        groups[key].latest_action = log.action;
+      }
+    });
+
+    return Object.values(groups).sort((a, b) => new Date(b.latest_timestamp).getTime() - new Date(a.latest_timestamp).getTime());
+  }, [auditLogs]);
 
   const loadSessions = async () => {
     setLoading(true);
@@ -599,7 +625,7 @@ const AdminActivity = () => {
                 <Loader2 className="animate-spin text-primary" size={32} />
                 <p className="text-xs text-muted-foreground animate-pulse">Syncing secure logs...</p>
               </div>
-            ) : auditLogs.length === 0 ? (
+            ) : groupedAuditLogs.length === 0 ? (
               <div className="p-16 text-center">
                 <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><ShieldCheck size={20} className="text-muted-foreground/50" /></div>
                 <p className="text-sm text-foreground font-semibold">No audit logs found</p>
@@ -611,41 +637,55 @@ const AdminActivity = () => {
                   <thead>
                     <tr className="border-b border-border/50 bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                       <th className="p-4">User</th>
-                      <th className="p-4">Action</th>
-                      <th className="p-4">Target Record ID</th>
-                      <th className="p-4">IP Address</th>
-                      <th className="p-4">Timestamp</th>
+                      <th className="p-4">Latest Action</th>
+                      <th className="p-4 text-center">Total Operations</th>
+                      <th className="p-4">Last Active</th>
+                      <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/40 text-xs">
-                    {auditLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-primary/[0.02] transition-colors border-b border-border/10">
-                        <td className="p-4">
-                          <div>
-                            <p className="font-bold text-foreground">{log.user_name || "Guest/Deleted"}</p>
-                            <p className="text-[10px] text-muted-foreground">{log.user_email || "N/A"}</p>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <span className={`px-2.5 py-0.5 rounded-full font-semibold text-[10px] uppercase tracking-wider ${
-                            log.action.includes("DELETE") ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                            log.action.includes("CREATE") || log.action.includes("SEND") ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                            "bg-blue-50 text-blue-600 border border-blue-100"
-                          }`}>
-                            {log.action.replace(/_/g, " ")}
-                          </span>
-                        </td>
-                        <td className="p-4 font-mono text-[10px] text-muted-foreground max-w-[150px] truncate" title={log.record_id}>
-                          {log.record_id || "—"}
-                        </td>
-                        <td className="p-4 font-mono text-[10px] text-muted-foreground">
-                          {log.ip_address || "—"}
-                        </td>
-                        <td className="p-4 text-muted-foreground">
-                          {new Date(log.timestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                        </td>
-                      </tr>
-                    ))}
+                    {groupedAuditLogs.map((group) => {
+                      const isDelete = group.latest_action.includes("DELETE");
+                      const isCreate = group.latest_action.includes("CREATE") || group.latest_action.includes("SEND");
+                      const badgeColor = isDelete ? "text-rose-600 bg-rose-50 border-rose-100" :
+                                         isCreate ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
+                                         "text-blue-600 bg-blue-50 border-blue-100";
+                      
+                      return (
+                        <tr key={group.user_email} className="hover:bg-primary/[0.02] transition-colors border-b border-border/10">
+                          <td className="p-4">
+                            <div>
+                              <p className="font-bold text-foreground">{group.user_name}</p>
+                              <p className="text-[10px] text-muted-foreground">{group.user_email}</p>
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <span className={`px-2.5 py-0.5 rounded-full font-semibold text-[10px] uppercase tracking-wider ${badgeColor}`}>
+                              {group.latest_action.replace(/_/g, " ")}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-bold text-[10px]">
+                              {group.logs.length} operations
+                            </span>
+                          </td>
+                          <td className="p-4 text-muted-foreground">
+                            {new Date(group.latest_timestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                          <td className="p-4 text-right">
+                            <button
+                              onClick={() => {
+                                setSelectedUserLogs(group.logs);
+                                setSelectedUserMeta({ name: group.user_name, email: group.user_email });
+                              }}
+                              className="px-3 py-1.5 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] hover:bg-primary/95 hover:shadow-sm active:scale-95 transition-all"
+                            >
+                              View Action Trail
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -653,6 +693,7 @@ const AdminActivity = () => {
           </div>
         </div>
       )}
+
 
       {openSession && (
         <div className="fixed inset-0 z-50 flex">
@@ -714,6 +755,80 @@ const AdminActivity = () => {
                   })}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedUserLogs && selectedUserMeta && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/40" onClick={() => { setSelectedUserLogs(null); setSelectedUserMeta(null); }} />
+          <div className="relative ml-auto w-full sm:max-w-lg h-full bg-background border-l border-border shadow-2xl flex flex-col">
+            <div className="p-4 border-b border-border flex items-start justify-between gap-3 bg-card">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <ShieldCheck size={18} className="text-primary" />
+                  <span className="text-sm font-bold text-foreground truncate">{selectedUserMeta.name}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground truncate">{selectedUserMeta.email}</p>
+                <p className="text-[10px] font-bold text-primary mt-1 uppercase tracking-wider">{selectedUserLogs.length} HIPAA audit records</p>
+              </div>
+              <button onClick={() => { setSelectedUserLogs(null); setSelectedUserMeta(null); }} className="p-1 rounded hover:bg-accent"><X size={16} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-6">
+              <div className="relative border-l border-border/60 ml-3 space-y-8 pb-10">
+                {selectedUserLogs.map((log, i) => {
+                  const isDelete = log.action.includes("DELETE");
+                  const isCreate = log.action.includes("CREATE") || log.action.includes("SEND");
+                  const badgeColor = isDelete ? "text-rose-600 bg-rose-50 border-rose-100" :
+                                     isCreate ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
+                                     "text-blue-600 bg-blue-50 border-blue-100";
+                  
+                  return (
+                    <div key={log.id} className="relative pl-8">
+                      {/* Timeline dot */}
+                      <div className={`absolute -left-4 top-0 w-8 h-8 rounded-full flex items-center justify-center border-4 border-background bg-card shadow-sm ${
+                        isDelete ? "text-rose-500" : isCreate ? "text-emerald-500" : "text-blue-500"
+                      }`}>
+                        <ShieldCheck size={12} />
+                      </div>
+                      
+                      <div className="p-3.5 bg-card border border-border shadow-sm rounded-2xl relative overflow-hidden group/ev">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover/ev:opacity-100 transition-opacity" />
+                        <div className="flex flex-col gap-2 relative z-10">
+                          <div className="flex items-center justify-between gap-4">
+                            <span className={`px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider border ${badgeColor}`}>
+                              {log.action.replace(/_/g, " ")}
+                            </span>
+                            <span className="text-[9px] tabular-nums font-bold text-muted-foreground/60">
+                              {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                            </span>
+                          </div>
+                          
+                          <div className="text-[11px] text-muted-foreground space-y-1.5 mt-1">
+                            {log.record_id && (
+                              <div className="flex items-start gap-1">
+                                <span className="font-semibold text-foreground shrink-0">Record ID:</span>
+                                <span className="font-mono text-[10px] break-all">{log.record_id}</span>
+                              </div>
+                            )}
+                            {log.ip_address && (
+                              <div className="flex items-center gap-1">
+                                <span className="font-semibold text-foreground">IP Address:</span>
+                                <span className="font-mono text-[10px]">{log.ip_address}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold text-foreground">Date:</span>
+                              <span>{new Date(log.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
