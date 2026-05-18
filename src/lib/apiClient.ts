@@ -174,6 +174,11 @@ export const reportsApi = {
   downloadUrl: (id: string) => `${API_BASE}/api/reports/${id}/download`,
 };
 
+// ─── Audit Logs ──────────────────────────────────────────────────
+export const auditApi = {
+  logEvent: (action: string, recordId?: string) => post("/api/audit/log", { action, recordId }),
+};
+
 // ─── Billing & Subscriptions ────────────────────────────────────
 export const billingApi = {
   getSubscription: () => get("/api/billing/subscription"),

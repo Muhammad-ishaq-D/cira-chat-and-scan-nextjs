@@ -14,6 +14,7 @@ import { getDeviceId } from "@/lib/freeCredits";
 import { toast } from "sonner";
 import { secureStorage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { logAuditEvent } from "@/lib/audit";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -270,6 +271,7 @@ const VitalsScan = () => {
       label: v.label, value: v.value, unit: v.unit, color: v.color,
     }));
     secureStorage.set("scan_vitals", serializableVitals, true);
+    logAuditEvent("ANALYZE_VITALS_WITH_CIRA");
     navigate(isGuest ? "/free-chat" : "/chat");
   };
 
@@ -436,7 +438,17 @@ const VitalsScan = () => {
 
           {/* ── Top bar overlay ── */}
           <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3 md:p-4">
-            <button onClick={() => setShowHistory(!showHistory)} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="History">
+            <button
+              onClick={() => {
+                const nextState = !showHistory;
+                setShowHistory(nextState);
+                if (nextState) {
+                  logAuditEvent("OPEN_VITALS_SCAN_HISTORY");
+                }
+              }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10"
+              title="History"
+            >
               <Menu size={18} strokeWidth={1.5} />
             </button>
             <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">

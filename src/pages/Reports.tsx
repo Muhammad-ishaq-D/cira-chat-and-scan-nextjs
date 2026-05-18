@@ -9,6 +9,7 @@ import { reportsApi, vitalsApi, billingApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 import { downloadReportPdf, downloadSingleScanPdf, downloadCombinedScansPdf } from "@/lib/reportPdf";
 import { toast } from "sonner";
+import { logAuditEvent } from "@/lib/audit";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -70,6 +71,7 @@ const Reports = () => {
     }
     try {
       await downloadReportPdf(report);
+      logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
       toast.success("PDF downloaded");
     } catch (e) {
       console.error("PDF generation failed:", e);
@@ -106,6 +108,7 @@ const Reports = () => {
     }
     try {
       await downloadCombinedScansPdf(selected);
+      logAuditEvent("DOWNLOAD_COMBINED_SCANS_PDF", Array.from(selectedScans).join(","));
       toast.success(`Combined report (${selected.length} scans) downloaded`);
     } catch (e) {
       console.error("Combined PDF failed:", e);
@@ -275,7 +278,13 @@ const Reports = () => {
                             </div>
                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
-                                onClick={() => setPreviewId(previewId === report.id ? null : report.id)}
+                                onClick={() => {
+                                  const isOpening = previewId !== report.id;
+                                  setPreviewId(isOpening ? report.id : null);
+                                  if (isOpening) {
+                                    logAuditEvent("PREVIEW_REPORT", report.id);
+                                  }
+                                }}
                                 className="h-8 px-3 rounded-lg border border-border/60 text-xs font-medium text-foreground hover:bg-accent transition-all flex items-center gap-1.5"
                               >
                                 <Eye size={13} />Preview
@@ -430,6 +439,7 @@ const Reports = () => {
                               }
                               try {
                                 await downloadSingleScanPdf(scan);
+                                logAuditEvent("DOWNLOAD_SINGLE_SCAN_PDF", scanId);
                                 toast.success("Scan PDF downloaded");
                               } catch {
                                 toast.error("Failed to generate PDF");
