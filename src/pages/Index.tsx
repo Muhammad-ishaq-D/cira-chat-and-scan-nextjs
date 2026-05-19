@@ -281,16 +281,24 @@ const Index = () => {
         </div>
 
         {/* CTA */}
-        <div className="flex flex-col items-center gap-2.5 animate-slide-up" style={{ animationDelay: "0.6s" }}>
-          <button
-            onClick={handleAskCira}
-            className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm sm:text-base font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg"
-          >
-            Ask Cira →
-          </button>
+        <div className="flex flex-col items-center gap-3 animate-slide-up" style={{ animationDelay: "0.6s" }}>
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
+            <button
+              onClick={() => navigate("/vitals-scan")}
+              className="px-8 sm:px-10 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm sm:text-base font-medium font-body hover:opacity-90 active:scale-95 sm:hover:scale-105 transition-all duration-200 shadow-lg flex items-center gap-2"
+            >
+              <span>📸</span> Start Free Face Scan →
+            </button>
+            <button
+              onClick={handleAskCira}
+              className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-full border border-border bg-card/60 backdrop-blur text-foreground text-sm sm:text-base font-medium font-body hover:bg-card active:scale-95 transition-all duration-200"
+            >
+              Or chat with Cira
+            </button>
+          </div>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[9px] sm:text-[11px] text-muted-foreground font-body">
-            <span>📸 Face scan</span>
-            <span>🩺 Clinical AI</span>
+            <span>⏱ 30 seconds</span>
+            <span>🩺 Clinical-grade</span>
             <span>🔒 HIPAA compliant</span>
             <span>⚡ No signup</span>
             <span>🆓 Free</span>
