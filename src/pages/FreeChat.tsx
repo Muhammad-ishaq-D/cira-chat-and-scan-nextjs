@@ -8,7 +8,6 @@ import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
 import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
-import FaceScanTopButton from "@/components/FaceScanTopButton";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
@@ -940,9 +939,6 @@ const FreeChat = () => {
           <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Chat History">
             <Menu size={18} strokeWidth={1.5} />
           </button>
-        </div>
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
-          <FaceScanTopButton onClick={() => selectMode("vitals")} />
         </div>
         <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
           <button onClick={() => navigate("/login")} className="px-3 h-9 rounded-xl flex items-center gap-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-all bg-card/60 backdrop-blur-sm border border-primary/20 shadow-sm">
