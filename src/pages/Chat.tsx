@@ -1374,6 +1374,10 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
+        {/* Face Scan CTA — center top */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+          <FaceScanTopButton onClick={() => selectMode("vitals")} />
+        </div>
         <div
           ref={scrollRef}
           className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0"
