@@ -1033,11 +1033,13 @@ const FreeChat = () => {
                           </p>
                           <div className="flex flex-col gap-2 mt-3">
                             <button
-                              onClick={() => selectMode("chat")}
+                              onClick={() => selectMode("vitals")}
                               className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                             >
-                              <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
+                              <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                                <ScanFace size={14} /> {t.scan}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
                             </button>
                             <button
                               onClick={() => selectMode("assessment")}
@@ -1045,13 +1047,6 @@ const FreeChat = () => {
                             >
                               <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
                               <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("vitals")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{t.scan}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
                             </button>
                             <button
                               onClick={() => {
@@ -1079,6 +1074,13 @@ const FreeChat = () => {
                             >
                               <span className="text-[12px] font-medium text-foreground">{t.book}</span>
                               <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
+                            </button>
+                            <button
+                              onClick={() => selectMode("chat")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
+                              <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
                             </button>
                           </div>
                         </div>
