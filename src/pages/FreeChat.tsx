@@ -8,6 +8,7 @@ import ConsultSummaryCard from "@/components/ConsultSummaryCard";
 import DetailedReportCard from "@/components/DetailedReportCard";
 import type { DetailedReport } from "@/components/DetailedReportCard";
 import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
+import FaceScanTopButton from "@/components/FaceScanTopButton";
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
