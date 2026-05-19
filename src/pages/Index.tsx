@@ -241,16 +241,16 @@ const Index = () => {
         {/* Tag + H1 */}
         <div className="text-center mb-2 sm:mb-3 animate-fade-in">
           <span className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 text-xs font-medium font-body tracking-widest uppercase bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            ✦ AI Nurse
+            ✦ Face Vital Scan
           </span>
           <h1 className="font-heading text-3xl sm:text-5xl md:text-[56px] font-semibold text-foreground leading-[1.1] tracking-tight">
-            Talk to an AI nurse.<br /><span className="text-primary">Anytime.</span>
+            Your vitals in 30 seconds.<br /><span className="text-primary">Just your face.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <p className="text-xs sm:text-sm text-muted-foreground text-center leading-relaxed mb-4 sm:mb-6 font-body max-w-md mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          Describe your symptoms. Get a clinical-grade assessment in minutes.
+          Heart rate, blood pressure, HRV and 30+ clinical vitals — measured from a 30-second face scan. Then chat with Cira about the results.
         </p>
 
         {/* Two columns: Face Scan (primary) + Chat (secondary) */}
