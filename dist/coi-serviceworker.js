@@ -1,4 +1,4 @@
-/*! coi-serviceworker v0.1.7 - Guido Zuidhof and contributors, licensed under MIT */
+/*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
     self.addEventListener("install", () => self.skipWaiting());
@@ -57,7 +57,11 @@ if (typeof window === 'undefined') {
                     }
                     newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
 
-                    return new Response(response.body, {
+                    const body = (response.status === 204 || response.status === 205 || response.status === 304)
+                        ? null
+                        : response.body;
+
+                    return new Response(body, {
                         status: response.status,
                         statusText: response.statusText,
                         headers: newHeaders,

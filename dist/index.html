@@ -1,43 +1,60 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KQ560MCJ9Y');
-    </script>
-    <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
-    <meta property="og:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
+<head>
+  <!-- ⚠️ DevTools detection — runs synchronously before React loads -->
+  <meta charset="UTF-8" />
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <!-- Note: We intentionally do NOT prefetch/preload shenai_sdk.wasm here.
+         The coi-serviceworker intercepts the SDK's fetch in a separate context,
+         so a page-level prefetch would download the 10MB WASM twice (once for
+         the page cache, once through the SW). Nginx already serves the file
+         with immutable cache + gzip, so the SW fetch is fast on repeat visits. -->
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-KQ560MCJ9Y');
+  </script>
+  <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
+
+
+  <meta property="og:type" content="website" />
+  <meta property="og:image"
+    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@Lovable" />
+  <meta name="twitter:image"
+    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+  <meta property="og:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
   <meta name="twitter:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
-  <meta property="og:description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-  <meta name="twitter:description" content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-  <script type="module" crossorigin src="/assets/index-CX00fyZZ.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Uzk2dBks.css">
+  <meta property="og:description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <meta name="twitter:description"
+    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+  <script type="module" crossorigin src="/assets/index-DVcRiZxk.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-x_ajtUU1.css">
 </head>
 
-  <body>
-    <div id="root"></div>
-  </body>
+<body>
+  <div id="root"></div>
+</body>
+
 </html>
