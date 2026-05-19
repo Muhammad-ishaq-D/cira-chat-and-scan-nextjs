@@ -129,7 +129,7 @@ const HeroChatPreview = () => {
   }, [visibleMessages]);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-3 shadow-md w-[280px]">
+    <div className="rounded-xl border border-border bg-card p-2.5 shadow-md w-[220px]">
       <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
         <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
         <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
@@ -253,30 +253,30 @@ const Index = () => {
           Describe your symptoms. Get a clinical-grade assessment in minutes.
         </p>
 
-        {/* Two columns: Chat + Face Scan */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-4 sm:mb-6 w-full max-w-3xl">
-          {/* Chat preview — animated */}
-          <div className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            <HeroChatPreview />
-          </div>
-
-          {/* Face scan — secondary */}
-          <div className="flex flex-col items-center gap-1.5 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <div className="flex items-center gap-2">
+        {/* Two columns: Face Scan (primary) + Chat (secondary) */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 mb-4 sm:mb-6 w-full max-w-3xl">
+          {/* Face scan — primary, larger */}
+          <div className="flex flex-col items-center gap-2 animate-fade-in order-1" style={{ animationDelay: "0.3s" }}>
+            <div className="flex items-center gap-3">
               <div className="relative">
-                <img src={faceNormal} alt="Face scan" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md" />
-                <span className="absolute -bottom-1 -right-1 bg-card border border-border text-[7px] sm:text-[8px] font-body text-muted-foreground px-1 py-px rounded-full shadow">You</span>
+                <img src={faceNormal} alt="Face scan" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg" />
+                <span className="absolute -bottom-1.5 -right-1.5 bg-card border border-border text-[9px] sm:text-[10px] font-body text-muted-foreground px-1.5 py-0.5 rounded-full shadow">You</span>
               </div>
               <div className="flex flex-col items-center gap-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-                <span className="text-[7px] text-muted-foreground font-body">30s</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                <span className="text-[9px] text-muted-foreground font-body">30s</span>
               </div>
               <div className="relative">
-                <img src={faceHeatmap} alt="Vitals heatmap" className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-md ring-1 ring-primary/20" />
-                <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[7px] sm:text-[8px] font-body px-1 py-px rounded-full shadow font-medium">30+ vitals</span>
+                <img src={faceHeatmap} alt="Vitals heatmap" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg ring-2 ring-primary/30" />
+                <span className="absolute -bottom-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] sm:text-[10px] font-body px-1.5 py-0.5 rounded-full shadow font-medium">30+ vitals</span>
               </div>
             </div>
-            <p className="text-[9px] sm:text-[10px] text-muted-foreground font-body font-medium tracking-wide">Powered by <span className="text-foreground">Face Vital Scan</span></p>
+            <p className="text-[11px] sm:text-xs text-foreground font-body font-semibold tracking-wide">Face Vital Scan <span className="text-muted-foreground font-normal">— real clinical vitals in 30s</span></p>
+          </div>
+
+          {/* Chat preview — secondary, smaller */}
+          <div className="animate-fade-in order-2" style={{ animationDelay: "0.5s" }}>
+            <HeroChatPreview />
           </div>
         </div>
 
@@ -288,9 +288,10 @@ const Index = () => {
           >
             Ask Cira →
           </button>
-          <div className="flex items-center gap-3 text-[9px] sm:text-[11px] text-muted-foreground font-body">
-            <span>🩺 Clinical AI</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[9px] sm:text-[11px] text-muted-foreground font-body">
             <span>📸 Face scan</span>
+            <span>🩺 Clinical AI</span>
+            <span>🔒 HIPAA compliant</span>
             <span>⚡ No signup</span>
             <span>🆓 Free</span>
           </div>
