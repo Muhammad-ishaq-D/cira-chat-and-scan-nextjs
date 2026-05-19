@@ -121,7 +121,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Ask anything — symptoms, wellness, or general health",
     assessment: "🩺 Health Assessment",
     assessment_desc: "Guided AI triage based on your symptoms",
-    scan: "📸 Face Scan",
+    scan: "Face Scan",
     scan_desc: "30-second scan captures real vitals from your face",
     book: "🏥 Book a Doctor",
     book_desc: "Connect with a licensed doctor near you",
@@ -135,7 +135,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Demandez n'importe quoi — symptômes, bien-être ou santé générale",
     assessment: "🩺 Évaluation de santé",
     assessment_desc: "Triage guidé par IA basé sur vos symptômes",
-    scan: "📸 Scan du visage",
+    scan: "Scan du visage",
     scan_desc: "Un scan de 30 secondes capture vos signes vitaux",
     book: "🏥 Prendre RDV",
     book_desc: "Connectez-vous avec un médecin près de chez vous",
@@ -149,7 +149,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Pregunta cualquier cosa: síntomas, bienestar o salud general",
     assessment: "🩺 Evaluación de salud",
     assessment_desc: "Triaje guidado por IA basado en tus síntomas",
-    scan: "📸 Escaneo facial",
+    scan: "Escaneo facial",
     scan_desc: "El escaneo de 30 segundos captura tus signos vitales",
     book: "🏥 Reservar médico",
     book_desc: "Conéctate con un médico licenciado cerca de ti",
@@ -163,7 +163,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Fragen Sie alles — Symptome, Wellness oder allgemeine Gesundheit",
     assessment: "🩺 Gesundheitsbewertung",
     assessment_desc: "Geführte KI-Triage basierend auf Ihren Symptomen",
-    scan: "📸 Gesichtsscan",
+    scan: "Gesichtsscan",
     scan_desc: "Ein 30-sekündiger Scan erfasst Ihre Vitalwerte",
     book: "🏥 Arzt buchen",
     book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
@@ -177,7 +177,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Chiedi qualsiasi cosa: sintomi, benessere o salute generale",
     assessment: "🩺 Valutazione della salute",
     assessment_desc: "Triage guidato dall'IA basato sui tuoi sintomi",
-    scan: "📸 Scansione facciale",
+    scan: "Scansione facciale",
     scan_desc: "Una scansione di 30 secondi cattura i tuoi parametri vitali",
     book: "🏥 Prenota un medico",
     book_desc: "Connettiti con un medico autorizzato vicino a te",
@@ -191,7 +191,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Pergunte qualquer coisa: sintomas, bem-estar ou saúde geral",
     assessment: "🩺 Avaliação de saúde",
     assessment_desc: "Triagem guiada por IA baseada em seus sintomas",
-    scan: "📸 Escaneamento facial",
+    scan: "Escaneamento facial",
     scan_desc: "O escaneamento de 30 segundos captura seus sinais vitais",
     book: "🏥 Agendar médico",
     book_desc: "Conecte-se com um médico licenciado perto de você",
@@ -205,7 +205,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "कुछ भी पूछें — लक्षण, कल्याण, या सामान्य स्वास्थ्य",
     assessment: "🩺 स्वास्थ्य मूल्यांकन",
     assessment_desc: "आपके लक्षणों के आधार पर निर्देशित AI ट्राइएज",
-    scan: "📸 फेस स्कैन",
+    scan: "फेस स्कैन",
     scan_desc: "30-सेकंड का स्कैन आपके चेहरे से महत्वपूर्ण संकेत कैप्चर करता है",
     book: "🏥 डॉक्टर बुक करें",
     book_desc: "अपने पास के लाइसेंस प्राप्त डॉक्टर से जुड़ें",
@@ -219,7 +219,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Tanya apa saja — gejala, kebugaran, atau kesehatan umum",
     assessment: "🩺 Penilaian Kesehatan",
     assessment_desc: "Triage AI berdasarkan gejala Anda",
-    scan: "📸 Scan Wajah",
+    scan: "Scan Wajah",
     scan_desc: "Scan 30 detik untuk mengambil tanda vital Anda",
     book: "🏥 Pesan Dokter",
     book_desc: "Terhubung dengan dokter berlisensi di dekat Anda",
@@ -233,7 +233,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "症状、ウェルネス、または一般的な健康について何でも聞いてください",
     assessment: "🩺 健康診断",
     assessment_desc: "症状に基づいたガイド付きAIトリアージ",
-    scan: "📸 フェイススキャン",
+    scan: "フェイススキャン",
     scan_desc: "30秒のスキャンで顔からバイタルデータを取得します",
     book: "🏥 医師を予約",
     book_desc: "お近くの公認医師に相談してください",
@@ -247,7 +247,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "증상, 웰니스 또는 일반적인 건강에 대해 무엇이든 물어보세요",
     assessment: "🩺 건강 평가",
     assessment_desc: "귀하의 증상에 기반한 가이드형 AI 트리아제",
-    scan: "📸 페이스 스캔",
+    scan: "페이스 스캔",
     scan_desc: "30초 스캔으로 얼굴에서 생체 신호를 캡처합니다",
     book: "🏥 의사 예약",
     book_desc: "가까운 공인 의사와 연결하세요",
@@ -261,7 +261,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "اسأل عن أي شيء — الأعراض أو العافية أو الصحة العامة",
     assessment: "🩺 تقييم صحي",
     assessment_desc: "تريتاج موجه بالذكاء الاصطناعي بناءً على أعراضك",
-    scan: "📸 مسح الوجه",
+    scan: "مسح الوجه",
     scan_desc: "مسح 30 ثانية يلتقط العلامات الحيوية من وجهك",
     book: "🏥 احجز طبيباً",
     book_desc: "تواصل مع طبيب مرخص بالقرب منك",
@@ -275,7 +275,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "询问任何问题 — 症状、健康或一般医疗",
     assessment: "🩺 健康评估",
     assessment_desc: "基于您症状的 AI 引导分诊",
-    scan: "📸 面部扫描",
+    scan: "面部扫描",
     scan_desc: "30 秒扫描从面部捕捉生命体征",
     book: "🏥 预约医生",
     book_desc: "与您附近的持牌医生联系",
@@ -289,7 +289,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Спросите о чём угодно — симптомы, здоровье или общее самочувствие",
     assessment: "🩺 Оценка здоровья",
     assessment_desc: "Управляемый AI-триаж на основе ваших симптомов",
-    scan: "📸 Сканирование лица",
+    scan: "Сканирование лица",
     scan_desc: "30-секундное сканирование фиксирует показатели жизнедеятельности",
     book: "🏥 Записаться к врачу",
     book_desc: "Свяжитесь с лицензированным врачом рядом с вами",
@@ -303,7 +303,7 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     just_chat_desc: "Zapytaj o cokolwiek — objawy, samopoczucie lub ogólne zdrowie",
     assessment: "🩺 Ocena zdrowia",
     assessment_desc: "Kierowany triażem AI na podstawie Twoich objawów",
-    scan: "📸 Skan twarzy",
+    scan: "Skan twarzy",
     scan_desc: "30-sekundowy skan uchwytuje parametry życiowe z Twojej twarzy",
     book: "🏥 Zarezerwuj lekarza",
     book_desc: "Połącz się z licencjonowanym lekarzem w pobliżu",
@@ -457,7 +457,7 @@ const FreeChat = () => {
     let shouldShowProcessing = false;
     const normalizedFallbackText = fallbackText.toLowerCase();
     const defaultButtons = [
-      { id: "face_scan", label: "📸 Face Scan", description: "Capture your vitals in 30 seconds" },
+      { id: "face_scan", label: "Face Scan", description: "Capture your vitals in 30 seconds" },
       { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
     ];
     const scanOnlyButtons = [defaultButtons[0]];
@@ -1033,11 +1033,13 @@ const FreeChat = () => {
                           </p>
                           <div className="flex flex-col gap-2 mt-3">
                             <button
-                              onClick={() => selectMode("chat")}
+                              onClick={() => selectMode("vitals")}
                               className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
                             >
-                              <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
+                              <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                                <ScanFace size={14} /> {t.scan}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
                             </button>
                             <button
                               onClick={() => selectMode("assessment")}
@@ -1045,13 +1047,6 @@ const FreeChat = () => {
                             >
                               <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
                               <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("vitals")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{t.scan}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
                             </button>
                             <button
                               onClick={() => {
@@ -1079,6 +1074,13 @@ const FreeChat = () => {
                             >
                               <span className="text-[12px] font-medium text-foreground">{t.book}</span>
                               <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
+                            </button>
+                            <button
+                              onClick={() => selectMode("chat")}
+                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            >
+                              <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
+                              <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
                             </button>
                           </div>
                         </div>
