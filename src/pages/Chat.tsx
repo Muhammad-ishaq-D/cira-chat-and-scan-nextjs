@@ -1475,7 +1475,7 @@ const Chat = () => {
                         <div className="flex flex-col gap-2 mt-3">
                           <button
                             onClick={() => selectMode("vitals")}
-                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-emerald-400/40 text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/15 hover:to-teal-500/15 transition-all active:scale-95 animate-gradient-pulse"
                           >
                             <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
                               <ScanFace size={14} /> {t.scan}
