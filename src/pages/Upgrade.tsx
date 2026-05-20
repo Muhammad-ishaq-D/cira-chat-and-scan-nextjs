@@ -58,8 +58,11 @@ const Upgrade = () => {
               const scans = apiPlan.face_scans ?? -1;
               const credits = apiPlan.chat_credits ?? -1;
               
-              dynamicFeatures.push(scans === -1 ? "Unlimited Face Scans" : `${scans} Face Scan${scans !== 1 ? 's' : ''} / month`);
-              dynamicFeatures.push(credits === -1 ? "Unlimited Chat Credits" : `${credits.toLocaleString()} Chat Credits`);
+              const isScansUnlimited = scans === -1 || String(scans).toLowerCase() === 'unlimited';
+              const isCreditsUnlimited = credits === -1 || String(credits).toLowerCase() === 'unlimited';
+              
+              dynamicFeatures.push(isScansUnlimited ? "Unlimited Face Scans" : `${scans} Face Scan${String(scans) !== '1' ? 's' : ''} / month`);
+              dynamicFeatures.push(isCreditsUnlimited ? "Unlimited Chat Credits" : `${Number(credits).toLocaleString()} Chat Credits`);
               // Parse additional features from JSON
               try {
                 const featureFlags = typeof apiPlan.features === 'string' ? JSON.parse(apiPlan.features) : apiPlan.features;

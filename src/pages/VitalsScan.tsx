@@ -123,10 +123,8 @@ const VitalsScan = () => {
           });
           const scanData = await scanCheck.json();
           if (!scanData.allowed) {
-            toast.error("Daily free scan used. Login to get more scans.", {
-              action: { label: "Login", onClick: () => navigate("/login") },
-              duration: 8000,
-            });
+            toast.error("Free guest scan limit reached. Login to get more scans.");
+            navigate("/login");
             return;
           }
         } catch {
@@ -151,7 +149,7 @@ const VitalsScan = () => {
       // Fetch history + fresh profile in parallel (non-blocking)
       vitalsApi.getHistory()
         .then((data) => setScanHistory(Array.isArray(data) ? data : data.scans || []))
-        .catch(() => {});
+        .catch(() => { });
 
       userApi.getProfile()
         .then((freshProfile) => {
@@ -165,7 +163,7 @@ const VitalsScan = () => {
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     };
 
     void init();
@@ -195,7 +193,7 @@ const VitalsScan = () => {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-Device-Id": getDeviceId() },
           });
-        } catch {}
+        } catch { }
         toast.success("Scan complete! (Guest mode — login to save)");
         return;
       }
@@ -237,7 +235,7 @@ const VitalsScan = () => {
         if (!isActive) return;
         userApi.getProfile()
           .then((data) => { if (isActive) setUserProfile(data); })
-          .catch(() => {});
+          .catch(() => { });
         const historyData = await vitalsApi.getHistory().catch(() => null);
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
@@ -271,7 +269,9 @@ const VitalsScan = () => {
       label: v.label, value: v.value, unit: v.unit, color: v.color,
     }));
     secureStorage.set("scan_vitals", serializableVitals, true);
-    logAuditEvent("ANALYZE_VITALS_WITH_CIRA");
+    if (!isGuest) {
+      logAuditEvent("ANALYZE_VITALS_WITH_CIRA");
+    }
     navigate(isGuest ? "/free-chat" : "/chat");
   };
 
@@ -296,9 +296,8 @@ const VitalsScan = () => {
                   if (item.id === "scan") navigate("/vitals-scan");
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
-                }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
-                  item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}>
+                }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}>
                   {item.id === "chat" ? <AiSparkleIcon size={18} /> : <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />}
                   <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
                 </button>
@@ -325,7 +324,7 @@ const VitalsScan = () => {
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
               <p className="text-sm font-semibold text-foreground font-heading">Scan History</p>
               <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18" /><path d="M6 6l12 12" /></svg>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
@@ -459,7 +458,7 @@ const VitalsScan = () => {
           {/* ── Floating Action Button — bottom right ── */}
           <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
             {status === "ready" && (
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -529,7 +528,7 @@ const VitalsScan = () => {
               <div className="bg-card/80 backdrop-blur-sm border border-emerald-200/60 rounded-2xl p-3 md:p-6 mb-3 md:mb-6 shadow-sm">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5" /></svg>
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>

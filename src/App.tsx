@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -46,10 +47,34 @@ import InactivityTimeout from "./components/InactivityTimeout.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
+const App = () => {
+  useEffect(() => {
+    // Silent background prefetch of the 34MB ShenAI WASM file
+    // to ensure the scanner loads instantly when accessed by the user.
+    const prefetchWasm = () => {
+      const fetchOptions = { priority: "low" as any, credentials: "omit" as const };
+      if (typeof window !== "undefined") {
+        if ("requestIdleCallback" in window) {
+          (window as any).requestIdleCallback(() => {
+            fetch("/wasm/shenai_sdk.wasm", fetchOptions).catch(() => {});
+          });
+        } else {
+          setTimeout(() => {
+            fetch("/wasm/shenai_sdk.wasm", fetchOptions).catch(() => {});
+          }, 2000);
+        }
+      }
+    };
+
+    // Delay start by 3 seconds so we don't interfere with initial application load/rendering
+    const prefetchTimer = setTimeout(prefetchWasm, 3000);
+    return () => clearTimeout(prefetchTimer);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
       <Sonner />
       <SecurityDeterrents />
       <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
@@ -109,6 +134,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

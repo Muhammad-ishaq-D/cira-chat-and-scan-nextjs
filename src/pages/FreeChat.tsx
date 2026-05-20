@@ -371,7 +371,7 @@ const FreeChat = () => {
     return UI_STRINGS[lang] || UI_STRINGS.en;
   };
   const t = getT();
-  
+
   const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
   const [isApiLoading, setIsApiLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -549,7 +549,7 @@ const FreeChat = () => {
 
     // Cancel any in-flight request before starting a new one
     if (abortControllerRef.current) {
-      try { abortControllerRef.current.abort(); } catch {}
+      try { abortControllerRef.current.abort(); } catch { }
     }
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -736,7 +736,7 @@ const FreeChat = () => {
         );
         if (renderedReport) {
           if (abortControllerRef.current) {
-            try { abortControllerRef.current.abort(); } catch {}
+            try { abortControllerRef.current.abort(); } catch { }
             abortControllerRef.current = null;
           }
           setMessages(prev =>
@@ -783,7 +783,7 @@ const FreeChat = () => {
 
   const handleStop = () => {
     if (abortControllerRef.current) {
-      try { abortControllerRef.current.abort(); } catch {}
+      try { abortControllerRef.current.abort(); } catch { }
       abortControllerRef.current = null;
     }
     setIsApiLoading(false);
@@ -817,7 +817,8 @@ const FreeChat = () => {
         });
         const data = await res.json();
         if (!data.allowed) {
-          toast.error("Daily free scan used. Login to get more scans.", { action: { label: "Login", onClick: () => navigate("/login") } });
+          toast.error("Free guest scan limit reached. Login to get more scans.");
+          navigate("/login");
           return;
         }
       } catch {
@@ -834,7 +835,7 @@ const FreeChat = () => {
     // Reset for a fresh conversation
     syncCurrentSessionId(null);
     setConversationHistory([]);
-    
+
     prepPayloadSentRef.current = false;
     syncChatMode(mode);
     setShowModeSelection(false);
@@ -948,228 +949,228 @@ const FreeChat = () => {
         </div>
 
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4">
-            {/* Chat messages */}
-            <div className="relative min-h-full bg-white">
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
-              </div>
-              <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
-                {messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
-                    {msg.role === "summary" && msg.summaryData ? (
-                      <ConsultSummaryCard data={msg.summaryData} />
-                    ) : msg.role === "detailed_report" && msg.detailedData ? (
-                      <DetailedReportCard data={msg.detailedData} />
-                    ) : msg.role === "vitals" && msg.vitalsData ? (
-                      <div className="w-full max-w-sm md:max-w-md">
-                        <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
-                          <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
-                                <Activity size={12} className="text-white" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-semibold text-foreground font-heading">Your Vitals</p>
-                                <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
-                            {msg.vitalsData.map((vital: any) => {
-                              const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
-                              const VIcon = vital.icon || iconMap[vital.label] || Activity;
-                              return (
-                                <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
-                                  <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
-                                    <VIcon size={13} />
-                                  </div>
-                                  <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
-                                  <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
-                                  <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ) : msg.role === "action_buttons" && msg.buttons ? (
-                      <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
-                        <div className="flex flex-col gap-2">
-                          {msg.buttons.map((btn) => (
-                            <button
-                              key={btn.id}
-                              onClick={() => {
-                                if (btn.id === "face_scan") selectMode("vitals");
-                                else if (btn.id === "book_doctor") {
-                                  const trackingData = { timestamp: new Date().toISOString(), deviceId: deviceId.current, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
-                                  console.log("[AirDoctor] Referral click:", trackingData);
-                                  try { const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {}); } catch {}
-                                  try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch {}
-                                  window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
-                                }
-                              }}
-                              className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
-                              {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
-                      <ReportGeneratingIndicator />
-                    ) : msg.role === "user" ? (
-                      <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
-                        <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>
-                      </div>
-                    ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
-                      <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active /></div>
-                        <div className="text-foreground">
-                          <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
-                            {t.welcome}
-                          </p>
-                          <div className="flex flex-col gap-2 mt-3">
-                            <button
-                              onClick={() => selectMode("vitals")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-emerald-400/40 text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/15 hover:to-teal-500/15 transition-all active:scale-95 animate-gradient-pulse"
-                            >
-                              <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
-                                <ScanFace size={14} /> {t.scan}
-                              </span>
-                              <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("assessment")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                const trackingData = {
-                                  timestamp: new Date().toISOString(),
-                                  deviceId: deviceId.current,
-                                  page: window.location.pathname,
-                                  source: "welcome_button",
-                                  userAgent: navigator.userAgent,
-                                  screenSize: `${window.innerWidth}x${window.innerHeight}`,
-                                };
-                                console.log("[AirDoctor] Referral click:", trackingData);
-                                try {
-                                  const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
-                                  fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => {});
-                                } catch {}
-                                try {
-                                  const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
-                                  clicks.push(trackingData);
-                                  localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
-                                } catch {}
-                                window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
-                              }}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{t.book}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
-                            </button>
-                            <button
-                              onClick={() => selectMode("chat")}
-                              className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
-                            >
-                              <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
-                              <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="max-w-[95%] md:max-w-[80%]">
-                        <div className="mb-2"><AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} /></div>
-                        <div className="text-foreground">
-                          <p className="text-[14px] md:text-[15px] leading-7 font-body">
-                            {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
-                              <LiveTypewriterText
-                                text={msg.text}
-                                speed={4}
-                                formatted
-                                isComplete={streamingMsgIndex !== i}
-                                onComplete={() => {
-                                  setCompletedStreamingMsgIndices((prev) => {
-                                    if (!prev[i]) return prev;
-                                    const next = { ...prev };
-                                    delete next[i];
-                                    return next;
-                                  });
-                                }}
-                              />
-                            ) : typingMsgIndex === i ? (
-                              <LiveTypewriterText text={msg.text} speed={4} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
-                            ) : (
-                              <span className="whitespace-pre-line">
-                                {renderFormattedText(msg.text)}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {/* Inline mode selection */}
-                {showModeSelection && (
-                  <div className="animate-fade-in space-y-2.5 w-full">
-                    <button onClick={() => selectMode("vitals")} className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]">
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
-                      <div className="relative z-10 p-3 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
-                          <ScanFace size={18} className="text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-bold text-white font-heading">{t.scan}</p>
-                          <p className="text-[9px] text-white/70 mt-0.5">{t.scan_desc}</p>
-                        </div>
-                      </div>
-                    </button>
-                    <div className="grid grid-cols-2 gap-2">
-                      {chatModes.filter(m => m.id !== "vitals").map((mode) => {
-                        const Icon = mode.icon;
-                        return (
-                          <button key={mode.id} onClick={() => selectMode(mode.id)} className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all">
-                            <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
-                              <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
-                            </div>
-                            <p className="text-[10px] font-semibold text-foreground mb-0.5 font-heading">{mode.id === 'assessment' ? t.assessment : mode.title}</p>
-                            <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2 font-body">{mode.id === 'assessment' ? t.assessment_desc : mode.desc}</p>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <button onClick={() => selectMode("chat")} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full">
-                      <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
-                        <MessageCircle size={12} className="text-muted-foreground" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-[10px] font-medium text-foreground">{t.just_chat}</p>
-                        <p className="text-[8px] text-muted-foreground">{t.just_chat_desc}</p>
-                      </div>
-                    </button>
-                  </div>
-                )}
-
-                {/* Thinking indicator */}
-                {isTyping && (
-                  <div className="flex justify-start animate-fade-in">
-                    <div className="max-w-[95%] md:max-w-[80%]">
-                      <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
-                    </div>
-                  </div>
-                )}
-              </div>
+          {/* Chat messages */}
+          <div className="relative min-h-full bg-white">
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
+              <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
             </div>
+            <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                  {msg.role === "summary" && msg.summaryData ? (
+                    <ConsultSummaryCard data={msg.summaryData} />
+                  ) : msg.role === "detailed_report" && msg.detailedData ? (
+                    <DetailedReportCard data={msg.detailedData} />
+                  ) : msg.role === "vitals" && msg.vitalsData ? (
+                    <div className="w-full max-w-sm md:max-w-md">
+                      <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+                        <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
+                              <Activity size={12} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold text-foreground font-heading">Your Vitals</p>
+                              <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
+                          {msg.vitalsData.map((vital: any) => {
+                            const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
+                            const VIcon = vital.icon || iconMap[vital.label] || Activity;
+                            return (
+                              <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
+                                <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
+                                  <VIcon size={13} />
+                                </div>
+                                <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
+                                <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
+                                <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : msg.role === "action_buttons" && msg.buttons ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="flex flex-col gap-2">
+                        {msg.buttons.map((btn) => (
+                          <button
+                            key={btn.id}
+                            onClick={() => {
+                              if (btn.id === "face_scan") selectMode("vitals");
+                              else if (btn.id === "book_doctor") {
+                                const trackingData = { timestamp: new Date().toISOString(), deviceId: deviceId.current, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
+                                console.log("[AirDoctor] Referral click:", trackingData);
+                                try { const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { }); } catch { }
+                                try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
+                                window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                              }
+                            }}
+                            className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
+                            {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                    <ReportGeneratingIndicator />
+                  ) : msg.role === "user" ? (
+                    <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
+                      <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>
+                    </div>
+                  ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="text-foreground">
+                        <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                          {t.welcome}
+                        </p>
+                        <div className="flex flex-col gap-2 mt-3">
+                          <button
+                            onClick={() => selectMode("vitals")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-emerald-400/40 text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/15 hover:to-teal-500/15 transition-all active:scale-95 animate-gradient-pulse"
+                          >
+                            <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                              <ScanFace size={14} /> {t.scan}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
+                          </button>
+                          <button
+                            onClick={() => selectMode("assessment")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const trackingData = {
+                                timestamp: new Date().toISOString(),
+                                deviceId: deviceId.current,
+                                page: window.location.pathname,
+                                source: "welcome_button",
+                                userAgent: navigator.userAgent,
+                                screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                              };
+                              console.log("[AirDoctor] Referral click:", trackingData);
+                              try {
+                                const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+                                fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { });
+                              } catch { }
+                              try {
+                                const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                clicks.push(trackingData);
+                                localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                              } catch { }
+                              window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                            }}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.book}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
+                          </button>
+                          <button
+                            onClick={() => selectMode("chat")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} /></div>
+                      <div className="text-foreground">
+                        <p className="text-[14px] md:text-[15px] leading-7 font-body">
+                          {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
+                            <LiveTypewriterText
+                              text={msg.text}
+                              speed={4}
+                              formatted
+                              isComplete={streamingMsgIndex !== i}
+                              onComplete={() => {
+                                setCompletedStreamingMsgIndices((prev) => {
+                                  if (!prev[i]) return prev;
+                                  const next = { ...prev };
+                                  delete next[i];
+                                  return next;
+                                });
+                              }}
+                            />
+                          ) : typingMsgIndex === i ? (
+                            <LiveTypewriterText text={msg.text} speed={4} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
+                          ) : (
+                            <span className="whitespace-pre-line">
+                              {renderFormattedText(msg.text)}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Inline mode selection */}
+              {showModeSelection && (
+                <div className="animate-fade-in space-y-2.5 w-full">
+                  <button onClick={() => selectMode("vitals")} className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                    <div className="relative z-10 p-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
+                        <ScanFace size={18} className="text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-bold text-white font-heading">{t.scan}</p>
+                        <p className="text-[9px] text-white/70 mt-0.5">{t.scan_desc}</p>
+                      </div>
+                    </div>
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                      const Icon = mode.icon;
+                      return (
+                        <button key={mode.id} onClick={() => selectMode(mode.id)} className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all">
+                          <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                            <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                          </div>
+                          <p className="text-[10px] font-semibold text-foreground mb-0.5 font-heading">{mode.id === 'assessment' ? t.assessment : mode.title}</p>
+                          <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2 font-body">{mode.id === 'assessment' ? t.assessment_desc : mode.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button onClick={() => selectMode("chat")} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full">
+                    <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+                      <MessageCircle size={12} className="text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-medium text-foreground">{t.just_chat}</p>
+                      <p className="text-[8px] text-muted-foreground">{t.just_chat_desc}</p>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* Thinking indicator */}
+              {isTyping && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="max-w-[95%] md:max-w-[80%]">
+                    <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>

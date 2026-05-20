@@ -253,6 +253,7 @@ export function useShenAI() {
         showInfoButton: false,
         showDisclaimer: false,
         enableHealthRisks: true,
+        cameraAspectRatio: typeof window !== "undefined" && window.innerWidth >= 768 ? 16 / 9 : 0,
         ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
 
