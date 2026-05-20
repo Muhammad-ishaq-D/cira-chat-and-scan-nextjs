@@ -1,5 +1,4 @@
 import ciraLogo from "@/assets/cira-logo.svg";
-import LandingMenu from "@/components/LandingMenu";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import realScan from "@/assets/real-scan.webp";
 import { useNavigate } from "react-router-dom";
@@ -10,13 +9,9 @@ const OurStory = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <nav className="flex items-center justify-between px-6 py-8 max-w-4xl mx-auto">
-        <LandingMenu />
-        <div className="flex items-center gap-3">
-          <img src={ciraLogo} alt="Cira" width={28} height={28} />
-          <span className="font-heading text-xl font-semibold text-foreground">Our Story</span>
-        </div>
-        <div className="w-10" />
+      <nav className="flex items-center justify-center gap-3 px-6 py-8">
+        <img src={ciraLogo} alt="Cira" width={28} height={28} />
+        <span className="font-heading text-xl font-semibold text-foreground">Our Story</span>
       </nav>
 
       <main className="max-w-[640px] mx-auto px-6 pb-24">

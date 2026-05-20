@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { blogsApi, type BlogPost } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
-import LandingMenu from "@/components/LandingMenu";
 
 const Blog = () => {
   const navigate = useNavigate();
@@ -34,12 +33,9 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-5xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <LandingMenu />
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft size={16} /> Home
-          </button>
-        </div>
+        <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft size={16} /> Home
+        </button>
         <div className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
           <span className="font-heading text-base font-semibold text-foreground">Cira</span>

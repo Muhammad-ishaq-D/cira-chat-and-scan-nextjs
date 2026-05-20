@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import ciraLogo from "@/assets/cira-logo.svg";
-import LandingMenu from "@/components/LandingMenu";
 import helpDecide from "@/assets/help-decide.jpg";
 import helpRealLife from "@/assets/help-reallife.jpg";
 import helpClarity from "@/assets/help-clarity.jpg";
@@ -53,13 +52,10 @@ const WhatCiraHelpsWith = () => {
     <div className="min-h-screen bg-background">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
-        <div className="flex items-center gap-1">
-          <LandingMenu />
-          <button onClick={() => navigate("/")} className="flex items-center gap-3">
-            <img src={ciraLogo} alt="Cira" width={28} height={28} />
-            <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
-          </button>
-        </div>
+        <button onClick={() => navigate("/")} className="flex items-center gap-3">
+          <img src={ciraLogo} alt="Cira" width={28} height={28} />
+          <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
+        </button>
         <button
           onClick={() => navigate("/free-chat")}
           className="text-sm font-body text-foreground hover:text-primary transition-colors"
