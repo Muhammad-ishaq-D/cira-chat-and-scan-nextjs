@@ -240,9 +240,16 @@ const Index = () => {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center items-center" style={{ minHeight: "calc(100vh - 68px)" }}>
         {/* Tag + H1 */}
         <div className="text-center mb-2 sm:mb-3 animate-fade-in">
-          <span className="inline-flex items-center gap-1.5 mb-2 sm:mb-3 text-xs font-medium font-body tracking-widest uppercase bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            ✦ Face Vital Scan
-          </span>
+          <div className="inline-flex items-center justify-center gap-2 mb-3.5 sm:mb-4 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur shadow-sm">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold font-body tracking-widest uppercase bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              ✦ Face Vital Scan
+            </span>
+            <span className="w-px h-3 bg-border" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold font-body tracking-wider uppercase text-emerald-600 dark:text-emerald-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              HIPAA Compliant
+            </span>
+          </div>
           <h1 className="font-heading text-3xl sm:text-5xl md:text-[56px] font-semibold text-foreground leading-[1.1] tracking-tight">
             Your vitals in 30 seconds.<br /><span className="text-primary">Just your face.</span>
           </h1>
