@@ -885,6 +885,12 @@ const Chat = () => {
           if (data === "[DONE]") continue;
           try {
             const event = JSON.parse(data);
+            
+            if (event.type === "warning") {
+              toast.warning(event.message, { duration: 6000 });
+              continue;
+            }
+
             // Debug: log tool-related SSE events
             if (event.type?.includes("content_block") && (event.content_block?.type === "tool_use" || event.delta?.type === "input_json_delta")) {
               console.log("[SSE Tool Event]", event.type, event);

@@ -627,6 +627,11 @@ const FreeChat = () => {
           try {
             const event = JSON.parse(data);
 
+            if (event.type === "warning") {
+              toast.warning(event.message, { duration: 6000 });
+              continue;
+            }
+
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
             }
