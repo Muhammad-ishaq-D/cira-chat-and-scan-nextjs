@@ -91,7 +91,7 @@ const HamburgerMenu = () => {
           <button
           onClick={() => {
               setOpen(false);
-              navigate("/chat");
+              navigate(loggedIn ? "/chat" : "/free-chat");
             }}
             className="w-full flex items-center gap-3 py-3 text-primary font-body font-medium"
           >
