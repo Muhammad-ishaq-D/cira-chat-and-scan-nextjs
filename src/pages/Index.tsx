@@ -193,6 +193,7 @@ const Index = () => {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
+          <HamburgerMenu />
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
           <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Beta</span>
