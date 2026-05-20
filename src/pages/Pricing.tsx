@@ -289,7 +289,7 @@ const Pricing = () => {
       </section>
 
       <footer className="max-w-4xl mx-auto px-6 pb-10 text-center text-xs text-muted-foreground">
-        <p>© 2026 Cira — askainurse.com</p>
+        <p>© 2026 AskAINurse · Cira AI</p>
       </footer>
     </div>
   );
