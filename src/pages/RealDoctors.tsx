@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Shield, Stethoscope, Globe, Video, MapPin, Sparkles, MessageCircle, Activity } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
+import LandingMenu from "@/components/LandingMenu";
 import handoffImg from "@/assets/doctors-handoff.jpg";
 import telehealthImg from "@/assets/doctors-telehealth.jpg";
 import globalImg from "@/assets/doctors-global.jpg";
@@ -27,10 +28,13 @@ const RealDoctors = () => {
     <div className="min-h-screen bg-[#fdfaf3] text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       {/* Nav */}
       <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <button onClick={() => navigate("/")} className="flex items-center gap-2">
-          <img src={ciraLogo} alt="Cira" width={32} height={32} />
-          <span className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>Cira</span>
-        </button>
+        <div className="flex items-center gap-1">
+          <LandingMenu />
+          <button onClick={() => navigate("/")} className="flex items-center gap-2">
+            <img src={ciraLogo} alt="Cira" width={32} height={32} />
+            <span className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>Cira</span>
+          </button>
+        </div>
         <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5">
           <ArrowLeft size={14} /> Back
         </button>
