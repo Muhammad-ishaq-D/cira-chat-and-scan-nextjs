@@ -89,16 +89,16 @@ const HamburgerMenu = () => {
         {/* Primary CTA */}
         <div className="px-6 pb-4">
           <button
-            onClick={() => {
+          onClick={() => {
               setOpen(false);
-              navigate("/vitals-scan");
+              navigate("/chat");
             }}
             className="w-full flex items-center gap-3 py-3 text-primary font-body font-medium"
           >
             <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
               <Plus size={14} strokeWidth={2.5} />
             </span>
-            <span>New Face Scan</span>
+            <span>New Chat</span>
           </button>
         </div>
 
