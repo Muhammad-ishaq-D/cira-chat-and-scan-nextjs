@@ -162,40 +162,40 @@ const Pricing = () => {
             return (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl p-7 transition-all ${
+                className={`relative rounded-2xl p-7 transition-all bg-white shadow-sm ${
                   plan.highlight
-                    ? "bg-foreground text-background shadow-2xl md:scale-[1.03] border border-foreground"
-                    : "bg-white border border-stone-200 hover:border-stone-300 shadow-sm"
+                    ? "border-2 border-pink-400 shadow-[0_10px_40px_-10px_rgba(236,72,153,0.35)] md:scale-[1.03]"
+                    : "border border-stone-200 hover:border-stone-300"
                 }`}
               >
                 {plan.highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
+                    <span className="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 shadow-md">
                       <Star size={10} fill="white" /> Most Popular
                     </span>
                   </div>
                 )}
 
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${plan.highlight ? "bg-white/10" : "bg-stone-100"}`}>
-                  <Icon size={20} className={plan.highlight ? "text-background" : "text-foreground"} />
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${plan.highlight ? "bg-pink-50" : "bg-stone-100"}`}>
+                  <Icon size={20} className={plan.highlight ? "text-pink-600" : "text-foreground"} />
                 </div>
 
-                <h3 className="text-xl font-semibold mb-1">{plan.name}</h3>
-                <p className={`text-sm mb-6 ${plan.highlight ? "text-background/70" : "text-muted-foreground"}`}>
+                <h3 className="text-xl font-semibold mb-1 text-foreground">{plan.name}</h3>
+                <p className="text-sm mb-6 text-muted-foreground">
                   {plan.desc}
                 </p>
 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <span className="text-4xl font-bold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
                       {plan.price}
                     </span>
-                    <span className={`text-sm ${plan.highlight ? "text-background/60" : "text-muted-foreground"}`}>
+                    <span className="text-sm text-muted-foreground">
                       {plan.period}
                     </span>
                   </div>
                   {plan.saving && (
-                    <p className={`text-xs mt-1 ${plan.highlight ? "text-emerald-300" : "text-emerald-600"}`}>
+                    <p className="text-xs mt-1 text-emerald-600">
                       {plan.saving}
                     </p>
                   )}
@@ -205,8 +205,8 @@ const Pricing = () => {
                   onClick={plan.action}
                   className={`w-full h-11 rounded-xl text-sm font-medium transition-all mb-6 ${
                     plan.highlight
-                      ? "bg-white text-foreground hover:bg-stone-100"
-                      : "bg-foreground text-background hover:bg-foreground/90"
+                      ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 shadow-md"
+                      : "bg-stone-100 text-foreground hover:bg-stone-200 border border-stone-200"
                   }`}
                 >
                   {plan.cta}
@@ -215,17 +215,16 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                      <Check
-                        size={16}
-                        className={`mt-0.5 shrink-0 ${plan.highlight ? "text-emerald-400" : "text-emerald-600"}`}
-                      />
-                      <span className={plan.highlight ? "text-background/90" : "text-foreground/80"}>{f}</span>
+                      <span className="mt-0.5 shrink-0 w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <Check size={11} className="text-emerald-600" strokeWidth={3} />
+                      </span>
+                      <span className="text-foreground/80">{f}</span>
                     </li>
                   ))}
                 </ul>
 
                 {plan.footnote && (
-                  <p className={`text-xs italic mt-6 pt-5 border-t ${plan.highlight ? "border-white/10 text-background/60" : "border-stone-200 text-muted-foreground"}`}>
+                  <p className="text-xs italic mt-6 pt-5 border-t border-stone-200 text-muted-foreground">
                     {plan.footnote}
                   </p>
                 )}
