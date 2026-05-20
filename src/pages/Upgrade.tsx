@@ -18,12 +18,12 @@ const defaultPlans: Plan[] = [
     features: ["1 Face Scan", "100,000 Chat Credits", "Basic Vital Signs", "Health Risk Overview", "Email Support"],
   },
   {
-    id: "pro", name: "Pro", price: "$29.99", period: "/mo", desc: "Advanced monitoring for health-conscious individuals",
+    id: "pro", name: "Pro", price: "$5.00", period: "/mo", desc: "Advanced monitoring for health-conscious individuals",
     icon: Zap, color: "from-primary/20 to-primary/10", iconColor: "text-primary", popular: true,
     features: ["20 Face Scans / month", "500,000 Chat Credits", "All Vital Signs + Trends", "Detailed Health Indices", "3 Doctor Consults", "Export Reports (PDF)", "Priority Support"],
   },
   {
-    id: "enterprise", name: "Enterprise", price: "$99.99", period: "/mo", desc: "Complete health intelligence for professionals",
+    id: "enterprise", name: "Enterprise", price: "$10.00", period: "/mo", desc: "Complete health intelligence for professionals",
     icon: Crown, color: "from-amber-100 to-orange-100", iconColor: "text-amber-600",
     features: ["Unlimited Face Scans", "Unlimited Chat Credits", "10 Doctor Consults", "Advanced AI Diagnostics", "Priority Support", "All Reports", "HIPAA Compliance"],
   },
