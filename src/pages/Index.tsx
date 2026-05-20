@@ -192,7 +192,7 @@ const Index = () => {
   return (
     <div ref={pageRef} className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
+      <nav className="flex items-center justify-between pl-3 pr-6 sm:pl-4 lg:pl-6 py-5 max-w-full lg:max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <HamburgerMenu />
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
