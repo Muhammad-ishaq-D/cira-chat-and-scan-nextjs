@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import ConsentBanner from "@/components/ConsentBanner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import HamburgerMenu from "@/components/HamburgerMenu";
 
 const faqs = [
   {
