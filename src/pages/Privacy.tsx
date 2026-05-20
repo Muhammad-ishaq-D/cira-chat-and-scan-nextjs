@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import ciraLogo from "@/assets/cira-logo.svg";
+import LandingMenu from "@/components/LandingMenu";
 import talkImg from "@/assets/privacy-talk.jpg";
 import scanImg from "@/assets/privacy-scan.jpg";
 import nextImg from "@/assets/privacy-next.jpg";
@@ -70,12 +71,15 @@ const Privacy = () => {
   return (
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
+        <div className="flex items-center gap-1">
+          <LandingMenu />
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+        </div>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
           <span className="font-heading text-base font-semibold text-foreground">Cira</span>

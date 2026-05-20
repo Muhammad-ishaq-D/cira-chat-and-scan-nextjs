@@ -1,15 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
+import LandingMenu from "@/components/LandingMenu";
 
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
+        <div className="flex items-center gap-1">
+          <LandingMenu />
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+        </div>
         <div className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
           <span className="font-heading text-base font-semibold text-foreground">Cira</span>

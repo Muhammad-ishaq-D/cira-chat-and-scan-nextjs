@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { blogsApi, type BlogPost as BlogPostType } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
+import LandingMenu from "@/components/LandingMenu";
 
 const blogContentClassName = "prose prose-neutral dark:prose-invert max-w-none prose-headings:font-heading prose-a:text-primary [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4 [&_li]:my-1 [&_li]:pl-1";
 
@@ -44,9 +45,12 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-3xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
-        <Link to="/blog" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft size={16} /> All articles
-        </Link>
+        <div className="flex items-center gap-1">
+          <LandingMenu />
+          <Link to="/blog" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft size={16} /> All articles
+          </Link>
+        </div>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
           <span className="font-heading text-base font-semibold text-foreground">Cira</span>
