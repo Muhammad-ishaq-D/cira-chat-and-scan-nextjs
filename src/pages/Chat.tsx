@@ -1135,13 +1135,26 @@ const Chat = () => {
     callClaude(userText);
   };
 
+  const canScan = () => {
+    const scans = userProfile?.credits?.face_scans;
+    if (scans !== "Unlimited" && typeof scans === "number" && scans <= 0) {
+      toast.error("No scan credits remaining. Upgrade your plan to scan.", {
+        action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+        duration: 6000,
+      });
+      return false;
+    }
+    return true;
+  };
+
   const startScan = () => {
-    // Close the mock modal and navigate to real Shen AI scan page
+    if (!canScan()) return;
     setShowScanModal(false);
     navigate("/vitals-scan");
   };
 
   const completeScanAndChat = () => {
+    if (!canScan()) return;
     setShowScanModal(false);
     navigate("/vitals-scan");
   };
@@ -1150,9 +1163,9 @@ const Chat = () => {
     // Hide the welcome-with-buttons card once the user picks an option
     setMessages((prev) => prev.filter((m) => m.text !== "WELCOME_WITH_BUTTONS"));
     if (mode === "vitals") {
+      if (!canScan()) return;
       syncChatMode(mode);
       setShowModeSelection(false);
-      // Navigate directly to the real Shen AI vitals scan page
       navigate("/vitals-scan");
       return;
     }
@@ -1294,7 +1307,7 @@ const Chat = () => {
                   setActiveNav(item.id);
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
-                  if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "scan") { if (canScan()) navigate("/vitals-scan"); }
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
                 }}

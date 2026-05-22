@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -61,6 +61,9 @@ const VitalsScan = () => {
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
 
   const [userProfile, setUserProfile] = useState<any>(null);
+
+  const scansLeft = userProfile?.credits?.face_scans;
+  const noScansLeft = !isGuest && scansLeft !== "Unlimited" && typeof scansLeft === "number" && scansLeft <= 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -293,7 +296,13 @@ const VitalsScan = () => {
                 <button key={item.id} onClick={() => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
-                  if (item.id === "scan") navigate("/vitals-scan");
+                  if (item.id === "scan") {
+                    if (noScansLeft) {
+                      toast.error("No scan credits remaining. Upgrade your plan.", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 6000 });
+                      return;
+                    }
+                    navigate("/vitals-scan");
+                  }
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
                 }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -458,20 +467,32 @@ const VitalsScan = () => {
           {/* ── Floating Action Button — bottom right ── */}
           <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
             {status === "ready" && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log("[VitalsScan] Start button clicked");
-                  startMeasurement();
-                }}
-                className="relative z-30 px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base"
-                style={{ pointerEvents: 'auto' }}
-              >
-                <Heart size={22} />
-                <span>Start</span>
-              </button>
+              noScansLeft ? (
+                <button
+                  type="button"
+                  onClick={() => navigate("/upgrade")}
+                  className="relative z-30 px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 hover:shadow-amber-400/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-amber-400/20 font-semibold text-sm md:text-base"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <Crown size={20} />
+                  <span>Upgrade to Scan</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("[VitalsScan] Start button clicked");
+                    startMeasurement();
+                  }}
+                  className="relative z-30 px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <Heart size={22} />
+                  <span>Start</span>
+                </button>
+              )
             )}
             {status === "error" && (
               <button onClick={reset} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
