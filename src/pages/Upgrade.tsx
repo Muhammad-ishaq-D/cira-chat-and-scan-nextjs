@@ -14,7 +14,7 @@ interface Plan {
 const defaultPlans: Plan[] = [
   {
     id: "basic", name: "Basic", price: "Free", period: "", desc: "Get started with essential health insights",
-    icon: Shield, color: "from-slate-100 to-slate-200", iconColor: "text-slate-600", current: true,
+    icon: Shield, color: "from-slate-100 to-slate-200", iconColor: "text-slate-600",
     features: ["1 Face Scan", "100,000 Chat Credits", "Basic Vital Signs", "Health Risk Overview", "Email Support"],
   },
   {
@@ -76,24 +76,27 @@ const Upgrade = () => {
                 }
               } catch {}
               
-              return { ...p, price: displayPrice, features: dynamicFeatures };
+              // Capture real DB id so subscribe sends the correct UUID to the backend
+              return { ...p, id: apiPlan.id ?? p.id, price: displayPrice, features: dynamicFeatures };
             }
             return p;
           }));
         }
       })
       .catch(() => {});
-    
+
     billingApi.getSubscription()
       .then((sub) => {
-        if (sub?.plan_id || sub?.plan_name) {
-          setPlans(prev => prev.map(p => ({
-            ...p,
-            current: p.id === sub.plan_id || p.name.toLowerCase() === (sub.plan_name || "").toLowerCase(),
-          })));
-        }
+        const activeName = (sub?.plan_name || "basic").toLowerCase();
+        setPlans(prev => prev.map(p => ({
+          ...p,
+          current: p.name.toLowerCase() === activeName,
+        })));
       })
-      .catch(() => {});
+      .catch(() => {
+        // On error default to basic
+        setPlans(prev => prev.map(p => ({ ...p, current: p.name.toLowerCase() === "basic" })));
+      });
   }, []);
 
   const handleUpgrade = (planId: string) => {

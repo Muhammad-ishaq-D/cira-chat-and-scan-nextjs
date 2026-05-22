@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, Ban, CreditCard, Edit3, Mail, Calendar, Loader2, CheckCircle, Wallet, Crown, Zap, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
-import { adminApi } from "@/lib/apiClient";
+import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
+import { adminApi, billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
 interface PlanOption {
@@ -9,46 +9,26 @@ interface PlanOption {
   price: string;
   period: string;
   desc: string;
-  credits: number;
+  faceScans: number | string;
+  chatCredits: number | string;
   popular?: boolean;
   features: string[];
 }
 
-const PLAN_OPTIONS: PlanOption[] = [
+const FALLBACK_PLANS: PlanOption[] = [
   {
-    id: "Pro",
-    name: "Pro",
-    price: "$29.99",
-    period: "/mo",
-    desc: "Advanced monitoring for health-conscious individuals",
-    credits: 500000,
-    popular: true,
-    features: [
-      "20 Face Scans / month",
-      "500,000 Chat Credits",
-      "All Vital Signs + Trends",
-      "Detailed Health Indices",
-      "3 Doctor Consults",
-      "Export Reports (PDF)",
-      "Priority Support",
-    ],
+    id: "basic", name: "Basic", price: "Free", period: "", desc: "Essential health insights",
+    faceScans: 1, chatCredits: 100000, features: ["1 Face Scan", "100,000 Chat Credits"],
   },
   {
-    id: "Enterprise",
-    name: "Enterprise",
-    price: "$99.99",
-    period: "/mo",
-    desc: "Complete health intelligence for professionals",
-    credits: 2000000,
-    features: [
-      "Unlimited Face Scans",
-      "Unlimited Chat Credits",
-      "10 Doctor Consults",
-      "Advanced AI Diagnostics",
-      "Priority Support",
-      "All Reports",
-      "HIPAA Compliance",
-    ],
+    id: "pro", name: "Pro", price: "$5.00", period: "/mo", desc: "Advanced monitoring",
+    faceScans: 20, chatCredits: 500000, popular: true,
+    features: ["20 Face Scans / month", "500,000 Chat Credits", "Priority Support"],
+  },
+  {
+    id: "enterprise", name: "Enterprise", price: "$10.00", period: "/mo", desc: "Complete health intelligence",
+    faceScans: 99999, chatCredits: 999999999,
+    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "HIPAA Compliance"],
   },
 ];
 
@@ -120,6 +100,7 @@ const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [planOptions, setPlanOptions] = useState<PlanOption[]>(FALLBACK_PLANS);
   const [planModalUser, setPlanModalUser] = useState<User | null>(null);
   const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
   const [suspendConfirmUser, setSuspendConfirmUser] = useState<User | null>(null);
@@ -140,7 +121,35 @@ const AdminUsers = () => {
     }
   };
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => {
+    loadUsers();
+    billingApi.getPlans().then((raw: any) => {
+      const data: any[] = Array.isArray(raw) ? raw : raw?.plans ?? [];
+      if (!data.length) return;
+      const mapped: PlanOption[] = data.map((p: any) => {
+        const scans = p.face_scans ?? p.scan_limit ?? 0;
+        const credits = p.chat_credits ?? p.chat_credit_limit ?? 0;
+        const isUnlimitedScans = scans === -1 || String(scans).toLowerCase() === "unlimited";
+        const isUnlimitedCredits = credits === -1 || String(credits).toLowerCase() === "unlimited";
+        const price = p.price != null ? (Number(p.price) === 0 ? "Free" : `$${p.price}`) : "Free";
+        return {
+          id: p.name,
+          name: p.name,
+          price,
+          period: Number(p.price) > 0 ? "/mo" : "",
+          desc: p.description || p.name,
+          faceScans: isUnlimitedScans ? "Unlimited" : Number(scans),
+          chatCredits: isUnlimitedCredits ? "Unlimited" : Number(credits),
+          popular: p.name?.toLowerCase() === "pro",
+          features: [
+            isUnlimitedScans ? "Unlimited Face Scans" : `${scans} Face Scan${scans !== 1 ? "s" : ""} / month`,
+            isUnlimitedCredits ? "Unlimited Chat Credits" : `${Number(credits).toLocaleString()} Chat Credits`,
+          ],
+        };
+      });
+      setPlanOptions(mapped);
+    }).catch(() => {});
+  }, []);
 
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -183,15 +192,19 @@ const AdminUsers = () => {
   };
 
   const addCredits = async (id: string) => {
-    const amount = prompt("Enter credits to add:");
-    if (amount && !isNaN(Number(amount))) {
-      try {
-        await adminApi.adjustCredits(id, Number(amount), "Admin adjustment");
-        toast.success("Credits added");
-        loadUsers();
-      } catch (e: any) {
-        toast.error(e.message || "Failed to add credits");
-      }
+    const type = prompt("Adjust which credits?\n1 = Chat Credits\n2 = Face Scans\nEnter 1 or 2:");
+    if (!type || (type !== "1" && type !== "2")) return;
+    const amount = prompt(`Enter amount to add (negative to subtract):`);
+    if (!amount || isNaN(Number(amount))) return;
+    try {
+      const payload: any = { reason: "Admin manual adjustment" };
+      if (type === "1") payload.amount = Number(amount);
+      else payload.face_scans = Number(amount);
+      await adminApi.adjustCredits(id, payload.amount ?? 0, payload.reason);
+      toast.success("Credits adjusted");
+      loadUsers();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to adjust credits");
     }
   };
 
@@ -203,15 +216,15 @@ const AdminUsers = () => {
     if (!planModalUser) return;
     setApplyingPlan(plan.id);
     try {
-      const res: any = await adminApi.changeUserPlan(planModalUser.id, plan.id);
-      const newCredits = res.credits ?? (planModalUser.credits + plan.credits);
+      const res: any = await adminApi.changeUserPlan(planModalUser.id, plan.name);
+      const newCredits = res.credits ?? planModalUser.credits;
       setUsers((prev) =>
         prev.map((u) =>
-          u.id === planModalUser.id ? { ...u, plan: plan.id, credits: newCredits } : u,
+          u.id === planModalUser.id ? { ...u, plan: plan.name, credits: newCredits } : u,
         ),
       );
       if (selectedUser?.id === planModalUser.id) {
-        setSelectedUser((prev) => (prev ? { ...prev, plan: plan.id, credits: newCredits } : null));
+        setSelectedUser((prev) => (prev ? { ...prev, plan: plan.name, credits: newCredits } : null));
       }
       toast.success(`Plan changed to ${plan.name}`);
       setPlanModalUser(null);
@@ -438,12 +451,14 @@ const AdminUsers = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-muted-foreground mb-5">Selecting a plan will change the user's plan and add the plan's credits to their existing balance.</p>
+              <p className="text-xs text-muted-foreground mb-5">Selecting a plan replaces the user's credits with the plan's full allocation.</p>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {PLAN_OPTIONS.map((plan) => {
-                  const Icon = plan.id === "Pro" ? Zap : Crown;
-                  const isCurrent = planModalUser.plan.toLowerCase() === plan.id.toLowerCase();
+              <div className="grid md:grid-cols-3 gap-4">
+                {planOptions.map((plan) => {
+                  const pLower = plan.name.toLowerCase();
+                  const Icon = pLower.includes("enterprise") ? Crown : pLower.includes("pro") ? Zap : Shield;
+                  const iconClass = pLower.includes("enterprise") ? "bg-amber-100 text-amber-600" : pLower.includes("pro") ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-600";
+                  const isCurrent = planModalUser.plan.toLowerCase() === plan.name.toLowerCase();
                   const isApplying = applyingPlan === plan.id;
                   return (
                     <div key={plan.id} className={`relative bg-background/60 border rounded-2xl p-5 transition-all ${plan.popular ? "border-primary/40 ring-2 ring-primary/10" : "border-border/60"}`}>
@@ -454,17 +469,14 @@ const AdminUsers = () => {
                           </span>
                         </div>
                       )}
-                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-3 ${plan.id === "Pro" ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-600"}`}>
+                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-3 ${iconClass}`}>
                         <Icon size={20} />
                       </div>
                       <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.name}</h3>
                       <p className="text-xs text-muted-foreground mb-3">{plan.desc}</p>
-                      <div className="mb-4">
+                      <div className="mb-3">
                         <span className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{plan.price}</span>
                         <span className="text-xs text-muted-foreground">{plan.period}</span>
-                      </div>
-                      <div className="text-[11px] text-muted-foreground mb-3">
-                        Adds <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={11} className="text-amber-500" />+{plan.credits.toLocaleString()}</span> credits
                       </div>
                       <ul className="space-y-2 mb-5">
                         {plan.features.map((f) => (
@@ -483,7 +495,7 @@ const AdminUsers = () => {
                             : "border border-border/60 text-foreground hover:bg-accent"
                           } disabled:opacity-60`}
                       >
-                        {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Select ${plan.name}`}
+                        {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Set ${plan.name}`}
                       </button>
                     </div>
                   );

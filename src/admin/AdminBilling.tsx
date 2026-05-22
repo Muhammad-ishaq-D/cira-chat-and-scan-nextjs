@@ -120,7 +120,7 @@ const AdminBilling = () => {
               className="text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
             >
               <option value="all">All Status</option>
-              <option value="completed">Completed</option>
+              <option value="success">Success</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
               <option value="refunded">Refunded</option>
@@ -150,7 +150,7 @@ const AdminBilling = () => {
                     <td className="py-2.5">{tx.plan_name || tx.plan || tx.plan_id || "—"}</td>
                     <td className="py-2.5">
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        tx.status === "completed" ? "bg-emerald-50 text-emerald-700" :
+                        (tx.status === "success" || tx.status === "completed") ? "bg-emerald-50 text-emerald-700" :
                         tx.status === "pending" ? "bg-amber-50 text-amber-700" :
                         tx.status === "failed" ? "bg-red-50 text-red-700" :
                         tx.status === "refunded" ? "bg-blue-50 text-blue-700" :
