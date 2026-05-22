@@ -194,6 +194,8 @@ export const billingApi = {
       throw err;
     }
   },
+  cancelSubscription: () => post("/api/billing/cancel", {}),
+  reactivateSubscription: () => post("/api/billing/reactivate", {}),
   getPaymentHistory: () => get("/api/billing/payments"),
   getPlans: () => get("/api/billing/plans"),
 };

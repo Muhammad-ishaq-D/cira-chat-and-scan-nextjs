@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, Receipt, CheckCircle2, Clock, XCircle, Loader2 } from "lucide-react";
+import {
+  ArrowLeft, Download, Receipt, CheckCircle2, Clock, XCircle,
+  Loader2, AlertTriangle, RotateCcw, Ban
+} from "lucide-react";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -19,31 +22,65 @@ const statusStyle = (status: string) => {
   return "text-red-600 bg-red-50";
 };
 
+const formatDate = (dateStr: string | null | undefined) => {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+};
+
 const PaymentHistory = () => {
   const navigate = useNavigate();
   const [payments, setPayments] = useState<any[]>([]);
   const [subscription, setSubscription] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [paymentsData, subData] = await Promise.allSettled([
-          billingApi.getPaymentHistory(),
-          billingApi.getSubscription(),
-        ]);
-        if (paymentsData.status === "fulfilled") {
-          setPayments(Array.isArray(paymentsData.value) ? paymentsData.value : paymentsData.value.payments || []);
-        }
-        if (subData.status === "fulfilled") setSubscription(subData.value);
-      } catch (e: any) {
-        toast.error("Failed to load payment history");
-      } finally {
-        setLoading(false);
+  const load = async () => {
+    try {
+      const [paymentsData, subData] = await Promise.allSettled([
+        billingApi.getPaymentHistory(),
+        billingApi.getSubscription(),
+      ]);
+      if (paymentsData.status === "fulfilled") {
+        setPayments(Array.isArray(paymentsData.value) ? paymentsData.value : paymentsData.value.payments || []);
       }
-    };
-    load();
-  }, []);
+      if (subData.status === "fulfilled") setSubscription(subData.value);
+    } catch {
+      toast.error("Failed to load payment history");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleCancel = async () => {
+    if (!confirm("Are you sure you want to cancel your subscription? You'll keep access until the end of your billing period.")) return;
+    setActionLoading(true);
+    try {
+      await billingApi.cancelSubscription();
+      toast.success("Subscription will cancel at the end of your billing period");
+      await load();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to cancel subscription");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReactivate = async () => {
+    setActionLoading(true);
+    try {
+      await billingApi.reactivateSubscription();
+      toast.success("Subscription reactivated — it will continue renewing automatically");
+      await load();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to reactivate subscription");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const totalSpent = payments
     .filter((p: any) => {
@@ -51,6 +88,10 @@ const PaymentHistory = () => {
       return s === "paid" || s === "success" || s === "" || s === "completed";
     })
     .reduce((sum: number, p: any) => sum + (parseFloat(String(p.amount).replace(/[^0-9.]/g, "")) || 0), 0);
+
+  const isBasicPlan = !subscription || ["basic", "free"].includes((subscription.plan_name || subscription.plan_id || "").toLowerCase());
+  const cancelAtPeriodEnd: boolean = !!subscription?.cancel_at_period_end;
+  const periodEnd = subscription?.current_period_end || subscription?.expires_at;
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,7 +123,7 @@ const PaymentHistory = () => {
         ) : (
           <>
             {/* Summary Cards */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Current Plan</p>
                 <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -96,12 +137,53 @@ const PaymentHistory = () => {
                 </p>
               </div>
               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Next Billing</p>
-                <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                  {subscription?.next_billing_date || "—"}
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                  {cancelAtPeriodEnd ? "Cancels On" : "Next Billing"}
+                </p>
+                <p className={`text-lg font-semibold ${cancelAtPeriodEnd ? "text-amber-600" : "text-foreground"}`} style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  {formatDate(periodEnd)}
                 </p>
               </div>
             </div>
+
+            {/* Cancellation banner */}
+            {cancelAtPeriodEnd && (
+              <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-6">
+                <AlertTriangle size={18} className="text-amber-500 mt-0.5 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-amber-800">Subscription cancellation scheduled</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    Your {subscription?.plan_name} plan will end on <strong>{formatDate(periodEnd)}</strong>. You have full access until then.
+                  </p>
+                </div>
+                <button
+                  onClick={handleReactivate}
+                  disabled={actionLoading}
+                  className="flex items-center gap-1.5 text-xs font-medium text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+                >
+                  {actionLoading ? <Loader2 size={12} className="animate-spin" /> : <RotateCcw size={12} />}
+                  Undo
+                </button>
+              </div>
+            )}
+
+            {/* Subscription management */}
+            {!isBasicPlan && !cancelAtPeriodEnd && (
+              <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl px-5 py-4 mb-6">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Manage Subscription</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Your plan renews on {formatDate(periodEnd)}</p>
+                </div>
+                <button
+                  onClick={handleCancel}
+                  disabled={actionLoading}
+                  className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {actionLoading ? <Loader2 size={12} className="animate-spin" /> : <Ban size={12} />}
+                  Cancel Plan
+                </button>
+              </div>
+            )}
 
             {/* Transactions */}
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
@@ -120,8 +202,8 @@ const PaymentHistory = () => {
                         {statusIcon(p.status)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground">{p.plan || p.description}</p>
-                        <p className="text-[11px] text-muted-foreground">{p.date || p.created_at} · {p.method || p.payment_method || "—"}</p>
+                        <p className="text-sm font-medium text-foreground">{p.plan_name || p.plan || p.description || "—"}</p>
+                        <p className="text-[11px] text-muted-foreground">{formatDate(p.date || p.created_at)} · {p.method || p.payment_method || "—"}</p>
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
