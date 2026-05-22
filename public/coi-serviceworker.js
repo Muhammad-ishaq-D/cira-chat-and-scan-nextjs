@@ -1,8 +1,22 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
+// Bump this version when the WASM file changes to invalidate the cache.
+const WASM_CACHE_VERSION = 'cira-wasm-v1';
+
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
     self.addEventListener("install", () => self.skipWaiting());
-    self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+    self.addEventListener("activate", (event) => {
+        // Clean up old WASM cache versions
+        event.waitUntil(
+            caches.keys().then((keys) =>
+                Promise.all(
+                    keys
+                        .filter((k) => k.startsWith('cira-wasm-') && k !== WASM_CACHE_VERSION)
+                        .map((k) => caches.delete(k))
+                )
+            ).then(() => self.clients.claim())
+        );
+    });
 
     self.addEventListener("message", (ev) => {
         if (!ev.data) {
@@ -37,10 +51,42 @@ if (typeof window === 'undefined') {
         const needsHeaders = isNavigationToVitalsScan || isSubresourceForVitalsScan;
 
         const request = (coepCredentialless && r.mode === "no-cors")
-            ? new Request(r, {
-                credentials: "omit",
-            })
+            ? new Request(r, { credentials: "omit" })
             : r;
+
+        // Cache-first strategy for large WASM files — avoids re-downloading 10+ MB on every visit.
+        // The cached response already has the required COOP/COEP headers applied.
+        if (url.pathname.endsWith(".wasm")) {
+            event.respondWith(
+                caches.open(WASM_CACHE_VERSION).then(async (cache) => {
+                    const cached = await cache.match(r.url);
+                    if (cached) return cached;
+
+                    const response = await fetch(request);
+                    if (!response.ok) return response;
+
+                    const buf = await response.arrayBuffer();
+                    const newHeaders = new Headers(response.headers);
+                    newHeaders.set("Cross-Origin-Embedder-Policy",
+                        coepCredentialless ? "credentialless" : "require-corp"
+                    );
+                    if (!coepCredentialless) {
+                        newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+                    }
+                    newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
+
+                    const modified = new Response(buf, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: newHeaders,
+                    });
+                    cache.put(r.url, modified.clone());
+                    return modified;
+                }).catch((e) => { console.error(e); return fetch(request); })
+            );
+            return;
+        }
+
         event.respondWith(
             fetch(request)
                 .then((response) => {

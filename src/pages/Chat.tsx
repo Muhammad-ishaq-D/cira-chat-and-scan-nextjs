@@ -52,10 +52,12 @@ const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { te
   useEffect(() => {
     setDisplayed("");
     indexRef.current = 0;
+    // Array.from splits by Unicode code point so emojis (multi-unit chars) stay intact
+    const chars = Array.from(text);
     const interval = setInterval(() => {
       indexRef.current += 1;
-      setDisplayed(text.slice(0, indexRef.current));
-      if (indexRef.current >= text.length) {
+      setDisplayed(chars.slice(0, indexRef.current).join(""));
+      if (indexRef.current >= chars.length) {
         clearInterval(interval);
         onComplete?.();
       }
@@ -90,11 +92,18 @@ const LiveTypewriterText = ({
   useEffect(() => {
     targetRef.current = text;
     completionFiredRef.current = false;
-    setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
+    // Use code-point–aware comparison so emoji boundaries don't cause false resets
+    setDisplayed((prev) => {
+      const targetChars = Array.from(text);
+      const prevChars = Array.from(prev);
+      return targetChars.slice(0, prevChars.length).join("") === prev ? prev : "";
+    });
   }, [text]);
 
   useEffect(() => {
-    if (!isComplete || displayed.length < text.length || completionFiredRef.current) return;
+    const displayedChars = Array.from(displayed);
+    const textChars = Array.from(text);
+    if (!isComplete || displayedChars.length < textChars.length || completionFiredRef.current) return;
     completionFiredRef.current = true;
     onComplete?.();
   }, [displayed, text, isComplete, onComplete]);
@@ -103,8 +112,11 @@ const LiveTypewriterText = ({
     const interval = window.setInterval(() => {
       setDisplayed((prev) => {
         const target = targetRef.current;
-        if (prev.length >= target.length) return prev;
-        return target.slice(0, prev.length + 1);
+        const targetChars = Array.from(target);
+        const prevChars = Array.from(prev);
+        if (prevChars.length >= targetChars.length) return prev;
+        // Advance one full code point (handles emojis, flags, etc.)
+        return targetChars.slice(0, prevChars.length + 1).join("");
       });
     }, speed);
 
@@ -783,6 +795,7 @@ const Chat = () => {
         const text = await res.text();
         let fullText = "";
         let toolCalls: ToolUse[] = [];
+        let fallbackSessionChanged = false;
         let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
         const lines = text.split("\n");
         for (const line of lines) {
@@ -793,6 +806,7 @@ const Chat = () => {
             const event = JSON.parse(data);
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
+              fallbackSessionChanged = true;
             }
             if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
               fullText += event.delta.text;
@@ -850,6 +864,9 @@ const Chat = () => {
         if (toolCalls.length > 0) {
           processToolCalls(toolCalls, fullText);
         }
+        if (fallbackSessionChanged) {
+          loadChatHistory();
+        }
         return;
       }
 
@@ -859,6 +876,7 @@ const Chat = () => {
       let fullText = "";
       let buffer = "";
       let toolCalls: ToolUse[] = [];
+      let sessionChanged = false;
       // Accumulate tool_use blocks from streaming events
       let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
       const msgIdx = { current: -1 };
@@ -901,6 +919,7 @@ const Chat = () => {
 
             if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
               syncCurrentSessionId(event.sessionId);
+              sessionChanged = true;
             }
 
             // Live text deltas — render as they arrive
@@ -1030,6 +1049,10 @@ const Chat = () => {
       setStreamingMsgIndex(null);
       if (fullText) {
         setConversationHistory((prev) => [...prev, { role: "assistant", text: fullText }]);
+      }
+      // Refresh sidebar history whenever a new session was created during this stream
+      if (sessionChanged) {
+        loadChatHistory();
       }
 
       if (toolCalls.length > 0) {

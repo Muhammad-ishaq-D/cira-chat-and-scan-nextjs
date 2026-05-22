@@ -62,11 +62,15 @@ const LiveTypewriterText = ({
   useEffect(() => {
     targetRef.current = text;
     completionFiredRef.current = false;
-    setDisplayed((prev) => (text.startsWith(prev) ? prev : ""));
+    setDisplayed((prev) => {
+      const targetChars = Array.from(text);
+      const prevChars = Array.from(prev);
+      return targetChars.slice(0, prevChars.length).join("") === prev ? prev : "";
+    });
   }, [text]);
 
   useEffect(() => {
-    if (!isComplete || displayed.length < text.length || completionFiredRef.current) return;
+    if (!isComplete || Array.from(displayed).length < Array.from(text).length || completionFiredRef.current) return;
     completionFiredRef.current = true;
     onComplete?.();
   }, [displayed, text, isComplete, onComplete]);
@@ -75,8 +79,10 @@ const LiveTypewriterText = ({
     const interval = window.setInterval(() => {
       setDisplayed((prev) => {
         const target = targetRef.current;
-        if (prev.length >= target.length) return prev;
-        return target.slice(0, prev.length + 1);
+        const targetChars = Array.from(target);
+        const prevChars = Array.from(prev);
+        if (prevChars.length >= targetChars.length) return prev;
+        return targetChars.slice(0, prevChars.length + 1).join("");
       });
     }, speed);
     return () => window.clearInterval(interval);
