@@ -358,51 +358,65 @@ const VitalsScan = () => {
         </>
       )}
 
-      {/* ═══════════ CAMERA VIEW — Desktop: 3-col with side panels, Mobile: Full Screen ═══════════ */}
+      {/* ═══════════ CAMERA VIEW ═══════════ */}
       {isCameraView ? (
-        <div className="flex-1 flex overflow-hidden bg-black md:bg-slate-100">
+        <div className="flex-1 relative flex bg-black overflow-hidden">
 
-          {/* ─── LEFT PANEL: Instructions (desktop only) ─── */}
-          <div className="hidden md:flex flex-col justify-center px-8 py-10 w-72 shrink-0 bg-white border-r border-border">
-            <div className="mb-7">
-              <div className="flex items-center gap-2 mb-1.5">
-                <ScanFace size={16} className="text-primary" />
-                <h2 className="text-sm font-bold font-heading text-foreground">How to Scan</h2>
-              </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">Follow these steps for the most accurate readings</p>
-            </div>
-            <div className="space-y-5">
-              {[
-                { step: "1", title: "Good Lighting", desc: "Ensure your face is well-lit. Natural light or a bright lamp facing you works best." },
-                { step: "2", title: "Face the Camera", desc: "Center your face in the frame at arm's length, looking directly at the camera." },
-                { step: "3", title: "Stay Still", desc: "Remain as still as possible during the 30-second scan for accurate readings." },
-                { step: "4", title: "Breathe Normally", desc: "Relax and breathe normally for the best stress and HRV readings." },
-              ].map(s => (
-                <div key={s.step} className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-primary">{s.step}</span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{s.title}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{s.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-7 p-3 bg-amber-50 border border-amber-200/60 rounded-xl">
-              <div className="flex gap-2 items-start">
-                <AlertCircle size={12} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-amber-700 leading-relaxed">Screening tool only — not a substitute for medical diagnosis.</p>
-              </div>
-            </div>
+          {/* Top bar — absolute, spans full width */}
+          <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3 md:p-4">
+            <button
+              onClick={() => {
+                const nextState = !showHistory;
+                setShowHistory(nextState);
+                if (nextState) {
+                  logAuditEvent("OPEN_VITALS_SCAN_HISTORY");
+                }
+              }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10"
+              title="History"
+            >
+              <Menu size={18} strokeWidth={1.5} />
+            </button>
+            <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">
+              <Home size={18} strokeWidth={1.5} />
+            </button>
           </div>
 
-          {/* ─── CAMERA CENTER ─── */}
-          <div className="flex-1 bg-black relative md:flex md:items-center md:justify-center md:bg-slate-100">
-            {/* Phone-shaped on desktop, full-screen on mobile */}
-            <div className="relative w-full h-full md:w-[340px] md:h-[620px] md:rounded-[2.5rem] md:overflow-hidden md:shadow-2xl md:ring-1 md:ring-black/10">
+          {/* Left panel — instructions — desktop only, shown when camera is active (not loading) */}
+          {(status === "ready" || status === "measuring") && (
+            <div className="hidden md:flex flex-col justify-center w-64 lg:w-72 px-6 py-16 shrink-0 border-r border-white/5">
+              <h2 className="text-white text-base font-semibold font-heading mb-1">How to Scan</h2>
+              <p className="text-white/40 text-xs mb-6">Follow these steps for best results</p>
+              <div className="space-y-5">
+                {[
+                  { step: "1", title: "Good lighting", desc: "Ensure your face is well-lit from the front, preferably natural light" },
+                  { step: "2", title: "Face the camera", desc: "Keep your face centered in the frame and look directly ahead" },
+                  { step: "3", title: "Stay still", desc: "Remain as still as possible throughout the scanning process" },
+                  { step: "4", title: "Breathe normally", desc: "Maintain natural, steady breathing during the scan" },
+                ].map((s) => (
+                  <div key={s.step} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-primary">{s.step}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 leading-tight">{s.title}</p>
+                      <p className="text-[11px] text-white/35 mt-0.5 leading-relaxed">{s.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 p-3 rounded-xl bg-white/5 border border-white/[0.08]">
+                <div className="flex items-start gap-2">
+                  <AlertCircle size={11} className="text-white/30 mt-0.5 shrink-0" />
+                  <p className="text-[10px] text-white/30 leading-relaxed">Screening tool only — not a substitute for medical diagnosis. 100% on-device processing.</p>
+                </div>
+              </div>
+            </div>
+          )}
 
-              {/* Camera canvas */}
+          {/* Center — Camera (constrained width on desktop) */}
+          <div className="flex-1 relative flex items-center justify-center">
+            <div className="relative w-full h-full md:max-w-[440px]">
               <canvas
                 id={CANVAS_ID}
                 ref={canvasRef}
@@ -410,16 +424,15 @@ const VitalsScan = () => {
                 style={{ display: "block" }}
               />
 
-              {/* Idle/Loading overlay */}
+              {/* Loading overlay */}
               {(status === "idle" || status === "loading") && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10 px-6">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
                     <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                   </div>
-                  <h2 className="text-white text-base font-heading font-semibold mb-1">Initializing Scanner</h2>
-                  <p className="text-white/50 text-xs font-body mb-5">Setting up camera · Please wait</p>
-                  {/* Tips shown only on mobile — desktop has the side panel */}
-                  <div className="grid grid-cols-3 gap-3 max-w-[220px] mb-6 md:hidden">
+                  <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Initializing Scanner</h2>
+                  <p className="text-white/50 text-xs md:text-sm font-body mb-6">Setting up camera · Please wait</p>
+                  <div className="grid grid-cols-3 gap-4 max-w-xs mb-8">
                     {[{ step: "1", text: "Good lighting" }, { step: "2", text: "Face camera" }, { step: "3", text: "Stay still" }].map((s) => (
                       <div key={s.step} className="text-center">
                         <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-1.5">
@@ -429,7 +442,7 @@ const VitalsScan = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-1">
                     <AlertCircle size={10} className="text-white/30 shrink-0" />
                     <p className="text-[10px] text-white/30">Credits deducted upon scan · 100% on-device</p>
                   </div>
@@ -439,7 +452,7 @@ const VitalsScan = () => {
               {/* Progress overlay during measurement */}
               {status === "measuring" && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
-                  <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 border border-white/10">
+                  <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 max-w-md mx-auto border border-white/10">
                     <div className="flex-1">
                       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -457,24 +470,18 @@ const VitalsScan = () => {
                   <h3 className="text-white text-base font-heading font-semibold mb-2 text-center">
                     {status === "unsupported" ? "Browser not supported" : "Something went wrong"}
                   </h3>
-                  <p className="text-white/70 text-xs font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
+                  <p className="text-white/70 text-xs md:text-sm font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
                   {status === "unsupported" && (
                     <div className="text-[11px] text-white/50 font-body mb-5 max-w-xs text-center leading-relaxed">
                       Tip: copy the link and open it in <span className="text-white/80">Safari</span> or <span className="text-white/80">Chrome</span> directly.
                     </div>
                   )}
                   <div className="flex gap-2.5">
-                    <button
-                      onClick={() => navigate(isGuest ? "/" : "/dashboard")}
-                      className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-medium transition-all"
-                    >
+                    <button onClick={() => navigate(isGuest ? "/" : "/dashboard")} className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs md:text-sm font-medium transition-all">
                       Go back
                     </button>
                     {status !== "unsupported" && (
-                      <button
-                        onClick={reset}
-                        className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs font-medium transition-all"
-                      >
+                      <button onClick={reset} className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-medium transition-all">
                         Try again
                       </button>
                     )}
@@ -482,34 +489,14 @@ const VitalsScan = () => {
                 </div>
               )}
 
-              {/* ── Top bar overlay ── */}
-              <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3">
-                <button
-                  onClick={() => {
-                    const nextState = !showHistory;
-                    setShowHistory(nextState);
-                    if (nextState) {
-                      logAuditEvent("OPEN_VITALS_SCAN_HISTORY");
-                    }
-                  }}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10"
-                  title="History"
-                >
-                  <Menu size={18} strokeWidth={1.5} />
-                </button>
-                <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">
-                  <Home size={18} strokeWidth={1.5} />
-                </button>
-              </div>
-
-              {/* ── Floating Action Button — bottom right ── */}
-              <div className="absolute z-20 right-4" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
+              {/* Floating Action Button — bottom right of camera */}
+              <div className="absolute z-20 right-4 md:right-6" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
                 {status === "ready" && (
                   noScansLeft ? (
                     <button
                       type="button"
                       onClick={() => navigate("/upgrade")}
-                      className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 hover:shadow-amber-400/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-amber-400/20 font-semibold text-sm"
+                      className="relative z-30 px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 hover:shadow-amber-400/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-amber-400/20 font-semibold text-sm md:text-base"
                       style={{ pointerEvents: 'auto' }}
                     >
                       <Crown size={20} />
@@ -524,7 +511,7 @@ const VitalsScan = () => {
                         console.log("[VitalsScan] Start button clicked");
                         startMeasurement();
                       }}
-                      className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm"
+                      className="relative z-30 px-6 h-14 md:h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm md:text-base"
                       style={{ pointerEvents: 'auto' }}
                     >
                       <Heart size={22} />
@@ -533,55 +520,48 @@ const VitalsScan = () => {
                   )
                 )}
                 {status === "error" && (
-                  <button onClick={reset} className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
+                  <button onClick={reset} className="w-16 h-16 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
                     <RefreshCw size={24} />
                   </button>
                 )}
               </div>
-
             </div>
           </div>
 
-          {/* ─── RIGHT PANEL: What We Measure (desktop only) ─── */}
-          <div className="hidden md:flex flex-col justify-center px-8 py-10 w-72 shrink-0 bg-white border-l border-border">
-            <div className="mb-7">
-              <div className="flex items-center gap-2 mb-1.5">
-                <Activity size={16} className="text-primary" />
-                <h2 className="text-sm font-bold font-heading text-foreground">What We Measure</h2>
-              </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">AI-powered vitals from your camera in ~30 seconds</p>
-            </div>
-            <div className="space-y-4">
-              {[
-                { icon: Heart, label: "Heart Rate", desc: "Beats per minute via rPPG", color: "text-red-500 bg-red-50" },
-                { icon: Activity, label: "Blood Pressure", desc: "Systolic & diastolic estimation", color: "text-pink-500 bg-pink-50" },
-                { icon: Wind, label: "Breathing Rate", desc: "Respiratory cycles per minute", color: "text-cyan-500 bg-cyan-50" },
-                { icon: Brain, label: "Stress Index", desc: "Autonomic nervous system stress", color: "text-purple-500 bg-purple-50" },
-                { icon: Zap, label: "HRV", desc: "Heart rate variability in ms", color: "text-amber-500 bg-amber-50" },
-                { icon: ShieldCheck, label: "Wellness Score", desc: "Overall health index /100", color: "text-emerald-500 bg-emerald-50" },
-              ].map(v => {
-                const Icon = v.icon;
-                return (
-                  <div key={v.label} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${v.color.split(" ")[1]}`}>
-                      <Icon size={15} className={v.color.split(" ")[0]} />
+          {/* Right panel — what we measure — desktop only, shown when camera is active (not loading) */}
+          {(status === "ready" || status === "measuring") && (
+            <div className="hidden md:flex flex-col justify-center w-64 lg:w-72 px-6 py-16 shrink-0 border-l border-white/5">
+              <h2 className="text-white text-base font-semibold font-heading mb-1">What We Measure</h2>
+              <p className="text-white/40 text-xs mb-6">Metrics captured during this scan</p>
+              <div className="space-y-4">
+                {[
+                  { icon: Heart, label: "Heart Rate", color: "text-red-400", bg: "bg-red-500/10", desc: "Via facial blood flow" },
+                  { icon: Activity, label: "Blood Pressure", color: "text-pink-400", bg: "bg-pink-500/10", desc: "Systolic & diastolic" },
+                  { icon: Wind, label: "Breathing Rate", color: "text-cyan-400", bg: "bg-cyan-500/10", desc: "Breaths per minute" },
+                  { icon: Brain, label: "Stress Index", color: "text-purple-400", bg: "bg-purple-500/10", desc: "HRV-based stress level" },
+                  { icon: Zap, label: "HRV (SDNN)", color: "text-amber-400", bg: "bg-amber-500/10", desc: "Heart rate variability" },
+                  { icon: ShieldCheck, label: "Wellness Score", color: "text-emerald-400", bg: "bg-emerald-500/10", desc: "Overall health index /100" },
+                  { icon: Scale, label: "BMI & Body Fat", color: "text-violet-400", bg: "bg-violet-500/10", desc: "Body composition metrics" },
+                ].map(({ icon: Icon, label, color, bg, desc }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center shrink-0`}>
+                      <Icon size={14} className={color} />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-foreground">{v.label}</p>
-                      <p className="text-[10px] text-muted-foreground">{v.desc}</p>
+                      <p className="text-sm font-medium text-white/75 leading-tight">{label}</p>
+                      <p className="text-[10px] text-white/35">{desc}</p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-            <div className="mt-7 p-3 bg-primary/5 border border-primary/20 rounded-xl">
-              <div className="flex gap-2 items-start">
-                <ShieldCheck size={12} className="text-primary shrink-0 mt-0.5" />
-                <p className="text-[10px] text-primary/80 leading-relaxed">All processing happens on-device. No video is ever uploaded.</p>
+                ))}
+              </div>
+              <div className="mt-8 p-3 rounded-xl bg-white/5 border border-white/[0.08]">
+                <div className="flex items-start gap-2">
+                  <ShieldCheck size={11} className="text-emerald-400/60 mt-0.5 shrink-0" />
+                  <p className="text-[10px] text-white/30 leading-relaxed">All processing is 100% on-device. No video is ever uploaded or stored.</p>
+                </div>
               </div>
             </div>
-          </div>
-
+          )}
         </div>
       ) : (
         /* ═══════════ RESULTS VIEW ═══════════ */
