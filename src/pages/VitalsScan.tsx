@@ -360,10 +360,10 @@ const VitalsScan = () => {
 
       {/* ═══════════ CAMERA VIEW — 3-column layout ═══════════ */}
       {isCameraView ? (
-        <div className="flex-1 flex overflow-hidden bg-gray-50">
+        <div className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}>
 
           {/* ── Left: Instructions Panel ── */}
-          <div className="hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -428,7 +428,7 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Center: Camera ── */}
-          <div className="flex-1 relative flex flex-col bg-black overflow-hidden">
+          <div className="flex-1 relative flex flex-col bg-black overflow-hidden max-w-[900px]">
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
@@ -549,7 +549,7 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Right: Vitals Panel ── */}
-          <div className="hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
