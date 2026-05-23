@@ -1,6 +1,6 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 // Bump this version when the WASM file changes to invalidate the cache.
-const WASM_CACHE_VERSION = 'cira-wasm-v1';
+const WASM_CACHE_VERSION = 'cira-wasm-v2';
 
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
@@ -65,7 +65,6 @@ if (typeof window === 'undefined') {
                     const response = await fetch(request);
                     if (!response.ok) return response;
 
-                    const buf = await response.arrayBuffer();
                     const newHeaders = new Headers(response.headers);
                     newHeaders.set("Cross-Origin-Embedder-Policy",
                         coepCredentialless ? "credentialless" : "require-corp"
@@ -75,6 +74,27 @@ if (typeof window === 'undefined') {
                     }
                     newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
 
+                    if (response.body) {
+                        // Return a streaming response to the page immediately so the browser can
+                        // start WebAssembly.instantiateStreaming while bytes are still arriving.
+                        // Cache the full body asynchronously in the background.
+                        const responseToCache = response.clone();
+                        responseToCache.arrayBuffer().then((buf) => {
+                            cache.put(r.url, new Response(buf, {
+                                status: response.status,
+                                statusText: response.statusText,
+                                headers: new Headers(newHeaders),
+                            }));
+                        }).catch(() => {});
+                        return new Response(response.body, {
+                            status: response.status,
+                            statusText: response.statusText,
+                            headers: newHeaders,
+                        });
+                    }
+
+                    // Fallback for body-less responses (should not happen for WASM)
+                    const buf = await response.arrayBuffer();
                     const modified = new Response(buf, {
                         status: response.status,
                         statusText: response.statusText,
