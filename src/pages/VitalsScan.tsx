@@ -363,7 +363,13 @@ const VitalsScan = () => {
           without hitting unmounted nodes (removeChild NotFoundError). */}
       <div
         className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}
-        style={{ display: isCameraView ? undefined : "none" }}
+       style={{
+  visibility: isCameraView ? "visible" : "hidden",
+  pointerEvents: isCameraView ? "auto" : "none",
+  position: isCameraView ? "relative" : "absolute",
+  inset: isCameraView ? undefined : 0,
+  opacity: isCameraView ? 1 : 0,
+}}
       >
 
           {/* ── Left: Instructions Panel ── */}
@@ -750,7 +756,12 @@ const VitalsScan = () => {
 
               {/* Action buttons */}
               <div className="flex gap-2.5 pb-2">
-                <button onClick={reset} className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all">Scan Again</button>
+               <button
+  onClick={() => window.location.reload()}
+  className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all"
+>
+  Scan Again
+</button>
                 <button onClick={handleAnalyzeWithCira} className="h-10 px-4 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 transition-all flex-1 md:flex-none">
                   Analyze with Cira
                 </button>

@@ -1,15 +1,40 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks, RisksFactors } from "shenai-sdk";
+import type {
+  ShenaiSDK,
+  MeasurementResults,
+  InitializationSettings,
+  HealthRisks,
+  RisksFactors,
+} from "shenai-sdk";
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
-// The ShenAI SDK requests whatever resolution the browser offers via getUserMedia.
-// At 640×480 (1.2 MB/frame RGBA) the WASM heap exhausts intermittently over 30 s.
-// We patch getUserMedia once per page load to cap at 320×240 (307 KB/frame) — a
-// 4× reduction. rPPG and face detection work reliably at this resolution.
+let ciraCameraStream: MediaStream | null = null;
+
+function stopCiraCameraStream() {
+  try {
+    ciraCameraStream?.getTracks().forEach((track) => track.stop());
+  } catch { }
+  ciraCameraStream = null;
+}
+
 function capCameraResolution(maxWidth = 320, maxHeight = 240) {
-  if (typeof navigator === "undefined" || (navigator.mediaDevices as any).__cira_capped) return;
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.mediaDevices?.getUserMedia ||
+    (navigator.mediaDevices as any).__cira_capped
+  ) {
+    return;
+  }
+
   const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+
+  const rememberStream = (stream: MediaStream) => {
+    if (stream.getVideoTracks().length > 0) {
+      ciraCameraStream = stream;
+    }
+    return stream;
+  };
 
   navigator.mediaDevices.getUserMedia = async function (constraints) {
     if (constraints?.video && typeof constraints.video === "object") {
@@ -17,31 +42,54 @@ function capCameraResolution(maxWidth = 320, maxHeight = 240) {
         ...constraints,
         video: {
           ...vid,
-          width:  { ...(typeof vid.width  === "object" ? vid.width  : {}), ideal: maxWidth,  ...(useMax ? { max: maxWidth  } : {}) },
-          height: { ...(typeof vid.height === "object" ? vid.height : {}), ideal: maxHeight, ...(useMax ? { max: maxHeight } : {}) },
+          width: {
+            ...(typeof vid.width === "object" ? vid.width : {}),
+            ideal: maxWidth,
+            ...(useMax ? { max: maxWidth } : {}),
+          },
+          height: {
+            ...(typeof vid.height === "object" ? vid.height : {}),
+            ideal: maxHeight,
+            ...(useMax ? { max: maxHeight } : {}),
+          },
+          frameRate: {
+            ...(typeof vid.frameRate === "object" ? vid.frameRate : {}),
+            ideal: 15,
+            max: 24,
+          },
         },
       });
 
       const vid = { ...(constraints.video as any) };
+
       try {
-        // First attempt: hard cap — prevents camera from delivering oversized frames.
-        return await orig(applyConstraints(vid, true));
+        const stream = await orig(applyConstraints(vid, true));
+        return rememberStream(stream);
       } catch (e: any) {
         if (e?.name === "OverconstrainedError") {
-          // Camera minimum exceeds our max (e.g. webcam min is 640×480).
-          // Retry with ideal-only — browser picks the closest supported resolution.
-          return orig(applyConstraints(vid, false));
+          const stream = await orig(applyConstraints(vid, false));
+          return rememberStream(stream);
         }
         throw e;
       }
     }
-    return orig(constraints);
+
+    const stream = await orig(constraints);
+    return rememberStream(stream);
   };
 
   (navigator.mediaDevices as any).__cira_capped = true;
 }
 
-export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "processing" | "finished" | "error" | "unsupported";
+export type ShenAIStatus =
+  | "idle"
+  | "loading"
+  | "ready"
+  | "measuring"
+  | "processing"
+  | "finished"
+  | "error"
+  | "unsupported";
 
 export interface VitalResults {
   heartRate: number;
@@ -109,14 +157,21 @@ function normalizeGender(value: unknown): "male" | "female" | "other" | undefine
   if (typeof value !== "string") return undefined;
 
   const normalized = value.trim().toLowerCase();
-  if (normalized === "male" || normalized === "female" || normalized === "other") {
+
+  if (
+    normalized === "male" ||
+    normalized === "female" ||
+    normalized === "other"
+  ) {
     return normalized;
   }
 
   return undefined;
 }
 
-function normalizeUserProfile(userProfile?: UserProfileData): UserProfileData | undefined {
+function normalizeUserProfile(
+  userProfile?: UserProfileData
+): UserProfileData | undefined {
   if (!userProfile) return undefined;
 
   const age = toFiniteNumber(userProfile.age);
@@ -136,7 +191,9 @@ function normalizeUserProfile(userProfile?: UserProfileData): UserProfileData | 
   };
 }
 
-function getEnumValue(value: { value?: number } | number | null | undefined): number | null {
+function getEnumValue(
+  value: { value?: number } | number | null | undefined
+): number | null {
   if (typeof value === "number") return value;
 
   if (value && typeof value === "object" && typeof value.value === "number") {
@@ -146,8 +203,13 @@ function getEnumValue(value: { value?: number } | number | null | undefined): nu
   return null;
 }
 
-function buildRiskFactors(sdk: ShenaiSDK, userProfile?: UserProfileData, raw?: MeasurementResults | null): RisksFactors {
+function buildRiskFactors(
+  sdk: ShenaiSDK,
+  userProfile?: UserProfileData,
+  raw?: MeasurementResults | null
+): RisksFactors {
   const factors: RisksFactors = {};
+
   const age = toFiniteNumber(userProfile?.age);
   const height = toFiniteNumber(userProfile?.height);
   const weight = toFiniteNumber(userProfile?.weight);
@@ -156,18 +218,29 @@ function buildRiskFactors(sdk: ShenaiSDK, userProfile?: UserProfileData, raw?: M
   if (age != null) factors.age = age;
   if (height != null) factors.bodyHeight = height;
   if (weight != null) factors.bodyWeight = weight;
+
   if (gender) {
-    factors.gender = sdk.Gender[
-      gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : "OTHER"
-    ];
+    factors.gender =
+      sdk.Gender[
+        gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : "OTHER"
+      ];
   }
-  if (raw?.systolic_blood_pressure_mmhg != null) factors.sbp = raw.systolic_blood_pressure_mmhg;
-  if (raw?.diastolic_blood_pressure_mmhg != null) factors.dbp = raw.diastolic_blood_pressure_mmhg;
+
+  if (raw?.systolic_blood_pressure_mmhg != null) {
+    factors.sbp = raw.systolic_blood_pressure_mmhg;
+  }
+
+  if (raw?.diastolic_blood_pressure_mmhg != null) {
+    factors.dbp = raw.diastolic_blood_pressure_mmhg;
+  }
 
   return factors;
 }
 
-function mergeHealthRisksData(primary: HealthRisksData | null, fallback: HealthRisksData | null): HealthRisksData | null {
+function mergeHealthRisksData(
+  primary: HealthRisksData | null,
+  fallback: HealthRisksData | null
+): HealthRisksData | null {
   if (!primary && !fallback) return null;
 
   const pick = <K extends keyof HealthRisksData>(key: K) =>
@@ -215,11 +288,16 @@ function extractHealthRisks(risks: HealthRisks): HealthRisksData {
     coronaryHeartDiseaseRisk: risks.cvDiseases?.coronaryHeartDiseaseRisk ?? null,
     strokeRisk: risks.cvDiseases?.strokeRisk ?? null,
     heartFailureRisk: risks.cvDiseases?.heartFailureRisk ?? null,
-    peripheralVascularDiseaseRisk: risks.cvDiseases?.peripheralVascularDiseaseRisk ?? null,
-    coronaryDeathRisk: risks.hardAndFatalEvents?.coronaryDeathEventRisk ?? null,
-    fatalStrokeRisk: risks.hardAndFatalEvents?.fatalStrokeEventRisk ?? null,
-    totalCVMortality: risks.hardAndFatalEvents?.totalCVMortalityRisk ?? null,
-    hardCVEventRisk: risks.hardAndFatalEvents?.hardCVEventRisk ?? null,
+    peripheralVascularDiseaseRisk:
+      risks.cvDiseases?.peripheralVascularDiseaseRisk ?? null,
+    coronaryDeathRisk:
+      risks.hardAndFatalEvents?.coronaryDeathEventRisk ?? null,
+    fatalStrokeRisk:
+      risks.hardAndFatalEvents?.fatalStrokeEventRisk ?? null,
+    totalCVMortality:
+      risks.hardAndFatalEvents?.totalCVMortalityRisk ?? null,
+    hardCVEventRisk:
+      risks.hardAndFatalEvents?.hardCVEventRisk ?? null,
     fattyLiverRisk: getEnumValue(risks.nonAlcoholicFattyLiverDiseaseRisk),
   };
 }
@@ -229,8 +307,11 @@ export function useShenAI() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<VitalResults | null>(null);
+
   const sdkRef = useRef<ShenaiSDK | null>(null);
   const pollRef = useRef<number | null>(null);
+  const finishTimerRef = useRef<number | null>(null);
+  const finishHandledRef = useRef(false);
   const riskProfileRef = useRef<UserProfileData | undefined>(undefined);
 
   const cleanup = useCallback(() => {
@@ -238,212 +319,346 @@ export function useShenAI() {
       clearInterval(pollRef.current);
       pollRef.current = null;
     }
+
+    if (finishTimerRef.current) {
+      clearTimeout(finishTimerRef.current);
+      finishTimerRef.current = null;
+    }
+
+    finishHandledRef.current = false;
+
+    stopCiraCameraStream();
+
     if (sdkRef.current) {
-      try { sdkRef.current.deinitialize(); } catch { }
+      try {
+        sdkRef.current.deinitialize();
+      } catch { }
       sdkRef.current = null;
     }
+
     riskProfileRef.current = undefined;
   }, []);
 
   useEffect(() => cleanup, [cleanup]);
 
-  const initialize = useCallback(async (canvasId: string, userProfile?: UserProfileData) => {
-    cleanup();
-    capCameraResolution();
-    setStatus("loading");
-    setError(null);
-    setResults(null);
-    setProgress(0);
+  const initialize = useCallback(
+    async (canvasId: string, userProfile?: UserProfileData) => {
+      cleanup();
 
-    try {
-      const ShenAI = (await import("shenai-sdk")).default;
-      const sdk: ShenaiSDK = await ShenAI({
-        // Disable SDK's internal preload canvas — we render our own React loader,
-        // and skipping this avoids extra canvas rendering work during WASM init.
-        enablePreloadDisplay: false,
-        locateFile: (filename: string) => {
-          if (filename.endsWith(".wasm")) return "/wasm/shenai_sdk.wasm";
-          return filename;
-        },
-        onWasmLoadingProgress: (p: number) => setProgress(Math.round(p * 100)),
-      } as any);
+      const isMobile =
+        typeof window !== "undefined" && window.innerWidth < 768;
 
-      sdkRef.current = sdk;
-      const normalizedProfile = normalizeUserProfile(userProfile);
-      riskProfileRef.current = normalizedProfile;
-      const riskFactors = buildRiskFactors(sdk, normalizedProfile);
+      capCameraResolution(isMobile ? 240 : 320, isMobile ? 180 : 240);
 
-      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+      setStatus("loading");
+      setError(null);
+      setResults(null);
+      setProgress(0);
+      finishHandledRef.current = false;
 
-      const settings: InitializationSettings = {
-        operatingMode: sdk.OperatingMode.POSITIONING,
-        measurementPreset: sdk.MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
-        precisionMode: sdk.PrecisionMode.RELAXED,
-        cameraMode: sdk.CameraMode.FACING_USER,
-        onboardingMode: sdk.OnboardingMode.HIDDEN,
-        showUserInterface: true,
-        showFacePositioningOverlay: true,
-        showVisualWarnings: !isMobile,  // saves a render buffer on mobile
-        enableCameraSwap: true,
-        showFaceMask: !isMobile,        // face mask costs ~1.2 MB/frame — skip on mobile
-        showBloodFlow: false,           // Disabled to reduce thermal throttling on mobile
-        hideShenaiLogo: true,
-        enableStartAfterSuccess: false,
-        enableSummaryScreen: false,
-        showStartStopButton: false,
-        showInfoButton: false,
-        showDisclaimer: false,
-        enableHealthRisks: true,
-        applyPrecisionModeToBloodPressure: true, // Speeds up the final BP calculation phase
-        enableFullFrameProcessing: false,         // Explicitly disable to save computation
-        cameraAspectRatio: isMobile ? 0 : 16 / 9,
-        ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
-      };
+      try {
+        const ShenAI = (await import("shenai-sdk")).default;
 
-      const canvasSelector = `#${canvasId}`;
+        const sdk: ShenaiSDK = await ShenAI({
+          enablePreloadDisplay: false,
+          locateFile: (filename: string) => {
+            if (filename.endsWith(".wasm")) return "/wasm/shenai_sdk.wasm";
+            return filename;
+          },
+          onWasmLoadingProgress: (p: number) => {
+            setProgress(Math.round(p * 100));
+          },
+        } as any);
 
-      sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
-        console.log("[ShenAI] init result:", result.value);
-        if (result.value === 0) {
-          setStatus("ready");
-          sdk.attachToCanvas(canvasSelector, true);
-        } else {
+        sdkRef.current = sdk;
+
+        const normalizedProfile = normalizeUserProfile(userProfile);
+        riskProfileRef.current = normalizedProfile;
+
+        const riskFactors = buildRiskFactors(sdk, normalizedProfile);
+
+        const settings: InitializationSettings = {
+          operatingMode: sdk.OperatingMode.POSITIONING,
+          measurementPreset: sdk.MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
+          precisionMode: sdk.PrecisionMode.RELAXED,
+          cameraMode: sdk.CameraMode.FACING_USER,
+          onboardingMode: sdk.OnboardingMode.HIDDEN,
+          showUserInterface: true,
+          showFacePositioningOverlay: true,
+          showVisualWarnings: !isMobile,
+          enableCameraSwap: true,
+          showFaceMask: !isMobile,
+          showBloodFlow: false,
+          hideShenaiLogo: true,
+          enableStartAfterSuccess: false,
+          enableSummaryScreen: false,
+          showStartStopButton: false,
+          showInfoButton: false,
+          showDisclaimer: false,
+
+          // Important: avoid heavy internal risk calculation during final frame processing.
+          // We compute it manually after stopping camera frame ingestion.
+          enableHealthRisks: false,
+
+          applyPrecisionModeToBloodPressure: true,
+          enableFullFrameProcessing: false,
+          cameraAspectRatio: isMobile ? 0 : 16 / 9,
+
+          ...(Object.keys(riskFactors).length > 0
+            ? { risksFactors: riskFactors }
+            : {}),
+        };
+
+        const canvasSelector = `#${canvasId}`;
+
+        sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
+          console.log("[ShenAI] init result:", result.value);
+
+          if (result.value === 0) {
+            setStatus("ready");
+
+            try {
+              sdk.attachToCanvas(canvasSelector, true);
+            } catch (e) {
+              console.error("[ShenAI] attachToCanvas error:", e);
+              setError("Could not attach scanner to camera canvas.");
+              setStatus("error");
+            }
+
+            return;
+          }
+
           const errors: Record<number, string> = {
             1: "Invalid API key",
             2: "Connection error — check your internet",
             3: "Internal SDK error",
           };
+
           setError(errors[result.value] || "Initialization failed");
           setStatus("error");
+        });
+      } catch (err: any) {
+        console.error("[ShenAI] init error:", err);
+
+        const msg = String(err?.message || err || "");
+
+        if (
+          msg.includes("invalid value type") ||
+          msg.includes("CompileError") ||
+          msg.includes("exn") ||
+          err?.name === "CompileError"
+        ) {
+          setError(
+            "Your browser doesn't support the technology needed for the face scan. Please open Cira in the latest Chrome, Safari 17.4+, Edge, or Firefox — and avoid in-app browsers."
+          );
+          setStatus("unsupported");
+        } else {
+          setError(err?.message || "Failed to load Shen AI SDK");
+          setStatus("error");
         }
-      });
-    } catch (err: any) {
-      console.error("[ShenAI] init error:", err);
-      const msg = String(err?.message || err || "");
-      // Catch the "invalid value type 'exn'" CompileError that slips through
-      // when validate() lies (some WebViews) or when other WASM features fail.
-      if (
-        msg.includes("invalid value type") ||
-        msg.includes("CompileError") ||
-        msg.includes("exn") ||
-        err?.name === "CompileError"
-      ) {
-        setError(
-          "Your browser doesn't support the technology needed for the face scan. Please open Cira in the latest Chrome, Safari (17.4+), Edge, or Firefox — and avoid in-app browsers (Facebook, Instagram, etc.)."
-        );
-        setStatus("unsupported");
-      } else {
-        setError(err.message || "Failed to load Shen AI SDK");
-        setStatus("error");
       }
-    }
-  }, [cleanup]);
+    },
+    [cleanup]
+  );
 
   const startMeasurement = useCallback(() => {
     const sdk = sdkRef.current;
     if (!sdk) return;
 
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+
+    if (finishTimerRef.current) {
+      clearTimeout(finishTimerRef.current);
+      finishTimerRef.current = null;
+    }
+
+    finishHandledRef.current = false;
+
+    setError(null);
+    setResults(null);
     setStatus("measuring");
     setProgress(0);
-    sdk.setOperatingMode(sdk.OperatingMode.MEASURE);
-    sdk.startMeasurement();
+
+    try {
+      sdk.setOperatingMode(sdk.OperatingMode.MEASURE);
+      sdk.startMeasurement();
+    } catch (e: any) {
+      console.error("[ShenAI] startMeasurement error:", e);
+      setError(e?.message || "Could not start measurement.");
+      setStatus("error");
+      return;
+    }
 
     pollRef.current = window.setInterval(() => {
       try {
-        const mState = sdk.getMeasurementState();
-        let prog = 0;
-        if (typeof sdk.getMeasurementProgressPercentage === "function") {
-          prog = sdk.getMeasurementProgressPercentage();
-        }
-        if (typeof prog === "number" && prog > 0) setProgress(Math.round(prog));
+        const activeSdk = sdkRef.current;
+        if (!activeSdk) return;
 
-        // FINISHED
-        if (mState.value === 6 || mState.value === sdk.MeasurementState?.FINISHED?.value) {
-          clearInterval(pollRef.current!);
-          pollRef.current = null;
+        const mState = activeSdk.getMeasurementState();
+
+        let prog = 0;
+        if (typeof activeSdk.getMeasurementProgressPercentage === "function") {
+          prog = activeSdk.getMeasurementProgressPercentage();
+        }
+
+        if (typeof prog === "number" && prog > 0) {
+          setProgress(Math.round(prog));
+        }
+
+        const isFinished =
+          mState.value === 6 ||
+          mState.value === activeSdk.MeasurementState?.FINISHED?.value;
+
+        const isFailed =
+          mState.value === 7 ||
+          mState.value === activeSdk.MeasurementState?.FAILED?.value;
+
+        if (isFinished) {
+          if (finishHandledRef.current) return;
+          finishHandledRef.current = true;
+
+          if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+          }
+
           setProgress(100);
           setStatus("processing");
 
-          // Stop frame ingestion first.
-          try { sdk.stopMeasurement(); } catch { }
+          let rawSnapshot: ReturnType<
+            typeof activeSdk.getMeasurementResults
+          > | null = null;
 
-          // Grab raw results SYNCHRONOUSLY right now, before yielding to the event loop.
-          // VideoFrame callbacks are async — they cannot fire while this synchronous
-          // block runs, so WASM is guaranteed alive here even on low-memory mobile.
-          // If we defer this into a setTimeout, in-flight VideoFrames can crash WASM
-          // before we get the chance to read the results.
-          let rawSnapshot: ReturnType<typeof sdk.getMeasurementResults> | null = null;
+          let healthRisks: HealthRisksData | null = null;
+
           try {
-            rawSnapshot = sdk.getMeasurementResults();
+            activeSdk.stopMeasurement();
           } catch (e) {
-            console.warn("[ShenAI] getMeasurementResults() failed synchronously:", e);
+            console.warn("[ShenAI] stopMeasurement failed:", e);
           }
 
-          // Yield to let UI paint "Analyzing results..." and drain in-flight frames.
-          setTimeout(() => {
-            // Compute health risks — may fail if WASM crashed after we yielded, that's OK
-            // because rawSnapshot is already captured above.
-            let healthRisks: HealthRisksData | null = null;
-            try {
-              if (rawSnapshot) {
-                const directRisks = sdk.getHealthRisks();
-                const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, rawSnapshot);
-                const computedRisks = Object.keys(computedFactors).length > 0
-                  ? sdk.computeHealthRisks(computedFactors)
-                  : null;
-                healthRisks = mergeHealthRisksData(
-                  directRisks ? extractHealthRisks(directRisks) : null,
-                  computedRisks ? extractHealthRisks(computedRisks) : null,
-                );
+          try {
+            rawSnapshot = activeSdk.getMeasurementResults();
+          } catch (e) {
+            console.warn("[ShenAI] getMeasurementResults failed:", e);
+          }
+
+          // Main crash fix: stop actual browser camera stream before any delayed
+          // SDK cleanup, risk calculation, or React result rendering.
+          stopCiraCameraStream();
+
+          try {
+            if (rawSnapshot) {
+              let directRisks: HealthRisks | null = null;
+              let computedRisks: HealthRisks | null = null;
+
+              try {
+                if (typeof activeSdk.getHealthRisks === "function") {
+                  directRisks = activeSdk.getHealthRisks();
+                }
+              } catch { }
+
+              const computedFactors = buildRiskFactors(
+                activeSdk,
+                riskProfileRef.current,
+                rawSnapshot
+              );
+
+              if (Object.keys(computedFactors).length > 0) {
+                try {
+                  computedRisks = activeSdk.computeHealthRisks(computedFactors);
+                } catch { }
               }
+
+              healthRisks = mergeHealthRisksData(
+                directRisks ? extractHealthRisks(directRisks) : null,
+                computedRisks ? extractHealthRisks(computedRisks) : null
+              );
+            }
+          } catch (e) {
+            console.warn("[ShenAI] Could not compute health risks:", e);
+          }
+
+          finishTimerRef.current = window.setTimeout(() => {
+            try {
+              activeSdk.deinitialize();
             } catch (e) {
-              console.warn("[ShenAI] Could not get health risks:", e);
+              console.warn("[ShenAI] deinitialize after finish failed:", e);
             }
 
-            // Free WASM memory before the heavy React render.
-            try { sdk.deinitialize(); } catch { }
-            sdkRef.current = null;
+            if (sdkRef.current === activeSdk) {
+              sdkRef.current = null;
+            }
 
-            // One more yield to allow GC before React reconciles the results view.
-            setTimeout(() => {
-              if (rawSnapshot) {
-                setResults({
-                  heartRate: rawSnapshot.heart_rate_bpm,
-                  systolicBP: rawSnapshot.systolic_blood_pressure_mmhg,
-                  diastolicBP: rawSnapshot.diastolic_blood_pressure_mmhg,
-                  breathingRate: rawSnapshot.breathing_rate_bpm,
-                  stressIndex: rawSnapshot.stress_index,
-                  hrvSdnn: rawSnapshot.hrv_sdnn_ms,
-                  bmi: rawSnapshot.bmi_kg_per_m2,
-                  cardiacWorkload: rawSnapshot.cardiac_workload_mmhg_per_sec,
-                  parasympatheticActivity: rawSnapshot.parasympathetic_activity,
-                  signalQuality: rawSnapshot.average_signal_quality,
-                  raw: rawSnapshot,
-                  healthRisks,
-                });
-              }
-              setStatus("finished");
-            }, 100);
-          }, 200);
-        } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
-          clearInterval(pollRef.current!);
-          pollRef.current = null;
+            finishTimerRef.current = null;
+
+            if (!rawSnapshot) {
+              setError(
+                "Scan completed, but results could not be read. Please try again."
+              );
+              setStatus("error");
+              return;
+            }
+
+            setResults({
+              heartRate: rawSnapshot.heart_rate_bpm,
+              systolicBP: rawSnapshot.systolic_blood_pressure_mmhg,
+              diastolicBP: rawSnapshot.diastolic_blood_pressure_mmhg,
+              breathingRate: rawSnapshot.breathing_rate_bpm,
+              stressIndex: rawSnapshot.stress_index,
+              hrvSdnn: rawSnapshot.hrv_sdnn_ms,
+              bmi: rawSnapshot.bmi_kg_per_m2,
+              cardiacWorkload: rawSnapshot.cardiac_workload_mmhg_per_sec,
+              parasympatheticActivity: rawSnapshot.parasympathetic_activity,
+              signalQuality: rawSnapshot.average_signal_quality,
+              raw: rawSnapshot,
+              healthRisks,
+            });
+
+            setStatus("finished");
+          }, 800);
+
+          return;
+        }
+
+        if (isFailed) {
+          if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+          }
+
+          stopCiraCameraStream();
+
           setError("Measurement failed — try again with better lighting");
           setStatus("error");
         }
       } catch (e: any) {
         console.error("[ShenAI] Poll error:", e);
-        // WASM crash (OOM → Aborted → RuntimeError: unreachable). The WASM module
-        // is a JS module singleton — after Aborted() every future call also throws.
-        // The only recovery is a page reload to get a fresh WASM heap.
+
         const msg = String(e?.message || e || "");
-        if (e?.name === "RuntimeError" || msg.includes("unreachable") || msg.includes("Aborted")) {
-          clearInterval(pollRef.current!);
-          pollRef.current = null;
-          setError("Scan failed — the page will reload automatically to recover.");
+
+        if (
+          e?.name === "RuntimeError" ||
+          msg.includes("unreachable") ||
+          msg.includes("Aborted") ||
+          msg.includes("table index is out of bounds")
+        ) {
+          if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+          }
+
+          stopCiraCameraStream();
+
+          setError("Scan failed. Restarting scanner...");
           setStatus("error");
-          // Give the user 2 s to read the message, then reload for a clean WASM heap.
-          setTimeout(() => window.location.reload(), 2000);
+
+          window.setTimeout(() => {
+            window.location.reload();
+          }, 1200);
         }
       }
     }, 300);
@@ -451,22 +666,51 @@ export function useShenAI() {
 
   const reset = useCallback(() => {
     const sdk = sdkRef.current;
-    if (sdk) {
-      try {
-        sdk.stopMeasurement();
-        sdk.resetMeasurementSession();
-        sdk.setOperatingMode(sdk.OperatingMode.POSITIONING);
-      } catch { }
+
+    if (finishTimerRef.current) {
+      clearTimeout(finishTimerRef.current);
+      finishTimerRef.current = null;
     }
+
     if (pollRef.current) {
       clearInterval(pollRef.current);
       pollRef.current = null;
     }
-    setStatus(sdk ? "ready" : "idle");
+
+    finishHandledRef.current = false;
+
+    if (sdk) {
+      try {
+        sdk.stopMeasurement();
+      } catch { }
+
+      try {
+        sdk.resetMeasurementSession();
+      } catch { }
+
+      try {
+        sdk.setOperatingMode(sdk.OperatingMode.POSITIONING);
+      } catch { }
+
+      setStatus("ready");
+    } else {
+      // After finished scan we deinitialize SDK, so a clean reload is safer.
+      setStatus("idle");
+    }
+
     setResults(null);
     setError(null);
     setProgress(0);
   }, []);
 
-  return { status, progress, error, results, initialize, startMeasurement, reset, cleanup };
+  return {
+    status,
+    progress,
+    error,
+    results,
+    initialize,
+    startMeasurement,
+    reset,
+    cleanup,
+  };
 }
