@@ -3,7 +3,7 @@ import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
-export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "finished" | "error" | "unsupported";
+export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "processing" | "finished" | "error" | "unsupported";
 
 export interface VitalResults {
   heartRate: number;
@@ -245,7 +245,7 @@ export function useShenAI() {
         showVisualWarnings: true,
         enableCameraSwap: true,
         showFaceMask: true,
-        showBloodFlow: true,
+        showBloodFlow: false, // Disabled to reduce thermal throttling on mobile
         hideShenaiLogo: true,
         enableStartAfterSuccess: false,
         enableSummaryScreen: false,
@@ -253,6 +253,8 @@ export function useShenAI() {
         showInfoButton: false,
         showDisclaimer: false,
         enableHealthRisks: true,
+        applyPrecisionModeToBloodPressure: true, // Speeds up the final BP calculation phase
+        enableFullFrameProcessing: false, // Explicitly disable to save computation
         cameraAspectRatio: typeof window !== "undefined" && window.innerWidth >= 768 ? 16 / 9 : 0,
         ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
@@ -319,49 +321,59 @@ export function useShenAI() {
           clearInterval(pollRef.current!);
           pollRef.current = null;
           setProgress(100);
+          setStatus("processing");
 
-          const raw = sdk.getMeasurementResults();
-          let healthRisks: HealthRisksData | null = null;
+          // Yield to browser so React can render "Analyzing results..."
+          setTimeout(() => {
+            try {
+              const raw = sdk.getMeasurementResults();
+              let healthRisks: HealthRisksData | null = null;
 
-          try {
-            const directRisks = sdk.getHealthRisks();
-            const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, raw);
-            const computedRisks = Object.keys(computedFactors).length > 0
-              ? sdk.computeHealthRisks(computedFactors)
-              : null;
+              try {
+                const directRisks = sdk.getHealthRisks();
+                const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, raw);
+                const computedRisks = Object.keys(computedFactors).length > 0
+                  ? sdk.computeHealthRisks(computedFactors)
+                  : null;
 
-            console.log("[ShenAI] Health risks:", { directRisks, computedRisks });
+                console.log("[ShenAI] Health risks:", { directRisks, computedRisks });
 
-            healthRisks = mergeHealthRisksData(
-              directRisks ? extractHealthRisks(directRisks) : null,
-              computedRisks ? extractHealthRisks(computedRisks) : null,
-            );
-          } catch (e) {
-            console.warn("[ShenAI] Could not get health risks:", e);
-          }
+                healthRisks = mergeHealthRisksData(
+                  directRisks ? extractHealthRisks(directRisks) : null,
+                  computedRisks ? extractHealthRisks(computedRisks) : null,
+                );
+              } catch (e) {
+                console.warn("[ShenAI] Could not get health risks:", e);
+              }
 
-          console.log("[ShenAI] Raw results:", raw);
-          if (raw) {
-            setResults({
-              heartRate: raw.heart_rate_bpm,
-              systolicBP: raw.systolic_blood_pressure_mmhg,
-              diastolicBP: raw.diastolic_blood_pressure_mmhg,
-              breathingRate: raw.breathing_rate_bpm,
-              stressIndex: raw.stress_index,
-              hrvSdnn: raw.hrv_sdnn_ms,
-              bmi: raw.bmi_kg_per_m2,
-              cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
-              parasympatheticActivity: raw.parasympathetic_activity,
-              signalQuality: raw.average_signal_quality,
-              raw,
-              healthRisks,
-            });
-          }
-          setStatus("finished");
+              console.log("[ShenAI] Raw results:", raw);
+              if (raw) {
+                setResults({
+                  heartRate: raw.heart_rate_bpm,
+                  systolicBP: raw.systolic_blood_pressure_mmhg,
+                  diastolicBP: raw.diastolic_blood_pressure_mmhg,
+                  breathingRate: raw.breathing_rate_bpm,
+                  stressIndex: raw.stress_index,
+                  hrvSdnn: raw.hrv_sdnn_ms,
+                  bmi: raw.bmi_kg_per_m2,
+                  cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
+                  parasympatheticActivity: raw.parasympathetic_activity,
+                  signalQuality: raw.average_signal_quality,
+                  raw,
+                  healthRisks,
+                });
+              }
+              setStatus("finished");
 
-          // Stop camera after scan is done
-          try { sdk.deinitialize(); } catch { }
-          sdkRef.current = null;
+              // Stop camera after scan is done
+              try { sdk.deinitialize(); } catch { }
+              sdkRef.current = null;
+            } catch (err) {
+              console.error("[ShenAI] Post-processing error:", err);
+              setError("Calculation failed. Please try again.");
+              setStatus("error");
+            }
+          }, 100); // 100ms delay to ensure UI paints
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;

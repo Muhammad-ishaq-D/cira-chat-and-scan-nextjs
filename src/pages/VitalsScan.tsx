@@ -452,15 +452,24 @@ const VitalsScan = () => {
             )}
 
             {/* Progress overlay during measurement */}
-            {status === "measuring" && (
+            {(status === "measuring" || status === "processing") && (
               <div className="absolute bottom-4 left-4 right-4 z-10">
                 <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 border border-white/10">
-                  <div className="flex-1">
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                  {status === "processing" || progress >= 100 ? (
+                    <div className="flex-1 flex items-center justify-center py-1">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin mr-3" />
+                      <span className="text-sm font-medium text-white">Analyzing results...</span>
                     </div>
-                  </div>
-                  <span className="text-sm font-semibold text-white font-heading min-w-[3ch] text-right">{progress}%</span>
+                  ) : (
+                    <>
+                      <div className="flex-1">
+                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                        </div>
+                      </div>
+                      <span className="text-sm font-semibold text-white font-heading min-w-[3ch] text-right">{progress}%</span>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -560,18 +569,22 @@ const VitalsScan = () => {
 
               {/* Status indicator */}
               <div className={`mb-4 p-3 rounded-xl flex items-center gap-2.5 ${
-                status === "measuring" ? "bg-primary/10 border border-primary/20" :
+                (status === "measuring" || status === "processing") ? "bg-primary/10 border border-primary/20" :
                 status === "ready" ? "bg-emerald-50 border border-emerald-200" :
                 "bg-gray-50 border border-gray-100"
               }`}>
-                {status === "measuring" ? (
+                {(status === "measuring" || status === "processing") ? (
                   <>
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-primary">Measuring...</p>
-                      <div className="mt-1.5 h-1.5 bg-primary/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
-                      </div>
+                      <p className="text-xs font-medium text-primary">
+                        {status === "processing" || progress >= 100 ? "Analyzing..." : "Measuring..."}
+                      </p>
+                      {status !== "processing" && progress < 100 && (
+                        <div className="mt-1.5 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                        </div>
+                      )}
                     </div>
                     <span className="text-xs font-bold text-primary shrink-0">{progress}%</span>
                   </>
@@ -611,7 +624,7 @@ const VitalsScan = () => {
                           --<span className="text-[10px] text-muted-foreground font-normal ml-0.5">{vital.unit}</span>
                         </p>
                       </div>
-                      {status === "measuring" && (
+                      {(status === "measuring" || status === "processing") && (
                         <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse shrink-0" />
                       )}
                     </div>
