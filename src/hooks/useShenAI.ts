@@ -323,12 +323,19 @@ export function useShenAI() {
           setProgress(100);
           setStatus("processing");
 
+          // Immediately stop frame ingestion so the WASM heap is no longer
+          // consumed by incoming VideoFrames (~1.2 MB each at ~30 fps).
+          // Without this the heap exhausts, WASM aborts, and getMeasurementResults()
+          // throws RuntimeError: unreachable.
+          try { sdk.stopMeasurement(); } catch { }
+
           // Yield to browser so React can render "Analyzing results..."
+          // 200 ms gives the browser VideoFrame pipeline time to drain.
           setTimeout(() => {
             try {
-              // STEP 1: Heavy WASM inference
+              // STEP 1: Heavy WASM inference (frame processing already stopped)
               const raw = sdk.getMeasurementResults();
-              
+
               // Yield again to allow browser to catch up and prevent watchdog kill
               setTimeout(() => {
                 try {
@@ -384,7 +391,7 @@ export function useShenAI() {
               setError("Calculation failed. Please try again.");
               setStatus("error");
             }
-          }, 100); // 100ms delay to ensure UI paints
+          }, 200); // 200ms: UI paints + in-flight VideoFrames drain after stopMeasurement()
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
