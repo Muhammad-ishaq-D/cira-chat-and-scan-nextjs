@@ -3,6 +3,26 @@ import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
+// The ShenAI SDK requests whatever resolution the browser offers via getUserMedia,
+// which on desktop is typically 1280×720 (2.76 MB/frame RGBA). Over 30 seconds at
+// 30 fps this exhausts the WASM heap → Aborted() → RuntimeError: unreachable.
+// We patch getUserMedia once per page load to cap at 640×480, reducing each frame
+// to ~1.2 MB — a 2–3× reduction that keeps the heap healthy for the full scan.
+function capCameraResolution(maxWidth = 640, maxHeight = 480) {
+  if (typeof navigator === "undefined" || (navigator.mediaDevices as any).__cira_capped) return;
+  const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = function (constraints) {
+    if (constraints?.video && typeof constraints.video === "object") {
+      const vid = { ...(constraints.video as any) };
+      vid.width  = { ...(typeof vid.width  === "object" ? vid.width  : {}), max: maxWidth  };
+      vid.height = { ...(typeof vid.height === "object" ? vid.height : {}), max: maxHeight };
+      constraints = { ...constraints, video: vid };
+    }
+    return orig(constraints);
+  };
+  (navigator.mediaDevices as any).__cira_capped = true;
+}
+
 export type ShenAIStatus = "idle" | "loading" | "ready" | "measuring" | "processing" | "finished" | "error" | "unsupported";
 
 export interface VitalResults {
@@ -211,6 +231,7 @@ export function useShenAI() {
 
   const initialize = useCallback(async (canvasId: string, userProfile?: UserProfileData) => {
     cleanup();
+    capCameraResolution();
     setStatus("loading");
     setError(null);
     setResults(null);
