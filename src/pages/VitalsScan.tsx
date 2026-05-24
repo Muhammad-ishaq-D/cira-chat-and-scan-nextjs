@@ -509,8 +509,8 @@ const VitalsScan = () => {
               </button>
             </div>
 
-            {/* FAB — mobile only (desktop uses SDK button) */}
-            <div className="absolute z-20 right-4 md:hidden" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
+            {/* FAB — Start / Error reset */}
+            <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
               {status === "ready" && (
                 noScansLeft ? (
                   <button type="button" onClick={() => navigate("/upgrade")} className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 transition-all flex items-center justify-center gap-2 active:scale-95 font-semibold text-sm" style={{ pointerEvents: 'auto' }}>
