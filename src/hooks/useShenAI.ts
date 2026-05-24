@@ -3,12 +3,11 @@ import type { ShenaiSDK, MeasurementResults, InitializationSettings, HealthRisks
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
-// The ShenAI SDK requests whatever resolution the browser offers via getUserMedia,
-// which on desktop is typically 1280×720 (2.76 MB/frame RGBA). Over 30 seconds at
-// 30 fps this exhausts the WASM heap → Aborted() → RuntimeError: unreachable.
-// We patch getUserMedia once per page load to cap at 640×480, reducing each frame
-// to ~1.2 MB — a 2–3× reduction that keeps the heap healthy for the full scan.
-function capCameraResolution(maxWidth = 640, maxHeight = 480) {
+// The ShenAI SDK requests whatever resolution the browser offers via getUserMedia.
+// At 640×480 (1.2 MB/frame RGBA) the WASM heap exhausts intermittently over 30 s.
+// We patch getUserMedia once per page load to cap at 320×240 (307 KB/frame) — a
+// 4× reduction. rPPG and face detection work reliably at this resolution.
+function capCameraResolution(maxWidth = 320, maxHeight = 240) {
   if (typeof navigator === "undefined" || (navigator.mediaDevices as any).__cira_capped) return;
   const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
   navigator.mediaDevices.getUserMedia = function (constraints) {
@@ -415,14 +414,17 @@ export function useShenAI() {
         }
       } catch (e: any) {
         console.error("[ShenAI] Poll error:", e);
-        // WASM crash (OOM → Aborted → RuntimeError: unreachable). Without this
-        // the interval keeps ticking silently and the user is stuck on "measuring".
+        // WASM crash (OOM → Aborted → RuntimeError: unreachable). The WASM module
+        // is a JS module singleton — after Aborted() every future call also throws.
+        // The only recovery is a page reload to get a fresh WASM heap.
         const msg = String(e?.message || e || "");
         if (e?.name === "RuntimeError" || msg.includes("unreachable") || msg.includes("Aborted")) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
-          setError("Not enough device memory for the face scan. Close other apps and try again, or use a desktop browser.");
+          setError("Scan failed — the page will reload automatically to recover.");
           setStatus("error");
+          // Give the user 2 s to read the message, then reload for a clean WASM heap.
+          setTimeout(() => window.location.reload(), 2000);
         }
       }
     }, 300);
