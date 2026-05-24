@@ -451,9 +451,9 @@ const VitalsScan = () => {
               </div>
             )}
 
-            {/* Progress overlay during measurement */}
+            {/* Progress overlay — pinned to top so it never covers SDK's bottom vital tiles */}
             {(status === "measuring" || status === "processing") && (
-              <div className="absolute bottom-4 left-4 right-4 z-10">
+              <div className="absolute top-14 left-4 right-4 z-10">
                 <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 border border-white/10">
                   {status === "processing" || progress >= 100 ? (
                     <div className="flex-1 flex items-center justify-center py-1">
