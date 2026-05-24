@@ -234,8 +234,6 @@ export function useShenAI() {
       riskProfileRef.current = normalizedProfile;
       const riskFactors = buildRiskFactors(sdk, normalizedProfile);
 
-      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
       const settings: InitializationSettings = {
         operatingMode: sdk.OperatingMode.POSITIONING,
         measurementPreset: sdk.MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
@@ -243,12 +241,11 @@ export function useShenAI() {
         cameraMode: sdk.CameraMode.FACING_USER,
         onboardingMode: sdk.OnboardingMode.HIDDEN,
         showUserInterface: true,
-        // Disable heavy rendering overlays on mobile to prevent scan from slowing/freezing
-        showFacePositioningOverlay: !isMobile,
-        showVisualWarnings: !isMobile,
-        showFaceMask: !isMobile,
-        showBloodFlow: false,
+        showFacePositioningOverlay: true,
+        showVisualWarnings: true,
         enableCameraSwap: true,
+        showFaceMask: true,
+        showBloodFlow: false, // Disabled to reduce thermal throttling on mobile
         hideShenaiLogo: true,
         enableStartAfterSuccess: false,
         enableSummaryScreen: false,
@@ -256,9 +253,9 @@ export function useShenAI() {
         showInfoButton: false,
         showDisclaimer: false,
         enableHealthRisks: true,
-        applyPrecisionModeToBloodPressure: true,
-        enableFullFrameProcessing: false,
-        cameraAspectRatio: isMobile ? 0 : 16 / 9,
+        applyPrecisionModeToBloodPressure: true, // Speeds up the final BP calculation phase
+        enableFullFrameProcessing: false, // Explicitly disable to save computation
+        cameraAspectRatio: typeof window !== "undefined" && window.innerWidth >= 768 ? 16 / 9 : 0,
         ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
 
@@ -326,63 +323,68 @@ export function useShenAI() {
           setProgress(100);
           setStatus("processing");
 
-          const onMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
-          // Yield so React can paint "Analyzing results..." before heavy WASM calls
+          // Yield to browser so React can render "Analyzing results..."
           setTimeout(() => {
             try {
-              // Grab results + SDK health risks in one go
+              // STEP 1: Heavy WASM inference
               const raw = sdk.getMeasurementResults();
-              let healthRisks: HealthRisksData | null = null;
-
-              try {
-                const directRisks = sdk.getHealthRisks();
-
-                // On mobile: skip the extra computeHealthRisks() — it's the slowest call.
-                // The SDK's built-in getHealthRisks() is already computed and sufficient.
-                const computedRisks = !onMobile && Object.keys(buildRiskFactors(sdk, riskProfileRef.current, raw)).length > 0
-                  ? sdk.computeHealthRisks(buildRiskFactors(sdk, riskProfileRef.current, raw))
-                  : null;
-
-                healthRisks = mergeHealthRisksData(
-                  directRisks ? extractHealthRisks(directRisks) : null,
-                  computedRisks ? extractHealthRisks(computedRisks) : null,
-                );
-              } catch (e) {
-                console.warn("[ShenAI] Could not get health risks:", e);
-              }
-
-              // Free WASM memory immediately to unblock GC before React re-renders
-              try { sdk.deinitialize(); } catch { }
-              sdkRef.current = null;
-
-              // One final yield to let GC run, then commit results to React
+              
+              // Yield again to allow browser to catch up and prevent watchdog kill
               setTimeout(() => {
-                if (raw) {
-                  setResults({
-                    heartRate: raw.heart_rate_bpm,
-                    systolicBP: raw.systolic_blood_pressure_mmhg,
-                    diastolicBP: raw.diastolic_blood_pressure_mmhg,
-                    breathingRate: raw.breathing_rate_bpm,
-                    stressIndex: raw.stress_index,
-                    hrvSdnn: raw.hrv_sdnn_ms,
-                    bmi: raw.bmi_kg_per_m2,
-                    cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
-                    parasympatheticActivity: raw.parasympathetic_activity,
-                    signalQuality: raw.average_signal_quality,
-                    raw,
-                    healthRisks,
-                  });
-                }
-                setStatus("finished");
-              }, 80);
+                try {
+                  let healthRisks: HealthRisksData | null = null;
+                  try {
+                    const directRisks = sdk.getHealthRisks();
+                    const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, raw);
+                    const computedRisks = Object.keys(computedFactors).length > 0
+                      ? sdk.computeHealthRisks(computedFactors)
+                      : null;
 
+                    healthRisks = mergeHealthRisksData(
+                      directRisks ? extractHealthRisks(directRisks) : null,
+                      computedRisks ? extractHealthRisks(computedRisks) : null,
+                    );
+                  } catch (e) {
+                    console.warn("[ShenAI] Could not get health risks:", e);
+                  }
+
+                  // STEP 2: Free WASM memory BEFORE heavy React render
+                  try { sdk.deinitialize(); } catch { }
+                  sdkRef.current = null;
+
+                  // Yield one last time to allow Garbage Collection
+                  setTimeout(() => {
+                    if (raw) {
+                      setResults({
+                        heartRate: raw.heart_rate_bpm,
+                        systolicBP: raw.systolic_blood_pressure_mmhg,
+                        diastolicBP: raw.diastolic_blood_pressure_mmhg,
+                        breathingRate: raw.breathing_rate_bpm,
+                        stressIndex: raw.stress_index,
+                        hrvSdnn: raw.hrv_sdnn_ms,
+                        bmi: raw.bmi_kg_per_m2,
+                        cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
+                        parasympatheticActivity: raw.parasympathetic_activity,
+                        signalQuality: raw.average_signal_quality,
+                        raw,
+                        healthRisks,
+                      });
+                    }
+                    setStatus("finished");
+                  }, 100);
+
+                } catch (err) {
+                  console.error("[ShenAI] Post-processing error step 2:", err);
+                  setError("Calculation failed. Please try again.");
+                  setStatus("error");
+                }
+              }, 100);
             } catch (err) {
-              console.error("[ShenAI] Post-processing error:", err);
+              console.error("[ShenAI] Post-processing error step 1:", err);
               setError("Calculation failed. Please try again.");
               setStatus("error");
             }
-          }, 80); // 80ms — enough for React to paint, short enough to feel fast
+          }, 100); // 100ms delay to ensure UI paints
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
