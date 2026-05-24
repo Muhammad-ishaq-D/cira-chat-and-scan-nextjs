@@ -10,15 +10,34 @@ const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 function capCameraResolution(maxWidth = 320, maxHeight = 240) {
   if (typeof navigator === "undefined" || (navigator.mediaDevices as any).__cira_capped) return;
   const orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-  navigator.mediaDevices.getUserMedia = function (constraints) {
+
+  navigator.mediaDevices.getUserMedia = async function (constraints) {
     if (constraints?.video && typeof constraints.video === "object") {
+      const applyConstraints = (vid: any, useMax: boolean) => ({
+        ...constraints,
+        video: {
+          ...vid,
+          width:  { ...(typeof vid.width  === "object" ? vid.width  : {}), ideal: maxWidth,  ...(useMax ? { max: maxWidth  } : {}) },
+          height: { ...(typeof vid.height === "object" ? vid.height : {}), ideal: maxHeight, ...(useMax ? { max: maxHeight } : {}) },
+        },
+      });
+
       const vid = { ...(constraints.video as any) };
-      vid.width  = { ...(typeof vid.width  === "object" ? vid.width  : {}), max: maxWidth  };
-      vid.height = { ...(typeof vid.height === "object" ? vid.height : {}), max: maxHeight };
-      constraints = { ...constraints, video: vid };
+      try {
+        // First attempt: hard cap — prevents camera from delivering oversized frames.
+        return await orig(applyConstraints(vid, true));
+      } catch (e: any) {
+        if (e?.name === "OverconstrainedError") {
+          // Camera minimum exceeds our max (e.g. webcam min is 640×480).
+          // Retry with ideal-only — browser picks the closest supported resolution.
+          return orig(applyConstraints(vid, false));
+        }
+        throw e;
+      }
     }
     return orig(constraints);
   };
+
   (navigator.mediaDevices as any).__cira_capped = true;
 }
 
