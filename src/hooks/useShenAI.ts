@@ -257,9 +257,7 @@ export function useShenAI() {
         enableHealthRisks: true,
         applyPrecisionModeToBloodPressure: true, // Speeds up the final BP calculation phase
         enableFullFrameProcessing: false,         // Explicitly disable to save computation
-        // Explicit 4:3 on mobile instead of 0 (auto) — avoids retina-DPR scaling that
-        // can cause the SDK to request a 2× resolution camera stream on high-DPR devices.
-        cameraAspectRatio: isMobile ? 4 / 3 : 16 / 9,
+        cameraAspectRatio: isMobile ? 0 : 16 / 9,
         ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
 
@@ -327,75 +325,67 @@ export function useShenAI() {
           setProgress(100);
           setStatus("processing");
 
-          // Immediately stop frame ingestion so the WASM heap is no longer
-          // consumed by incoming VideoFrames (~1.2 MB each at ~30 fps).
-          // Without this the heap exhausts, WASM aborts, and getMeasurementResults()
-          // throws RuntimeError: unreachable.
+          // Stop frame ingestion first.
           try { sdk.stopMeasurement(); } catch { }
 
-          // Yield to browser so React can render "Analyzing results..."
-          // 200 ms gives the browser VideoFrame pipeline time to drain.
+          // Grab raw results SYNCHRONOUSLY right now, before yielding to the event loop.
+          // VideoFrame callbacks are async — they cannot fire while this synchronous
+          // block runs, so WASM is guaranteed alive here even on low-memory mobile.
+          // If we defer this into a setTimeout, in-flight VideoFrames can crash WASM
+          // before we get the chance to read the results.
+          let rawSnapshot: ReturnType<typeof sdk.getMeasurementResults> | null = null;
+          try {
+            rawSnapshot = sdk.getMeasurementResults();
+          } catch (e) {
+            console.warn("[ShenAI] getMeasurementResults() failed synchronously:", e);
+          }
+
+          // Yield to let UI paint "Analyzing results..." and drain in-flight frames.
           setTimeout(() => {
+            // Compute health risks — may fail if WASM crashed after we yielded, that's OK
+            // because rawSnapshot is already captured above.
+            let healthRisks: HealthRisksData | null = null;
             try {
-              // STEP 1: Heavy WASM inference (frame processing already stopped)
-              const raw = sdk.getMeasurementResults();
-
-              // Yield again to allow browser to catch up and prevent watchdog kill
-              setTimeout(() => {
-                try {
-                  let healthRisks: HealthRisksData | null = null;
-                  try {
-                    const directRisks = sdk.getHealthRisks();
-                    const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, raw);
-                    const computedRisks = Object.keys(computedFactors).length > 0
-                      ? sdk.computeHealthRisks(computedFactors)
-                      : null;
-
-                    healthRisks = mergeHealthRisksData(
-                      directRisks ? extractHealthRisks(directRisks) : null,
-                      computedRisks ? extractHealthRisks(computedRisks) : null,
-                    );
-                  } catch (e) {
-                    console.warn("[ShenAI] Could not get health risks:", e);
-                  }
-
-                  // STEP 2: Free WASM memory BEFORE heavy React render
-                  try { sdk.deinitialize(); } catch { }
-                  sdkRef.current = null;
-
-                  // Yield one last time to allow Garbage Collection
-                  setTimeout(() => {
-                    if (raw) {
-                      setResults({
-                        heartRate: raw.heart_rate_bpm,
-                        systolicBP: raw.systolic_blood_pressure_mmhg,
-                        diastolicBP: raw.diastolic_blood_pressure_mmhg,
-                        breathingRate: raw.breathing_rate_bpm,
-                        stressIndex: raw.stress_index,
-                        hrvSdnn: raw.hrv_sdnn_ms,
-                        bmi: raw.bmi_kg_per_m2,
-                        cardiacWorkload: raw.cardiac_workload_mmhg_per_sec,
-                        parasympatheticActivity: raw.parasympathetic_activity,
-                        signalQuality: raw.average_signal_quality,
-                        raw,
-                        healthRisks,
-                      });
-                    }
-                    setStatus("finished");
-                  }, 100);
-
-                } catch (err) {
-                  console.error("[ShenAI] Post-processing error step 2:", err);
-                  setError("Calculation failed. Please try again.");
-                  setStatus("error");
-                }
-              }, 100);
-            } catch (err) {
-              console.error("[ShenAI] Post-processing error step 1:", err);
-              setError("Calculation failed. Please try again.");
-              setStatus("error");
+              if (rawSnapshot) {
+                const directRisks = sdk.getHealthRisks();
+                const computedFactors = buildRiskFactors(sdk, riskProfileRef.current, rawSnapshot);
+                const computedRisks = Object.keys(computedFactors).length > 0
+                  ? sdk.computeHealthRisks(computedFactors)
+                  : null;
+                healthRisks = mergeHealthRisksData(
+                  directRisks ? extractHealthRisks(directRisks) : null,
+                  computedRisks ? extractHealthRisks(computedRisks) : null,
+                );
+              }
+            } catch (e) {
+              console.warn("[ShenAI] Could not get health risks:", e);
             }
-          }, 200); // 200ms: UI paints + in-flight VideoFrames drain after stopMeasurement()
+
+            // Free WASM memory before the heavy React render.
+            try { sdk.deinitialize(); } catch { }
+            sdkRef.current = null;
+
+            // One more yield to allow GC before React reconciles the results view.
+            setTimeout(() => {
+              if (rawSnapshot) {
+                setResults({
+                  heartRate: rawSnapshot.heart_rate_bpm,
+                  systolicBP: rawSnapshot.systolic_blood_pressure_mmhg,
+                  diastolicBP: rawSnapshot.diastolic_blood_pressure_mmhg,
+                  breathingRate: rawSnapshot.breathing_rate_bpm,
+                  stressIndex: rawSnapshot.stress_index,
+                  hrvSdnn: rawSnapshot.hrv_sdnn_ms,
+                  bmi: rawSnapshot.bmi_kg_per_m2,
+                  cardiacWorkload: rawSnapshot.cardiac_workload_mmhg_per_sec,
+                  parasympatheticActivity: rawSnapshot.parasympathetic_activity,
+                  signalQuality: rawSnapshot.average_signal_quality,
+                  raw: rawSnapshot,
+                  healthRisks,
+                });
+              }
+              setStatus("finished");
+            }, 100);
+          }, 200);
         } else if (mState.value === 7 || mState.value === sdk.MeasurementState?.FAILED?.value) {
           clearInterval(pollRef.current!);
           pollRef.current = null;
