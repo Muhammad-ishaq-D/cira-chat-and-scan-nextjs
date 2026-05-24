@@ -358,84 +358,77 @@ const VitalsScan = () => {
         </>
       )}
 
-      {/* ═══════════ CAMERA VIEW — Split Layout ═══════════ */}
+      {/* ═══════════ CAMERA VIEW — 3-column layout ═══════════ */}
       {isCameraView ? (
-        <div className="flex-1 flex bg-background overflow-hidden">
+        <div className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}>
 
-          {/* ── Left Panel (desktop only) ── */}
-          <div className="hidden md:flex w-72 lg:w-80 flex-col bg-card border-r border-border shrink-0">
-            {/* Header */}
-            <div className="px-5 py-4 border-b border-border flex items-center gap-2.5">
-              <ScanFace size={17} className="text-primary" />
-              <h2 className="text-sm font-semibold font-heading text-foreground">How to Scan</h2>
-            </div>
-
-            {/* Steps */}
-            <div className="px-5 py-5 space-y-5 flex-1 overflow-y-auto">
-              {[
-                { step: "1", title: "Good Lighting", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
-                { step: "2", title: "Position Your Face", desc: "Center your face in the camera and keep it within the red markers." },
-                { step: "3", title: "Stay Still", desc: "Keep your head and body steady during the 30-second measurement." },
-                { step: "4", title: "Breathe Normally", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
-              ].map((s) => (
-                <div key={s.step} className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-[10px] font-bold text-primary-foreground">{s.step}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground font-heading leading-tight">{s.title}</p>
-                    <p className="text-xs text-muted-foreground font-body mt-1 leading-relaxed">{s.desc}</p>
-                  </div>
+          {/* ── Left: Instructions Panel ── */}
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <ScanFace size={16} className="text-primary" />
                 </div>
-              ))}
-            </div>
-
-            {/* 100% Private */}
-            <div className="px-5 py-4 border-t border-border">
-              <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">100% Private</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">All analysis happens on your device. No video is recorded or transmitted.</p>
-                </div>
+                <h2 className="font-heading font-semibold text-foreground">How to Scan</h2>
               </div>
-            </div>
 
-            {/* Scan Credits */}
-            {!isGuest && (
-              <div className="px-5 py-4 border-t border-border">
-                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-                      <AlertCircle size={11} className="text-primary" />
+              <div className="space-y-5">
+                {[
+                  { step: "1", icon: Zap, title: "Good Lighting", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
+                  { step: "2", icon: UserRound, title: "Position Your Face", desc: "Center your face in the camera and keep it within the red markers." },
+                  { step: "3", icon: Activity, title: "Stay Still", desc: "Keep your head and body steady during the 30-second measurement." },
+                  { step: "4", icon: Wind, title: "Breathe Normally", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.step} className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-primary">{item.step}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground font-heading">{item.title}</p>
+                        <p className="text-xs text-muted-foreground font-body mt-0.5 leading-relaxed">{item.desc}</p>
+                      </div>
                     </div>
-                    <p className="text-sm font-semibold text-primary">Scan Credits</p>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <ShieldCheck size={12} className="text-emerald-500" />
+                  <p className="text-[11px] font-semibold text-foreground">100% Private</p>
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">All analysis happens on your device. No video is recorded or transmitted.</p>
+              </div>
+
+              {!isGuest && (
+                <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/10">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <AlertCircle size={12} className="text-primary" />
+                    <p className="text-[11px] font-semibold text-primary">Scan Credits</p>
                   </div>
-                  <p className="text-xs text-muted-foreground pl-7">
-                    {scansLeft === "Unlimited" ? "Unlimited scans" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    {scansLeft === "Unlimited" ? "Unlimited scans available" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
                   </p>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Scan History button */}
-            {!isGuest && (
-              <div className="px-5 py-4 border-t border-border">
+              {/* History button */}
+              {!isGuest && (
                 <button
-                  onClick={() => { setShowHistory(true); logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
-                  className="w-full flex items-center justify-center gap-2 h-10 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-accent transition-all"
+                  onClick={() => { const next = !showHistory; setShowHistory(next); if (next) logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
+                  className="mt-4 w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
                   <Menu size={14} strokeWidth={1.5} />
                   Scan History
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* ── Center: Camera Canvas ── */}
-          <div className="flex-1 relative flex flex-col overflow-hidden bg-black">
+          {/* ── Center: Camera ── */}
+          <div className={`flex-1 relative flex flex-col bg-black overflow-hidden${(status === "idle" || status === "loading") ? " max-w-[640px]" : ""}`}>
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
@@ -443,21 +436,25 @@ const VitalsScan = () => {
               style={{ display: "block" }}
             />
 
-            {/* Loading overlay */}
+            {/* Idle/Loading overlay */}
             {(status === "idle" || status === "loading") && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-10">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
                   <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                 </div>
-                <h2 className="text-white text-lg md:text-xl font-heading font-semibold mb-1">Initializing Scanner</h2>
-                <p className="text-white/50 text-xs md:text-sm font-body">Setting up camera · Please wait</p>
+                <h2 className="text-white text-lg font-heading font-semibold mb-1">Initializing Scanner</h2>
+                <p className="text-white/50 text-xs font-body mb-4">Setting up camera · Please wait</p>
+                <div className="flex items-center gap-1.5">
+                  <AlertCircle size={10} className="text-white/30 shrink-0" />
+                  <p className="text-[10px] text-white/30">Credits deducted upon scan · 100% on-device</p>
+                </div>
               </div>
             )}
 
-            {/* Progress overlay — mobile only */}
+            {/* Progress overlay during measurement */}
             {status === "measuring" && (
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-10 md:hidden" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
-                <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 max-w-md mx-auto border border-white/10">
+              <div className="absolute bottom-4 left-4 right-4 z-10">
+                <div className="bg-black/70 backdrop-blur-xl rounded-2xl px-5 py-3 flex items-center gap-4 border border-white/10">
                   <div className="flex-1">
                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
@@ -475,18 +472,18 @@ const VitalsScan = () => {
                 <h3 className="text-white text-base font-heading font-semibold mb-2 text-center">
                   {status === "unsupported" ? "Browser not supported" : "Something went wrong"}
                 </h3>
-                <p className="text-white/70 text-xs md:text-sm font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
+                <p className="text-white/70 text-xs font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
                 {status === "unsupported" && (
                   <div className="text-[11px] text-white/50 font-body mb-5 max-w-xs text-center leading-relaxed">
                     Tip: copy the link and open it in <span className="text-white/80">Safari</span> or <span className="text-white/80">Chrome</span> directly.
                   </div>
                 )}
                 <div className="flex gap-2.5">
-                  <button onClick={() => navigate(isGuest ? "/" : "/dashboard")} className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs md:text-sm font-medium transition-all">
+                  <button onClick={() => navigate(isGuest ? "/" : "/dashboard")} className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-medium transition-all">
                     Go back
                   </button>
                   {status !== "unsupported" && (
-                    <button onClick={reset} className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-medium transition-all">
+                    <button onClick={reset} className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs font-medium transition-all">
                       Try again
                     </button>
                   )}
@@ -494,109 +491,138 @@ const VitalsScan = () => {
               </div>
             )}
 
-            {/* Top bar — home button (always), history button (mobile only) */}
-            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3 md:p-4">
-              <button
-                onClick={() => { setShowHistory(true); logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
-                className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10"
-                title="History"
-              >
-                <Menu size={18} strokeWidth={1.5} />
-              </button>
-              <div className="hidden md:block" />
+            {/* Top bar — home button only (history moved to left panel) */}
+            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-end p-3 md:p-4">
               <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">
                 <Home size={18} strokeWidth={1.5} />
               </button>
             </div>
 
-            {/* FAB — Start / Error reset */}
-            <div className="absolute z-20 right-4 md:right-8" style={{ bottom: 'max(env(safe-area-inset-bottom, 16px), 80px)' }}>
+            {/* Mobile history + start buttons at bottom */}
+            <div className="lg:hidden absolute bottom-4 left-4 z-20">
+              {!isGuest && (
+                <button
+                  onClick={() => { const next = !showHistory; setShowHistory(next); if (next) logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10"
+                >
+                  <Menu size={18} strokeWidth={1.5} />
+                </button>
+              )}
+            </div>
+
+            {/* Floating Action Button */}
+            <div className="absolute z-20 right-4 bottom-4">
               {status === "ready" && (
                 noScansLeft ? (
-                  <button type="button" onClick={() => navigate("/upgrade")} className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 transition-all flex items-center justify-center gap-2 active:scale-95 font-semibold text-sm" style={{ pointerEvents: 'auto' }}>
-                    <Crown size={20} /><span>Upgrade to Scan</span>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/upgrade")}
+                    className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-400/40 hover:shadow-amber-400/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-amber-400/20 font-semibold text-sm"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <Crown size={20} />
+                    <span>Upgrade to Scan</span>
                   </button>
                 ) : (
-                  <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); startMeasurement(); }} className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center gap-2 active:scale-95 font-semibold text-sm" style={{ pointerEvents: 'auto' }}>
-                    <Heart size={22} /><span>Start</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log("[VitalsScan] Start button clicked");
+                      startMeasurement();
+                    }}
+                    className="relative z-30 px-6 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center justify-center gap-2 active:scale-95 ring-4 ring-primary/20 font-semibold text-sm"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <Heart size={22} />
+                    <span>Start</span>
                   </button>
                 )
               )}
               {status === "error" && (
-                <button onClick={reset} className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl transition-all flex items-center justify-center active:scale-95">
-                  <RefreshCw size={24} />
+                <button onClick={reset} className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-2xl shadow-primary/40 transition-all flex items-center justify-center active:scale-95 ring-4 ring-primary/20">
+                  <RefreshCw size={22} />
                 </button>
               )}
             </div>
           </div>
 
-          {/* ── Right Panel: Vitals (desktop only) ── */}
-          <div className="hidden md:flex w-72 lg:w-80 flex-col bg-card border-l border-border shrink-0">
-            {/* Header */}
-            <div className="px-5 py-4 border-b border-border flex items-center gap-2.5">
-              <Heart size={16} className="text-primary" />
-              <h2 className="text-sm font-semibold font-heading text-foreground">Vitals</h2>
-            </div>
-
-            {/* Status badge */}
-            <div className="px-5 pt-4">
-              {status === "ready" && (
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="text-sm font-medium text-emerald-700">Ready to scan</span>
+          {/* ── Right: Vitals Panel ── */}
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                  <Heart size={16} className="text-rose-500" />
                 </div>
-              )}
-              {status === "measuring" && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
-                    <span className="text-sm font-medium text-primary flex-1">Scanning…</span>
-                    <span className="text-sm font-semibold text-primary">{progress}%</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Vitals list */}
-            <div className="px-5 py-5 space-y-4 flex-1 overflow-y-auto">
-              {[
-                { icon: Heart, label: "Heart Rate", unit: "bpm", color: "text-rose-500 bg-rose-50" },
-                { icon: Activity, label: "Blood Pressure", unit: "mmHg", color: "text-pink-500 bg-pink-50" },
-                { icon: Wind, label: "Breathing Rate", unit: "/min", color: "text-cyan-500 bg-cyan-50" },
-                { icon: Brain, label: "Stress Index", unit: "/100", color: "text-purple-500 bg-purple-50" },
-                { icon: Zap, label: "HRV", unit: "ms", color: "text-amber-500 bg-amber-50" },
-                { icon: Heart, label: "Cardiac Workload", unit: "", color: "text-orange-500 bg-orange-50" },
-                { icon: Scale, label: "BMI", unit: "kg/m²", color: "text-emerald-500 bg-emerald-50" },
-              ].map((v) => {
-                const Icon = v.icon;
-                const [textColor, bgColor] = v.color.split(" ");
-                return (
-                  <div key={v.label} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${bgColor}`}>
-                      <Icon size={14} className={textColor} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground font-body">{v.label}</p>
-                      <p className="text-sm font-semibold text-foreground font-heading">
-                        -- <span className="text-xs text-muted-foreground font-normal">{v.unit}</span>
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Upgrade nudge if no credits */}
-            {noScansLeft && (
-              <div className="px-5 py-4 border-t border-border">
-                <button onClick={() => navigate("/upgrade")} className="w-full h-10 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold flex items-center justify-center gap-2">
-                  <Crown size={15} />Upgrade to Scan
-                </button>
+                <h2 className="font-heading font-semibold text-foreground">Vitals</h2>
               </div>
-            )}
+
+              {/* Status indicator */}
+              <div className={`mb-4 p-3 rounded-xl flex items-center gap-2.5 ${
+                status === "measuring" ? "bg-primary/10 border border-primary/20" :
+                status === "ready" ? "bg-emerald-50 border border-emerald-200" :
+                "bg-gray-50 border border-gray-100"
+              }`}>
+                {status === "measuring" ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-primary">Measuring...</p>
+                      <div className="mt-1.5 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-primary shrink-0">{progress}%</span>
+                  </>
+                ) : status === "ready" ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <p className="text-xs font-medium text-emerald-700">Ready to scan</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                    <p className="text-xs font-medium text-muted-foreground">Initializing...</p>
+                  </>
+                )}
+              </div>
+
+              {/* Vital placeholder cards */}
+              <div className="space-y-2">
+                {[
+                  { label: "Heart Rate", unit: "bpm", icon: Heart, color: "text-red-500", bg: "bg-red-50" },
+                  { label: "Blood Pressure", unit: "mmHg", icon: Activity, color: "text-pink-500", bg: "bg-pink-50" },
+                  { label: "Breathing Rate", unit: "/min", icon: Wind, color: "text-cyan-500", bg: "bg-cyan-50" },
+                  { label: "Stress Index", unit: "/100", icon: Brain, color: "text-purple-500", bg: "bg-purple-50" },
+                  { label: "HRV", unit: "ms", icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+                  { label: "Cardiac Workload", unit: "", icon: Heart, color: "text-orange-500", bg: "bg-orange-50" },
+                  { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500", bg: "bg-emerald-50" },
+                ].map((vital) => {
+                  const Icon = vital.icon;
+                  return (
+                    <div key={vital.label} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${vital.bg}`}>
+                        <Icon size={14} className={vital.color} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] text-muted-foreground font-body">{vital.label}</p>
+                        <p className="text-sm font-semibold text-foreground font-heading">
+                          --<span className="text-[10px] text-muted-foreground font-normal ml-0.5">{vital.unit}</span>
+                        </p>
+                      </div>
+                      {status === "measuring" && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse shrink-0" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-[10px] text-muted-foreground text-center mt-4 leading-relaxed">
+                Values appear after scan completes
+              </p>
+            </div>
           </div>
 
         </div>
