@@ -234,6 +234,8 @@ export function useShenAI() {
       riskProfileRef.current = normalizedProfile;
       const riskFactors = buildRiskFactors(sdk, normalizedProfile);
 
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
       const settings: InitializationSettings = {
         operatingMode: sdk.OperatingMode.POSITIONING,
         measurementPreset: sdk.MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
@@ -242,10 +244,10 @@ export function useShenAI() {
         onboardingMode: sdk.OnboardingMode.HIDDEN,
         showUserInterface: true,
         showFacePositioningOverlay: true,
-        showVisualWarnings: true,
+        showVisualWarnings: !isMobile,  // saves a render buffer on mobile
         enableCameraSwap: true,
-        showFaceMask: true,
-        showBloodFlow: false, // Disabled to reduce thermal throttling on mobile
+        showFaceMask: !isMobile,        // face mask costs ~1.2 MB/frame — skip on mobile
+        showBloodFlow: false,           // Disabled to reduce thermal throttling on mobile
         hideShenaiLogo: true,
         enableStartAfterSuccess: false,
         enableSummaryScreen: false,
@@ -254,8 +256,10 @@ export function useShenAI() {
         showDisclaimer: false,
         enableHealthRisks: true,
         applyPrecisionModeToBloodPressure: true, // Speeds up the final BP calculation phase
-        enableFullFrameProcessing: false, // Explicitly disable to save computation
-        cameraAspectRatio: typeof window !== "undefined" && window.innerWidth >= 768 ? 16 / 9 : 0,
+        enableFullFrameProcessing: false,         // Explicitly disable to save computation
+        // Explicit 4:3 on mobile instead of 0 (auto) — avoids retina-DPR scaling that
+        // can cause the SDK to request a 2× resolution camera stream on high-DPR devices.
+        cameraAspectRatio: isMobile ? 4 / 3 : 16 / 9,
         ...(Object.keys(riskFactors).length > 0 ? { risksFactors: riskFactors } : {}),
       };
 
@@ -398,8 +402,17 @@ export function useShenAI() {
           setError("Measurement failed — try again with better lighting");
           setStatus("error");
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("[ShenAI] Poll error:", e);
+        // WASM crash (OOM → Aborted → RuntimeError: unreachable). Without this
+        // the interval keeps ticking silently and the user is stuck on "measuring".
+        const msg = String(e?.message || e || "");
+        if (e?.name === "RuntimeError" || msg.includes("unreachable") || msg.includes("Aborted")) {
+          clearInterval(pollRef.current!);
+          pollRef.current = null;
+          setError("Not enough device memory for the face scan. Close other apps and try again, or use a desktop browser.");
+          setStatus("error");
+        }
       }
     }, 300);
   }, []);
