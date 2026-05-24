@@ -49,32 +49,23 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Warm the service worker's WASM cache so the first scan loads fast.
-    // Wait for the SW to be ready so the fetch goes through the SW's cache-first handler.
+    // Warm the service worker's WASM cache in the background so the first scan loads fast.
+    // We wait for the SW to be controlling the page before fetching so the request goes through
+    // the SW's cache-first handler (not just the browser HTTP cache which the SW ignores).
     const triggerPrefetch = () => {
       fetch("/wasm/shenai_sdk.wasm", { priority: "low" as any }).catch(() => {});
     };
 
-    let ricId: number | undefined;
-    const scheduleWhenReady = () => {
+    const prefetchTimer = setTimeout(() => {
+      if (typeof window === "undefined") return;
       if ("requestIdleCallback" in window) {
-        ricId = (window as any).requestIdleCallback(triggerPrefetch, { timeout: 2000 });
+        (window as any).requestIdleCallback(triggerPrefetch);
       } else {
         triggerPrefetch();
       }
-    };
+    }, 3000);
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then(scheduleWhenReady).catch(scheduleWhenReady);
-    } else {
-      scheduleWhenReady();
-    }
-
-    return () => {
-      if (ricId !== undefined && "cancelIdleCallback" in window) {
-        (window as any).cancelIdleCallback(ricId);
-      }
-    };
+    return () => clearTimeout(prefetchTimer);
   }, []);
 
   return (
