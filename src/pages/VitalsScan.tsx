@@ -359,8 +359,12 @@ const VitalsScan = () => {
       )}
 
       {/* ═══════════ CAMERA VIEW — 3-column layout ═══════════ */}
-      {isCameraView ? (
-        <div className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}>
+      {/* Always kept in DOM so the ShenAI SDK can finish its deferred DOM cleanup
+          without hitting unmounted nodes (removeChild NotFoundError). */}
+      <div
+        className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}
+        style={{ display: isCameraView ? undefined : "none" }}
+      >
 
           {/* ── Left: Instructions Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
@@ -639,8 +643,9 @@ const VitalsScan = () => {
           </div>
 
         </div>
-      ) : (
-        /* ═══════════ RESULTS VIEW ═══════════ */
+
+      {/* ═══════════ RESULTS VIEW ═══════════ */}
+      {!isCameraView && (
         <div className="flex-1 relative flex flex-col overflow-hidden">
           {/* Background gradients */}
           <div className="absolute inset-0 pointer-events-none">
