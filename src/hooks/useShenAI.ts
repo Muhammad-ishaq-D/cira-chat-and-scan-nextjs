@@ -243,7 +243,7 @@ export function useShenAI() {
         showUserInterface: true,
         showFacePositioningOverlay: true,
         showVisualWarnings: true,
-        enableCameraSwap: true,
+        enableCameraSwap: false,
         showFaceMask: true,
         showBloodFlow: true,
         hideShenaiLogo: true,
