@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
-import { Wifi, WifiOff, Gauge, AlertCircle, Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Wifi, WifiOff, Gauge, AlertCircle, Download, RefreshCw } from "lucide-react";
 
 interface Props {
   progress: number;
   status: "idle" | "loading";
+  onRetry?: () => void;
 }
+
+const STUCK_TIMEOUT_MS = 20000;
+
 
 type NetInfo = {
   online: boolean;
@@ -24,10 +28,32 @@ function readConnection(): NetInfo {
   };
 }
 
-const SdkLoadingOverlay = ({ progress, status }: Props) => {
+const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
   const [net, setNet] = useState<NetInfo>(() => readConnection());
   const [ping, setPing] = useState<number | null>(null);
   const [displayed, setDisplayed] = useState(0);
+  const [isStuck, setIsStuck] = useState(false);
+  const lastChangeRef = useRef<number>(Date.now());
+  const lastProgressRef = useRef<number>(progress);
+
+  // Track when real progress last changed (for stuck detection)
+  useEffect(() => {
+    if (progress !== lastProgressRef.current) {
+      lastProgressRef.current = progress;
+      lastChangeRef.current = Date.now();
+      setIsStuck(false);
+    }
+  }, [progress]);
+
+  // Stuck check — fires when no progress movement for STUCK_TIMEOUT_MS
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (progress < 100 && Date.now() - lastChangeRef.current > STUCK_TIMEOUT_MS) {
+        setIsStuck(true);
+      }
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [progress]);
 
   // Smoothly animate displayed % toward the real progress, clamped 0-100.
   useEffect(() => {
@@ -36,7 +62,6 @@ const SdkLoadingOverlay = ({ progress, status }: Props) => {
     const tick = () => {
       setDisplayed((cur) => {
         if (cur === target) return cur;
-        // Move at most 1.5% per frame so big jumps animate visibly
         const step = Math.max(1, Math.ceil(Math.abs(target - cur) / 25));
         const next = cur < target ? Math.min(target, cur + step) : Math.max(target, cur - step);
         if (next !== target) raf = requestAnimationFrame(tick);
@@ -49,6 +74,7 @@ const SdkLoadingOverlay = ({ progress, status }: Props) => {
 
 
   useEffect(() => {
+
     const update = () => setNet(readConnection());
     window.addEventListener("online", update);
     window.addEventListener("offline", update);
