@@ -103,7 +103,20 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
-    window.location.href = link;
+    try {
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = link;
+        return;
+      }
+    } catch {
+      // cross-origin iframe: fall through to opening a new tab
+    }
+    const opened = window.open(link, "_blank", "noopener,noreferrer");
+    if (!opened) {
+      window.location.href = link;
+    } else {
+      setRedirectingId(null);
+    }
   };
 
   return (
