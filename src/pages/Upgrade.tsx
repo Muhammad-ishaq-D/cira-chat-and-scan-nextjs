@@ -113,7 +113,7 @@ const Upgrade = () => {
       }
 
       const origin = window.location.origin;
-      const { error } = await stripe.redirectToCheckout({
+      const { error } = await (stripe as any).redirectToCheckout({
         lineItems: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
         successUrl: `${origin}/dashboard?checkout=success&plan=${encodeURIComponent(plan.name)}`,
