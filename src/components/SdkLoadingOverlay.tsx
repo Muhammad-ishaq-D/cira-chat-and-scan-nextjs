@@ -89,7 +89,7 @@ const SdkLoadingOverlay = ({ progress, status }: Props) => {
     return { label: "Stable", color: "text-emerald-400", dot: "bg-emerald-400" };
   })();
 
-  const shown = status === "loading" ? Math.max(progress, 2) : progress;
+  const shown = Math.max(0, Math.min(100, status === "loading" ? Math.max(displayed, 2) : displayed));
   const phase = status === "idle"
     ? "Preparing scanner"
     : progress < 100
