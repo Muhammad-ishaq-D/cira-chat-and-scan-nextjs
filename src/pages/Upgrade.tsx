@@ -164,21 +164,24 @@ const Upgrade = () => {
       searchParams.get("plan") ||
       "";
 
+    const targetKey = normalizePlanKey(pendingKey);
+    if (!targetKey || targetKey === "basic") return;
+
     let cancelled = false;
-    const poll = async () => {
-      for (let i = 0; i < 12 && !cancelled; i++) {
-        const sub = await refreshSubscription();
-        const key = normalizePlanKey(sub?.plan_key || sub?.plan_name);
-        if (pendingKey && key === normalizePlanKey(pendingKey)) {
-          toast.success(`Your ${sub?.plan_name || key} plan is now active.`);
-          sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
-          setSearchParams({}, { replace: true });
-          return;
-        }
-        await new Promise((r) => setTimeout(r, 2000));
+    const sync = async () => {
+      try {
+        await billingApi.confirmCheckout(undefined, targetKey);
+      } catch {
+        // fall through to refresh
+      }
+      await refreshSubscription();
+      if (!cancelled) {
+        toast.success(`Your ${targetKey} plan is now active.`);
+        sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
+        setSearchParams({}, { replace: true });
       }
     };
-    poll();
+    sync();
     return () => {
       cancelled = true;
     };

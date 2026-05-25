@@ -198,8 +198,12 @@ export const billingApi = {
   reactivateSubscription: () => post("/api/billing/reactivate", {}),
   getPaymentHistory: () => get("/api/billing/payments"),
   getPlans: () => get("/api/billing/plans"),
-  confirmCheckout: (sessionId: string, planKey?: string) =>
-    post("/api/billing/confirm-checkout", { sessionId, planKey }),
+  /** Activates plan + credits after Stripe payment (requires planKey). sessionId optional. */
+  confirmCheckout: (sessionId: string | undefined, planKey: string) =>
+    post("/api/billing/confirm-checkout", {
+      ...(sessionId ? { sessionId } : {}),
+      planKey,
+    }),
 };
 
 // ─── Doctors ────────────────────────────────────────────────────

@@ -5,72 +5,58 @@ import { billingApi } from "@/lib/apiClient";
 import { PENDING_PLAN_STORAGE_KEY } from "@/lib/stripe";
 import ciraLogo from "@/assets/cira-logo.svg";
 
-const MAX_ATTEMPTS = 15;
-const INTERVAL_MS = 2000;
-
-function normalizePlanKey(name?: string): string {
-  const key = (name || "basic").toLowerCase().trim();
+function normalizePlanKey(name?: string): string | null {
+  const key = (name || "").toLowerCase().trim();
+  if (!key) return null;
   if (key === "basic" || key === "free") return "basic";
-  return key;
+  if (key === "pro" || key === "enterprise") return key;
+  return null;
 }
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<"polling" | "success" | "timeout">("polling");
+  const [status, setStatus] = useState<"activating" | "success" | "error">("activating");
   const [planName, setPlanName] = useState<string>("");
-  const [attempts, setAttempts] = useState(0);
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
-    const sessionId = searchParams.get("session_id");
-    const planFromUrl = searchParams.get("plan") || "";
-    const pendingKey =
-      planFromUrl ||
-      sessionStorage.getItem(PENDING_PLAN_STORAGE_KEY) ||
-      "";
 
-    if (planFromUrl) {
-      sessionStorage.setItem(PENDING_PLAN_STORAGE_KEY, planFromUrl);
-    }
+    const run = async () => {
+      const sessionId = searchParams.get("session_id");
+      const planFromUrl = searchParams.get("plan") || "";
+      const planKey =
+        normalizePlanKey(planFromUrl) ||
+        normalizePlanKey(sessionStorage.getItem(PENDING_PLAN_STORAGE_KEY) || "") ||
+        null;
 
-    const poll = async () => {
-      if (sessionId) {
-        try {
-          await billingApi.confirmCheckout(sessionId, pendingKey || undefined);
-        } catch {
-          // Webhook may still apply — continue polling
+      if (!planKey || planKey === "basic") {
+        if (!cancelled) {
+          setErrorMsg(
+            "Could not determine which plan you purchased. Open Upgrade and try again, or contact support."
+          );
+          setStatus("error");
         }
+        return;
       }
 
-      for (let count = 0; !cancelled && count < MAX_ATTEMPTS; count++) {
-        setAttempts(count + 1);
-        try {
-          const sub = await billingApi.getSubscription();
-          const currentKey = normalizePlanKey(sub?.plan_key || sub?.plan_name);
-          const targetKey = pendingKey ? normalizePlanKey(pendingKey) : null;
+      try {
+        const result = await billingApi.confirmCheckout(sessionId || undefined, planKey);
+        if (cancelled) return;
 
-          const matched = targetKey
-            ? currentKey === targetKey
-            : currentKey === "pro" || currentKey === "enterprise";
-
-          if (matched) {
-            if (!cancelled) {
-              setPlanName(sub?.plan_name || currentKey);
-              setStatus("success");
-              sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
-            }
-            return;
-          }
-        } catch {
-          // retry
-        }
-        await new Promise((r) => setTimeout(r, INTERVAL_MS));
+        setPlanName(result.plan_name || planKey);
+        setStatus("success");
+        sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
+      } catch (err: unknown) {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : "Could not activate your plan";
+        setErrorMsg(message);
+        setStatus("error");
       }
-      if (!cancelled) setStatus("timeout");
     };
 
-    poll();
+    run();
     return () => {
       cancelled = true;
     };
@@ -83,14 +69,13 @@ const PaymentSuccess = () => {
           <img src={ciraLogo} alt="Cira" width={40} height={40} />
         </div>
 
-        {status === "polling" && (
+        {status === "activating" && (
           <>
             <Loader2 size={40} className="text-primary mx-auto mb-4 animate-spin" />
-            <h1 className="text-xl font-semibold mb-2">Confirming your payment…</h1>
+            <h1 className="text-xl font-semibold mb-2">Activating your plan…</h1>
             <p className="text-sm text-muted-foreground">
-              Activating your new plan. This usually takes a few seconds.
+              Applying your subscription and allocating face scans and chat credits.
             </p>
-            <p className="text-xs text-muted-foreground mt-3">Attempt {attempts} / {MAX_ATTEMPTS}</p>
           </>
         )}
 
@@ -99,7 +84,8 @@ const PaymentSuccess = () => {
             <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4" />
             <h1 className="text-xl font-semibold mb-2">Payment Successful</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              Your <span className="font-medium text-foreground capitalize">{planName}</span> plan is now active.
+              Your <span className="font-medium text-foreground capitalize">{planName}</span> plan is
+              active. Face scans and chat credits have been updated.
             </p>
             <button
               onClick={() => navigate("/upgrade?paid=1")}
@@ -110,18 +96,22 @@ const PaymentSuccess = () => {
           </>
         )}
 
-        {status === "timeout" && (
+        {status === "error" && (
           <>
             <AlertCircle size={40} className="text-amber-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold mb-2">Still processing…</h1>
-            <p className="text-sm text-muted-foreground mb-6">
-              Your payment may still be confirming. Open the upgrade page to check your plan.
-            </p>
+            <h1 className="text-xl font-semibold mb-2">Activation issue</h1>
+            <p className="text-sm text-muted-foreground mb-6">{errorMsg}</p>
             <button
               onClick={() => navigate("/upgrade?paid=1")}
-              className="w-full h-11 rounded-xl border border-border/60 text-sm font-medium hover:bg-accent"
+              className="w-full h-11 rounded-xl border border-border/60 text-sm font-medium hover:bg-accent mb-3"
             >
-              Check Plan Status
+              Try Again on Upgrade Page
+            </button>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-full h-11 rounded-xl text-sm text-muted-foreground hover:bg-accent"
+            >
+              Go to Dashboard
             </button>
           </>
         )}
