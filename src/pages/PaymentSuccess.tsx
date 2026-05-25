@@ -16,13 +16,13 @@ const PaymentSuccess = () => {
   useEffect(() => {
     let cancelled = false;
     let count = 0;
-    const initialPlan = (() => {
-      try {
-        return (JSON.parse(localStorage.getItem("cira_user") || "{}")?.plan || "basic").toLowerCase();
-      } catch {
-        return "basic";
-      }
-    })();
+    let baselinePlan = "basic";
+    try {
+      const sub = await billingApi.getSubscription();
+      baselinePlan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
+    } catch {
+      // use default baseline
+    }
 
     const poll = async () => {
       while (!cancelled && count < MAX_ATTEMPTS) {
@@ -31,7 +31,7 @@ const PaymentSuccess = () => {
         try {
           const sub = await billingApi.getSubscription();
           const current = (sub?.plan_name || sub?.plan || "").toLowerCase();
-          if (current && current !== "basic" && current !== initialPlan) {
+          if (current && current !== baselinePlan) {
             if (!cancelled) {
               setPlanName(current);
               setStatus("success");
@@ -78,10 +78,10 @@ const PaymentSuccess = () => {
               Your <span className="font-medium text-foreground capitalize">{planName}</span> plan is now active.
             </p>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/upgrade?paid=1")}
               className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium"
             >
-              Go to Dashboard
+              View My Plan
             </button>
           </>
         )}
@@ -94,10 +94,10 @@ const PaymentSuccess = () => {
               Your payment may still be confirming. Refresh your dashboard in a moment to see the updated plan.
             </p>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/upgrade?paid=1")}
               className="w-full h-11 rounded-xl border border-border/60 text-sm font-medium hover:bg-accent"
             >
-              Go to Dashboard
+              Check Plan Status
             </button>
           </>
         )}

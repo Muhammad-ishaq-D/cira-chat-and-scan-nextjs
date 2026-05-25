@@ -32,7 +32,23 @@ export interface AuthUser {
 export interface AuthResponse {
   token: string;
   refreshToken?: string;
-  user: AuthUser;
+  user?: AuthUser;
+}
+
+/** Decode JWT payload (no verification — server already issued the token). */
+export function parseTokenUser(token: string): AuthUser | null {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (!payload?.id) return null;
+    return {
+      id: payload.id,
+      email: payload.email || "",
+      name: payload.name || payload.email?.split("@")[0] || "User",
+      role: payload.role || "user",
+    };
+  } catch {
+    return null;
+  }
 }
 
 /** Get stored JWT token */
@@ -40,16 +56,29 @@ export function getToken(): string | null {
   return getStoredValue(TOKEN_KEY);
 }
 
+/** Database user id for billing / Stripe client_reference_id */
+export function getUserId(): string | null {
+  const user = getUser();
+  if (user?.id) return user.id;
+  const token = getToken();
+  if (!token) return null;
+  return parseTokenUser(token)?.id ?? null;
+}
+
 /** Get stored user */
 export function getUser(): AuthUser | null {
   const raw = getStoredValue(USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    localStorage.removeItem(USER_KEY);
-    return null;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as AuthUser;
+      if (parsed?.id) return parsed;
+    } catch {
+      localStorage.removeItem(USER_KEY);
+    }
   }
+  const token = getToken();
+  if (!token) return null;
+  return parseTokenUser(token);
 }
 
 /** Check if user is authenticated (token exists AND is not expired) */
@@ -79,7 +108,9 @@ function saveAuth(data: AuthResponse) {
   localStorage.setItem(TOKEN_KEY, data.token);
   if (data.refreshToken) localStorage.setItem(REFRESH_KEY, data.refreshToken);
   else localStorage.removeItem(REFRESH_KEY);
-  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  const user = data.user?.id ? data.user : parseTokenUser(data.token);
+  if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
+  else localStorage.removeItem(USER_KEY);
 }
 
 /** Clear auth data */
@@ -180,19 +211,24 @@ export async function googleLogin(idToken: string): Promise<AuthResponse> {
     throw new Error("Google login failed — no token received");
   }
 
+  const fromToken = parseTokenUser(data.token);
   const normalizedData: AuthResponse = {
     ...data,
     user: {
-      id: data?.user?.id || googleId,
-      name: data?.user?.name || googleName,
-      email: data?.user?.email || googleEmail,
-      role: data?.user?.role || "user",
+      id: data?.user?.id || fromToken?.id || "",
+      name: data?.user?.name || fromToken?.name || googleName,
+      email: data?.user?.email || fromToken?.email || googleEmail,
+      role: data?.user?.role || fromToken?.role || "user",
       ...(data?.user?.avatar || googleAvatar ? { avatar: data?.user?.avatar || googleAvatar } : {}),
     },
   };
 
+  if (!normalizedData.user?.id) {
+    throw new Error("Google login failed — could not resolve user id");
+  }
+
   saveAuth(normalizedData);
-  return normalizedData;
+  return normalizedData as AuthResponse & { user: AuthUser };
 }
 
 /** Send OTP to email */
