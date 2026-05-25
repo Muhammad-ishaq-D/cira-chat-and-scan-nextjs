@@ -724,21 +724,31 @@ export function useShenAI() {
           e?.name === "RuntimeError" ||
           msg.includes("unreachable") ||
           msg.includes("Aborted") ||
-          msg.includes("table index is out of bounds")
+          msg.includes("table index is out of bounds") ||
+          msg.includes("VideoFrame") ||
+          msg.includes("memory_pool")
         ) {
           if (pollRef.current) {
             clearInterval(pollRef.current);
             pollRef.current = null;
           }
 
+          measurementStartedAtRef.current = null;
           stopCiraCameraStream();
 
-          setError("Scan failed. Restarting scanner...");
-          setStatus("error");
+          const activeSdk = sdkRef.current;
+          if (activeSdk) {
+            try {
+              activeSdk.stopMeasurement();
+            } catch { }
 
-          window.setTimeout(() => {
-            window.location.reload();
-          }, 1200);
+            try {
+              activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+            } catch { }
+          }
+
+          setError("Camera processing failed before results were ready. Please retry in brighter light and close other camera apps.");
+          setStatus("error");
         }
       }
     }, 300);
