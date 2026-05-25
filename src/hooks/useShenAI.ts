@@ -665,6 +665,7 @@ export function useShenAI() {
             } catch (e) {
               console.warn("[ShenAI] deinitialize after finish failed:", e);
             }
+            restoreVideoFrameCapture();
 
             if (sdkRef.current === activeSdk) {
               sdkRef.current = null;
