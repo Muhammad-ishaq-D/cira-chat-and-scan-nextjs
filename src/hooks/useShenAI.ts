@@ -91,8 +91,9 @@ function capCameraResolution(maxWidth = 320, maxHeight = 240) {
       try {
         const stream = await orig(applyConstraints(true, true));
         return rememberStream(stream);
-      } catch (e: any) {
-        if (e?.name === "OverconstrainedError") {
+      } catch (e: unknown) {
+        const name = e instanceof DOMException ? e.name : "";
+        if (name === "OverconstrainedError" || name === "TypeError") {
           const stream = await orig(applyConstraints(false, false));
           return rememberStream(stream);
         }
