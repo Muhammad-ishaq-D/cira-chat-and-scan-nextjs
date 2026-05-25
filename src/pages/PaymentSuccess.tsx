@@ -15,19 +15,18 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     let cancelled = false;
-    let count = 0;
-    let baselinePlan = "basic";
-    try {
-      const sub = await billingApi.getSubscription();
-      baselinePlan = (sub?.plan_name || sub?.plan_id || "basic").toLowerCase();
-    } catch {
-      // use default baseline
-    }
 
     const poll = async () => {
-      while (!cancelled && count < MAX_ATTEMPTS) {
-        count++;
-        setAttempts(count);
+      let baselinePlan = "basic";
+      try {
+        const initial = await billingApi.getSubscription();
+        baselinePlan = (initial?.plan_name || initial?.plan_id || "basic").toLowerCase();
+      } catch {
+        // use default baseline
+      }
+
+      for (let count = 0; !cancelled && count < MAX_ATTEMPTS; count++) {
+        setAttempts(count + 1);
         try {
           const sub = await billingApi.getSubscription();
           const current = (sub?.plan_name || sub?.plan || "").toLowerCase();
