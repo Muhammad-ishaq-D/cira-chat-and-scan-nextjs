@@ -516,6 +516,7 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = Date.now();
 
     setError(null);
     setResults(null);
@@ -545,7 +546,32 @@ export function useShenAI() {
         }
 
         if (typeof prog === "number" && prog > 0) {
-          setProgress(Math.round(prog));
+          setProgress(clampPercent(prog));
+        }
+
+        if (
+          measurementStartedAtRef.current &&
+          Date.now() - measurementStartedAtRef.current > MAX_MEASUREMENT_MS
+        ) {
+          if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+          }
+
+          measurementStartedAtRef.current = null;
+          stopCiraCameraStream();
+
+          try {
+            activeSdk.stopMeasurement();
+          } catch { }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
+
+          setError("The camera feed got stuck before results were ready. Please retry in brighter light and close other camera apps.");
+          setStatus("error");
+          return;
         }
 
         const isFinished =
@@ -567,6 +593,7 @@ export function useShenAI() {
 
           setProgress(100);
           setStatus("processing");
+          measurementStartedAtRef.current = null;
 
           let rawSnapshot: ReturnType<
             typeof activeSdk.getMeasurementResults
@@ -579,6 +606,10 @@ export function useShenAI() {
           } catch (e) {
             console.warn("[ShenAI] stopMeasurement failed:", e);
           }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
 
           try {
             rawSnapshot = activeSdk.getMeasurementResults();
@@ -670,7 +701,16 @@ export function useShenAI() {
             pollRef.current = null;
           }
 
+          measurementStartedAtRef.current = null;
           stopCiraCameraStream();
+
+          try {
+            activeSdk.stopMeasurement();
+          } catch { }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
 
           setError("Measurement failed — try again with better lighting");
           setStatus("error");
