@@ -4,7 +4,7 @@ import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2 } from "l
 import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
-import { getStripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
+import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 
 interface Plan {
   id: string; name: string; price: string; period: string; desc: string;
@@ -89,46 +89,21 @@ const Upgrade = () => {
       });
   }, []);
 
-  const handleUpgrade = async (plan: Plan) => {
+  const handleUpgrade = (plan: Plan) => {
     if (plan.current) return;
     if (plan.id === "basic" || plan.name.toLowerCase() === "basic") return;
 
-    const priceId =
-      plan.stripe_price_id ||
-      STRIPE_PRICE_IDS[plan.name.toLowerCase()] ||
-      STRIPE_PRICE_IDS[plan.id];
+    const link =
+      STRIPE_PAYMENT_LINKS[plan.name.toLowerCase()] ||
+      STRIPE_PAYMENT_LINKS[plan.id];
 
-    if (!priceId) {
-      toast.error("Stripe price ID is not configured for this plan.");
+    if (!link) {
+      toast.error("Payment link is not configured for this plan.");
       return;
     }
 
     setRedirectingId(plan.id);
-    try {
-      const stripe = await getStripe();
-      if (!stripe) {
-        toast.error("Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY.");
-        setRedirectingId(null);
-        return;
-      }
-
-      const origin = window.location.origin;
-      const { error } = await (stripe as any).redirectToCheckout({
-        lineItems: [{ price: priceId, quantity: 1 }],
-        mode: "subscription",
-        successUrl: `${origin}/dashboard?checkout=success&plan=${encodeURIComponent(plan.name)}`,
-        cancelUrl: `${origin}/upgrade?checkout=cancelled`,
-        clientReferenceId: plan.id,
-      });
-
-      if (error) {
-        toast.error(error.message || "Could not start checkout.");
-        setRedirectingId(null);
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Checkout failed");
-      setRedirectingId(null);
-    }
+    window.location.href = link;
   };
 
   return (
