@@ -14,6 +14,7 @@ import Upgrade from "./pages/Upgrade.tsx";
 import VitalsScan from "./pages/VitalsScan.tsx";
 import Reports from "./pages/Reports.tsx";
 import PaymentHistory from "./pages/PaymentHistory.tsx";
+import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
