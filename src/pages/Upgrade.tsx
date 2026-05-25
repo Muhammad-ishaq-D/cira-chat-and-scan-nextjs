@@ -5,6 +5,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
+import { getUser } from "@/lib/auth";
 
 interface Plan {
   id: string; name: string; price: string; period: string; desc: string;
@@ -103,16 +104,26 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
+    
+    // Append client_reference_id
+    const user = getUser();
+    let finalLink = link;
+    if (user && user.id) {
+      const url = new URL(link);
+      url.searchParams.append("client_reference_id", user.id);
+      finalLink = url.toString();
+    }
+
     // Force same-tab navigation (break out of preview iframe if needed)
     try {
       if (window.top && window.top !== window.self) {
-        window.top.location.href = link;
+        window.top.location.href = finalLink;
         return;
       }
     } catch {
       // cross-origin iframe — fall through
     }
-    window.location.assign(link);
+    window.location.assign(finalLink);
   };
 
   return (
