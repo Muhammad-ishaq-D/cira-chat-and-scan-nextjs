@@ -27,6 +27,26 @@ function readConnection(): NetInfo {
 const SdkLoadingOverlay = ({ progress, status }: Props) => {
   const [net, setNet] = useState<NetInfo>(() => readConnection());
   const [ping, setPing] = useState<number | null>(null);
+  const [displayed, setDisplayed] = useState(0);
+
+  // Smoothly animate displayed % toward the real progress, clamped 0-100.
+  useEffect(() => {
+    const target = Math.max(0, Math.min(100, Math.round(progress)));
+    let raf = 0;
+    const tick = () => {
+      setDisplayed((cur) => {
+        if (cur === target) return cur;
+        // Move at most 1.5% per frame so big jumps animate visibly
+        const step = Math.max(1, Math.ceil(Math.abs(target - cur) / 25));
+        const next = cur < target ? Math.min(target, cur + step) : Math.max(target, cur - step);
+        if (next !== target) raf = requestAnimationFrame(tick);
+        return next;
+      });
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progress]);
+
 
   useEffect(() => {
     const update = () => setNet(readConnection());
@@ -69,7 +89,7 @@ const SdkLoadingOverlay = ({ progress, status }: Props) => {
     return { label: "Stable", color: "text-emerald-400", dot: "bg-emerald-400" };
   })();
 
-  const shown = status === "loading" ? Math.max(progress, 2) : progress;
+  const shown = Math.max(0, Math.min(100, status === "loading" ? Math.max(displayed, 2) : displayed));
   const phase = status === "idle"
     ? "Preparing scanner"
     : progress < 100
