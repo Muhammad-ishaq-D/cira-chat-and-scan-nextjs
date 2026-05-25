@@ -773,6 +773,7 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = null;
 
     if (sdk) {
       try {
@@ -781,6 +782,10 @@ export function useShenAI() {
 
       try {
         sdk.resetMeasurementSession();
+      } catch { }
+
+      try {
+        sdk.setCameraMode(sdk.CameraMode.FACING_USER);
       } catch { }
 
       try {
