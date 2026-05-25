@@ -122,8 +122,53 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
       ? "Downloading scanner engine"
       : "Starting camera";
 
+  const handleRetry = () => {
+    if (onRetry) onRetry();
+    else window.location.reload();
+  };
+
+  if (isStuck) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-10 px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 border-2 border-amber-500/30">
+          <WifiOff size={24} className="text-amber-400" />
+        </div>
+        <h2 className="text-white text-lg font-heading font-semibold mb-1">Connection issue</h2>
+        <p className="text-white/60 text-xs font-body mb-1 max-w-xs">
+          The scanner engine is taking longer than expected to download.
+        </p>
+        <p className="text-white/40 text-[11px] font-body mb-5 max-w-xs">
+          Please check your internet connection and try again.
+        </p>
+
+        <div className="w-full max-w-xs bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 backdrop-blur-sm mb-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {net.online ? <Wifi size={13} className="text-white/60" /> : <WifiOff size={13} className="text-red-400" />}
+              <span className="text-[11px] text-white/60 font-medium">
+                {net.online ? "Online" : "Offline"}
+              </span>
+            </div>
+            <span className="text-[11px] text-white/60 tabular-nums">
+              {ping != null ? `${ping}ms` : "no response"}
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleRetry}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          <RefreshCw size={14} /> Retry
+        </button>
+        <p className="text-[10px] text-white/30 mt-4">Stuck at {displayed}% · waited 20s+</p>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-10 px-6">
+
       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
         {status === "loading" && progress < 100 ? (
           <Download size={22} className="text-primary animate-pulse" />
