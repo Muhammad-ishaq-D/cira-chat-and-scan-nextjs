@@ -103,7 +103,19 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
-    window.location.href = link;
+    try {
+      // Stripe Checkout / Payment Links cannot run inside an iframe (e.g. Lovable preview).
+      // Break out to the top-level window when possible, otherwise open in a new tab.
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = link;
+      } else {
+        window.location.href = link;
+      }
+    } catch {
+      // Cross-origin iframe — can't access window.top.location, open in new tab instead.
+      window.open(link, "_blank", "noopener,noreferrer");
+      setRedirectingId(null);
+    }
   };
 
   return (
