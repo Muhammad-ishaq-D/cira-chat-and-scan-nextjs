@@ -10,6 +10,39 @@ import type {
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
 let ciraCameraStream: MediaStream | null = null;
+let originalMediaStreamTrackProcessor: unknown;
+let mediaStreamTrackProcessorDisabled = false;
+
+const MAX_MEASUREMENT_MS = 90000;
+
+function clampPercent(value: unknown): number {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function normalizeSdkProgress(value: unknown): number {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return clampPercent(n <= 1 ? n * 100 : n);
+}
+
+function disableVideoFrameCapture() {
+  if (typeof globalThis === "undefined" || mediaStreamTrackProcessorDisabled) return;
+  const g = globalThis as any;
+  originalMediaStreamTrackProcessor = g.MediaStreamTrackProcessor;
+  if (originalMediaStreamTrackProcessor) {
+    g.MediaStreamTrackProcessor = undefined;
+    mediaStreamTrackProcessorDisabled = true;
+  }
+}
+
+function restoreVideoFrameCapture() {
+  if (typeof globalThis === "undefined" || !mediaStreamTrackProcessorDisabled) return;
+  (globalThis as any).MediaStreamTrackProcessor = originalMediaStreamTrackProcessor;
+  originalMediaStreamTrackProcessor = undefined;
+  mediaStreamTrackProcessorDisabled = false;
+}
 
 function stopCiraCameraStream() {
   try {
@@ -37,37 +70,31 @@ function capCameraResolution(maxWidth = 320, maxHeight = 240) {
   };
 
   navigator.mediaDevices.getUserMedia = async function (constraints) {
-    if (constraints?.video && typeof constraints.video === "object") {
-      const applyConstraints = (vid: any, useMax: boolean) => ({
+    if (constraints?.video) {
+      const vid = typeof constraints.video === "object" ? { ...(constraints.video as any) } : {};
+      const baseVideo: MediaTrackConstraints = {
+        ...(vid.deviceId ? { deviceId: vid.deviceId } : {}),
+        ...(vid.facingMode ? { facingMode: vid.facingMode } : {}),
+      };
+
+      const applyConstraints = (useMax: boolean, useResizeMode: boolean) => ({
         ...constraints,
         video: {
-          ...vid,
-          width: {
-            ...(typeof vid.width === "object" ? vid.width : {}),
-            ideal: maxWidth,
-            ...(useMax ? { max: maxWidth } : {}),
-          },
-          height: {
-            ...(typeof vid.height === "object" ? vid.height : {}),
-            ideal: maxHeight,
-            ...(useMax ? { max: maxHeight } : {}),
-          },
-          frameRate: {
-            ...(typeof vid.frameRate === "object" ? vid.frameRate : {}),
-            ideal: 15,
-            max: 24,
-          },
+          ...baseVideo,
+          width: { ideal: maxWidth, ...(useMax ? { max: maxWidth } : {}) },
+          height: { ideal: maxHeight, ...(useMax ? { max: maxHeight } : {}) },
+          frameRate: { ideal: 12, max: 15 },
+          ...(useResizeMode ? { resizeMode: "crop-and-scale" as any } : {}),
         },
       });
 
-      const vid = { ...(constraints.video as any) };
-
       try {
-        const stream = await orig(applyConstraints(vid, true));
+        const stream = await orig(applyConstraints(true, true));
         return rememberStream(stream);
-      } catch (e: any) {
-        if (e?.name === "OverconstrainedError") {
-          const stream = await orig(applyConstraints(vid, false));
+      } catch (e: unknown) {
+        const name = e instanceof DOMException ? e.name : "";
+        if (name === "OverconstrainedError" || name === "TypeError") {
+          const stream = await orig(applyConstraints(false, false));
           return rememberStream(stream);
         }
         throw e;
@@ -312,6 +339,7 @@ export function useShenAI() {
   const pollRef = useRef<number | null>(null);
   const finishTimerRef = useRef<number | null>(null);
   const finishHandledRef = useRef(false);
+  const measurementStartedAtRef = useRef<number | null>(null);
   const riskProfileRef = useRef<UserProfileData | undefined>(undefined);
 
   const cleanup = useCallback(() => {
@@ -326,15 +354,22 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = null;
 
     stopCiraCameraStream();
 
     if (sdkRef.current) {
       try {
+        sdkRef.current.setCameraMode(sdkRef.current.CameraMode.OFF);
+      } catch { }
+
+      try {
         sdkRef.current.deinitialize();
       } catch { }
       sdkRef.current = null;
     }
+
+    restoreVideoFrameCapture();
 
     riskProfileRef.current = undefined;
   }, []);
@@ -355,8 +390,14 @@ export function useShenAI() {
       setResults(null);
       setProgress(0);
       finishHandledRef.current = false;
+      measurementStartedAtRef.current = null;
 
       try {
+        // The SDK's MediaStreamTrackProcessor path allocates large VideoFrame
+        // buffers and can crash with repeated "Error ingesting VideoFrame" logs
+        // on memory-limited devices. Force its lower-memory canvas/ImageData path.
+        disableVideoFrameCapture();
+
         const ShenAI = (await import("shenai-sdk")).default;
 
         const sdk: ShenaiSDK = await ShenAI({
@@ -366,7 +407,7 @@ export function useShenAI() {
             return filename;
           },
           onWasmLoadingProgress: (p: number) => {
-            setProgress(Math.round(p * 100));
+            setProgress(normalizeSdkProgress(p));
           },
         } as any);
 
@@ -403,6 +444,11 @@ export function useShenAI() {
           applyPrecisionModeToBloodPressure: true,
           enableFullFrameProcessing: false,
           cameraAspectRatio: isMobile ? 0 : 16 / 9,
+          onCameraError: () => {
+            stopCiraCameraStream();
+            setError("Camera processing stopped. Please close other camera apps and try again.");
+            setStatus("error");
+          },
 
           ...(Object.keys(riskFactors).length > 0
             ? { risksFactors: riskFactors }
@@ -421,6 +467,8 @@ export function useShenAI() {
               sdk.attachToCanvas(canvasSelector, true);
             } catch (e) {
               console.error("[ShenAI] attachToCanvas error:", e);
+              stopCiraCameraStream();
+              restoreVideoFrameCapture();
               setError("Could not attach scanner to camera canvas.");
               setStatus("error");
             }
@@ -436,9 +484,12 @@ export function useShenAI() {
 
           setError(errors[result.value] || "Initialization failed");
           setStatus("error");
+          stopCiraCameraStream();
+          restoreVideoFrameCapture();
         });
       } catch (err: any) {
         console.error("[ShenAI] init error:", err);
+        restoreVideoFrameCapture();
 
         const msg = String(err?.message || err || "");
 
@@ -476,6 +527,7 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = Date.now();
 
     setError(null);
     setResults(null);
@@ -505,7 +557,32 @@ export function useShenAI() {
         }
 
         if (typeof prog === "number" && prog > 0) {
-          setProgress(Math.round(prog));
+          setProgress(clampPercent(prog));
+        }
+
+        if (
+          measurementStartedAtRef.current &&
+          Date.now() - measurementStartedAtRef.current > MAX_MEASUREMENT_MS
+        ) {
+          if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+          }
+
+          measurementStartedAtRef.current = null;
+          stopCiraCameraStream();
+
+          try {
+            activeSdk.stopMeasurement();
+          } catch { }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
+
+          setError("The camera feed got stuck before results were ready. Please retry in brighter light and close other camera apps.");
+          setStatus("error");
+          return;
         }
 
         const isFinished =
@@ -527,6 +604,7 @@ export function useShenAI() {
 
           setProgress(100);
           setStatus("processing");
+          measurementStartedAtRef.current = null;
 
           let rawSnapshot: ReturnType<
             typeof activeSdk.getMeasurementResults
@@ -539,6 +617,10 @@ export function useShenAI() {
           } catch (e) {
             console.warn("[ShenAI] stopMeasurement failed:", e);
           }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
 
           try {
             rawSnapshot = activeSdk.getMeasurementResults();
@@ -588,6 +670,7 @@ export function useShenAI() {
             } catch (e) {
               console.warn("[ShenAI] deinitialize after finish failed:", e);
             }
+            restoreVideoFrameCapture();
 
             if (sdkRef.current === activeSdk) {
               sdkRef.current = null;
@@ -630,7 +713,16 @@ export function useShenAI() {
             pollRef.current = null;
           }
 
+          measurementStartedAtRef.current = null;
           stopCiraCameraStream();
+
+          try {
+            activeSdk.stopMeasurement();
+          } catch { }
+
+          try {
+            activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+          } catch { }
 
           setError("Measurement failed — try again with better lighting");
           setStatus("error");
@@ -644,21 +736,31 @@ export function useShenAI() {
           e?.name === "RuntimeError" ||
           msg.includes("unreachable") ||
           msg.includes("Aborted") ||
-          msg.includes("table index is out of bounds")
+          msg.includes("table index is out of bounds") ||
+          msg.includes("VideoFrame") ||
+          msg.includes("memory_pool")
         ) {
           if (pollRef.current) {
             clearInterval(pollRef.current);
             pollRef.current = null;
           }
 
+          measurementStartedAtRef.current = null;
           stopCiraCameraStream();
 
-          setError("Scan failed. Restarting scanner...");
-          setStatus("error");
+          const activeSdk = sdkRef.current;
+          if (activeSdk) {
+            try {
+              activeSdk.stopMeasurement();
+            } catch { }
 
-          window.setTimeout(() => {
-            window.location.reload();
-          }, 1200);
+            try {
+              activeSdk.setCameraMode(activeSdk.CameraMode.OFF);
+            } catch { }
+          }
+
+          setError("Camera processing failed before results were ready. Please retry in brighter light and close other camera apps.");
+          setStatus("error");
         }
       }
     }, 300);
@@ -678,6 +780,7 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = null;
 
     if (sdk) {
       try {
@@ -686,6 +789,10 @@ export function useShenAI() {
 
       try {
         sdk.resetMeasurementSession();
+      } catch { }
+
+      try {
+        sdk.setCameraMode(sdk.CameraMode.FACING_USER);
       } catch { }
 
       try {
