@@ -356,14 +356,19 @@ export function useShenAI() {
     measurementStartedAtRef.current = null;
 
     stopCiraCameraStream();
-    restoreVideoFrameCapture();
 
     if (sdkRef.current) {
+      try {
+        sdkRef.current.setCameraMode(sdkRef.current.CameraMode.OFF);
+      } catch { }
+
       try {
         sdkRef.current.deinitialize();
       } catch { }
       sdkRef.current = null;
     }
+
+    restoreVideoFrameCapture();
 
     riskProfileRef.current = undefined;
   }, []);
