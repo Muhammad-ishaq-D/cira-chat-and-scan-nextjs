@@ -467,6 +467,8 @@ export function useShenAI() {
               sdk.attachToCanvas(canvasSelector, true);
             } catch (e) {
               console.error("[ShenAI] attachToCanvas error:", e);
+              stopCiraCameraStream();
+              restoreVideoFrameCapture();
               setError("Could not attach scanner to camera canvas.");
               setStatus("error");
             }
@@ -482,9 +484,12 @@ export function useShenAI() {
 
           setError(errors[result.value] || "Initialization failed");
           setStatus("error");
+          stopCiraCameraStream();
+          restoreVideoFrameCapture();
         });
       } catch (err: any) {
         console.error("[ShenAI] init error:", err);
+        restoreVideoFrameCapture();
 
         const msg = String(err?.message || err || "");
 
