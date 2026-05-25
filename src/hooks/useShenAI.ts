@@ -10,6 +10,39 @@ import type {
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
 let ciraCameraStream: MediaStream | null = null;
+let originalMediaStreamTrackProcessor: unknown;
+let mediaStreamTrackProcessorDisabled = false;
+
+const MAX_MEASUREMENT_MS = 90000;
+
+function clampPercent(value: unknown): number {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function normalizeSdkProgress(value: unknown): number {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return clampPercent(n <= 1 ? n * 100 : n);
+}
+
+function disableVideoFrameCapture() {
+  if (typeof globalThis === "undefined" || mediaStreamTrackProcessorDisabled) return;
+  const g = globalThis as any;
+  originalMediaStreamTrackProcessor = g.MediaStreamTrackProcessor;
+  if (originalMediaStreamTrackProcessor) {
+    g.MediaStreamTrackProcessor = undefined;
+    mediaStreamTrackProcessorDisabled = true;
+  }
+}
+
+function restoreVideoFrameCapture() {
+  if (typeof globalThis === "undefined" || !mediaStreamTrackProcessorDisabled) return;
+  (globalThis as any).MediaStreamTrackProcessor = originalMediaStreamTrackProcessor;
+  originalMediaStreamTrackProcessor = undefined;
+  mediaStreamTrackProcessorDisabled = false;
+}
 
 function stopCiraCameraStream() {
   try {
@@ -37,37 +70,30 @@ function capCameraResolution(maxWidth = 320, maxHeight = 240) {
   };
 
   navigator.mediaDevices.getUserMedia = async function (constraints) {
-    if (constraints?.video && typeof constraints.video === "object") {
-      const applyConstraints = (vid: any, useMax: boolean) => ({
+    if (constraints?.video) {
+      const vid = typeof constraints.video === "object" ? { ...(constraints.video as any) } : {};
+      const baseVideo: MediaTrackConstraints = {
+        ...(vid.deviceId ? { deviceId: vid.deviceId } : {}),
+        ...(vid.facingMode ? { facingMode: vid.facingMode } : {}),
+      };
+
+      const applyConstraints = (useMax: boolean, useResizeMode: boolean) => ({
         ...constraints,
         video: {
-          ...vid,
-          width: {
-            ...(typeof vid.width === "object" ? vid.width : {}),
-            ideal: maxWidth,
-            ...(useMax ? { max: maxWidth } : {}),
-          },
-          height: {
-            ...(typeof vid.height === "object" ? vid.height : {}),
-            ideal: maxHeight,
-            ...(useMax ? { max: maxHeight } : {}),
-          },
-          frameRate: {
-            ...(typeof vid.frameRate === "object" ? vid.frameRate : {}),
-            ideal: 15,
-            max: 24,
-          },
+          ...baseVideo,
+          width: { ideal: maxWidth, ...(useMax ? { max: maxWidth } : {}) },
+          height: { ideal: maxHeight, ...(useMax ? { max: maxHeight } : {}) },
+          frameRate: { ideal: 12, max: 15 },
+          ...(useResizeMode ? { resizeMode: "crop-and-scale" as any } : {}),
         },
       });
 
-      const vid = { ...(constraints.video as any) };
-
       try {
-        const stream = await orig(applyConstraints(vid, true));
+        const stream = await orig(applyConstraints(true, true));
         return rememberStream(stream);
       } catch (e: any) {
         if (e?.name === "OverconstrainedError") {
-          const stream = await orig(applyConstraints(vid, false));
+          const stream = await orig(applyConstraints(false, false));
           return rememberStream(stream);
         }
         throw e;
