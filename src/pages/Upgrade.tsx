@@ -103,7 +103,16 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
-    window.location.href = link;
+    // Force same-tab navigation (break out of preview iframe if needed)
+    try {
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = link;
+        return;
+      }
+    } catch {
+      // cross-origin iframe — fall through
+    }
+    window.location.assign(link);
   };
 
   return (

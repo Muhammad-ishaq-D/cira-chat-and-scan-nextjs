@@ -14,6 +14,7 @@ import Upgrade from "./pages/Upgrade.tsx";
 import VitalsScan from "./pages/VitalsScan.tsx";
 import Reports from "./pages/Reports.tsx";
 import PaymentHistory from "./pages/PaymentHistory.tsx";
+import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import Doctor from "./pages/Doctor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
@@ -109,6 +110,7 @@ const App = () => {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
+          <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
           <Route path="/vitals-scan" element={<VitalsScan />} />
           <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
