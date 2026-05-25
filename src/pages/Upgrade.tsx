@@ -4,7 +4,7 @@ import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2 } from "l
 import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
-import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
+import { STRIPE_PAYMENT_LINKS, PENDING_PLAN_STORAGE_KEY } from "@/lib/stripe";
 import { getUser, getUserId } from "@/lib/auth";
 
 interface Plan {
@@ -155,17 +155,23 @@ const Upgrade = () => {
     };
   }, [refreshSubscription]);
 
-  // After Stripe redirect (?paid=1), poll until plan updates
+  // After Stripe redirect (?paid=1), poll until the selected plan is active
   useEffect(() => {
     if (searchParams.get("paid") !== "1") return;
+
+    const pendingKey =
+      sessionStorage.getItem(PENDING_PLAN_STORAGE_KEY) ||
+      searchParams.get("plan") ||
+      "";
 
     let cancelled = false;
     const poll = async () => {
       for (let i = 0; i < 12 && !cancelled; i++) {
         const sub = await refreshSubscription();
         const key = normalizePlanKey(sub?.plan_key || sub?.plan_name);
-        if (key === "pro" || key === "enterprise") {
+        if (pendingKey && key === normalizePlanKey(pendingKey)) {
           toast.success(`Your ${sub?.plan_name || key} plan is now active.`);
+          sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
           setSearchParams({}, { replace: true });
           return;
         }
@@ -192,6 +198,7 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
+    sessionStorage.setItem(PENDING_PLAN_STORAGE_KEY, normalizePlanKey(plan.name));
 
     const userId = getUserId();
     if (!userId) {

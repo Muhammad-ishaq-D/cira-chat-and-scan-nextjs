@@ -198,6 +198,8 @@ export const billingApi = {
   reactivateSubscription: () => post("/api/billing/reactivate", {}),
   getPaymentHistory: () => get("/api/billing/payments"),
   getPlans: () => get("/api/billing/plans"),
+  confirmCheckout: (sessionId: string, planKey?: string) =>
+    post("/api/billing/confirm-checkout", { sessionId, planKey }),
 };
 
 // ─── Doctors ────────────────────────────────────────────────────
