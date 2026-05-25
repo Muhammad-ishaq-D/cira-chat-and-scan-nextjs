@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { secureStorage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { logAuditEvent } from "@/lib/audit";
+import SdkLoadingOverlay from "@/components/SdkLoadingOverlay";
 
 const navItems = [
   { icon: Home, label: "Home", id: "home" },
@@ -448,17 +449,7 @@ const VitalsScan = () => {
 
             {/* Idle/Loading overlay */}
             {(status === "idle" || status === "loading") && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-10">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 border-2 border-primary/20">
-                  <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                </div>
-                <h2 className="text-white text-lg font-heading font-semibold mb-1">Initializing Scanner</h2>
-                <p className="text-white/50 text-xs font-body mb-4">Setting up camera · Please wait</p>
-                <div className="flex items-center gap-1.5">
-                  <AlertCircle size={10} className="text-white/30 shrink-0" />
-                  <p className="text-[10px] text-white/30">Credits deducted upon scan · 100% on-device</p>
-                </div>
-              </div>
+              <SdkLoadingOverlay status={status} progress={progress} />
             )}
 
             {/* Progress overlay during measurement */}
