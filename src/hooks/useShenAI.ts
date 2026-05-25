@@ -338,6 +338,7 @@ export function useShenAI() {
   const pollRef = useRef<number | null>(null);
   const finishTimerRef = useRef<number | null>(null);
   const finishHandledRef = useRef(false);
+  const measurementStartedAtRef = useRef<number | null>(null);
   const riskProfileRef = useRef<UserProfileData | undefined>(undefined);
 
   const cleanup = useCallback(() => {
@@ -352,8 +353,10 @@ export function useShenAI() {
     }
 
     finishHandledRef.current = false;
+    measurementStartedAtRef.current = null;
 
     stopCiraCameraStream();
+    restoreVideoFrameCapture();
 
     if (sdkRef.current) {
       try {
@@ -381,8 +384,14 @@ export function useShenAI() {
       setResults(null);
       setProgress(0);
       finishHandledRef.current = false;
+      measurementStartedAtRef.current = null;
 
       try {
+        // The SDK's MediaStreamTrackProcessor path allocates large VideoFrame
+        // buffers and can crash with repeated "Error ingesting VideoFrame" logs
+        // on memory-limited devices. Force its lower-memory canvas/ImageData path.
+        disableVideoFrameCapture();
+
         const ShenAI = (await import("shenai-sdk")).default;
 
         const sdk: ShenaiSDK = await ShenAI({
@@ -392,7 +401,7 @@ export function useShenAI() {
             return filename;
           },
           onWasmLoadingProgress: (p: number) => {
-            setProgress(Math.round(p * 100));
+            setProgress(normalizeSdkProgress(p));
           },
         } as any);
 
@@ -429,6 +438,11 @@ export function useShenAI() {
           applyPrecisionModeToBloodPressure: true,
           enableFullFrameProcessing: false,
           cameraAspectRatio: isMobile ? 0 : 16 / 9,
+          onCameraError: () => {
+            stopCiraCameraStream();
+            setError("Camera processing stopped. Please close other camera apps and try again.");
+            setStatus("error");
+          },
 
           ...(Object.keys(riskFactors).length > 0
             ? { risksFactors: riskFactors }
