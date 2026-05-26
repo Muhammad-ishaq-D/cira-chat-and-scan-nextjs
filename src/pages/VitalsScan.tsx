@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, Info, Crown } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -375,57 +375,51 @@ const VitalsScan = () => {
 
           {/* ── Left: Instructions Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-6 flex flex-col h-full">
-              {/* How to take assessment card */}
-              <div className="border border-gray-200 rounded-2xl p-5 mb-5">
-                <h2 className="font-heading font-semibold text-foreground text-base mb-4">How to take assessment</h2>
-                <div className="space-y-4">
-                  {[
-                    { step: "1", text: "Ensure good lighting for clear visibility." },
-                    { step: "2", text: "Position your device's camera so it's level with your eyes." },
-                    { step: "3", text: "Avoid talking or moving your head." },
-                  ].map((item) => (
-                    <div key={item.step} className="flex gap-3 items-start">
-                      <div className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-medium text-gray-600">{item.step}</span>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <ScanFace size={16} className="text-primary" />
+                </div>
+                <h2 className="font-heading font-semibold text-foreground">How to Scan</h2>
+              </div>
+
+              <div className="space-y-5">
+                {[
+                  { step: "1", icon: Zap, title: "Good Lighting", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
+                  { step: "2", icon: UserRound, title: "Position Your Face", desc: "Center your face in the camera and keep it within the red markers." },
+                  { step: "3", icon: Activity, title: "Stay Still", desc: "Keep your head and body steady during the 30-second measurement." },
+                  { step: "4", icon: Wind, title: "Breathe Normally", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.step} className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-primary">{item.step}</span>
                       </div>
-                      <p className="text-sm text-gray-700 font-body leading-snug pt-1">{item.text}</p>
+                      <div>
+                        <p className="text-sm font-medium text-foreground font-heading">{item.title}</p>
+                        <p className="text-xs text-muted-foreground font-body mt-0.5 leading-relaxed">{item.desc}</p>
+                      </div>
                     </div>
-                  ))}
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <ShieldCheck size={12} className="text-emerald-500" />
+                  <p className="text-[11px] font-semibold text-foreground">100% Private</p>
                 </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">All analysis happens on your device. No video is recorded or transmitted.</p>
               </div>
 
-              {/* Apply in various scenarios dropdown */}
-              <div className="mb-5">
-                <p className="text-sm font-semibold text-foreground font-heading mb-2">Apply Shen in various scenarios</p>
-                <div className="relative">
-                  <select className="w-full h-11 pl-4 pr-10 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 font-body appearance-none focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer">
-                    <option>Chronic Disease Management</option>
-                    <option>Preventive Health Screening</option>
-                    <option>Post-Exercise Recovery</option>
-                    <option>Stress Management</option>
-                    <option>General Wellness</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M6 9l6 6 6-6"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-3 text-sm text-gray-600 font-body mb-5">
-                <p>This health assessment uses rPPG, computer vision, and advanced AI to build a full profile of your health markers.</p>
-                <p>Click <span className="font-bold text-foreground">START</span> to take a 30 seconds face scan and get insights into your health.</p>
-              </div>
-
-              {/* Scan credits */}
               {!isGuest && (
-                <div className="p-3 rounded-xl bg-primary/5 border border-primary/10 mb-5">
+                <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/10">
                   <div className="flex items-center gap-1.5 mb-1">
                     <AlertCircle size={12} className="text-primary" />
                     <p className="text-[11px] font-semibold text-primary">Scan Credits</p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
                     {scansLeft === "Unlimited" ? "Unlimited scans available" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
                   </p>
                 </div>
@@ -435,27 +429,17 @@ const VitalsScan = () => {
               {!isGuest && (
                 <button
                   onClick={() => { const next = !showHistory; setShowHistory(next); if (next) logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
-                  className="mb-5 w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
+                  className="mt-4 w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
                   <Menu size={14} strokeWidth={1.5} />
                   Scan History
                 </button>
               )}
-
-              {/* Trusted by */}
-              <div className="mt-auto">
-                <p className="text-[11px] text-muted-foreground font-body mb-2">Trusted by:</p>
-                <div className="flex flex-wrap gap-x-5 gap-y-2 items-center">
-                  {["Allianz", "Dr.Digital", "Telekom", "Caremondo", "Healtherry"].map((name) => (
-                    <span key={name} className="text-[12px] font-semibold text-gray-400">{name}</span>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
           {/* ── Center: Camera ── */}
-          <div className="flex-1 relative flex flex-col bg-black overflow-hidden w-full md:max-w-[640px] md:aspect-[16/10] md:self-start md:mt-4 md:rounded-2xl lg:max-w-[480px] lg:aspect-auto lg:self-stretch lg:mt-0 lg:rounded-2xl mx-auto">
+          <div className="flex-1 relative flex flex-col bg-black overflow-hidden mx-auto w-full md:max-w-[640px] md:aspect-[16/10] md:self-start md:mt-4 md:rounded-2xl">
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
@@ -574,49 +558,84 @@ const VitalsScan = () => {
             </div>
           </div>
 
-          {/* ── Right: Health Metrics Panel ── */}
+          {/* ── Right: Vitals Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-6 flex flex-col h-full">
-              {/* Heading */}
-              <h2 className="font-heading font-bold text-foreground text-xl leading-tight mb-3">
-                Monitor 30+ health metrics in just 30 seconds—with a facial scan.
-              </h2>
-              <p className="text-[13px] text-muted-foreground font-body leading-relaxed mb-6">
-                Measure health markers like blood pressure, BMI, heart rate (HR), heart rate variability (HRV) and more in just 30 seconds via face scan.
-              </p>
-
-              {/* Metrics grid */}
-              <div className="grid grid-cols-2 gap-x-6 gap-y-6">
-                {[
-                  { label: "Heart Rate", icon: Heart, color: "text-rose-500" },
-                  { label: "Breathing Rate", icon: Wind, color: "text-teal-500" },
-                  { label: "Blood Pressure", icon: Activity, color: "text-pink-500" },
-                  { label: "Body Mass Index", icon: Scale, color: "text-emerald-500" },
-                  { label: "Heart Rate Variability", icon: Zap, color: "text-amber-500" },
-                  { label: "Cardiac Stress Index", icon: Brain, color: "text-purple-500" },
-                  { label: "Parasympathetic Activity", icon: Activity, color: "text-blue-500" },
-                  { label: "Wellness Score", icon: ShieldCheck, color: "text-green-500" },
-                ].map(({ label, icon: Icon, color }) => (
-                  <div key={label} className="flex flex-col gap-2">
-                    <Icon size={24} className={color} strokeWidth={1.5} />
-                    <p className="text-[12px] font-medium text-foreground font-body leading-tight">{label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* +25 More Health Markers */}
-              <div className="mt-6 flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                  <Sparkles size={13} className="text-gray-400" />
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                  <Heart size={16} className="text-rose-500" />
                 </div>
-                <p className="text-sm text-muted-foreground font-body">+25 More Health Markers</p>
+                <h2 className="font-heading font-semibold text-foreground">Vitals</h2>
               </div>
 
-              {/* Powered by */}
-              <div className="mt-auto pt-6 flex items-center justify-end gap-2 border-t border-gray-100">
-                <span className="text-[11px] text-muted-foreground font-body">Powered by:</span>
-                <span className="text-[13px] font-bold text-foreground tracking-tight">shen ai</span>
+              {/* Status indicator */}
+              <div className={`mb-4 p-3 rounded-xl flex items-center gap-2.5 ${
+                (status === "measuring" || status === "processing") ? "bg-primary/10 border border-primary/20" :
+                status === "ready" ? "bg-emerald-50 border border-emerald-200" :
+                "bg-gray-50 border border-gray-100"
+              }`}>
+                {(status === "measuring" || status === "processing") ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-primary">
+                        {status === "processing" || progress >= 100 ? "Analyzing..." : "Measuring..."}
+                      </p>
+                      {status !== "processing" && progress < 100 && (
+                        <div className="mt-1.5 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold text-primary shrink-0">{progress}%</span>
+                  </>
+                ) : status === "ready" ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <p className="text-xs font-medium text-emerald-700">Ready to scan</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+                    <p className="text-xs font-medium text-muted-foreground">Initializing...</p>
+                  </>
+                )}
               </div>
+
+              {/* Vital placeholder cards */}
+              <div className="space-y-2">
+                {[
+                  { label: "Heart Rate", unit: "bpm", icon: Heart, color: "text-red-500", bg: "bg-red-50" },
+                  { label: "Blood Pressure", unit: "mmHg", icon: Activity, color: "text-pink-500", bg: "bg-pink-50" },
+                  { label: "Breathing Rate", unit: "/min", icon: Wind, color: "text-cyan-500", bg: "bg-cyan-50" },
+                  { label: "Stress Index", unit: "/100", icon: Brain, color: "text-purple-500", bg: "bg-purple-50" },
+                  { label: "HRV", unit: "ms", icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+                  { label: "Cardiac Workload", unit: "", icon: Heart, color: "text-orange-500", bg: "bg-orange-50" },
+                  { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500", bg: "bg-emerald-50" },
+                ].map((vital) => {
+                  const Icon = vital.icon;
+                  return (
+                    <div key={vital.label} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${vital.bg}`}>
+                        <Icon size={14} className={vital.color} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] text-muted-foreground font-body">{vital.label}</p>
+                        <p className="text-sm font-semibold text-foreground font-heading">
+                          --<span className="text-[10px] text-muted-foreground font-normal ml-0.5">{vital.unit}</span>
+                        </p>
+                      </div>
+                      {(status === "measuring" || status === "processing") && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse shrink-0" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-[10px] text-muted-foreground text-center mt-4 leading-relaxed">
+                Values appear after scan completes
+              </p>
             </div>
           </div>
 
