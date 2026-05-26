@@ -439,7 +439,7 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Center: Camera ── */}
-          <div className={`flex-1 relative flex flex-col bg-black overflow-hidden${(status === "idle" || status === "loading") ? " max-w-[640px]" : ""}`}>
+          <div className="flex-1 relative flex flex-col bg-black overflow-hidden mx-auto w-full md:max-w-[520px] lg:max-w-[560px]">
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
