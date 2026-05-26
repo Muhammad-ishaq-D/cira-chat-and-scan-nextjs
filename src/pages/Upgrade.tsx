@@ -81,29 +81,6 @@ const Upgrade = () => {
     }
   }, [applyCurrentPlan]);
 
-  // Instantly apply plan from PaymentSuccess without waiting for API round-trip
-  useEffect(() => {
-    const stored = sessionStorage.getItem("cira_just_activated_plan");
-    if (!stored) return;
-    try {
-      const { planKey, planName } = JSON.parse(stored);
-      if (planKey && normalizePlanKey(planKey) !== "basic") {
-        applyCurrentPlan({ plan_key: planKey, plan_name: planName, plan_id: planKey });
-        setLoadingPlan(false);
-      }
-    } catch { /* ignore */ }
-    sessionStorage.removeItem("cira_just_activated_plan");
-  }, [applyCurrentPlan]);
-
-  // Refresh when browser restores page from BFCache (back button from Stripe)
-  useEffect(() => {
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) refreshSubscription();
-    };
-    window.addEventListener("pageshow", handlePageShow);
-    return () => window.removeEventListener("pageshow", handlePageShow);
-  }, [refreshSubscription]);
-
   useEffect(() => {
     billingApi.getPlans()
       .then((rawData) => {
@@ -178,7 +155,7 @@ const Upgrade = () => {
     };
   }, [refreshSubscription]);
 
-  // After Stripe redirect (?paid=1), confirm activation and refresh plan display
+  // After Stripe redirect (?paid=1), poll until the selected plan is active
   useEffect(() => {
     if (searchParams.get("paid") !== "1") return;
 
@@ -188,29 +165,24 @@ const Upgrade = () => {
       "";
 
     const targetKey = normalizePlanKey(pendingKey);
+    if (!targetKey || targetKey === "basic") return;
 
     let cancelled = false;
     const sync = async () => {
-      // If we know the target plan, try to confirm activation (idempotent — safe to call again)
       let activationError: string | null = null;
-      if (targetKey && targetKey !== "basic") {
-        try {
-          await billingApi.confirmCheckout(undefined, targetKey);
-        } catch (err) {
-          activationError = err instanceof Error ? err.message : "Could not activate your plan";
-        }
+      try {
+        await billingApi.confirmCheckout(undefined, targetKey);
+      } catch (err) {
+        activationError = err instanceof Error ? err.message : "Could not activate your plan";
       }
-      // Always refresh subscription so the UI shows the correct current plan
       const sub = await refreshSubscription();
       if (cancelled) return;
       const activatedKey = normalizePlanKey(sub?.plan_key || sub?.plan_name || sub?.plan_id || "");
-      if (targetKey && targetKey !== "basic") {
-        if (activatedKey === targetKey) {
-          toast.success(`Your ${targetKey} plan is now active.`);
-          sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
-        } else {
-          toast.error(activationError || "Plan activation failed — please contact support.");
-        }
+      if (activatedKey === targetKey) {
+        toast.success(`Your ${targetKey} plan is now active.`);
+        sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
+      } else {
+        toast.error(activationError || "Plan activation failed — please contact support.");
       }
       setSearchParams({}, { replace: true });
     };

@@ -45,13 +45,9 @@ const PaymentSuccess = () => {
         const result = await billingApi.confirmCheckout(sessionId || undefined, planKey);
         if (cancelled) return;
 
-        const resolvedPlanName = result.plan_name || planKey;
-        const resolvedPlanKey = result.plan_key || planKey;
-        setPlanName(resolvedPlanName);
+        setPlanName(result.plan_name || planKey);
         setStatus("success");
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
-        // Store activated plan so Upgrade page can show it instantly without re-fetching
-        sessionStorage.setItem("cira_just_activated_plan", JSON.stringify({ planKey: resolvedPlanKey, planName: resolvedPlanName }));
       } catch (err: unknown) {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : "Could not activate your plan";
