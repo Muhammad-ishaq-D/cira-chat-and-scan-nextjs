@@ -439,7 +439,7 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Center: Camera ── */}
-          <div className="flex-1 relative flex flex-col bg-black overflow-hidden mx-auto w-full md:max-w-[640px] md:aspect-[16/10] md:self-start md:mt-4 md:rounded-2xl">
+          <div className="flex-1 relative flex flex-col bg-black overflow-hidden mx-auto w-full md:max-w-[520px] lg:max-w-[560px]">
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
