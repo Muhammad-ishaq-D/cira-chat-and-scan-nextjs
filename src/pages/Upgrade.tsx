@@ -170,19 +170,38 @@ const Upgrade = () => {
     let cancelled = false;
     const sync = async () => {
       let activationError: string | null = null;
-      try {
-        await billingApi.confirmCheckout(undefined, targetKey);
-      } catch (err) {
-        activationError = err instanceof Error ? err.message : "Could not activate your plan";
+      // Try to confirm checkout, retry a few times in case webhook is delayed
+      for (let i = 0; i < 5; i++) {
+        try {
+          await billingApi.confirmCheckout(undefined, targetKey);
+          activationError = null;
+          break;
+        } catch (err) {
+          activationError = err instanceof Error ? err.message : "Could not activate your plan";
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+        if (cancelled) return;
       }
-      const sub = await refreshSubscription();
+
+      // Poll subscription until the target plan is active (up to ~30s)
+      let activated = false;
+      for (let i = 0; i < 15; i++) {
+        if (cancelled) return;
+        const sub = await refreshSubscription();
+        const activatedKey = normalizePlanKey(sub?.plan_key || sub?.plan_name || sub?.plan_id || "");
+        if (activatedKey === targetKey) {
+          activated = true;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+
       if (cancelled) return;
-      const activatedKey = normalizePlanKey(sub?.plan_key || sub?.plan_name || sub?.plan_id || "");
-      if (activatedKey === targetKey) {
+      if (activated) {
         toast.success(`Your ${targetKey} plan is now active.`);
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
       } else {
-        toast.error(activationError || "Plan activation failed — please contact support.");
+        toast.error(activationError || "Plan activation is taking longer than expected. Please refresh in a moment.");
       }
       setSearchParams({}, { replace: true });
     };
@@ -191,6 +210,7 @@ const Upgrade = () => {
       cancelled = true;
     };
   }, [searchParams, refreshSubscription, setSearchParams]);
+
 
   const handleUpgrade = (plan: Plan) => {
     if (plan.current) return;
