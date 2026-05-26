@@ -363,7 +363,7 @@ const VitalsScan = () => {
       {/* Always kept in DOM so the ShenAI SDK can finish its deferred DOM cleanup
           without hitting unmounted nodes (removeChild NotFoundError). */}
       <div
-        className={`flex-1 flex justify-center overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}
+        className={`flex-1 flex overflow-hidden ${(status === "idle" || status === "loading") ? "bg-black" : "bg-gray-50"}`}
        style={{
   visibility: isCameraView ? "visible" : "hidden",
   pointerEvents: isCameraView ? "auto" : "none",
@@ -374,8 +374,8 @@ const VitalsScan = () => {
       >
 
           {/* ── Left: Instructions Panel ── */}
-          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-56 xl:w-64 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-4">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-80 xl:w-96 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-6">
               <h2 className="font-heading font-bold text-foreground text-base mb-1">How to Scan</h2>
               <p className="text-xs text-muted-foreground mb-6 leading-relaxed">Follow these steps for an accurate reading.</p>
 
@@ -430,7 +430,7 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Center: Camera ── */}
-          <div className="flex-1 relative flex flex-col bg-black overflow-hidden mx-auto w-full md:max-w-[420px] lg:max-w-[450px]">
+          <div className="flex-1 relative flex flex-col bg-black overflow-hidden">
             <canvas
               id={CANVAS_ID}
               ref={canvasRef}
@@ -550,8 +550,8 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Right: Vitals Panel ── */}
-          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-56 xl:w-64 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-4">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-80 xl:w-96 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-6">
               <h2 className="font-heading font-bold text-foreground text-lg leading-snug mb-2">
                 Monitor your health metrics in just 30 seconds
               </h2>
