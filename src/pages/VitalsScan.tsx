@@ -376,60 +376,51 @@ const VitalsScan = () => {
           {/* ── Left: Instructions Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <ScanFace size={16} className="text-primary" />
-                </div>
-                <h2 className="font-heading font-semibold text-foreground">How to Scan</h2>
-              </div>
+              <h2 className="font-heading font-bold text-foreground text-base mb-1">How to Scan</h2>
+              <p className="text-xs text-muted-foreground mb-6 leading-relaxed">Follow these steps for an accurate reading.</p>
 
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {[
-                  { step: "1", icon: Zap, title: "Good Lighting", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
-                  { step: "2", icon: UserRound, title: "Position Your Face", desc: "Center your face in the camera and keep it within the red markers." },
-                  { step: "3", icon: Activity, title: "Stay Still", desc: "Keep your head and body steady during the 30-second measurement." },
-                  { step: "4", icon: Wind, title: "Breathe Normally", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={item.step} className="flex gap-3">
-                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-primary">{item.step}</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground font-heading">{item.title}</p>
-                        <p className="text-xs text-muted-foreground font-body mt-0.5 leading-relaxed">{item.desc}</p>
-                      </div>
+                  { step: "1", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
+                  { step: "2", desc: "Center your face in the camera and keep it within the markers." },
+                  { step: "3", desc: "Keep your head and body steady during the 30-second measurement." },
+                  { step: "4", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-3 items-start">
+                    <div className="w-5 h-5 rounded-full border border-primary/40 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[10px] font-semibold text-primary">{item.step}</span>
                     </div>
-                  );
-                })}
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
               </div>
 
-              <div className="mt-6 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <ShieldCheck size={12} className="text-emerald-500" />
-                  <p className="text-[11px] font-semibold text-foreground">100% Private</p>
+              <div className="border-t border-gray-100 my-6" />
+
+              <div className="flex items-start gap-2.5 mb-4">
+                <ShieldCheck size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-semibold text-foreground">100% Private</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">All analysis happens on your device. No video is recorded or transmitted.</p>
                 </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed">All analysis happens on your device. No video is recorded or transmitted.</p>
               </div>
 
               {!isGuest && (
-                <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <AlertCircle size={12} className="text-primary" />
-                    <p className="text-[11px] font-semibold text-primary">Scan Credits</p>
+                <div className="flex items-start gap-2.5 mb-5">
+                  <AlertCircle size={14} className="text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-semibold text-primary">Scan Credits</p>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
+                      {scansLeft === "Unlimited" ? "Unlimited scans available" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
-                    {scansLeft === "Unlimited" ? "Unlimited scans available" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
-                  </p>
                 </div>
               )}
 
-              {/* History button */}
               {!isGuest && (
                 <button
                   onClick={() => { const next = !showHistory; setShowHistory(next); if (next) logAuditEvent("OPEN_VITALS_SCAN_HISTORY"); }}
-                  className="mt-4 w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
+                  className="w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
                   <Menu size={14} strokeWidth={1.5} />
                   Scan History
@@ -561,15 +552,15 @@ const VitalsScan = () => {
           {/* ── Right: Vitals Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
-                  <Heart size={16} className="text-rose-500" />
-                </div>
-                <h2 className="font-heading font-semibold text-foreground">Vitals</h2>
-              </div>
+              <h2 className="font-heading font-bold text-foreground text-lg leading-snug mb-2">
+                Monitor your health metrics in just 30 seconds
+              </h2>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-5">
+                Measure heart rate, blood pressure, HRV, stress index, and more via a 30-second face scan.
+              </p>
 
               {/* Status indicator */}
-              <div className={`mb-4 p-3 rounded-xl flex items-center gap-2.5 ${
+              <div className={`mb-5 px-3 py-2.5 rounded-xl flex items-center gap-2.5 ${
                 (status === "measuring" || status === "processing") ? "bg-primary/10 border border-primary/20" :
                 status === "ready" ? "bg-emerald-50 border border-emerald-200" :
                 "bg-gray-50 border border-gray-100"
@@ -582,7 +573,7 @@ const VitalsScan = () => {
                         {status === "processing" || progress >= 100 ? "Analyzing..." : "Measuring..."}
                       </p>
                       {status !== "processing" && progress < 100 && (
-                        <div className="mt-1.5 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                        <div className="mt-1 h-1 bg-primary/20 rounded-full overflow-hidden">
                           <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
                         </div>
                       )}
@@ -602,39 +593,35 @@ const VitalsScan = () => {
                 )}
               </div>
 
-              {/* Vital placeholder cards */}
-              <div className="space-y-2">
+              {/* 2-column metrics grid */}
+              <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  { label: "Heart Rate", unit: "bpm", icon: Heart, color: "text-red-500", bg: "bg-red-50" },
-                  { label: "Blood Pressure", unit: "mmHg", icon: Activity, color: "text-pink-500", bg: "bg-pink-50" },
-                  { label: "Breathing Rate", unit: "/min", icon: Wind, color: "text-cyan-500", bg: "bg-cyan-50" },
-                  { label: "Stress Index", unit: "/100", icon: Brain, color: "text-purple-500", bg: "bg-purple-50" },
-                  { label: "HRV", unit: "ms", icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
-                  { label: "Cardiac Workload", unit: "", icon: Heart, color: "text-orange-500", bg: "bg-orange-50" },
-                  { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500", bg: "bg-emerald-50" },
+                  { label: "Heart Rate", unit: "bpm", icon: Heart, color: "text-red-500" },
+                  { label: "Breathing Rate", unit: "/min", icon: Wind, color: "text-cyan-500" },
+                  { label: "Blood Pressure", unit: "mmHg", icon: Activity, color: "text-pink-500" },
+                  { label: "Stress Index", unit: "/100", icon: Brain, color: "text-purple-500" },
+                  { label: "HRV", unit: "ms", icon: Zap, color: "text-amber-500" },
+                  { label: "Cardiac Workload", unit: "", icon: Heart, color: "text-orange-500" },
+                  { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500" },
+                  { label: "Wellness Score", unit: "/100", icon: ShieldCheck, color: "text-blue-500" },
                 ].map((vital) => {
                   const Icon = vital.icon;
                   return (
-                    <div key={vital.label} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50/80 border border-gray-100">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${vital.bg}`}>
-                        <Icon size={14} className={vital.color} />
+                    <div key={vital.label} className="flex flex-col gap-2 p-3 rounded-xl bg-gray-50/70 border border-gray-100">
+                      <Icon size={16} className={vital.color} strokeWidth={1.5} />
+                      <div>
+                        <p className="text-[10px] text-muted-foreground font-body leading-tight">{vital.label}</p>
+                        {(status === "measuring" || status === "processing") && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse mt-1" />
+                        )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] text-muted-foreground font-body">{vital.label}</p>
-                        <p className="text-sm font-semibold text-foreground font-heading">
-                          --<span className="text-[10px] text-muted-foreground font-normal ml-0.5">{vital.unit}</span>
-                        </p>
-                      </div>
-                      {(status === "measuring" || status === "processing") && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse shrink-0" />
-                      )}
                     </div>
                   );
                 })}
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center mt-4 leading-relaxed">
-                Values appear after scan completes
+                +25 More Health Markers after scan
               </p>
             </div>
           </div>
