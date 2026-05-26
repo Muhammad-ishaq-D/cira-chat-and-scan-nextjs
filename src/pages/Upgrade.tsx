@@ -169,17 +169,22 @@ const Upgrade = () => {
 
     let cancelled = false;
     const sync = async () => {
+      let activationError: string | null = null;
       try {
         await billingApi.confirmCheckout(undefined, targetKey);
-      } catch {
-        // fall through to refresh
+      } catch (err) {
+        activationError = err instanceof Error ? err.message : "Could not activate your plan";
       }
-      await refreshSubscription();
-      if (!cancelled) {
+      const sub = await refreshSubscription();
+      if (cancelled) return;
+      const activatedKey = normalizePlanKey(sub?.plan_key || sub?.plan_name || sub?.plan_id || "");
+      if (activatedKey === targetKey) {
         toast.success(`Your ${targetKey} plan is now active.`);
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
-        setSearchParams({}, { replace: true });
+      } else {
+        toast.error(activationError || "Plan activation failed — please contact support.");
       }
+      setSearchParams({}, { replace: true });
     };
     sync();
     return () => {
