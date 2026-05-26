@@ -402,7 +402,7 @@ export function useShenAI() {
 
           applyPrecisionModeToBloodPressure: true,
           enableFullFrameProcessing: false,
-          cameraAspectRatio: isMobile ? 0 : 16 / 9,
+          cameraAspectRatio: 0,
 
           ...(Object.keys(riskFactors).length > 0
             ? { risksFactors: riskFactors }
