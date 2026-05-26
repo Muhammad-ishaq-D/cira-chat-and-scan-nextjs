@@ -374,8 +374,8 @@ const VitalsScan = () => {
       >
 
           {/* ── Left: Instructions Panel ── */}
-          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-6">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-56 xl:w-64 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-4">
               <h2 className="font-heading font-bold text-foreground text-base mb-1">How to Scan</h2>
               <p className="text-xs text-muted-foreground mb-6 leading-relaxed">Follow these steps for an accurate reading.</p>
 
@@ -550,8 +550,8 @@ const VitalsScan = () => {
           </div>
 
           {/* ── Right: Vitals Panel ── */}
-          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-72 xl:w-80 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
-            <div className="p-6">
+          <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-56 xl:w-64 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
+            <div className="p-4">
               <h2 className="font-heading font-bold text-foreground text-lg leading-snug mb-2">
                 Monitor your health metrics in just 30 seconds
               </h2>
