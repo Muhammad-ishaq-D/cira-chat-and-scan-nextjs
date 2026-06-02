@@ -217,12 +217,12 @@ const PaymentSuccess = () => {
 
         {/* Footer note */}
         <p className="text-[10px] text-muted-foreground mt-auto pt-10 leading-relaxed">
-          A payment to Cira Health will appear on your bank statement. Subscription renews automatically. Cancel anytime from your account.
+          A payment to Cira will appear on your bank statement. Subscription renews automatically. Cancel anytime from your account.
         </p>
       </div>
 
       {/* ── Right panel: Success message ───────────────────────────────────────── */}
-      <div className="flex-1 h-full flex flex-col items-center justify-center px-14 py-12 bg-background overflow-y-auto">
+      <div className="flex-1 h-full flex flex-col items-center justify-center px-14 py-12 bg-background overflow-hidden">
         <div className="w-full max-w-sm">
           {/* Checkmark */}
           <div className="flex justify-center mb-5">
