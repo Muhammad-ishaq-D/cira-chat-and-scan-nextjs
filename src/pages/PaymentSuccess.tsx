@@ -37,8 +37,8 @@ const PLAN_META: Record<string, {
     icon: Crown,
     color: "from-amber-100 to-orange-100",
     iconColor: "text-amber-600",
-    scans: "Unlimited Face Scans",
-    chat: "Unlimited Chat Credits",
+    scans: "10 Face Scans",
+    chat: "1,000,000 Chat Credits",
     consults: "10 Doctor Consults",
   },
 };
@@ -170,8 +170,8 @@ const PaymentSuccess = () => {
       <div className="w-[44%] h-full bg-muted/30 border-r border-border/50 flex flex-col px-14 py-12 overflow-y-auto">
         {/* Brand */}
         <div className="flex items-center gap-2 mb-12">
-          <img src={ciraLogo} alt="Cira" width={26} height={26} />
-          <span className="text-sm font-semibold text-foreground tracking-wide">Cira</span>
+          <img src={ciraLogo} alt="Cira" width={28} height={28} />
+          <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
 
         {/* Subscribe label */}
@@ -225,17 +225,17 @@ const PaymentSuccess = () => {
       <div className="flex-1 h-full flex flex-col items-center justify-center px-14 py-12 bg-background overflow-y-auto">
         <div className="w-full max-w-sm">
           {/* Checkmark */}
-          <div className="flex justify-center mb-7">
+          <div className="flex justify-center mb-5">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
               <CheckCircle2 size={34} className="text-emerald-500" strokeWidth={1.8} />
             </div>
           </div>
 
-          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+          <h1 className="text-2xl font-bold text-foreground text-center mb-1">
             Thanks for subscribing!
           </h1>
-          <p className="text-sm text-muted-foreground text-center mb-8">
-            A payment to <span className="font-medium text-foreground">Cira Health</span> will appear on your statement.
+          <p className="text-sm text-muted-foreground text-center mb-7">
+            A payment to <span className="font-medium text-foreground">Cira </span> will appear on your statement.
           </p>
 
           {/* Info box */}
