@@ -162,135 +162,131 @@ const PaymentSuccess = () => {
     );
   }
 
-  // ── Success state ────────────────────────────────────────────────────────────
+  // ── Success state — full-screen split layout (mirrors Stripe) ───────────────
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
-        <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
-      </div>
+    <div className="h-screen overflow-hidden flex">
 
-      <div className="relative z-10 w-full max-w-3xl">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <img src={ciraLogo} alt="Cira" width={28} height={28} />
+      {/* ── Left panel: Order summary ──────────────────────────────────────────── */}
+      <div className="w-[44%] h-full bg-muted/30 border-r border-border/50 flex flex-col px-14 py-12 overflow-y-auto">
+        {/* Brand */}
+        <div className="flex items-center gap-2 mb-12">
+          <img src={ciraLogo} alt="Cira" width={26} height={26} />
           <span className="text-sm font-semibold text-foreground tracking-wide">Cira</span>
         </div>
 
-        {/* Main card — two columns */}
-        <div className="bg-card/90 backdrop-blur-sm border border-border/50 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        {/* Subscribe label */}
+        <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-3">
+          Subscribe to {planName}
+        </p>
 
-          {/* ── Left: Order summary ────────────────────────────── */}
-          <div className="md:w-[42%] bg-muted/40 border-b md:border-b-0 md:border-r border-border/40 p-8 flex flex-col">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-3">
-              Subscribe to {planName}
-            </p>
+        {/* Big price */}
+        <div className="flex items-end gap-1.5 mb-1">
+          <span className="text-5xl font-bold text-foreground tracking-tight">{displaySubtotal}</span>
+          <span className="text-sm text-muted-foreground mb-2">per month</span>
+        </div>
+        <p className="text-xs text-muted-foreground mb-10">Billed monthly · Renews {nextBilling}</p>
 
-            {/* Price */}
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-bold text-foreground">{displaySubtotal}</span>
-              <span className="text-sm text-muted-foreground mb-1.5">/ month</span>
-            </div>
-            <p className="text-xs text-muted-foreground mb-8">Billed monthly · Renews {nextBilling}</p>
-
-            {/* Plan icon */}
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${meta?.color} flex items-center justify-center mb-5`}>
-              <PlanIcon size={20} className={meta?.iconColor} />
-            </div>
-
-            {/* Line items */}
-            <div className="space-y-3 text-sm flex-1">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground capitalize">{planName}</span>
-                <span className="font-medium text-foreground">{displaySubtotal}</span>
-              </div>
-              {displayTax && (
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Tax</span>
-                  <span className="font-medium text-foreground">{displayTax}</span>
-                </div>
-              )}
-              <div className="border-t border-border/40 pt-3 flex justify-between items-center">
-                <span className="text-muted-foreground">Total paid today</span>
-                <span className="font-semibold text-foreground">{displayTotal}</span>
-              </div>
-            </div>
-
-            <p className="text-[10px] text-muted-foreground mt-8 leading-relaxed">
-              A payment to Cira Health will appear on your statement. Subscription auto-renews monthly. Cancel anytime.
-            </p>
+        {/* Plan icon + name row */}
+        <div className="flex items-center gap-3 mb-10">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta?.color} flex items-center justify-center shrink-0`}>
+            <PlanIcon size={18} className={meta?.iconColor} />
           </div>
+          <div>
+            <p className="text-sm font-medium text-foreground capitalize">{planName}</p>
+            <p className="text-xs text-muted-foreground">Billed monthly</p>
+          </div>
+          <span className="ml-auto text-sm font-medium text-foreground">{displaySubtotal}</span>
+        </div>
 
-          {/* ── Right: Success message ─────────────────────────── */}
-          <div className="flex-1 p-8 flex flex-col">
-            {/* Checkmark */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
-                <CheckCircle2 size={34} className="text-emerald-500" strokeWidth={1.8} />
-              </div>
+        {/* Divider */}
+        <div className="border-t border-border/40" />
+
+        {/* Line items */}
+        <div className="mt-4 space-y-3 text-sm">
+          {displayTax && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Tax</span>
+              <span className="font-medium text-foreground">{displayTax}</span>
             </div>
-
-            <h1 className="text-xl font-bold text-foreground text-center mb-1.5">
-              Thanks for subscribing!
-            </h1>
-            <p className="text-sm text-muted-foreground text-center mb-8">
-              Your <span className="font-medium text-foreground capitalize">{planName}</span> plan is now active. Your credits have been allocated.
-            </p>
-
-            {/* Info box */}
-            <div className="border border-border/50 rounded-xl divide-y divide-border/40 mb-8 text-sm">
-              {user?.email && (
-                <div className="px-4 py-3">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Contact</p>
-                  <p className="text-foreground font-medium">{user.email}</p>
-                </div>
-              )}
-              <div className="px-4 py-3">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Credits allocated</p>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <Scan size={13} className="text-primary shrink-0" />
-                    {meta?.scans}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <MessageCircle size={13} className="text-primary shrink-0" />
-                    {meta?.chat}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <UserCheck size={13} className="text-primary shrink-0" />
-                    {meta?.consults}
-                  </div>
-                </div>
-              </div>
-              <div className="px-4 py-3">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Next billing date</p>
-                <p className="text-foreground font-medium">{nextBilling}</p>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all mb-3"
-            >
-              Go to Dashboard
-            </button>
-            <button
-              onClick={() => navigate("/upgrade")}
-              className="w-full h-10 rounded-xl border border-border/60 text-sm text-muted-foreground hover:bg-accent transition-all"
-            >
-              View Plan Details
-            </button>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Total paid today</span>
+            <span className="font-semibold text-foreground">{displayTotal}</span>
           </div>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-5">
-          Need help? Contact us at{" "}
-          <a href="mailto:support@askainurse.com" className="text-primary hover:underline">
-            support@askainurse.com
-          </a>
+        {/* Footer note */}
+        <p className="text-[10px] text-muted-foreground mt-auto pt-10 leading-relaxed">
+          A payment to Cira Health will appear on your bank statement. Subscription renews automatically. Cancel anytime from your account.
         </p>
+      </div>
+
+      {/* ── Right panel: Success message ───────────────────────────────────────── */}
+      <div className="flex-1 h-full flex flex-col items-center justify-center px-14 py-12 bg-background overflow-y-auto">
+        <div className="w-full max-w-sm">
+          {/* Checkmark */}
+          <div className="flex justify-center mb-7">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
+              <CheckCircle2 size={34} className="text-emerald-500" strokeWidth={1.8} />
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+            Thanks for subscribing!
+          </h1>
+          <p className="text-sm text-muted-foreground text-center mb-8">
+            A payment to <span className="font-medium text-foreground">Cira Health</span> will appear on your statement.
+          </p>
+
+          {/* Info box */}
+          <div className="border border-border/50 rounded-xl divide-y divide-border/40 mb-8 text-sm">
+            {user?.email && (
+              <div className="px-4 py-3.5">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Contact information</p>
+                <p className="text-foreground font-medium">{user.email}</p>
+              </div>
+            )}
+            <div className="px-4 py-3.5">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Credits allocated</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs text-foreground">
+                  <Scan size={13} className="text-primary shrink-0" />{meta?.scans}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-foreground">
+                  <MessageCircle size={13} className="text-primary shrink-0" />{meta?.chat}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-foreground">
+                  <UserCheck size={13} className="text-primary shrink-0" />{meta?.consults}
+                </div>
+              </div>
+            </div>
+            <div className="px-4 py-3.5">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Next billing date</p>
+              <p className="text-foreground font-medium">{nextBilling}</p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all mb-3"
+          >
+            Go to Dashboard
+          </button>
+          <button
+            onClick={() => navigate("/upgrade")}
+            className="w-full h-10 rounded-xl border border-border/60 text-sm text-muted-foreground hover:bg-accent transition-all"
+          >
+            View Plan Details
+          </button>
+
+          <p className="text-center text-[11px] text-muted-foreground mt-6">
+            Need help?{" "}
+            <a href="mailto:support@askainurse.com" className="text-primary hover:underline">
+              support@askainurse.com
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
