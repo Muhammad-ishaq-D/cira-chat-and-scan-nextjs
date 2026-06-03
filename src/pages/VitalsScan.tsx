@@ -34,7 +34,7 @@ const formatVitalsForDisplay = (r: VitalResults) => [
   { label: "Stress Index", value: r.stressIndex != null ? String(Math.round(r.stressIndex)) : "--", unit: "/100", icon: Brain, color: "text-purple-500 bg-purple-50" },
   { label: "HRV", value: r.hrvSdnn != null ? String(Math.round(r.hrvSdnn)) : "--", unit: "ms", icon: Zap, color: "text-amber-500 bg-amber-50" },
   { label: "Cardiac Workload", value: r.cardiacWorkload != null ? String(Math.round(r.cardiacWorkload)) : "--", unit: "", icon: Heart, color: "text-orange-500 bg-orange-50" },
-  { label: "BMI", value: r.bmi != null ? r.bmi.toFixed(1) : "--", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
+  // { label: "BMI", value: r.bmi != null ? r.bmi.toFixed(1) : "--", unit: "kg/m²", icon: Scale, color: "text-emerald-500 bg-emerald-50" },
 ];
 
 const formatHealthIndexes = (h: HealthRisksData) => [
@@ -602,7 +602,7 @@ const VitalsScan = () => {
                   { label: "Stress Index", unit: "/100", icon: Brain, color: "text-purple-500" },
                   { label: "HRV", unit: "ms", icon: Zap, color: "text-amber-500" },
                   { label: "Cardiac Workload", unit: "", icon: Heart, color: "text-orange-500" },
-                  { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500" },
+                  // { label: "BMI", unit: "kg/m²", icon: Scale, color: "text-emerald-500" },
                   { label: "Wellness Score", unit: "/100", icon: ShieldCheck, color: "text-blue-500" },
                 ].map((vital) => {
                   const Icon = vital.icon;
