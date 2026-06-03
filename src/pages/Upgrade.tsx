@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2, CalendarDays, AlertCircle } from "lucide-react";
+import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2, CalendarDays, AlertCircle, TriangleAlert, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
@@ -21,8 +21,6 @@ interface Subscription {
   current_period_end?: string | null;
   cancel_at_period_end?: boolean;
 }
-
-const PLAN_ORDER: Record<string, number> = { basic: 0, pro: 1, enterprise: 2 };
 
 function normalizePlanKey(nameOrId?: string): string {
   const key = (nameOrId || "basic").toLowerCase().trim();
@@ -65,6 +63,7 @@ const Upgrade = () => {
   const [plans, setPlans] = useState<Plan[]>(defaultPlans);
   const [redirectingId, setRedirectingId] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ planId: string; isCancel: boolean } | null>(null);
   const [currentPlanLabel, setCurrentPlanLabel] = useState<string>("Basic");
   const [currentPlanKey, setCurrentPlanKey] = useState<string>("basic");
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -318,15 +317,10 @@ const Upgrade = () => {
             const isCancelling = cancellingId === plan.id;
             const planKey = normalizePlanKey(plan.name);
             const isPaid = planKey !== "basic";
-            const planOrder = PLAN_ORDER[planKey] ?? 0;
-            const currentOrder = PLAN_ORDER[currentPlanKey] ?? 0;
-            const isDowngrade = !plan.current && isPaid && planOrder < currentOrder;
-
             let actionLabel: string;
             if (plan.current) actionLabel = "Current Plan";
             else if (!isPaid) actionLabel = "Free";
-            else if (isDowngrade) actionLabel = "Downgrade";
-            else actionLabel = "Upgrade";
+            else actionLabel = `Upgrade to ${plan.name}`;
 
             return (
               <div
@@ -385,8 +379,6 @@ const Upgrade = () => {
                       ? "bg-secondary text-muted-foreground cursor-default"
                       : plan.popular
                       ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
-                      : isDowngrade
-                      ? "border border-amber-400/60 text-amber-700 hover:bg-amber-50"
                       : "border border-border/60 text-foreground hover:bg-accent"
                     } disabled:opacity-60`}
                 >
@@ -400,7 +392,7 @@ const Upgrade = () => {
                   <div className="mt-3">
                     {subscription?.cancel_at_period_end ? (
                       <button
-                        onClick={() => handleCancelOrReactivate(plan.id, false)}
+                        onClick={() => setConfirmModal({ planId: plan.id, isCancel: false })}
                         disabled={!!isCancelling}
                         className="w-full h-9 rounded-xl text-xs font-medium border border-emerald-500/40 text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
@@ -409,7 +401,7 @@ const Upgrade = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleCancelOrReactivate(plan.id, true)}
+                        onClick={() => setConfirmModal({ planId: plan.id, isCancel: true })}
                         disabled={!!isCancelling}
                         className="w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
@@ -432,6 +424,69 @@ const Upgrade = () => {
           </p>
         )}
       </div>
+
+      {/* ── Confirmation Modal ─────────────────────────────────────────────── */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setConfirmModal(null)}
+          />
+
+          {/* Dialog */}
+          <div className="relative z-10 bg-card border border-border/60 rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            {/* Icon */}
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              confirmModal.isCancel ? "bg-destructive/10" : "bg-emerald-100"
+            }`}>
+              {confirmModal.isCancel
+                ? <TriangleAlert size={22} className="text-destructive" />
+                : <RotateCcw size={22} className="text-emerald-600" />
+              }
+            </div>
+
+            {/* Title */}
+            <h3 className="text-base font-semibold text-foreground text-center mb-2">
+              {confirmModal.isCancel ? "Cancel Subscription?" : "Reactivate Subscription?"}
+            </h3>
+
+            {/* Description */}
+            <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
+              {confirmModal.isCancel
+                ? `Your plan will be downgraded to Basic immediately and Stripe will stop future charges. You can reactivate anytime.`
+                : `Your ${currentPlanLabel} plan will resume. Stripe will charge you on the next billing date${renewalDate ? ` (${renewalDate})` : ""}.`
+              }
+            </p>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmModal(null)}
+                className="flex-1 h-10 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent transition-all"
+              >
+                No, go back
+              </button>
+              <button
+                onClick={() => {
+                  const { planId, isCancel } = confirmModal;
+                  setConfirmModal(null);
+                  handleCancelOrReactivate(planId, isCancel);
+                }}
+                disabled={!!cancellingId}
+                className={`flex-1 h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-60 ${
+                  confirmModal.isCancel
+                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    : "bg-emerald-600 text-white hover:bg-emerald-700"
+                }`}
+              >
+                {cancellingId ? <Loader2 size={14} className="animate-spin" /> : null}
+                {confirmModal.isCancel ? "Yes, cancel" : "Yes, reactivate"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
