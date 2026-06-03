@@ -212,7 +212,7 @@ const VitalsScan = () => {
           breathing_rate: results.breathingRate != null ? Math.round(results.breathingRate) : undefined,
           stress_index: results.stressIndex != null ? Math.round(results.stressIndex) : undefined,
           hrv_sdnn: results.hrvSdnn != null ? Math.round(results.hrvSdnn) : undefined,
-          bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
+          // bmi: results.bmi != null ? Number(results.bmi.toFixed(1)) : undefined,
           cardiac_workload: results.cardiacWorkload != null ? Math.round(results.cardiacWorkload) : undefined,
           signal_quality: results.signalQuality != null ? Number(results.signalQuality.toFixed(4)) : undefined,
           wellness_score: hr?.wellnessScore != null ? Math.round(hr.wellnessScore) : undefined,
