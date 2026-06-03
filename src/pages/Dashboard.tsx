@@ -111,7 +111,6 @@ const Dashboard = () => {
             const cw = num(v.cardiac_workload);
             const br = num(v.breathing_rate);
             const si = num(v.stress_index);
-            const bmi = num(v.bmi);
             const para = num(v.parasympathetic_activity);
             setVitals(prev => prev.map(item => {
               const map: Record<string, string> = {
@@ -121,7 +120,7 @@ const Dashboard = () => {
                 "Cardiac Workload": cw != null ? String(Math.round(cw)) : "--",
                 "Breathing Rate": br ? String(Math.round(br)) : "--",
                 "Stress Index": si != null ? String(Math.round(si)) : "--",
-                "Body Mass Index": bmi != null ? bmi.toFixed(1) : "--",
+                // BMI always comes from profile (height/weight), never from facial scan
                 "Parasympathetic Activity": para != null ? String(Math.round(para)) : "--",
               };
               return map[item.label] !== undefined ? { ...item, value: map[item.label] } : item;
