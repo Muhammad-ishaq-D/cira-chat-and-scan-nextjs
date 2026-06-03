@@ -55,7 +55,7 @@ const defaultPlans: Plan[] = [
   {
     id: "enterprise", name: "Enterprise", price: "$10.00", period: "/mo", desc: "Complete health intelligence for professionals",
     icon: Crown, color: "from-amber-100 to-orange-100", iconColor: "text-amber-600",
-    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "10 Doctor Consults", "Advanced AI Diagnostics", "Priority Support", "All Reports", "HIPAA Compliance"],
+    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "10 Doctor Consults", "Advanced AI Diagnostics", "Priority Support", "All Reports", "HIPAA Private"],
   },
 ];
 

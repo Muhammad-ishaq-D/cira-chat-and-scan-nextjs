@@ -28,7 +28,7 @@ const FALLBACK_PLANS: PlanOption[] = [
   {
     id: "enterprise", name: "Enterprise", price: "$10.00", period: "/mo", desc: "Complete health intelligence",
     faceScans: 99999, chatCredits: 999999999,
-    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "HIPAA Compliance"],
+    features: ["Unlimited Face Scans", "Unlimited Chat Credits", "HIPAA Private"],
   },
 ];
 
