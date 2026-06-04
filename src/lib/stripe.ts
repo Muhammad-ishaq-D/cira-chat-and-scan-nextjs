@@ -1,8 +1,8 @@
 // Stripe Payment Links (hosted) — direct redirect, no SDK needed
-// Test links must match the correct Stripe product (Pro $5 / Enterprise $10).
+// Live links for real payments.
 export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  pro: "https://buy.stripe.com/test_6oUfZi5xd5YF7IefHE9Zm02",
-  enterprise: "https://buy.stripe.com/test_00w14ogbR3Qx8MifHE9Zm03",
+  pro: "https://buy.stripe.com/4gM28scZF5YFbYufHE9Zm00",
+  enterprise: "https://buy.stripe.com/eVq8wQcZF1IpbYubro9Zm01",
 };
 
 export const PENDING_PLAN_STORAGE_KEY = "cira_pending_plan";
