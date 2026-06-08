@@ -70,6 +70,7 @@ const toFattyLiverLevel = (val: number | null | undefined): string => {
 };
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const activeNav: string = "home";
   const localUser = getUser();
