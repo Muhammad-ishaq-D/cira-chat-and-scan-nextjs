@@ -191,8 +191,8 @@ const HowItWorks = () => {
       {/* Step 1 — Talk */}
       <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Step 1 — Conversation</p>
-          <h2 className="font-heading text-3xl md:text-4xl mb-5">Start with a real conversation.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.step1Eyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl mb-5">{t("pages.howItWorks.step1Title")}</h2>
           <p className="text-muted-foreground leading-relaxed mb-6">
             You just talk. Symptoms, history, medications, worries, the goals you care about. No strange forms or
             rigid checklists — Cira asks the right follow-ups, the way a calm, patient nurse would.
@@ -268,8 +268,8 @@ const HowItWorks = () => {
           </div>
 
           <div className="order-1 md:order-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Step 2 — Face scan</p>
-            <h2 className="font-heading text-3xl md:text-4xl mb-5">Add real signals from your body.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.step2Eyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-5">{t("pages.howItWorks.step2Title")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
               Powered by Shen AI, your device camera reads subtle changes in skin tone to estimate vital signs — in
               about 30 seconds, with nothing to wear or attach.
@@ -288,9 +288,9 @@ const HowItWorks = () => {
       {/* Step 3 — Understanding */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Step 3 — Understanding</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.step3Eyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl mb-4">
-            Conversation + vitals = a clearer picture.
+            {t("pages.howItWorks.step3Title")}
           </h2>
           <p className="text-muted-foreground leading-relaxed">
             Cira combines what you said with what the scan measured, checks the patterns against medical knowledge,
@@ -315,9 +315,9 @@ const HowItWorks = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Step 4 — Real doctors</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.step4Eyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl mb-5">
-              When you need a human doctor, we don't leave you alone.
+              {t("pages.howItWorks.step4Title")}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
               Through our partnership with Air Doctor, Cira connects you to a network of 20,000 doctors across 180
@@ -376,9 +376,9 @@ const HowItWorks = () => {
           className="rounded-3xl w-full h-auto object-cover shadow-lg"
         />
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">For chronic conditions</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.chronicEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl mb-5">
-            Built for people who manage health every day.
+            {t("pages.howItWorks.chronicTitle")}
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-8">
             If you live with diabetes, hypertension, COPD or another long-term condition, Cira is designed to be
@@ -404,8 +404,8 @@ const HowItWorks = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Privacy in flow</p>
-            <h2 className="font-heading text-3xl md:text-4xl mb-4">What happens to your data at each step.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.privacyEyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-4">{t("pages.howItWorks.privacyTitle")}</h2>
             <p className="text-muted-foreground leading-relaxed">
               No surprises. Here's what we collect, when we use it, and what we never keep.
             </p>
@@ -424,7 +424,7 @@ const HowItWorks = () => {
               onClick={() => navigate("/privacy")}
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
-              Read the full Security & Privacy Hub <ArrowRight className="w-4 h-4" />
+              {t("pages.readPrivacyHub")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -433,9 +433,9 @@ const HowItWorks = () => {
       {/* Comparison */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Comparison</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.comparisonEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl mb-4">
-            How Cira differs from chatbots and AI doctors.
+            {t("pages.howItWorks.comparisonTitle")}
           </h2>
           <p className="text-muted-foreground leading-relaxed">
             Cira isn't trying to replace your doctor — and it isn't a generic chatbot either. It sits in the gap
@@ -468,26 +468,25 @@ const HowItWorks = () => {
 
       {/* CTA */}
       <section className="max-w-4xl mx-auto px-6 py-20 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">See how Cira feels</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.ctaEyebrow")}</p>
         <h2 className="font-heading text-3xl md:text-5xl mb-5">
-          Take a breath. Start with one conversation.
+          {t("pages.howItWorks.ctaTitle")}
         </h2>
         <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto mb-8">
-          No commitment. Talk to Cira, run a first scan, and see what your body's signals suggest. We'll be here
-          whenever you want to come back.
+          {t("pages.howItWorks.ctaSubtitle")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             onClick={() => navigate("/free-chat")}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
           >
-            Start a conversation <ArrowRight className="w-4 h-4" />
+            {t("pages.howItWorks.ctaStart")} <ArrowRight className="w-4 h-4" />
           </button>
           <button
             onClick={() => navigate("/vitals-scan")}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-foreground/20 text-foreground font-medium hover:bg-secondary/60 transition-colors"
           >
-            Run a face scan
+            {t("pages.howItWorks.ctaScan")}
           </button>
         </div>
         <div className="mt-10">
@@ -496,7 +495,7 @@ const HowItWorks = () => {
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            Read the Security & Privacy Hub
+            {t("pages.readPrivacyHub")}
           </button>
         </div>
       </section>
