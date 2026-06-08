@@ -496,7 +496,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("auth.emailEnter")}
                 autoComplete="email"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -506,26 +506,26 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Sending..." : "Send verification code"}
+                {loading ? t("auth.sending") : t("auth.sendVerificationCode")}
               </button>
               <button
                 type="button"
                 onClick={resetOtpFlow}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use password instead
+                {t("auth.usePasswordInstead")}
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-3">
               <p className="text-xs text-muted-foreground font-body text-center">
-                We sent a code to <strong className="text-foreground">{email}</strong>
+                {t("auth.sentCodeTo")} <strong className="text-foreground">{email}</strong>
               </p>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
+                placeholder={t("auth.enter6Digit")}
                 maxLength={6}
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
                 required
@@ -535,14 +535,14 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Verifying..." : "Verify & Sign in"}
+                {loading ? t("auth.verifying") : t("auth.verifySignIn")}
               </button>
               <button
                 type="button"
                 onClick={() => setOtpSent(false)}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use a different email
+                {t("auth.useDifferentEmail")}
               </button>
             </form>
           )
@@ -552,7 +552,7 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder={t("auth.email")}
               autoComplete="email"
               className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
               required
@@ -561,7 +561,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder={t("auth.password")}
               autoComplete="current-password"
               className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
               required
@@ -571,34 +571,34 @@ const Login = () => {
               disabled={loading}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("auth.signingIn") : t("auth.signIn")}
             </button>
             <button
               type="button"
               onClick={() => setUseOtp(true)}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Use OTP instead
+              {t("auth.useOtpInstead")}
             </button>
             <button
               type="button"
               onClick={() => navigate("/forgot-password")}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Forgot password?
+              {t("auth.forgotPassword")}
             </button>
             <button
               type="button"
               onClick={() => handleModeChange("register")}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Need an account? Create one
+              {t("auth.needAccount")}
             </button>
           </form>
         )}
 
         <p className="text-xs text-muted-foreground text-center font-body mt-8 leading-relaxed">
-          By continuing, you agree to Cira's Terms and Privacy Policy.
+          {t("auth.termsNotice")}
         </p>
       </div>
     </div>
