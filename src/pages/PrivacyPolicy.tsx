@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-5 max-w-4xl mx-auto">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <div className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -17,8 +19,9 @@ const PrivacyPolicy = () => {
       </nav>
 
       <article className="max-w-3xl mx-auto px-6 pb-24 font-body text-foreground">
-        <h1 className="font-heading text-3xl md:text-4xl font-semibold mb-2">Privacy Policy</h1>
-        <p className="text-xs text-muted-foreground mb-8">Last updated: April 22, 2026</p>
+        <h1 className="font-heading text-3xl md:text-4xl font-semibold mb-2">{t("pages.legal.privacyTitle")}</h1>
+        <p className="text-xs text-muted-foreground mb-3">{t("pages.legal.lastUpdated")}</p>
+        <p className="text-xs italic text-muted-foreground mb-8 border-l-2 border-border pl-3">{t("pages.legal.englishOnly")}</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-foreground/90">
           <p>
