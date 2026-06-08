@@ -20,10 +20,10 @@ const Onboarding = () => {
   const [saving, setSaving] = useState(false);
 
   const steps = [
-    { key: "sex", label: "Biological Sex", sub: "This helps us personalize your health metrics", icon: User },
-    { key: "age", label: "How old are you?", sub: "Age is used for risk assessments and vitals analysis", icon: Calendar },
-    { key: "height", label: "Your height", sub: "Height in centimeters for BMI and body metrics", icon: Ruler },
-    { key: "weight", label: "Your weight", sub: "Weight in kilograms for accurate health indices", icon: Weight },
+    { key: "sex", label: t("onboarding.sex.label"), sub: t("onboarding.sex.sub"), icon: User },
+    { key: "age", label: t("onboarding.age.label"), sub: t("onboarding.age.sub"), icon: Calendar },
+    { key: "height", label: t("onboarding.height.label"), sub: t("onboarding.height.sub"), icon: Ruler },
+    { key: "weight", label: t("onboarding.weight.label"), sub: t("onboarding.weight.sub"), icon: Weight },
   ];
 
   const completeOnboarding = () => {
