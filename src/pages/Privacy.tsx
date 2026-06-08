@@ -76,7 +76,7 @@ const Privacy = () => {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -86,22 +86,21 @@ const Privacy = () => {
 
       <header className="max-w-4xl mx-auto px-6 pt-10 pb-16 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-[11px] tracking-wide uppercase text-muted-foreground mb-6">
-          <ShieldCheck className="w-3.5 h-3.5" /> Security & Privacy Hub
+          <ShieldCheck className="w-3.5 h-3.5" /> {t("pages.privacyHub.badge")}
         </div>
         <h1 className="font-heading text-4xl md:text-6xl font-semibold text-foreground leading-[1.05] mb-5">
-          Your health data, <em className="italic text-primary">protected by design.</em>
+          {t("pages.privacyHub.heroTitleA")} <em className="italic text-primary">{t("pages.privacyHub.heroTitleB")}</em>
         </h1>
         <p className="font-body text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Cira combines advanced medical reasoning with camera-based vitals from a short face scan.
-          The whole system is built so your information stays yours — private, secured, and under your control.
+          {t("pages.privacyHub.heroSubtitle")}
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a href="#use" className="rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:opacity-90 transition">
-            How we use your data
+            {t("pages.privacyHub.ctaHow")}
           </a>
           <a href="#contact" className="rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition">
-            Contact our privacy team
+            {t("pages.privacyHub.ctaContact")}
           </a>
         </div>
 
