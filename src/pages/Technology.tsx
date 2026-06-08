@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   ArrowRight,
@@ -127,6 +128,7 @@ const guidance = [
 
 const Technology = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,7 +138,7 @@ const Technology = () => {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -146,34 +148,32 @@ const Technology = () => {
           onClick={() => navigate("/free-chat")}
           className="text-sm font-medium text-foreground hover:text-primary transition-colors"
         >
-          Try Cira
+          {t("pages.technology.navTry")}
         </button>
       </nav>
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-16 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">The technology behind Cira</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">{t("pages.technology.heroEyebrow")}</p>
           <h1 className="font-heading text-4xl md:text-5xl leading-[1.05] text-foreground mb-6">
-            Your phone camera reads clinical vitals. Independently validated.
+            {t("pages.technology.heroTitle")}
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-            Cira's 30-second face scan captures 30+ health markers — heart rate, blood pressure, HRV, stress, and more —
-            using your phone camera and nothing else. The technology is peer-reviewed, used by Allianz and Deutsche
-            Telekom, and runs entirely on your device.
+            {t("pages.technology.heroSubtitle")}
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             <button
               onClick={() => navigate("/free-chat")}
               className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:bg-foreground/90 transition"
             >
-              Try a free scan now <ArrowRight className="w-4 h-4" />
+              {t("pages.technology.ctaScan")} <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => navigate("/how-it-works")}
               className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-secondary transition"
             >
-              See how it works
+              {t("pages.technology.seeHow")}
             </button>
           </div>
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
@@ -204,8 +204,8 @@ const Technology = () => {
       {/* Short version */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">The short version</p>
-          <h2 className="font-heading text-3xl md:text-4xl">If you only read three things.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.summaryEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.summaryTitle")}</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-5">
           {summary.map((s) => (
@@ -222,9 +222,9 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Why we partnered with Shen AI</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.partnerEyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl mb-5">
-              Cira is a triage tool. We let the experts handle the scan.
+              {t("pages.technology.partnerTitle")}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               Building clinical-grade face scan technology takes years of computer vision research, terabytes of
@@ -273,7 +273,7 @@ const Technology = () => {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 pb-20">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">Trusted by</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">{t("pages.technology.trustedBy")}</p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-foreground/70">
             {partners.map((p) => (
               <span key={p} className="font-medium">
@@ -287,8 +287,8 @@ const Technology = () => {
       {/* Science */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">How the science works</p>
-          <h2 className="font-heading text-3xl md:text-4xl mb-4">Two technologies. One scan.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.scienceEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl mb-4">{t("pages.technology.scienceTitle")}</h2>
           <p className="text-muted-foreground leading-relaxed">
             Most face-based health AI uses one signal. Shen AI combines two — which is why it works reliably across all
             skin tones and even in less-than-ideal lighting.
@@ -340,8 +340,8 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-5xl mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">How accurate is it?</p>
-            <h2 className="font-heading text-3xl md:text-4xl">Validated against clinical-grade equipment.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.accuracyEyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.accuracyTitle")}</h2>
           </div>
 
           <div className="rounded-2xl border bg-card overflow-hidden">
@@ -392,8 +392,8 @@ const Technology = () => {
       {/* What Cira measures */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">What Cira measures</p>
-          <h2 className="font-heading text-3xl md:text-4xl">30+ health markers from one 30-second scan.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.measuresEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.measuresTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -432,8 +432,8 @@ const Technology = () => {
             className="rounded-3xl w-full h-auto object-cover shadow-lg"
           />
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Privacy</p>
-            <h2 className="font-heading text-3xl md:text-4xl mb-5">Your face never leaves your phone.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.privacyEyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-5">{t("pages.technology.privacyTitle")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               Most face-based AI sends your video to a server, runs analysis there, and stores the data. Shen AI
               doesn't.
@@ -468,8 +468,8 @@ const Technology = () => {
       {/* Case studies */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Real-world results</p>
-          <h2 className="font-heading text-3xl md:text-4xl">What happens when this technology meets a product.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.caseEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.caseTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -505,9 +505,9 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-5xl mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">From vitals to answer</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.fromVitalsEyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl mb-4">
-              Reading vitals is just the start. Cira tells you what to do.
+              {t("pages.technology.fromVitalsTitle")}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               Most camera-based health technologies stop at giving you a number. Cira goes further. Once Shen AI delivers
@@ -535,7 +535,7 @@ const Technology = () => {
               onClick={() => navigate("/free-chat")}
               className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:bg-foreground/90 transition"
             >
-              Try a free scan now <ArrowRight className="w-4 h-4" />
+              {t("pages.technology.ctaScan")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -544,8 +544,8 @@ const Technology = () => {
       {/* Technically curious */}
       <section className="max-w-5xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">For the technically curious</p>
-          <h2 className="font-heading text-3xl md:text-4xl">Want to dig deeper?</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.techCuriousEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.techCuriousTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -578,16 +578,16 @@ const Technology = () => {
       {/* CTA */}
       <section className="max-w-3xl mx-auto px-6 pt-4 pb-24 text-center">
         <h2 className="font-heading text-3xl md:text-4xl mb-4">
-          Real vitals. Real science. Real answers.
+          {t("pages.technology.finalTitle")}
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8">
-          No hardware required. Your first scan is free. No credit card. No app to install.
+          {t("pages.technology.finalSubtitle")}
         </p>
         <button
           onClick={() => navigate("/free-chat")}
           className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-7 py-3 text-base font-medium hover:bg-foreground/90 transition"
         >
-          Start your scan <ArrowRight className="w-4 h-4" />
+          {t("pages.technology.finalCta")} <ArrowRight className="w-4 h-4" />
         </button>
       </section>
     </div>
