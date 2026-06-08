@@ -422,7 +422,7 @@ const Dashboard = () => {
                         <div className="w-7 h-7 rounded-lg bg-secondary/60 flex items-center justify-center">
                           <TrendingUp size={14} className="text-muted-foreground" />
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{h.label}</p>
+                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${h.label}`, h.label)}</p>
                       </div>
                       <p className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                         {h.value}
