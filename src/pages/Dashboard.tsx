@@ -310,7 +310,7 @@ const Dashboard = () => {
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           {/* Header */}
           <div className="mb-8">
-            <p className="text-sm text-muted-foreground font-body mb-1">Welcome back</p>
+            <p className="text-sm text-muted-foreground font-body mb-1">{t("dashboard.welcomeBack")}</p>
             <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
               {greeting}, {userName.split(" ")[0]} 👋
             </h1>
