@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
@@ -158,6 +160,7 @@ const HeroChatPreview = () => {
 };
 
 const Index = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
   const [heroMessage, setHeroMessage] = useState("");
