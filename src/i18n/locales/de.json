@@ -1,0 +1,140 @@
+{
+  "common": {
+    "submit": "Senden",
+    "cancel": "Abbrechen",
+    "continue": "Weiter",
+    "back": "Zurück",
+    "next": "Weiter",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "loading": "Wird geladen...",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "ok": "OK",
+    "skip": "Vorerst überspringen",
+    "finish": "Einrichtung abschließen",
+    "gotIt": "Verstanden",
+    "tryAgain": "Erneut versuchen",
+    "learnMore": "Mehr erfahren"
+  },
+  "nav": {
+    "howItWorks": "So funktioniert es",
+    "technology": "Technologie",
+    "whatCiraHelpsWith": "Womit Cira hilft",
+    "pricing": "Preise",
+    "realDoctors": "Echte Ärzte",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "logout": "Abmelden"
+  },
+  "footer": {
+    "language": "Sprache",
+    "product": "Produkt",
+    "company": "Unternehmen",
+    "legal": "Rechtliches",
+    "security": "Sicherheit & Datenschutz",
+    "privacyPolicy": "Datenschutz",
+    "terms": "AGB",
+    "tagline": "Deine KI-Gesundheits­krankenschwester — klinisch validierte Vitalwerte, jederzeit verfügbar.",
+    "copyright": "© 2026 Cira · askainurse.com",
+    "disclaimerLine": "Klinisch validierte Vitalwerte · Lizenzierte Ärzte ·",
+    "disclaimer": "Cira ersetzt keine professionelle medizinische Beratung."
+  },
+  "consent": {
+    "message": "Cira speichert deine Gesundheitsdaten, um deine Auswertungen zu ermöglichen. Indem du fortfährst, stimmst du unserer",
+    "privacyPolicy": "Datenschutzerklärung",
+    "and": "und unseren",
+    "terms": "AGB",
+    "notMedical": "Kein medizinischer Dienst."
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Ups! Seite nicht gefunden",
+    "returnHome": "Zur Startseite"
+  },
+  "pricing": {
+    "badge": "Preise",
+    "title1": "Einfach. Ehrlich.",
+    "title2": "Für alle gemacht.",
+    "subtitle": "Keine versteckten Gebühren. Kein Versicherungspapierkram. Mit einem Klick kündbar.",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "savePercent": "20% sparen",
+    "mostPopular": "Am beliebtesten",
+    "trusted": "Genutzt von Menschen in über 30 Ländern",
+    "faqTitle": "Häufig gestellte Fragen",
+    "faqSubtitle": "Alles, was du vor dem Start wissen musst.",
+    "ctaTitle": "Starte heute mit Cira.",
+    "ctaSubtitle": "Für deinen ersten Scan ist keine Anmeldung nötig.",
+    "ctaButton": "Cira kostenlos testen",
+    "plans": {
+      "free": {
+        "name": "Kostenlos",
+        "desc": "Teste Cira ohne Anmeldung, ohne Kreditkarte, ohne Haken.",
+        "period": "für immer",
+        "cta": "Kostenlos starten"
+      },
+      "premium": {
+        "name": "Premium",
+        "desc": "Alles, was du für laufende Gesundheitsunterstützung brauchst.",
+        "perYear": "/Jahr",
+        "perMonth": "/Monat",
+        "saveYearly": "Spare 12 $ pro Jahr",
+        "cta": "Premium holen",
+        "footnote": "Weniger als ein Kaffee. Mehr als ein Check-up."
+      },
+      "family": {
+        "name": "Familie",
+        "desc": "Cira für den ganzen Haushalt – bis zu 4 Mitglieder.",
+        "saveYearly": "Spare 24 $ pro Jahr",
+        "cta": "Familie holen"
+      }
+    }
+  },
+  "onboarding": {
+    "sex": {
+      "label": "Biologisches Geschlecht",
+      "sub": "Das hilft uns, deine Gesundheits­messwerte zu personalisieren",
+      "male": "♂ Männlich",
+      "female": "♀ Weiblich"
+    },
+    "age": {
+      "label": "Wie alt bist du?",
+      "sub": "Das Alter wird für Risikobewertungen und Vitalanalysen verwendet",
+      "placeholder": "z. B. 28",
+      "unit": "Jahre"
+    },
+    "height": {
+      "label": "Deine Größe",
+      "sub": "Größe in Zentimetern für BMI und Körpermesswerte",
+      "placeholder": "z. B. 175",
+      "unit": "cm"
+    },
+    "weight": {
+      "label": "Dein Gewicht",
+      "sub": "Gewicht in Kilogramm für präzise Gesundheits­indizes",
+      "placeholder": "z. B. 70",
+      "unit": "kg"
+    },
+    "toastSuccess": "Profil aktualisiert!",
+    "toastError": "Profil konnte nicht gespeichert werden"
+  },
+  "form": {
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen"
+  },
+  "language": {
+    "select": "Sprache auswählen"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "common": {
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "loading": "Cargando...",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "ok": "Aceptar",
+    "skip": "Omitir por ahora",
+    "finish": "Finalizar configuración",
+    "gotIt": "Entendido",
+    "tryAgain": "Intentar de nuevo",
+    "learnMore": "Saber más"
+  },
+  "nav": {
+    "howItWorks": "Cómo funciona",
+    "technology": "Tecnología",
+    "whatCiraHelpsWith": "En qué te ayuda Cira",
+    "pricing": "Precios",
+    "realDoctors": "Médicos reales",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "footer": {
+    "language": "Idioma",
+    "product": "Producto",
+    "company": "Compañía",
+    "legal": "Legal",
+    "security": "Seguridad y privacidad",
+    "privacyPolicy": "Política de privacidad",
+    "terms": "Términos",
+    "tagline": "Tu enfermera de salud con IA: signos vitales validados clínicamente, disponibles en cualquier momento.",
+    "copyright": "© 2026 Cira · askainurse.com",
+    "disclaimerLine": "Signos vitales validados clínicamente · Médicos licenciados ·",
+    "disclaimer": "Cira no reemplaza el consejo médico profesional."
+  },
+  "consent": {
+    "message": "Cira almacena tus datos de salud para potenciar tus evaluaciones. Al continuar aceptas nuestra",
+    "privacyPolicy": "Política de privacidad",
+    "and": "y",
+    "terms": "Términos",
+    "notMedical": "No es un servicio médico."
+  },
+  "notFound": {
+    "title": "404",
+    "message": "¡Ups! Página no encontrada",
+    "returnHome": "Volver al inicio"
+  },
+  "pricing": {
+    "badge": "Precios",
+    "title1": "Simple. Honesto.",
+    "title2": "Hecho para todos.",
+    "subtitle": "Sin tarifas ocultas. Sin papeleo de seguros. Cancela en un clic.",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "savePercent": "Ahorra 20%",
+    "mostPopular": "Más popular",
+    "trusted": "Usado por personas en más de 30 países",
+    "faqTitle": "Preguntas frecuentes",
+    "faqSubtitle": "Todo lo que necesitas saber antes de empezar.",
+    "ctaTitle": "Comienza con Cira hoy.",
+    "ctaSubtitle": "No necesitas registrarte para tu primer escaneo.",
+    "ctaButton": "Prueba Cira Gratis",
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "desc": "Prueba Cira sin registro, sin tarjeta, sin trampas.",
+        "period": "para siempre",
+        "cta": "Empezar gratis"
+      },
+      "premium": {
+        "name": "Premium",
+        "desc": "Todo lo que necesitas para un soporte de salud continuo.",
+        "perYear": "/año",
+        "perMonth": "/mes",
+        "saveYearly": "Ahorra 12 USD al año",
+        "cta": "Obtener Premium",
+        "footnote": "Menos que un café. Más que un chequeo."
+      },
+      "family": {
+        "name": "Familia",
+        "desc": "Cira para toda la casa, hasta 4 miembros.",
+        "saveYearly": "Ahorra 24 USD al año",
+        "cta": "Obtener Familia"
+      }
+    }
+  },
+  "onboarding": {
+    "sex": {
+      "label": "Sexo biológico",
+      "sub": "Esto nos ayuda a personalizar tus métricas de salud",
+      "male": "♂ Hombre",
+      "female": "♀ Mujer"
+    },
+    "age": {
+      "label": "¿Cuántos años tienes?",
+      "sub": "La edad se usa para evaluaciones de riesgo y análisis de signos vitales",
+      "placeholder": "ej. 28",
+      "unit": "años"
+    },
+    "height": {
+      "label": "Tu altura",
+      "sub": "Altura en centímetros para el IMC y métricas corporales",
+      "placeholder": "ej. 175",
+      "unit": "cm"
+    },
+    "weight": {
+      "label": "Tu peso",
+      "sub": "Peso en kilogramos para índices de salud precisos",
+      "placeholder": "ej. 70",
+      "unit": "kg"
+    },
+    "toastSuccess": "¡Perfil actualizado!",
+    "toastError": "No se pudo guardar el perfil"
+  },
+  "form": {
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña"
+  },
+  "language": {
+    "select": "Seleccionar idioma"
+  }
+}

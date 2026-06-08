@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
@@ -158,6 +160,7 @@ const HeroChatPreview = () => {
 };
 
 const Index = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const pageRef = useRef<HTMLDivElement>(null);
   const [heroMessage, setHeroMessage] = useState("");
@@ -982,48 +985,51 @@ const Index = () => {
                 <span className="font-heading text-lg font-semibold text-foreground">Cira</span>
               </button>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                Your AI health nurse — clinically validated vitals, available anytime.
+                {t("footer.tagline")}
               </p>
             </div>
 
             {/* Product */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Product</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("footer.product")}</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">How it works</button></li>
-                <li><button onClick={() => navigate("/technology")} className="text-muted-foreground hover:text-primary transition-colors">Technology</button></li>
-                <li><button onClick={() => navigate("/what-cira-helps-with")} className="text-muted-foreground hover:text-primary transition-colors">What Cira helps with</button></li>
-                <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">Pricing</button></li>
+                <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.howItWorks")}</button></li>
+                <li><button onClick={() => navigate("/technology")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.technology")}</button></li>
+                <li><button onClick={() => navigate("/what-cira-helps-with")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.whatCiraHelpsWith")}</button></li>
+                <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.pricing")}</button></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Company</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("footer.company")}</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">Real doctors</button></li>
-                <li><button onClick={() => navigate("/blog")} className="text-muted-foreground hover:text-primary transition-colors">Blog</button></li>
-                <li><a href="mailto:hello@askainurse.com" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+                <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.realDoctors")}</button></li>
+                <li><button onClick={() => navigate("/blog")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.blog")}</button></li>
+                <li><a href="mailto:hello@askainurse.com" className="text-muted-foreground hover:text-primary transition-colors">{t("nav.contact")}</a></li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Legal</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("footer.legal")}</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">Security &amp; Privacy</button></li>
-                <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</button></li>
-                <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">Terms</button></li>
+                <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.security")}</button></li>
+                <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.privacyPolicy")}</button></li>
+                <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.terms")}</button></li>
               </ul>
             </div>
           </div>
 
           <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <p>© 2026 Cira · askainurse.com</p>
-            <p className="text-center md:text-right">
-              Clinically validated vitals · Licensed physicians ·{" "}
-              <span className="italic">Cira does not replace professional medical advice.</span>
-            </p>
+            <p>{t("footer.copyright")}</p>
+            <div className="flex flex-col md:flex-row items-center gap-3">
+              <LanguageSwitcher />
+              <p className="text-center md:text-right">
+                {t("footer.disclaimerLine")}{" "}
+                <span className="italic">{t("footer.disclaimer")}</span>
+              </p>
+            </div>
           </div>
         </div>
       </footer>

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "cira_consent_v1";
 
 const ConsentBanner = () => {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -30,9 +32,10 @@ const ConsentBanner = () => {
       <div className="rounded-xl border border-border bg-card/95 backdrop-blur p-3 shadow-lg">
         <div className="flex items-start gap-2">
           <p className="text-[11px] leading-relaxed text-muted-foreground flex-1">
-            Cira stores your health data to power your assessments. By continuing you agree to our{" "}
-            <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link> and{" "}
-            <Link to="/terms" className="underline hover:text-foreground">Terms</Link>. Not a medical service.
+            {t("consent.message")}{" "}
+            <Link to="/privacy" className="underline hover:text-foreground">{t("consent.privacyPolicy")}</Link>{" "}
+            {t("consent.and")}{" "}
+            <Link to="/terms" className="underline hover:text-foreground">{t("consent.terms")}</Link>. {t("consent.notMedical")}
           </p>
           <button
             onClick={accept}
@@ -44,7 +47,7 @@ const ConsentBanner = () => {
         </div>
         <div className="mt-2 flex justify-end">
           <Button size="sm" onClick={accept} className="h-7 px-3 text-xs">
-            Got it
+            {t("common.gotIt")}
           </Button>
         </div>
       </div>
