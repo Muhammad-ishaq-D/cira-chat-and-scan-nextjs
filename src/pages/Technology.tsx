@@ -578,16 +578,16 @@ const Technology = () => {
       {/* CTA */}
       <section className="max-w-3xl mx-auto px-6 pt-4 pb-24 text-center">
         <h2 className="font-heading text-3xl md:text-4xl mb-4">
-          Real vitals. Real science. Real answers.
+          {t("pages.technology.finalTitle")}
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8">
-          No hardware required. Your first scan is free. No credit card. No app to install.
+          {t("pages.technology.finalSubtitle")}
         </p>
         <button
           onClick={() => navigate("/free-chat")}
           className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-7 py-3 text-base font-medium hover:bg-foreground/90 transition"
         >
-          Start your scan <ArrowRight className="w-4 h-4" />
+          {t("pages.technology.finalCta")} <ArrowRight className="w-4 h-4" />
         </button>
       </section>
     </div>
