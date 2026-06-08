@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { userApi } from "@/lib/apiClient";
 import { consumePostAuthRedirect } from "@/lib/authFlow";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -9,6 +10,7 @@ import { ChevronRight, Ruler, Weight, Calendar, User } from "lucide-react";
 type Sex = "male" | "female" | "";
 
 const Onboarding = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [age, setAge] = useState("");
