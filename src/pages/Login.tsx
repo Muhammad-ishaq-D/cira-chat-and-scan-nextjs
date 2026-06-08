@@ -189,7 +189,7 @@ const Login = () => {
       await login(email.trim(), password);
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Login failed"));
+      toast.error(getErrorMessage(error, t("auth.errors.loginFailed")));
     } finally {
       setLoading(false);
     }
@@ -199,17 +199,17 @@ const Login = () => {
     e.preventDefault();
 
     if (!fullName.trim()) {
-      toast.error("Please enter your full name");
+      toast.error(t("auth.errors.nameRequired"));
       return;
     }
 
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error(t("auth.errors.passwordMin"));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("auth.errors.passwordsMismatch"));
       return;
     }
 
@@ -217,9 +217,9 @@ const Login = () => {
     try {
       await sendOtp(email.trim());
       setRegisterOtpSent(true);
-      toast.success("Verification code sent to your email!");
+      toast.success(t("auth.toast.codeSent"));
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send verification code"));
+      toast.error(getErrorMessage(error, t("auth.errors.sendCodeFailed")));
     } finally {
       setLoading(false);
     }
@@ -235,10 +235,10 @@ const Login = () => {
         password,
         otp: registerOtp,
       });
-      toast.success("Account created!");
+      toast.success(t("auth.toast.accountCreated"));
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Verification failed"));
+      toast.error(getErrorMessage(error, t("auth.errors.verifyFailed")));
     } finally {
       setLoading(false);
     }
@@ -250,9 +250,9 @@ const Login = () => {
     try {
       await sendOtp(email.trim());
       setOtpSent(true);
-      toast.success("Verification code sent!");
+      toast.success(t("auth.toast.codeSentShort"));
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send code"));
+      toast.error(getErrorMessage(error, t("auth.errors.sendCodeFailedShort")));
     } finally {
       setLoading(false);
     }
@@ -265,7 +265,7 @@ const Login = () => {
       await verifyOtp(email.trim(), otp);
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Invalid code"));
+      toast.error(getErrorMessage(error, t("auth.errors.invalidCode")));
     } finally {
       setLoading(false);
     }
