@@ -290,7 +290,7 @@ const Login = () => {
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response: { credential?: string }) => {
           if (!response.credential) {
-            toast.error("Google login failed");
+            toast.error(t("auth.errors.googleFailed"));
             return;
           }
 
