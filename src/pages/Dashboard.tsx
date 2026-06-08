@@ -373,15 +373,15 @@ const Dashboard = () => {
                     <ShieldCheck size={20} className="text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground font-body">Overall Health</p>
+                    <p className="text-sm text-muted-foreground font-body">{t("dashboard.overallHealth")}</p>
                     <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                      {vitals[0].value === "--" ? "No scan data yet" : "Good"}
+                      {vitals[0].value === "--" ? t("dashboard.noScanData") : t("dashboard.good")}
                     </p>
                   </div>
                 </div>
                 {vitals[0].value === "--" && (
                   <p className="text-sm text-muted-foreground font-body ml-[52px]">
-                    Complete your first face scan to see your health dashboard.
+                    {t("dashboard.completeFirstScan")}
                   </p>
                 )}
               </div>
