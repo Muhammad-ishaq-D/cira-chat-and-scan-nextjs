@@ -226,8 +226,10 @@ const Dashboard = () => {
   }, []);
 
   const userName = profile?.name || localUser?.name || "User";
-  const greeting = new Date().getHours() < 12 ? "Good Morning" : new Date().getHours() < 18 ? "Good Afternoon" : "Good Evening";
-  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? t("dashboard.goodMorning") : hour < 18 ? t("dashboard.goodAfternoon") : t("dashboard.goodEvening");
+  const localeForDate = i18n.language || "en";
+  const today = new Date().toLocaleDateString(localeForDate, { month: "long", day: "numeric", year: "numeric" });
 
   const handleLogout = () => {
     logout();
