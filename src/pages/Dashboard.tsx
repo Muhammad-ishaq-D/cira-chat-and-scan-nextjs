@@ -274,7 +274,7 @@ const Dashboard = () => {
                 ) : (
                   <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
                 )}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{t(item.tKey)}</span>
               </button>
             );
           })}
