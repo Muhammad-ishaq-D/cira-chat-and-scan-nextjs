@@ -282,17 +282,17 @@ const RealDoctors = () => {
           <img src={globalImg} alt="Global doctor network" loading="lazy" width={1280} height={896} className="w-full h-full object-cover" />
           <div className="p-10 md:p-12">
             <h2 className="text-3xl md:text-4xl font-light mb-4 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-              From chat and scan to doctors in 180 countries.
+              {t("pages.realDoctors.finalTitle")}
             </h2>
             <p className="text-sm text-background/70 mb-7 leading-relaxed">
-              Start with Cira. If real care is the right next step, you'll know — and Air Doctor will be one tap away.
+              {t("pages.realDoctors.finalSubtitle")}
             </p>
             <div className="flex flex-wrap gap-3">
               <button onClick={() => navigate("/free-chat")} className="inline-flex items-center gap-2 px-6 h-11 rounded-full bg-white text-foreground text-sm font-medium hover:bg-stone-100 transition">
-                Talk to Cira
+                {t("pages.realDoctors.talkToCira")}
               </button>
               <a href={AIR_DOCTOR_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 h-11 rounded-full border border-white/20 text-sm font-medium hover:bg-white/10 transition">
-                Book with Air Doctor
+                {t("pages.realDoctors.bookAir")}
               </a>
             </div>
           </div>
@@ -301,7 +301,7 @@ const RealDoctors = () => {
 
       <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground space-y-2">
         <p className="leading-relaxed">
-          AskAinurse / Cira provides AI guidance, not direct medical treatment. Bookings happen on Air Doctor's own platform. Doctors are independent licensed professionals, not employees of Cira. Availability and insurance coverage vary by country and provider.
+          {t("pages.realDoctors.footerLegal")}
         </p>
         <p>© 2026 Cira — askainurse.com</p>
       </footer>
