@@ -388,8 +388,8 @@ const Dashboard = () => {
 
               {/* Vital Signs */}
               {vitals.some((v) => v.value !== "--") && <div className="mb-8">
-                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Signs</h2>
-                <p className="text-xs text-muted-foreground font-body mb-4">Measured entirely from the face scan</p>
+                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("dashboard.vitalSigns")}</h2>
+                <p className="text-xs text-muted-foreground font-body mb-4">{t("dashboard.vitalSignsSub")}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {vitals.filter((v) => v.value !== "--").map((v) => {
                     const Icon = v.icon;
