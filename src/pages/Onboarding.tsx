@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { userApi } from "@/lib/apiClient";
 import { consumePostAuthRedirect } from "@/lib/authFlow";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -9,6 +10,7 @@ import { ChevronRight, Ruler, Weight, Calendar, User } from "lucide-react";
 type Sex = "male" | "female" | "";
 
 const Onboarding = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [age, setAge] = useState("");
@@ -18,10 +20,10 @@ const Onboarding = () => {
   const [saving, setSaving] = useState(false);
 
   const steps = [
-    { key: "sex", label: "Biological Sex", sub: "This helps us personalize your health metrics", icon: User },
-    { key: "age", label: "How old are you?", sub: "Age is used for risk assessments and vitals analysis", icon: Calendar },
-    { key: "height", label: "Your height", sub: "Height in centimeters for BMI and body metrics", icon: Ruler },
-    { key: "weight", label: "Your weight", sub: "Weight in kilograms for accurate health indices", icon: Weight },
+    { key: "sex", label: t("onboarding.sex.label"), sub: t("onboarding.sex.sub"), icon: User },
+    { key: "age", label: t("onboarding.age.label"), sub: t("onboarding.age.sub"), icon: Calendar },
+    { key: "height", label: t("onboarding.height.label"), sub: t("onboarding.height.sub"), icon: Ruler },
+    { key: "weight", label: t("onboarding.weight.label"), sub: t("onboarding.weight.sub"), icon: Weight },
   ];
 
   const completeOnboarding = () => {
@@ -50,11 +52,11 @@ const Onboarding = () => {
         weight: Number(weight),
         biological_sex: sex,
       });
-      toast.success("Profile updated!");
+      toast.success(t("onboarding.toastSuccess"));
       completeOnboarding();
     } catch (err: any) {
       console.error("Profile save error:", err);
-      toast.error(err.message || "Failed to save profile");
+      toast.error(err.message || t("onboarding.toastError"));
     } finally {
       setSaving(false);
     }
@@ -114,7 +116,7 @@ const Onboarding = () => {
                       : "border-border bg-card text-foreground hover:border-primary/30"
                       }`}
                   >
-                    {option === "male" ? "♂ Male" : "♀ Female"}
+                    {option === "male" ? t("onboarding.sex.male") : t("onboarding.sex.female")}
                   </button>
                 ))}
               </div>
@@ -127,13 +129,13 @@ const Onboarding = () => {
                   inputMode="numeric"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  placeholder="e.g. 28"
+                  placeholder={t("onboarding.age.placeholder")}
                   min={10}
                   max={120}
                   autoFocus
                   className="w-full py-4 px-4 rounded-xl border-2 border-border bg-card text-foreground font-body text-lg text-center outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/40"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">years</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">{t("onboarding.age.unit")}</span>
               </div>
             )}
 
@@ -144,13 +146,13 @@ const Onboarding = () => {
                   inputMode="decimal"
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  placeholder="e.g. 175"
+                  placeholder={t("onboarding.height.placeholder")}
                   min={50}
                   max={300}
                   autoFocus
                   className="w-full py-4 px-4 rounded-xl border-2 border-border bg-card text-foreground font-body text-lg text-center outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/40"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">cm</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">{t("onboarding.height.unit")}</span>
               </div>
             )}
 
@@ -161,13 +163,13 @@ const Onboarding = () => {
                   inputMode="decimal"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  placeholder="e.g. 70"
+                  placeholder={t("onboarding.weight.placeholder")}
                   min={10}
                   max={500}
                   autoFocus
                   className="w-full py-4 px-4 rounded-xl border-2 border-border bg-card text-foreground font-body text-lg text-center outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/40"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">kg</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">{t("onboarding.weight.unit")}</span>
               </div>
             )}
           </div>
@@ -178,7 +180,7 @@ const Onboarding = () => {
             disabled={!canProceed() || saving}
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body shadow-lg shadow-primary/20 hover:shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {saving ? "Saving..." : step < 3 ? "Continue" : "Finish Setup"}
+            {saving ? t("common.saving") : step < 3 ? t("common.continue") : t("common.finish")}
             {!saving && <ChevronRight size={16} />}
           </button>
 
@@ -186,7 +188,7 @@ const Onboarding = () => {
             onClick={handleSkip}
             className="w-full mt-3 py-2 text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
           >
-            Skip for now
+            {t("common.skip")}
           </button>
 
           {/* Step dots */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -9,10 +10,10 @@ import { userApi, vitalsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
+  { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
+  { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
 
 const defaultVitals = [
@@ -69,6 +70,7 @@ const toFattyLiverLevel = (val: number | null | undefined): string => {
 };
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const activeNav: string = "home";
   const localUser = getUser();
@@ -224,8 +226,10 @@ const Dashboard = () => {
   }, []);
 
   const userName = profile?.name || localUser?.name || "User";
-  const greeting = new Date().getHours() < 12 ? "Good Morning" : new Date().getHours() < 18 ? "Good Afternoon" : "Good Evening";
-  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? t("dashboard.goodMorning") : hour < 18 ? t("dashboard.goodAfternoon") : t("dashboard.goodEvening");
+  const localeForDate = i18n.language || "en";
+  const today = new Date().toLocaleDateString(localeForDate, { month: "long", day: "numeric", year: "numeric" });
 
   const handleLogout = () => {
     logout();
@@ -270,7 +274,7 @@ const Dashboard = () => {
                 ) : (
                   <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
                 )}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{t(item.tKey)}</span>
               </button>
             );
           })}
@@ -281,7 +285,7 @@ const Dashboard = () => {
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
-            <span className="text-[9px] font-body font-medium leading-none">Logout</span>
+            <span className="text-[9px] font-body font-medium leading-none">{t("dashboard.nav.logout")}</span>
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20 overflow-hidden">
@@ -306,7 +310,7 @@ const Dashboard = () => {
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           {/* Header */}
           <div className="mb-8">
-            <p className="text-sm text-muted-foreground font-body mb-1">Welcome back</p>
+            <p className="text-sm text-muted-foreground font-body mb-1">{t("dashboard.welcomeBack")}</p>
             <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
               {greeting}, {userName.split(" ")[0]} 👋
             </h1>
@@ -369,23 +373,23 @@ const Dashboard = () => {
                     <ShieldCheck size={20} className="text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground font-body">Overall Health</p>
+                    <p className="text-sm text-muted-foreground font-body">{t("dashboard.overallHealth")}</p>
                     <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                      {vitals[0].value === "--" ? "No scan data yet" : "Good"}
+                      {vitals[0].value === "--" ? t("dashboard.noScanData") : t("dashboard.good")}
                     </p>
                   </div>
                 </div>
                 {vitals[0].value === "--" && (
                   <p className="text-sm text-muted-foreground font-body ml-[52px]">
-                    Complete your first face scan to see your health dashboard.
+                    {t("dashboard.completeFirstScan")}
                   </p>
                 )}
               </div>
 
               {/* Vital Signs */}
               {vitals.some((v) => v.value !== "--") && <div className="mb-8">
-                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Vital Signs</h2>
-                <p className="text-xs text-muted-foreground font-body mb-4">Measured entirely from the face scan</p>
+                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("dashboard.vitalSigns")}</h2>
+                <p className="text-xs text-muted-foreground font-body mb-4">{t("dashboard.vitalSignsSub")}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {vitals.filter((v) => v.value !== "--").map((v) => {
                     const Icon = v.icon;
@@ -395,7 +399,7 @@ const Dashboard = () => {
                           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                             <Icon size={14} className="text-primary" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                          <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${v.label}`, v.label)}</p>
                         </div>
                         <p className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                           {v.value}
@@ -409,8 +413,8 @@ const Dashboard = () => {
 
               {/* Health Indices */}
               {healthIndices.some((h) => h.value !== "--") && <div className="mb-8">
-                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Health Indices</h2>
-                <p className="text-xs text-muted-foreground font-body mb-4">Based on scan and user data</p>
+                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("dashboard.healthIndices")}</h2>
+                <p className="text-xs text-muted-foreground font-body mb-4">{t("dashboard.healthIndicesSub")}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {healthIndices.filter((h) => h.value !== "--").map((h) => (
                     <div key={h.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md hover:border-border transition-all">
@@ -418,7 +422,7 @@ const Dashboard = () => {
                         <div className="w-7 h-7 rounded-lg bg-secondary/60 flex items-center justify-center">
                           <TrendingUp size={14} className="text-muted-foreground" />
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{h.label}</p>
+                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${h.label}`, h.label)}</p>
                       </div>
                       <p className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                         {h.value}
@@ -431,8 +435,8 @@ const Dashboard = () => {
 
               {/* Health Risks */}
               {healthRisks.some((r) => r.level !== "—") && <div className="mb-12">
-                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Health Risks</h2>
-                <p className="text-xs text-muted-foreground font-body mb-4">Based on scan and user data</p>
+                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("dashboard.healthRisks")}</h2>
+                <p className="text-xs text-muted-foreground font-body mb-4">{t("dashboard.healthRisksSub")}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {healthRisks.filter((r) => r.level !== "—").map((r) => (
                     <div key={r.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md hover:border-border transition-all">
@@ -440,10 +444,10 @@ const Dashboard = () => {
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${r.level === "Low" ? "bg-emerald-50" : r.level === "Moderate" ? "bg-amber-50" : "bg-muted"}`}>
                           <AlertTriangle size={14} className={r.level === "Low" ? "text-emerald-600" : r.level === "Moderate" ? "text-amber-600" : "text-muted-foreground"} />
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{r.label}</p>
+                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${r.label}`, r.label)}</p>
                       </div>
                       <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${riskColor(r.level)}`}>
-                        {r.level}
+                        {r.level === "Low" ? t("dashboard.risk.low") : r.level === "Moderate" ? t("dashboard.risk.moderate") : r.level === "High" ? t("dashboard.risk.high") : r.level}
                       </span>
                     </div>
                   ))}

@@ -401,14 +401,38 @@
         ]
       },
       "faqs": [
-        { "q": "¿Necesito registrarme para probarlo?", "a": "No. Puedes chatear con Cira y hacer un escaneo facial completamente gratis — sin cuenta, sin tarjeta, sin compromiso." },
-        { "q": "¿Puedo cancelar en cualquier momento?", "a": "Sí. Cancela con un clic desde tu cuenta. Sin correos, sin llamadas, sin presión." },
-        { "q": "¿Ofrecen reembolsos?", "a": "Sí — garantía de reembolso de 7 días en los planes Premium y Family. Si Cira no es para ti, te devolvemos el dinero." },
-        { "q": "¿Qué métodos de pago aceptan?", "a": "Todas las tarjetas de crédito y débito principales, Apple Pay y Google Pay. Métodos locales en mercados seleccionados." },
-        { "q": "¿Subirá el precio?", "a": "Tu precio se mantiene mientras la suscripción esté activa. Respetamos la tarifa con la que te suscribiste." },
-        { "q": "¿Mis datos son privados?", "a": "Sí. Los escaneos faciales se procesan 100% en tu dispositivo — tu vídeo nunca sale del teléfono. Conversaciones y constantes están cifradas y nunca se venden." },
-        { "q": "¿Sustituye a un médico?", "a": "No. Cira es una enfermera IA que te ayuda a entender tus síntomas y decidir el siguiente paso. No sustituye al consejo médico profesional." },
-        { "q": "¿Puedo cambiar entre Premium y Family?", "a": "Sí — sube, baja o cambia de plan en cualquier momento desde la configuración de tu cuenta." }
+        {
+          "q": "¿Necesito registrarme para probarlo?",
+          "a": "No. Puedes chatear con Cira y hacer un escaneo facial completamente gratis — sin cuenta, sin tarjeta, sin compromiso."
+        },
+        {
+          "q": "¿Puedo cancelar en cualquier momento?",
+          "a": "Sí. Cancela con un clic desde tu cuenta. Sin correos, sin llamadas, sin presión."
+        },
+        {
+          "q": "¿Ofrecen reembolsos?",
+          "a": "Sí — garantía de reembolso de 7 días en los planes Premium y Family. Si Cira no es para ti, te devolvemos el dinero."
+        },
+        {
+          "q": "¿Qué métodos de pago aceptan?",
+          "a": "Todas las tarjetas de crédito y débito principales, Apple Pay y Google Pay. Métodos locales en mercados seleccionados."
+        },
+        {
+          "q": "¿Subirá el precio?",
+          "a": "Tu precio se mantiene mientras la suscripción esté activa. Respetamos la tarifa con la que te suscribiste."
+        },
+        {
+          "q": "¿Mis datos son privados?",
+          "a": "Sí. Los escaneos faciales se procesan 100% en tu dispositivo — tu vídeo nunca sale del teléfono. Conversaciones y constantes están cifradas y nunca se venden."
+        },
+        {
+          "q": "¿Sustituye a un médico?",
+          "a": "No. Cira es una enfermera IA que te ayuda a entender tus síntomas y decidir el siguiente paso. No sustituye al consejo médico profesional."
+        },
+        {
+          "q": "¿Puedo cambiar entre Premium y Family?",
+          "a": "Sí — sube, baja o cambia de plan en cualquier momento desde la configuración de tu cuenta."
+        }
       ],
       "footer": "© 2026 AskAINurse · Cira AI"
     },
@@ -424,23 +448,55 @@
       "situationsTitleA": "Sea lo que sea lo que te preocupa,",
       "situationsTitleB": "Cira está ahí.",
       "situations": [
-        { "title": "¿Debería ver a un médico?", "text": "No todo síntoma requiere visita. Cira te ayuda a decidir." },
-        { "title": "Algo no va bien", "text": "No sabes qué es — pero sabes que no es normal." },
-        { "title": "Me siento mal", "text": "Resfriado, fiebre, fatiga — entiende qué pasa." },
-        { "title": "¿Es urgente?", "text": "Sabe cuándo actuar de inmediato — y cuándo puedes esperar." },
-        { "title": "Dudas sobre medicación", "text": "Efectos, interacciones o dudas — obtén claridad." },
-        { "title": "Solo quiero tranquilidad", "text": "A veces solo necesitas saber que estás bien." }
+        {
+          "title": "¿Debería ver a un médico?",
+          "text": "No todo síntoma requiere visita. Cira te ayuda a decidir."
+        },
+        {
+          "title": "Algo no va bien",
+          "text": "No sabes qué es — pero sabes que no es normal."
+        },
+        {
+          "title": "Me siento mal",
+          "text": "Resfriado, fiebre, fatiga — entiende qué pasa."
+        },
+        {
+          "title": "¿Es urgente?",
+          "text": "Sabe cuándo actuar de inmediato — y cuándo puedes esperar."
+        },
+        {
+          "title": "Dudas sobre medicación",
+          "text": "Efectos, interacciones o dudas — obtén claridad."
+        },
+        {
+          "title": "Solo quiero tranquilidad",
+          "text": "A veces solo necesitas saber que estás bien."
+        }
       ],
       "stepsEyebrow": "Simple. Rápido. Claro.",
       "stepsTitleA": "Tres pasos. Unos minutos.",
       "stepsTitleB": "Dirección real.",
       "steps": [
-        { "title": "Cuéntale a Cira qué pasa", "text": "Describe cómo te sientes, con tus propias palabras." },
-        { "title": "Opcional: escanea tus constantes", "text": "Un escaneo facial de 30 segundos añade contexto." },
-        { "title": "Recibe una dirección clara", "text": "Sabe exactamente qué hacer a continuación." }
+        {
+          "title": "Cuéntale a Cira qué pasa",
+          "text": "Describe cómo te sientes, con tus propias palabras."
+        },
+        {
+          "title": "Opcional: escanea tus constantes",
+          "text": "Un escaneo facial de 30 segundos añade contexto."
+        },
+        {
+          "title": "Recibe una dirección clara",
+          "text": "Sabe exactamente qué hacer a continuación."
+        }
       ],
       "outcomesLabel": "Cada chequeo termina con uno de estos",
-      "outcomes": ["Autocuidado", "Monitorizar", "Ver a un médico", "Atención urgente"],
+      "outcomes": [
+        "Autocuidado",
+        "Monitorizar",
+        "Ver a un médico",
+        "Atención urgente"
+      ],
       "audienceEyebrow": "Hecho para la vida real",
       "audienceTitle": "Cira encaja en los momentos en los que no puedes dejarlo todo para investigar.",
       "audience": [
@@ -476,7 +532,11 @@
       "heroTitleA": "Habla. Escanea. Entiende",
       "heroTitleB": "tu siguiente paso.",
       "heroSubtitle": "Cira es una enfermera IA que escucha tu historia, observa tus constantes con un breve escaneo facial y te ayuda a decidir si vigilar, ver a un médico o actuar rápido.",
-      "stepShortTitles": ["Habla", "Escanea", "Siguiente paso"],
+      "stepShortTitles": [
+        "Habla",
+        "Escanea",
+        "Siguiente paso"
+      ],
       "stepShortBodies": [
         "Comparte lo que pasa, con tus propias palabras.",
         "Un breve escaneo facial lee tus constantes en tiempo real.",
@@ -540,7 +600,11 @@
       "heroSubtitle": "Cira te da orientación privada de enfermera IA primero. Cuando tu evaluación completa lo sugiera, puedes pasar directamente a atención médica real vía la red de Air Doctor de ~20.000 médicos licenciados en ~180 países — telesalud o presencial.",
       "heroCta1": "Ver cómo es la transición",
       "heroCta2": "Reservar con un médico",
-      "trustChips": ["Privado por diseño", "Médicos licenciados", "180 países"],
+      "trustChips": [
+        "Privado por diseño",
+        "Médicos licenciados",
+        "180 países"
+      ],
       "whyEyebrow": "Por qué existe esta página",
       "whyTitle": "Más que solo un chat IA",
       "whySubtitle": "Mucha gente asume que AskAinurse es \"solo IA\". No lo es. La enfermera IA es el primer paso — y cuando hace falta, pasas a médicos reales en lugar de quedarte solo con un resumen.",
@@ -608,6 +672,107 @@
       "englishOnly": "Este documento legal está actualmente solo disponible en inglés. Próximamente versión traducida.",
       "termsTitle": "Términos de Servicio",
       "privacyTitle": "Política de Privacidad"
+    }
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "createAccount": "Crea tu cuenta",
+    "subtitleLogin": "Inicia sesión para continuar tu conversación",
+    "subtitleRegister": "Comienza tu primera evaluación en unos pasos",
+    "preparingGoogle": "Preparando inicio con Google...",
+    "orContinueEmail": "o continúa con correo",
+    "tabSignIn": "Iniciar sesión",
+    "tabCreateAccount": "Crear cuenta",
+    "fullName": "Nombre completo",
+    "email": "Correo electrónico",
+    "emailEnter": "Introduce tu correo",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "continue": "Continuar",
+    "sendingCode": "Enviando código...",
+    "sentCodeTo": "Hemos enviado un código a",
+    "enter6Digit": "Introduce el código de 6 dígitos",
+    "verifyCreate": "Verificar y crear cuenta",
+    "verifying": "Verificando...",
+    "useDifferentEmail": "Usar otro correo",
+    "alreadyHave": "¿Ya tienes una cuenta? Inicia sesión",
+    "needAccount": "¿Necesitas una cuenta? Créala",
+    "sendVerificationCode": "Enviar código de verificación",
+    "sending": "Enviando...",
+    "usePasswordInstead": "Usar contraseña",
+    "useOtpInstead": "Usar código (OTP)",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "verifySignIn": "Verificar e iniciar sesión",
+    "signingIn": "Iniciando sesión...",
+    "signIn": "Iniciar sesión",
+    "termsNotice": "Al continuar, aceptas los Términos y la Política de Privacidad de Cira.",
+    "errors": {
+      "nameRequired": "Por favor introduce tu nombre completo",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordsMismatch": "Las contraseñas no coinciden",
+      "loginFailed": "Error al iniciar sesión",
+      "googleFailed": "Error al iniciar sesión con Google",
+      "verifyFailed": "Verificación fallida",
+      "sendCodeFailed": "No se pudo enviar el código de verificación",
+      "sendCodeFailedShort": "No se pudo enviar el código",
+      "invalidCode": "Código inválido"
+    },
+    "toast": {
+      "codeSent": "¡Código de verificación enviado a tu correo!",
+      "codeSentShort": "¡Código de verificación enviado!",
+      "accountCreated": "¡Cuenta creada!"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches",
+    "overallHealth": "Salud general",
+    "noScanData": "Sin datos de escaneo aún",
+    "good": "Bien",
+    "completeFirstScan": "Completa tu primer escaneo facial para ver tu panel de salud.",
+    "vitalSigns": "Signos vitales",
+    "vitalSignsSub": "Medidos íntegramente desde el escaneo facial",
+    "healthIndices": "Índices de salud",
+    "healthIndicesSub": "Basado en escaneo y datos del usuario",
+    "healthRisks": "Riesgos de salud",
+    "healthRisksSub": "Basado en escaneo y datos del usuario",
+    "nav": {
+      "home": "Inicio",
+      "askCira": "Preguntar a Cira",
+      "scan": "Escaneo",
+      "reports": "Informes",
+      "logout": "Salir"
+    },
+    "risk": {
+      "low": "Bajo",
+      "moderate": "Moderado",
+      "high": "Alto"
+    },
+    "labels": {
+      "Blood Pressure": "Presión arterial",
+      "Heart Rate": "Frecuencia cardíaca",
+      "Heart Rate Variability": "Variabilidad cardíaca",
+      "Cardiac Workload": "Carga cardíaca",
+      "Breathing Rate": "Frecuencia respiratoria",
+      "Stress Index": "Índice de estrés",
+      "Body Mass Index": "Índice de masa corporal",
+      "Parasympathetic Activity": "Actividad parasimpática",
+      "Vascular Age": "Edad vascular",
+      "Wellness Score": "Puntuación de bienestar",
+      "Waist-to-Height Ratio": "Relación cintura-altura",
+      "Body Fat Percentage": "Porcentaje de grasa corporal",
+      "Basal Metabolic Rate": "Tasa metabólica basal",
+      "Body Shape Index": "Índice de forma corporal",
+      "Total Daily Energy": "Gasto energético diario total",
+      "Cardiovascular Risk": "Riesgo cardiovascular",
+      "Coronary Heart Disease": "Cardiopatía coronaria",
+      "Stroke Risk": "Riesgo de ictus",
+      "Heart Failure Risk": "Riesgo de insuficiencia cardíaca",
+      "Diabetes Risk": "Riesgo de diabetes",
+      "Fatty Liver Disease": "Hígado graso",
+      "Cardiovascular Event": "Evento cardiovascular"
     }
   }
 }

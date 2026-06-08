@@ -13,6 +13,7 @@ import {
 } from "@/lib/browserContext";
 import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.googleusercontent.com";
 const GOOGLE_CONTEXT_RESET_KEY = "cira_google_popup_reset";
@@ -29,6 +30,7 @@ const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error && error.message ? error.message : fallback;
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const googleButtonRef = useRef<HTMLDivElement>(null);
@@ -187,7 +189,7 @@ const Login = () => {
       await login(email.trim(), password);
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Login failed"));
+      toast.error(getErrorMessage(error, t("auth.errors.loginFailed")));
     } finally {
       setLoading(false);
     }
@@ -197,17 +199,17 @@ const Login = () => {
     e.preventDefault();
 
     if (!fullName.trim()) {
-      toast.error("Please enter your full name");
+      toast.error(t("auth.errors.nameRequired"));
       return;
     }
 
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error(t("auth.errors.passwordMin"));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("auth.errors.passwordsMismatch"));
       return;
     }
 
@@ -215,9 +217,9 @@ const Login = () => {
     try {
       await sendOtp(email.trim());
       setRegisterOtpSent(true);
-      toast.success("Verification code sent to your email!");
+      toast.success(t("auth.toast.codeSent"));
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send verification code"));
+      toast.error(getErrorMessage(error, t("auth.errors.sendCodeFailed")));
     } finally {
       setLoading(false);
     }
@@ -233,10 +235,10 @@ const Login = () => {
         password,
         otp: registerOtp,
       });
-      toast.success("Account created!");
+      toast.success(t("auth.toast.accountCreated"));
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Verification failed"));
+      toast.error(getErrorMessage(error, t("auth.errors.verifyFailed")));
     } finally {
       setLoading(false);
     }
@@ -248,9 +250,9 @@ const Login = () => {
     try {
       await sendOtp(email.trim());
       setOtpSent(true);
-      toast.success("Verification code sent!");
+      toast.success(t("auth.toast.codeSentShort"));
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send code"));
+      toast.error(getErrorMessage(error, t("auth.errors.sendCodeFailedShort")));
     } finally {
       setLoading(false);
     }
@@ -263,7 +265,7 @@ const Login = () => {
       await verifyOtp(email.trim(), otp);
       await redirectAfterAuth();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Invalid code"));
+      toast.error(getErrorMessage(error, t("auth.errors.invalidCode")));
     } finally {
       setLoading(false);
     }
@@ -288,7 +290,7 @@ const Login = () => {
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response: { credential?: string }) => {
           if (!response.credential) {
-            toast.error("Google login failed");
+            toast.error(t("auth.errors.googleFailed"));
             return;
           }
 
@@ -320,7 +322,7 @@ const Login = () => {
             }
             await redirectAfterAuth();
           } catch (error) {
-            toast.error(getErrorMessage(error, "Google login failed"));
+            toast.error(getErrorMessage(error, t("auth.errors.googleFailed")));
           } finally {
             setLoading(false);
           }
@@ -355,12 +357,10 @@ const Login = () => {
         </div>
 
         <h1 className="font-heading text-2xl font-semibold text-foreground text-center mb-2">
-          {authMode === "register" ? "Create your account" : "Welcome back"}
+          {authMode === "register" ? t("auth.createAccount") : t("auth.welcomeBack")}
         </h1>
         <p className="text-sm text-muted-foreground text-center font-body mb-8">
-          {authMode === "register"
-            ? "Start your first assessment in a few steps"
-            : "Sign in to continue your conversation"}
+          {authMode === "register" ? t("auth.subtitleRegister") : t("auth.subtitleLogin")}
         </p>
 
         <div className={`w-full mb-4 flex justify-center ${loading || !googleContextReady ? "pointer-events-none opacity-70" : ""}`}>
@@ -368,7 +368,7 @@ const Login = () => {
             <div ref={googleButtonRef} className="w-full min-h-[44px]" />
             {!googleContextReady && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full border border-border bg-card text-xs text-muted-foreground font-body">
-                Preparing Google sign-in...
+                {t("auth.preparingGoogle")}
               </div>
             )}
           </div>
@@ -376,7 +376,7 @@ const Login = () => {
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground font-body">or continue with email</span>
+          <span className="text-xs text-muted-foreground font-body">{t("auth.orContinueEmail")}</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -390,7 +390,7 @@ const Login = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Sign in
+            {t("auth.tabSignIn")}
           </button>
           <button
             type="button"
@@ -401,7 +401,7 @@ const Login = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Create account
+            {t("auth.tabCreateAccount")}
           </button>
         </div>
 
@@ -412,7 +412,7 @@ const Login = () => {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Full name"
+                placeholder={t("auth.fullName")}
                 autoComplete="name"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -421,7 +421,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("auth.email")}
                 autoComplete="email"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -430,7 +430,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 autoComplete="new-password"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -439,7 +439,7 @@ const Login = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm password"
+                placeholder={t("auth.confirmPassword")}
                 autoComplete="new-password"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -449,26 +449,26 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Sending code..." : "Continue"}
+                {loading ? t("auth.sendingCode") : t("auth.continue")}
               </button>
               <button
                 type="button"
                 onClick={() => handleModeChange("login")}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Already have an account? Sign in
+                {t("auth.alreadyHave")}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegisterVerifyOtp} className="space-y-3">
               <p className="text-xs text-muted-foreground font-body text-center">
-                We sent a code to <strong className="text-foreground">{email}</strong>
+                {t("auth.sentCodeTo")} <strong className="text-foreground">{email}</strong>
               </p>
               <input
                 type="text"
                 value={registerOtp}
                 onChange={(e) => setRegisterOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
+                placeholder={t("auth.enter6Digit")}
                 maxLength={6}
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
                 required
@@ -478,14 +478,14 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Verifying..." : "Verify & Create account"}
+                {loading ? t("auth.verifying") : t("auth.verifyCreate")}
               </button>
               <button
                 type="button"
                 onClick={() => setRegisterOtpSent(false)}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use a different email
+                {t("auth.useDifferentEmail")}
               </button>
             </form>
           )
@@ -496,7 +496,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("auth.emailEnter")}
                 autoComplete="email"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -506,26 +506,26 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Sending..." : "Send verification code"}
+                {loading ? t("auth.sending") : t("auth.sendVerificationCode")}
               </button>
               <button
                 type="button"
                 onClick={resetOtpFlow}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use password instead
+                {t("auth.usePasswordInstead")}
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-3">
               <p className="text-xs text-muted-foreground font-body text-center">
-                We sent a code to <strong className="text-foreground">{email}</strong>
+                {t("auth.sentCodeTo")} <strong className="text-foreground">{email}</strong>
               </p>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
+                placeholder={t("auth.enter6Digit")}
                 maxLength={6}
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
                 required
@@ -535,14 +535,14 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Verifying..." : "Verify & Sign in"}
+                {loading ? t("auth.verifying") : t("auth.verifySignIn")}
               </button>
               <button
                 type="button"
                 onClick={() => setOtpSent(false)}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use a different email
+                {t("auth.useDifferentEmail")}
               </button>
             </form>
           )
@@ -552,7 +552,7 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder={t("auth.email")}
               autoComplete="email"
               className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
               required
@@ -561,7 +561,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder={t("auth.password")}
               autoComplete="current-password"
               className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
               required
@@ -571,34 +571,34 @@ const Login = () => {
               disabled={loading}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("auth.signingIn") : t("auth.signIn")}
             </button>
             <button
               type="button"
               onClick={() => setUseOtp(true)}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Use OTP instead
+              {t("auth.useOtpInstead")}
             </button>
             <button
               type="button"
               onClick={() => navigate("/forgot-password")}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Forgot password?
+              {t("auth.forgotPassword")}
             </button>
             <button
               type="button"
               onClick={() => handleModeChange("register")}
               className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
             >
-              Need an account? Create one
+              {t("auth.needAccount")}
             </button>
           </form>
         )}
 
         <p className="text-xs text-muted-foreground text-center font-body mt-8 leading-relaxed">
-          By continuing, you agree to Cira's Terms and Privacy Policy.
+          {t("auth.termsNotice")}
         </p>
       </div>
     </div>
