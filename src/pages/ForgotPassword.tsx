@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { forgotPassword } from "@/lib/auth";
 import { toast } from "sonner";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -16,10 +18,10 @@ const ForgotPassword = () => {
     try {
       await forgotPassword(email.trim());
       setSent(true);
-      toast.success("Reset code sent to your email!");
+      toast.success(t("pages.forgotPassword.toastSuccess"));
       navigate(`/reset-password?email=${encodeURIComponent(email.trim())}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to send reset code");
+      toast.error(error instanceof Error ? error.message : t("pages.forgotPassword.toastError"));
     } finally {
       setLoading(false);
     }
@@ -34,10 +36,10 @@ const ForgotPassword = () => {
         </div>
 
         <h1 className="font-heading text-2xl font-semibold text-foreground text-center mb-2">
-          Forgot password?
+          {t("pages.forgotPassword.title")}
         </h1>
         <p className="text-sm text-muted-foreground text-center font-body mb-8">
-          Enter your email and we'll send you a code to reset your password
+          {t("pages.forgotPassword.subtitle")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -45,7 +47,7 @@ const ForgotPassword = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            placeholder={t("pages.forgotPassword.emailPlaceholder")}
             autoComplete="email"
             className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
             required
@@ -55,7 +57,7 @@ const ForgotPassword = () => {
             disabled={loading || sent}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {loading ? "Sending..." : sent ? "Code sent!" : "Send reset code"}
+            {loading ? t("pages.forgotPassword.sending") : sent ? t("pages.forgotPassword.sent") : t("pages.forgotPassword.send")}
           </button>
         </form>
 
@@ -64,7 +66,7 @@ const ForgotPassword = () => {
           onClick={() => navigate("/login")}
           className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors mt-4"
         >
-          Back to sign in
+          {t("pages.forgotPassword.back")}
         </button>
       </div>
     </div>
