@@ -322,7 +322,7 @@ const Login = () => {
             }
             await redirectAfterAuth();
           } catch (error) {
-            toast.error(getErrorMessage(error, "Google login failed"));
+            toast.error(getErrorMessage(error, t("auth.errors.googleFailed")));
           } finally {
             setLoading(false);
           }
