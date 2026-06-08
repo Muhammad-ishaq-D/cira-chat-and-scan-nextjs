@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Check, Shield, Stethoscope, Globe, Video, MapPin, Sparkles, MessageCircle, Activity } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import handoffImg from "@/assets/doctors-handoff.jpg";
@@ -9,6 +10,8 @@ const AIR_DOCTOR_URL = "https://www.air-dr.com/";
 
 const RealDoctors = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const trustChips = t("pages.realDoctors.trustChips", { returnObjects: true }) as string[];
 
   const flow = [
     { n: "1", title: "Cira chat + face scan", desc: "AI nurse intake + 30s vitals." },
