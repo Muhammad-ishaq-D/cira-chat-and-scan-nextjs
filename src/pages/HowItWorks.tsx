@@ -134,6 +134,10 @@ const Cell = ({ v }: { v: boolean | string }) => {
 
 const HowItWorks = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const shortTitles = t("pages.howItWorks.stepShortTitles", { returnObjects: true }) as string[];
+  const shortBodies = t("pages.howItWorks.stepShortBodies", { returnObjects: true }) as string[];
+  const stepsLocalized = steps.map((s, i) => ({ ...s, title: shortTitles[i] ?? s.title, body: shortBodies[i] ?? s.body }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -143,7 +147,7 @@ const HowItWorks = () => {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -153,23 +157,22 @@ const HowItWorks = () => {
           onClick={() => navigate("/free-chat")}
           className="text-sm font-medium text-foreground hover:text-primary transition-colors"
         >
-          Try Cira
+          {t("pages.howItWorks.navTry")}
         </button>
       </nav>
 
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 pt-10 pb-16 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">How Cira Works</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">{t("pages.howItWorks.heroEyebrow")}</p>
         <h1 className="font-heading text-4xl md:text-6xl leading-[1.05] text-foreground mb-6">
-          Talk. Scan. Understand <br className="hidden md:block" /> your next step.
+          {t("pages.howItWorks.heroTitleA")} <br className="hidden md:block" /> {t("pages.howItWorks.heroTitleB")}
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Cira is an AI nurse who listens to your story, looks at your vitals through a short face scan, and helps
-          you decide whether to watch, see a doctor, or act quickly.
+          {t("pages.howItWorks.heroSubtitle")}
         </p>
 
         <div className="grid sm:grid-cols-3 gap-4 mt-14">
-          {steps.map((s) => (
+          {stepsLocalized.map((s) => (
             <div
               key={s.n}
               className="rounded-2xl border bg-card p-6 text-left hover:shadow-md transition-shadow"
