@@ -116,7 +116,7 @@ const Onboarding = () => {
                       : "border-border bg-card text-foreground hover:border-primary/30"
                       }`}
                   >
-                    {option === "male" ? "♂ Male" : "♀ Female"}
+                    {option === "male" ? t("onboarding.sex.male") : t("onboarding.sex.female")}
                   </button>
                 ))}
               </div>
