@@ -116,12 +116,12 @@ const Privacy = () => {
 
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">What we collect</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.collectEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Only what helps you decide what to do next.
+            {t("pages.privacyHub.collectTitle")}
           </h2>
           <p className="mt-4 text-muted-foreground font-body text-[15px] leading-relaxed">
-            To give you useful guidance, Cira needs a small, focused set of information. Here's exactly what that looks like.
+            {t("pages.privacyHub.collectSubtitle")}
           </p>
         </div>
 
@@ -151,13 +151,12 @@ const Privacy = () => {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">What we don't keep</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.dontKeepEyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground mb-4">
-              We don't keep <em className="italic text-primary">your face.</em>
+              {t("pages.privacyHub.dontKeepTitleA")} <em className="italic text-primary">{t("pages.privacyHub.dontKeepTitleB")}</em>
             </h2>
             <p className="text-muted-foreground font-body text-[15px] leading-relaxed">
-              The face scan is a measurement tool, not an identity record. Frames are processed to compute your vitals
-              and then discarded. Nothing is added to a facial database or identity profile.
+              {t("pages.privacyHub.dontKeepBody")}
             </p>
           </div>
           <ul className="space-y-4">
@@ -178,9 +177,9 @@ const Privacy = () => {
 
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">How Cira protects your data</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.protectEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Layered protection, in plain language.
+            {t("pages.privacyHub.protectTitle")}
           </h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -198,19 +197,18 @@ const Privacy = () => {
 
       <section id="use" className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">How your information is used</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.useEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Used to help you. <em className="italic text-primary">Not sold. Not hidden.</em>
+            {t("pages.privacyHub.useTitleA")} <em className="italic text-primary">{t("pages.privacyHub.useTitleB")}</em>
           </h2>
           <p className="mt-4 text-muted-foreground font-body text-[15px] leading-relaxed">
-            Your information powers Cira's guidance in the moment, and — only when you choose — the connection to a
-            real doctor through Air Doctor's global network.
+            {t("pages.privacyHub.useSubtitle")}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="rounded-2xl border border-border bg-card p-6">
-            <h3 className="font-heading text-lg font-semibold text-foreground mb-4">We use your data to:</h3>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-4">{t("pages.privacyHub.useForLabel")}</h3>
             <ul className="space-y-3">
               {useFor.map((line) => (
                 <li key={line} className="flex gap-3 text-sm text-foreground/90">
@@ -221,7 +219,7 @@ const Privacy = () => {
             </ul>
           </div>
           <div className="rounded-2xl border border-border bg-secondary/40 p-6">
-            <h3 className="font-heading text-lg font-semibold text-foreground mb-4">What we don't do:</h3>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-4">{t("pages.privacyHub.dontDoLabel")}</h3>
             <ul className="space-y-3">
               {dontDo.map((line) => (
                 <li key={line} className="flex gap-3 text-sm text-foreground/90">
@@ -236,12 +234,12 @@ const Privacy = () => {
 
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Retention & deletion</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.retentionEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Honest about what we're <em className="italic text-primary">still finalizing.</em>
+            {t("pages.privacyHub.retentionTitleA")} <em className="italic text-primary">{t("pages.privacyHub.retentionTitleB")}</em>
           </h2>
           <p className="mt-4 text-muted-foreground font-body text-[15px] leading-relaxed">
-            We are finalizing our detailed retention and deletion schedule and will publish it here, rather than over-promising.
+            {t("pages.privacyHub.retentionSubtitle")}
           </p>
         </div>
 
@@ -262,9 +260,9 @@ const Privacy = () => {
 
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Compliance & partners</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.complianceEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Built with <em className="italic text-primary">trusted partners.</em>
+            {t("pages.privacyHub.complianceTitleA")} <em className="italic text-primary">{t("pages.privacyHub.complianceTitleB")}</em>
           </h2>
         </div>
 
@@ -302,9 +300,9 @@ const Privacy = () => {
 
       <section className="max-w-3xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">FAQ — Privacy first</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.privacyHub.faqEyebrow")}</p>
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Straight answers to <em className="italic text-primary">the questions that matter.</em>
+            {t("pages.privacyHub.faqTitleA")} <em className="italic text-primary">{t("pages.privacyHub.faqTitleB")}</em>
           </h2>
         </div>
         <Accordion type="single" collapsible className="rounded-2xl border border-border bg-card divide-y divide-border overflow-hidden">
@@ -324,10 +322,10 @@ const Privacy = () => {
       <section id="contact" className="max-w-6xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="font-heading text-3xl md:text-4xl font-semibold text-foreground">
-            Talk to us. <em className="italic text-primary">We'll respond.</em>
+            {t("pages.privacyHub.contactTitleA")} <em className="italic text-primary">{t("pages.privacyHub.contactTitleB")}</em>
           </h2>
           <p className="mt-4 text-muted-foreground font-body text-[15px] leading-relaxed">
-            Privacy is a relationship, not a checkbox. Reach out anytime — we welcome questions and feedback.
+            {t("pages.privacyHub.contactSubtitle")}
           </p>
         </div>
 
@@ -336,26 +334,26 @@ const Privacy = () => {
             <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
               <ShieldCheck className="w-5 h-5" />
             </span>
-            <h3 className="font-heading text-lg font-semibold text-foreground">Security contact</h3>
+            <h3 className="font-heading text-lg font-semibold text-foreground">{t("pages.privacyHub.securityContact")}</h3>
             <p className="text-sm text-primary mt-1">[security@ — to be confirmed]</p>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">For responsible disclosure of security issues.</p>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("pages.privacyHub.securityContactSub")}</p>
           </div>
           <div className="rounded-2xl border border-border bg-card p-6">
             <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
               <Mail className="w-5 h-5" />
             </span>
-            <h3 className="font-heading text-lg font-semibold text-foreground">Privacy contact</h3>
+            <h3 className="font-heading text-lg font-semibold text-foreground">{t("pages.privacyHub.privacyContact")}</h3>
             <p className="text-sm text-primary mt-1">[privacy@ — to be confirmed]</p>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">For data, retention, or deletion questions.</p>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{t("pages.privacyHub.privacyContactSub")}</p>
           </div>
         </div>
 
         <div className="mt-10 flex flex-wrap justify-center gap-4 text-xs text-muted-foreground">
           <button onClick={() => navigate("/privacy-policy")} className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <FileText className="w-3.5 h-3.5" /> Privacy Policy [TBC]
+            <FileText className="w-3.5 h-3.5" /> {t("pages.privacyHub.privacyPolicyLink")}
           </button>
           <button onClick={() => navigate("/terms")} className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <FileText className="w-3.5 h-3.5" /> Terms of Service [TBC]
+            <FileText className="w-3.5 h-3.5" /> {t("pages.privacyHub.termsLink")}
           </button>
         </div>
       </section>
