@@ -357,12 +357,10 @@ const Login = () => {
         </div>
 
         <h1 className="font-heading text-2xl font-semibold text-foreground text-center mb-2">
-          {authMode === "register" ? "Create your account" : "Welcome back"}
+          {authMode === "register" ? t("auth.createAccount") : t("auth.welcomeBack")}
         </h1>
         <p className="text-sm text-muted-foreground text-center font-body mb-8">
-          {authMode === "register"
-            ? "Start your first assessment in a few steps"
-            : "Sign in to continue your conversation"}
+          {authMode === "register" ? t("auth.subtitleRegister") : t("auth.subtitleLogin")}
         </p>
 
         <div className={`w-full mb-4 flex justify-center ${loading || !googleContextReady ? "pointer-events-none opacity-70" : ""}`}>
@@ -370,7 +368,7 @@ const Login = () => {
             <div ref={googleButtonRef} className="w-full min-h-[44px]" />
             {!googleContextReady && (
               <div className="absolute inset-0 flex items-center justify-center rounded-full border border-border bg-card text-xs text-muted-foreground font-body">
-                Preparing Google sign-in...
+                {t("auth.preparingGoogle")}
               </div>
             )}
           </div>
@@ -378,7 +376,7 @@ const Login = () => {
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground font-body">or continue with email</span>
+          <span className="text-xs text-muted-foreground font-body">{t("auth.orContinueEmail")}</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -392,7 +390,7 @@ const Login = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Sign in
+            {t("auth.tabSignIn")}
           </button>
           <button
             type="button"
@@ -403,7 +401,7 @@ const Login = () => {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Create account
+            {t("auth.tabCreateAccount")}
           </button>
         </div>
 
