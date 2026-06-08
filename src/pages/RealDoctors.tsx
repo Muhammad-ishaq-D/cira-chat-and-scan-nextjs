@@ -90,12 +90,12 @@ const RealDoctors = () => {
       {/* Why this page */}
       <section className="max-w-6xl mx-auto px-6 pb-20">
         <div className="text-center mb-12 max-w-2xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Why this page exists</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">{t("pages.realDoctors.whyEyebrow")}</p>
           <h2 className="text-3xl md:text-4xl font-light mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
-            More than just an AI chat
+            {t("pages.realDoctors.whyTitle")}
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Many people assume AskAinurse is "just AI." It isn't. The AI nurse is designed to be the first step — and when needed, you move on to real doctors instead of being left alone with a summary.
+            {t("pages.realDoctors.whySubtitle")}
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-5">
@@ -150,9 +150,9 @@ const RealDoctors = () => {
             </div>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">Step 1</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">{t("pages.realDoctors.step1Eyebrow")}</p>
             <h2 className="text-3xl md:text-4xl font-light mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Start with a full Cira assessment
+              {t("pages.realDoctors.step1Title")}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               Cira asks about your symptoms, medical history, medications and goals. You can run the Shen.AI face scan to add vitals and objective signals. Together, this builds a structured view of what's going on.
@@ -176,9 +176,9 @@ const RealDoctors = () => {
             <img src={telehealthImg} alt="Telehealth consultation" loading="lazy" width={1280} height={896} className="rounded-3xl w-full h-auto object-cover shadow-xl" />
           </div>
           <div className="md:order-1">
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">Step 2</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">{t("pages.realDoctors.step2Eyebrow")}</p>
             <h2 className="text-3xl md:text-4xl font-light mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
-              When Cira recommends real care
+              {t("pages.realDoctors.step2Title")}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               If your assessment suggests human care is appropriate, Cira clearly flags it. Cira does not diagnose or prescribe — it tells you when it's safer to involve a real clinician.
@@ -206,9 +206,9 @@ const RealDoctors = () => {
       <section className="max-w-6xl mx-auto px-6 pb-20">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">Step 3</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-3">{t("pages.realDoctors.step3Eyebrow")}</p>
             <h2 className="text-3xl md:text-4xl font-light mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Book a real doctor through Air Doctor
+              {t("pages.realDoctors.step3Title")}
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               When you're ready, Cira sends you to Air Doctor's own platform to book care. You choose telehealth or in-person, in the language and location you need.
@@ -227,12 +227,12 @@ const RealDoctors = () => {
               ))}
             </div>
             <a href={AIR_DOCTOR_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 h-12 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition">
-              Book care with Air Doctor <ArrowRight size={16} />
+              {t("pages.realDoctors.step3Cta")} <ArrowRight size={16} />
             </a>
           </div>
           <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-stone-100">
-              <div className="text-sm font-medium">Available doctors near you</div>
+              <div className="text-sm font-medium">{t("pages.realDoctors.availableTitle")}</div>
               <span className="text-[10px] text-muted-foreground">via Air Doctor</span>
             </div>
             <div className="space-y-3">
@@ -249,12 +249,12 @@ const RealDoctors = () => {
                         {d.spec} · <Icon size={11} /> {d.mode} · {d.time}
                       </div>
                     </div>
-                    <a href={AIR_DOCTOR_URL} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full border border-stone-300 hover:bg-stone-100 transition">Book</a>
+                    <a href={AIR_DOCTOR_URL} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 rounded-full border border-stone-300 hover:bg-stone-100 transition">{t("pages.realDoctors.bookBtn")}</a>
                   </div>
                 );
               })}
             </div>
-            <p className="text-[10px] text-muted-foreground italic mt-4 text-center">Sample listing for illustration. Real availability is shown on Air Doctor.</p>
+            <p className="text-[10px] text-muted-foreground italic mt-4 text-center">{t("pages.realDoctors.availableNote")}</p>
           </div>
         </div>
       </section>
