@@ -52,11 +52,11 @@ const Onboarding = () => {
         weight: Number(weight),
         biological_sex: sex,
       });
-      toast.success("Profile updated!");
+      toast.success(t("onboarding.toastSuccess"));
       completeOnboarding();
     } catch (err: any) {
       console.error("Profile save error:", err);
-      toast.error(err.message || "Failed to save profile");
+      toast.error(err.message || t("onboarding.toastError"));
     } finally {
       setSaving(false);
     }
