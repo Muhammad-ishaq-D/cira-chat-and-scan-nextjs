@@ -204,8 +204,8 @@ const Technology = () => {
       {/* Short version */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">The short version</p>
-          <h2 className="font-heading text-3xl md:text-4xl">If you only read three things.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.summaryEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.summaryTitle")}</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-5">
           {summary.map((s) => (
@@ -222,9 +222,9 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Why we partnered with Shen AI</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.partnerEyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl mb-5">
-              Cira is a triage tool. We let the experts handle the scan.
+              {t("pages.technology.partnerTitle")}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               Building clinical-grade face scan technology takes years of computer vision research, terabytes of
@@ -273,7 +273,7 @@ const Technology = () => {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 pb-20">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">Trusted by</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">{t("pages.technology.trustedBy")}</p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-foreground/70">
             {partners.map((p) => (
               <span key={p} className="font-medium">
@@ -287,8 +287,8 @@ const Technology = () => {
       {/* Science */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">How the science works</p>
-          <h2 className="font-heading text-3xl md:text-4xl mb-4">Two technologies. One scan.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.scienceEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl mb-4">{t("pages.technology.scienceTitle")}</h2>
           <p className="text-muted-foreground leading-relaxed">
             Most face-based health AI uses one signal. Shen AI combines two — which is why it works reliably across all
             skin tones and even in less-than-ideal lighting.
@@ -340,8 +340,8 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-5xl mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">How accurate is it?</p>
-            <h2 className="font-heading text-3xl md:text-4xl">Validated against clinical-grade equipment.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.accuracyEyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.accuracyTitle")}</h2>
           </div>
 
           <div className="rounded-2xl border bg-card overflow-hidden">
@@ -392,8 +392,8 @@ const Technology = () => {
       {/* What Cira measures */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">What Cira measures</p>
-          <h2 className="font-heading text-3xl md:text-4xl">30+ health markers from one 30-second scan.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.measuresEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.measuresTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -432,8 +432,8 @@ const Technology = () => {
             className="rounded-3xl w-full h-auto object-cover shadow-lg"
           />
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Privacy</p>
-            <h2 className="font-heading text-3xl md:text-4xl mb-5">Your face never leaves your phone.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.privacyEyebrow")}</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-5">{t("pages.technology.privacyTitle")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               Most face-based AI sends your video to a server, runs analysis there, and stores the data. Shen AI
               doesn't.
@@ -468,8 +468,8 @@ const Technology = () => {
       {/* Case studies */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Real-world results</p>
-          <h2 className="font-heading text-3xl md:text-4xl">What happens when this technology meets a product.</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.caseEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.caseTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
