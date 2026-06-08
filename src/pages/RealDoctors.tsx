@@ -35,7 +35,7 @@ const RealDoctors = () => {
           <span className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>Cira</span>
         </button>
         <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5">
-          <ArrowLeft size={14} /> Back
+          <ArrowLeft size={14} /> {t("pages.back")}
         </button>
       </nav>
 
@@ -43,26 +43,26 @@ const RealDoctors = () => {
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-5">AI Nurse → Real Doctors</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-5">{t("pages.realDoctors.heroEyebrow")}</p>
             <h1 className="text-4xl md:text-5xl font-light leading-[1.1] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Guidance first.<br />
-              <span className="italic">Real care</span> when you need it.
+              {t("pages.realDoctors.heroTitleA")}<br />
+              <span className="italic">{t("pages.realDoctors.heroTitleB")}</span> {t("pages.realDoctors.heroTitleC")}
             </h1>
             <p className="text-base text-muted-foreground leading-relaxed mb-8 max-w-lg">
-              Cira gives you private AI nurse guidance first. When your full assessment suggests it, you can step straight into real medical care via Air Doctor's network of ~20,000 licensed doctors across ~180 countries — telehealth or in-person.
+              {t("pages.realDoctors.heroSubtitle")}
             </p>
             <div className="flex flex-wrap gap-3 mb-8">
               <button onClick={() => document.getElementById("handoff")?.scrollIntoView({ behavior: "smooth" })} className="inline-flex items-center gap-2 px-6 h-12 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition">
-                See how the handoff works <ArrowRight size={16} />
+                {t("pages.realDoctors.heroCta1")} <ArrowRight size={16} />
               </button>
               <a href={AIR_DOCTOR_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 h-12 rounded-full border border-stone-300 text-sm font-medium hover:bg-stone-100 transition">
-                Book care with a doctor
+                {t("pages.realDoctors.heroCta2")}
               </a>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Shield size={12} /> Private by design</span>
-              <span className="flex items-center gap-1.5"><Stethoscope size={12} /> Licensed clinicians</span>
-              <span className="flex items-center gap-1.5"><Globe size={12} /> 180 countries</span>
+              <span className="flex items-center gap-1.5"><Shield size={12} /> {trustChips[0]}</span>
+              <span className="flex items-center gap-1.5"><Stethoscope size={12} /> {trustChips[1]}</span>
+              <span className="flex items-center gap-1.5"><Globe size={12} /> {trustChips[2]}</span>
             </div>
           </div>
           <div className="relative">
