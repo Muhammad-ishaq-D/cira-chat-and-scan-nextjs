@@ -505,9 +505,9 @@ const Technology = () => {
       <section className="bg-secondary/40 border-y">
         <div className="max-w-5xl mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">From vitals to answer</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.fromVitalsEyebrow")}</p>
             <h2 className="font-heading text-3xl md:text-4xl mb-4">
-              Reading vitals is just the start. Cira tells you what to do.
+              {t("pages.technology.fromVitalsTitle")}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               Most camera-based health technologies stop at giving you a number. Cira goes further. Once Shen AI delivers
@@ -535,7 +535,7 @@ const Technology = () => {
               onClick={() => navigate("/free-chat")}
               className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:bg-foreground/90 transition"
             >
-              Try a free scan now <ArrowRight className="w-4 h-4" />
+              {t("pages.technology.ctaScan")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -544,8 +544,8 @@ const Technology = () => {
       {/* Technically curious */}
       <section className="max-w-5xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">For the technically curious</p>
-          <h2 className="font-heading text-3xl md:text-4xl">Want to dig deeper?</h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.technology.techCuriousEyebrow")}</p>
+          <h2 className="font-heading text-3xl md:text-4xl">{t("pages.technology.techCuriousTitle")}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
