@@ -180,7 +180,7 @@ const Onboarding = () => {
             disabled={!canProceed() || saving}
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body shadow-lg shadow-primary/20 hover:shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {saving ? "Saving..." : step < 3 ? "Continue" : "Finish Setup"}
+            {saving ? t("common.saving") : step < 3 ? t("common.continue") : t("common.finish")}
             {!saving && <ChevronRight size={16} />}
           </button>
 
@@ -188,7 +188,7 @@ const Onboarding = () => {
             onClick={handleSkip}
             className="w-full mt-3 py-2 text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
           >
-            Skip for now
+            {t("common.skip")}
           </button>
 
           {/* Step dots */}
