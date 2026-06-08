@@ -444,10 +444,10 @@ const Dashboard = () => {
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${r.level === "Low" ? "bg-emerald-50" : r.level === "Moderate" ? "bg-amber-50" : "bg-muted"}`}>
                           <AlertTriangle size={14} className={r.level === "Low" ? "text-emerald-600" : r.level === "Moderate" ? "text-amber-600" : "text-muted-foreground"} />
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{r.label}</p>
+                        <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${r.label}`, r.label)}</p>
                       </div>
                       <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${riskColor(r.level)}`}>
-                        {r.level}
+                        {r.level === "Low" ? t("dashboard.risk.low") : r.level === "Moderate" ? t("dashboard.risk.moderate") : r.level === "High" ? t("dashboard.risk.high") : r.level}
                       </span>
                     </div>
                   ))}
