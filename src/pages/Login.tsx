@@ -412,7 +412,7 @@ const Login = () => {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Full name"
+                placeholder={t("auth.fullName")}
                 autoComplete="name"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -421,7 +421,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("auth.email")}
                 autoComplete="email"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -430,7 +430,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 autoComplete="new-password"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -439,7 +439,7 @@ const Login = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm password"
+                placeholder={t("auth.confirmPassword")}
                 autoComplete="new-password"
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
                 required
@@ -449,26 +449,26 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Sending code..." : "Continue"}
+                {loading ? t("auth.sendingCode") : t("auth.continue")}
               </button>
               <button
                 type="button"
                 onClick={() => handleModeChange("login")}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Already have an account? Sign in
+                {t("auth.alreadyHave")}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegisterVerifyOtp} className="space-y-3">
               <p className="text-xs text-muted-foreground font-body text-center">
-                We sent a code to <strong className="text-foreground">{email}</strong>
+                {t("auth.sentCodeTo")} <strong className="text-foreground">{email}</strong>
               </p>
               <input
                 type="text"
                 value={registerOtp}
                 onChange={(e) => setRegisterOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
+                placeholder={t("auth.enter6Digit")}
                 maxLength={6}
                 className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
                 required
@@ -478,14 +478,14 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {loading ? "Verifying..." : "Verify & Create account"}
+                {loading ? t("auth.verifying") : t("auth.verifyCreate")}
               </button>
               <button
                 type="button"
                 onClick={() => setRegisterOtpSent(false)}
                 className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors"
               >
-                Use a different email
+                {t("auth.useDifferentEmail")}
               </button>
             </form>
           )
