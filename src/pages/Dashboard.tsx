@@ -10,10 +10,10 @@ import { userApi, vitalsApi } from "@/lib/apiClient";
 import { getUser, logout } from "@/lib/auth";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
+  { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
+  { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
 
 const defaultVitals = [
