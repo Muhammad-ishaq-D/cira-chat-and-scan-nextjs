@@ -399,7 +399,7 @@ const Dashboard = () => {
                           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                             <Icon size={14} className="text-primary" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                          <p className="text-[11px] text-muted-foreground font-body leading-tight">{t(`dashboard.labels.${v.label}`, v.label)}</p>
                         </div>
                         <p className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                           {v.value}
