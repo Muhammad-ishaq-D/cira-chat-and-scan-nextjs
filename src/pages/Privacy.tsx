@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, ShieldCheck, Lock, EyeOff, Cpu, KeyRound, Users, Mail, FileText, Stethoscope, Trash2, CheckCircle2 } from "lucide-react";
 import {
   Accordion,
@@ -66,6 +67,7 @@ const faqs = [
 
 const Privacy = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
