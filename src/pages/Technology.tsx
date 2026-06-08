@@ -138,7 +138,7 @@ const Technology = () => {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -148,34 +148,32 @@ const Technology = () => {
           onClick={() => navigate("/free-chat")}
           className="text-sm font-medium text-foreground hover:text-primary transition-colors"
         >
-          Try Cira
+          {t("pages.technology.navTry")}
         </button>
       </nav>
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-16 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">The technology behind Cira</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">{t("pages.technology.heroEyebrow")}</p>
           <h1 className="font-heading text-4xl md:text-5xl leading-[1.05] text-foreground mb-6">
-            Your phone camera reads clinical vitals. Independently validated.
+            {t("pages.technology.heroTitle")}
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-            Cira's 30-second face scan captures 30+ health markers — heart rate, blood pressure, HRV, stress, and more —
-            using your phone camera and nothing else. The technology is peer-reviewed, used by Allianz and Deutsche
-            Telekom, and runs entirely on your device.
+            {t("pages.technology.heroSubtitle")}
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             <button
               onClick={() => navigate("/free-chat")}
               className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:bg-foreground/90 transition"
             >
-              Try a free scan now <ArrowRight className="w-4 h-4" />
+              {t("pages.technology.ctaScan")} <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => navigate("/how-it-works")}
               className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-secondary transition"
             >
-              See how it works
+              {t("pages.technology.seeHow")}
             </button>
           </div>
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
