@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft, Check, Sparkles, Star, Users, Heart, Shield } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -288,7 +289,8 @@ const Pricing = () => {
         </div>
       </section>
 
-      <footer className="max-w-4xl mx-auto px-6 pb-10 text-center text-xs text-muted-foreground">
+      <footer className="max-w-4xl mx-auto px-6 pb-10 flex flex-col items-center gap-3 text-center text-xs text-muted-foreground">
+        <LanguageSwitcher />
         <p>© 2026 AskAINurse · Cira AI</p>
       </footer>
     </div>
