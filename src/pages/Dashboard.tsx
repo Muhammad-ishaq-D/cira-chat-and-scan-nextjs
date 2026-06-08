@@ -413,8 +413,8 @@ const Dashboard = () => {
 
               {/* Health Indices */}
               {healthIndices.some((h) => h.value !== "--") && <div className="mb-8">
-                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Health Indices</h2>
-                <p className="text-xs text-muted-foreground font-body mb-4">Based on scan and user data</p>
+                <h2 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("dashboard.healthIndices")}</h2>
+                <p className="text-xs text-muted-foreground font-body mb-4">{t("dashboard.healthIndicesSub")}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {healthIndices.filter((h) => h.value !== "--").map((h) => (
                     <div key={h.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md hover:border-border transition-all">
