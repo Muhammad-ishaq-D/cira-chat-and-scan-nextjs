@@ -372,5 +372,101 @@
     "wallCta": "Habla con Cira — gratis →",
     "footer1": "Cira no reemplaza el consejo médico profesional.",
     "footer2": "© 2026 Cira — askainurse.com"
+  },
+  "pages": {
+    "back": "Atrás",
+    "pricing": {
+      "features": {
+        "free": [
+          "Habla con Cira, tu enfermera IA",
+          "1 escaneo facial gratuito",
+          "Información de salud al instante",
+          "Sin cuenta requerida"
+        ],
+        "premium": [
+          "Escaneos faciales ilimitados",
+          "Historial completo de conversaciones",
+          "Informes clínicos detallados",
+          "Velocidad de respuesta prioritaria",
+          "Garantía de reembolso de 7 días",
+          "Cancela en cualquier momento"
+        ],
+        "family": [
+          "Todo lo de Premium",
+          "Hasta 4 perfiles individuales",
+          "Historiales de salud separados por persona",
+          "Ideal para padres que gestionan la salud de hijos y mayores",
+          "Garantía de reembolso de 7 días",
+          "Cancela en cualquier momento"
+        ]
+      },
+      "faqs": [
+        { "q": "¿Necesito registrarme para probarlo?", "a": "No. Puedes chatear con Cira y hacer un escaneo facial completamente gratis — sin cuenta, sin tarjeta, sin compromiso." },
+        { "q": "¿Puedo cancelar en cualquier momento?", "a": "Sí. Cancela con un clic desde tu cuenta. Sin correos, sin llamadas, sin presión." },
+        { "q": "¿Ofrecen reembolsos?", "a": "Sí — garantía de reembolso de 7 días en los planes Premium y Family. Si Cira no es para ti, te devolvemos el dinero." },
+        { "q": "¿Qué métodos de pago aceptan?", "a": "Todas las tarjetas de crédito y débito principales, Apple Pay y Google Pay. Métodos locales en mercados seleccionados." },
+        { "q": "¿Subirá el precio?", "a": "Tu precio se mantiene mientras la suscripción esté activa. Respetamos la tarifa con la que te suscribiste." },
+        { "q": "¿Mis datos son privados?", "a": "Sí. Los escaneos faciales se procesan 100% en tu dispositivo — tu vídeo nunca sale del teléfono. Conversaciones y constantes están cifradas y nunca se venden." },
+        { "q": "¿Sustituye a un médico?", "a": "No. Cira es una enfermera IA que te ayuda a entender tus síntomas y decidir el siguiente paso. No sustituye al consejo médico profesional." },
+        { "q": "¿Puedo cambiar entre Premium y Family?", "a": "Sí — sube, baja o cambia de plan en cualquier momento desde la configuración de tu cuenta." }
+      ],
+      "footer": "© 2026 AskAINurse · Cira AI"
+    },
+    "whatCiraHelpsWith": {
+      "navStartFree": "Empezar gratis →",
+      "heroEyebrow": "En qué ayuda Cira",
+      "heroTitleA": "Cuando algo no va bien,",
+      "heroTitleB": "Cira te ayuda a decidir qué hacer.",
+      "heroSubtitle": "¿No sabes si es grave? ¿Te preguntas si deberías ver a un médico? Cira te ayuda a entender tu situación en minutos.",
+      "heroCta": "Empezar tu chequeo",
+      "heroCtaSub": "Sin registro · Gratis · Privado",
+      "situationsEyebrow": "Situaciones reales, respuestas reales",
+      "situationsTitleA": "Sea lo que sea lo que te preocupa,",
+      "situationsTitleB": "Cira está ahí.",
+      "situations": [
+        { "title": "¿Debería ver a un médico?", "text": "No todo síntoma requiere visita. Cira te ayuda a decidir." },
+        { "title": "Algo no va bien", "text": "No sabes qué es — pero sabes que no es normal." },
+        { "title": "Me siento mal", "text": "Resfriado, fiebre, fatiga — entiende qué pasa." },
+        { "title": "¿Es urgente?", "text": "Sabe cuándo actuar de inmediato — y cuándo puedes esperar." },
+        { "title": "Dudas sobre medicación", "text": "Efectos, interacciones o dudas — obtén claridad." },
+        { "title": "Solo quiero tranquilidad", "text": "A veces solo necesitas saber que estás bien." }
+      ],
+      "stepsEyebrow": "Simple. Rápido. Claro.",
+      "stepsTitleA": "Tres pasos. Unos minutos.",
+      "stepsTitleB": "Dirección real.",
+      "steps": [
+        { "title": "Cuéntale a Cira qué pasa", "text": "Describe cómo te sientes, con tus propias palabras." },
+        { "title": "Opcional: escanea tus constantes", "text": "Un escaneo facial de 30 segundos añade contexto." },
+        { "title": "Recibe una dirección clara", "text": "Sabe exactamente qué hacer a continuación." }
+      ],
+      "outcomesLabel": "Cada chequeo termina con uno de estos",
+      "outcomes": ["Autocuidado", "Monitorizar", "Ver a un médico", "Atención urgente"],
+      "audienceEyebrow": "Hecho para la vida real",
+      "audienceTitle": "Cira encaja en los momentos en los que no puedes dejarlo todo para investigar.",
+      "audience": [
+        "Personas ocupadas que no pueden esperar",
+        "Padres que necesitan orientación rápida",
+        "Personas sin fácil acceso a la sanidad",
+        "Personas que prefieren la privacidad",
+        "Cualquiera que quiera claridad antes de actuar"
+      ],
+      "disclaimer": "Cira no reemplaza a los médicos. Te ayuda a decidir cuándo realmente necesitas uno.",
+      "ctaTitle": "Cuando estés listo.",
+      "ctaSubtitle": "Unos minutos hoy pueden ahorrar horas de preocupación.",
+      "ctaButton": "Empezar tu chequeo",
+      "footer1": "Cira no reemplaza el consejo médico profesional.",
+      "footer2": "© 2026 Cira — askainurse.com"
+    },
+    "forgotPassword": {
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Introduce tu email y te enviaremos un código para restablecer tu contraseña",
+      "emailPlaceholder": "Email",
+      "send": "Enviar código",
+      "sending": "Enviando...",
+      "sent": "¡Código enviado!",
+      "toastSuccess": "¡Código de recuperación enviado a tu email!",
+      "toastError": "No se pudo enviar el código",
+      "back": "Volver al inicio de sesión"
+    }
   }
 }

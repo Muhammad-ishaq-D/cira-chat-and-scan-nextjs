@@ -372,5 +372,101 @@
     "wallCta": "Talk to Cira — free →",
     "footer1": "Cira does not replace professional medical advice.",
     "footer2": "© 2026 Cira — askainurse.com"
+  },
+  "pages": {
+    "back": "Back",
+    "pricing": {
+      "features": {
+        "free": [
+          "Chat with Cira, your AI nurse",
+          "1 free face scan",
+          "Instant health insights",
+          "No account required"
+        ],
+        "premium": [
+          "Unlimited face scans",
+          "Full conversation history",
+          "Detailed clinical reports",
+          "Priority response speed",
+          "7-day money-back guarantee",
+          "Cancel anytime"
+        ],
+        "family": [
+          "Everything in Premium",
+          "Up to 4 individual profiles",
+          "Separate health histories per person",
+          "Ideal for parents managing kids' and elders' health",
+          "7-day money-back guarantee",
+          "Cancel anytime"
+        ]
+      },
+      "faqs": [
+        { "q": "Do I need to sign up to try it?", "a": "No. You can chat with Cira and run one face scan completely free — no account, no credit card, no commitment." },
+        { "q": "Can I cancel anytime?", "a": "Yes. Cancel in one click from your account. No emails, no phone calls, no retention pressure." },
+        { "q": "Do you offer refunds?", "a": "Yes — a 7-day money-back guarantee on Premium and Family plans. If Cira isn't right for you, we'll refund you in full." },
+        { "q": "What payment methods do you accept?", "a": "All major credit cards, debit cards, Apple Pay and Google Pay. Local payment methods are added in select markets." },
+        { "q": "Will my price ever go up?", "a": "Your price is locked in for as long as your subscription stays active. We honor the rate you signed up with." },
+        { "q": "Is my data private?", "a": "Yes. Face scans are processed 100% on-device — your video never leaves your phone. Your conversations and vitals are encrypted and never sold." },
+        { "q": "Is this a replacement for a doctor?", "a": "No. Cira is an AI nurse who helps you understand your symptoms and decide your next step. She does not replace professional medical advice." },
+        { "q": "Can I switch between Premium and Family?", "a": "Yes — upgrade, downgrade or switch plans at any time from your account settings." }
+      ],
+      "footer": "© 2026 AskAINurse · Cira AI"
+    },
+    "whatCiraHelpsWith": {
+      "navStartFree": "Start free →",
+      "heroEyebrow": "What Cira helps with",
+      "heroTitleA": "When something feels off,",
+      "heroTitleB": "Cira helps you decide what to do next.",
+      "heroSubtitle": "Not sure if it's serious? Wondering if you should see a doctor? Cira helps you understand your situation in minutes.",
+      "heroCta": "Start your check",
+      "heroCtaSub": "No signup · Free · Private",
+      "situationsEyebrow": "Real situations, real answers",
+      "situationsTitleA": "Whatever is on your mind,",
+      "situationsTitleB": "Cira meets you there.",
+      "situations": [
+        { "title": "Should I see a doctor?", "text": "Not every symptom needs a visit. Cira helps you decide." },
+        { "title": "Something feels off", "text": "You don't know what it is — but you know it's not normal." },
+        { "title": "I feel sick", "text": "Cold, fever, fatigue — understand what's happening." },
+        { "title": "Is this urgent?", "text": "Know when to act immediately — and when you can wait." },
+        { "title": "Medication questions", "text": "Side effects, interactions, or uncertainty — get clarity." },
+        { "title": "I just want reassurance", "text": "Sometimes you just need to know you're okay." }
+      ],
+      "stepsEyebrow": "Simple. Fast. Clear.",
+      "stepsTitleA": "Three steps. A few minutes.",
+      "stepsTitleB": "Real direction.",
+      "steps": [
+        { "title": "Tell Cira what's going on", "text": "Describe how you feel, in your own words." },
+        { "title": "Optional: scan your vitals", "text": "A 30-second face scan adds context." },
+        { "title": "Get a clear direction", "text": "Know exactly what to do next." }
+      ],
+      "outcomesLabel": "Every check ends with one of these",
+      "outcomes": ["Self-care", "Monitor", "See a doctor", "Urgent care"],
+      "audienceEyebrow": "Made for real life",
+      "audienceTitle": "Cira fits the moments when you can't drop everything to figure things out.",
+      "audience": [
+        "Busy people who don't have time to wait",
+        "Parents who need quick guidance",
+        "People without easy access to healthcare",
+        "People who prefer privacy",
+        "Anyone who wants clarity before acting"
+      ],
+      "disclaimer": "Cira doesn't replace doctors. It helps you decide when you actually need one.",
+      "ctaTitle": "Ready when you are.",
+      "ctaSubtitle": "A few minutes today can save hours of worry.",
+      "ctaButton": "Start your check",
+      "footer1": "Cira does not replace professional medical advice.",
+      "footer2": "© 2026 Cira — askainurse.com"
+    },
+    "forgotPassword": {
+      "title": "Forgot password?",
+      "subtitle": "Enter your email and we'll send you a code to reset your password",
+      "emailPlaceholder": "Email",
+      "send": "Send reset code",
+      "sending": "Sending...",
+      "sent": "Code sent!",
+      "toastSuccess": "Reset code sent to your email!",
+      "toastError": "Failed to send reset code",
+      "back": "Back to sign in"
+    }
   }
 }
