@@ -401,14 +401,38 @@
         ]
       },
       "faqs": [
-        { "q": "Muss ich mich registrieren, um es zu testen?", "a": "Nein. Du kannst mit Cira chatten und einen Gesichtsscan völlig kostenlos ausführen — ohne Konto, ohne Kreditkarte, ohne Verpflichtung." },
-        { "q": "Kann ich jederzeit kündigen?", "a": "Ja. Mit einem Klick aus deinem Konto. Keine E-Mails, keine Anrufe, kein Druck." },
-        { "q": "Bietet ihr Rückerstattungen an?", "a": "Ja — 7 Tage Geld-zurück-Garantie für Premium- und Family-Pläne. Wenn Cira nichts für dich ist, erstatten wir voll." },
-        { "q": "Welche Zahlungsmethoden akzeptiert ihr?", "a": "Alle gängigen Kredit- und Debitkarten, Apple Pay und Google Pay. Lokale Methoden in ausgewählten Märkten." },
-        { "q": "Wird der Preis steigen?", "a": "Dein Preis bleibt fest, solange dein Abo aktiv ist. Wir halten uns an den Tarif, mit dem du gestartet bist." },
-        { "q": "Sind meine Daten privat?", "a": "Ja. Gesichtsscans werden zu 100% auf dem Gerät verarbeitet — dein Video verlässt dein Telefon nie. Gespräche und Vitalwerte sind verschlüsselt und werden nie verkauft." },
-        { "q": "Ersetzt das einen Arzt?", "a": "Nein. Cira ist eine KI-Krankenschwester, die dir hilft, deine Symptome zu verstehen. Sie ersetzt keine professionelle medizinische Beratung." },
-        { "q": "Kann ich zwischen Premium und Family wechseln?", "a": "Ja — jederzeit upgraden, downgraden oder Pläne wechseln in den Kontoeinstellungen." }
+        {
+          "q": "Muss ich mich registrieren, um es zu testen?",
+          "a": "Nein. Du kannst mit Cira chatten und einen Gesichtsscan völlig kostenlos ausführen — ohne Konto, ohne Kreditkarte, ohne Verpflichtung."
+        },
+        {
+          "q": "Kann ich jederzeit kündigen?",
+          "a": "Ja. Mit einem Klick aus deinem Konto. Keine E-Mails, keine Anrufe, kein Druck."
+        },
+        {
+          "q": "Bietet ihr Rückerstattungen an?",
+          "a": "Ja — 7 Tage Geld-zurück-Garantie für Premium- und Family-Pläne. Wenn Cira nichts für dich ist, erstatten wir voll."
+        },
+        {
+          "q": "Welche Zahlungsmethoden akzeptiert ihr?",
+          "a": "Alle gängigen Kredit- und Debitkarten, Apple Pay und Google Pay. Lokale Methoden in ausgewählten Märkten."
+        },
+        {
+          "q": "Wird der Preis steigen?",
+          "a": "Dein Preis bleibt fest, solange dein Abo aktiv ist. Wir halten uns an den Tarif, mit dem du gestartet bist."
+        },
+        {
+          "q": "Sind meine Daten privat?",
+          "a": "Ja. Gesichtsscans werden zu 100% auf dem Gerät verarbeitet — dein Video verlässt dein Telefon nie. Gespräche und Vitalwerte sind verschlüsselt und werden nie verkauft."
+        },
+        {
+          "q": "Ersetzt das einen Arzt?",
+          "a": "Nein. Cira ist eine KI-Krankenschwester, die dir hilft, deine Symptome zu verstehen. Sie ersetzt keine professionelle medizinische Beratung."
+        },
+        {
+          "q": "Kann ich zwischen Premium und Family wechseln?",
+          "a": "Ja — jederzeit upgraden, downgraden oder Pläne wechseln in den Kontoeinstellungen."
+        }
       ],
       "footer": "© 2026 AskAINurse · Cira AI"
     },
@@ -424,23 +448,55 @@
       "situationsTitleA": "Was immer dich beschäftigt,",
       "situationsTitleB": "Cira ist für dich da.",
       "situations": [
-        { "title": "Sollte ich zum Arzt?", "text": "Nicht jedes Symptom braucht einen Besuch. Cira hilft dir zu entscheiden." },
-        { "title": "Etwas stimmt nicht", "text": "Du weißt nicht was — aber du weißt, es ist nicht normal." },
-        { "title": "Ich fühle mich krank", "text": "Erkältung, Fieber, Müdigkeit — verstehe, was passiert." },
-        { "title": "Ist es dringend?", "text": "Wisse, wann du sofort handeln musst — und wann du warten kannst." },
-        { "title": "Fragen zu Medikamenten", "text": "Nebenwirkungen, Wechselwirkungen oder Unsicherheit — Klarheit gewinnen." },
-        { "title": "Ich brauche nur Beruhigung", "text": "Manchmal musst du einfach wissen, dass es dir gut geht." }
+        {
+          "title": "Sollte ich zum Arzt?",
+          "text": "Nicht jedes Symptom braucht einen Besuch. Cira hilft dir zu entscheiden."
+        },
+        {
+          "title": "Etwas stimmt nicht",
+          "text": "Du weißt nicht was — aber du weißt, es ist nicht normal."
+        },
+        {
+          "title": "Ich fühle mich krank",
+          "text": "Erkältung, Fieber, Müdigkeit — verstehe, was passiert."
+        },
+        {
+          "title": "Ist es dringend?",
+          "text": "Wisse, wann du sofort handeln musst — und wann du warten kannst."
+        },
+        {
+          "title": "Fragen zu Medikamenten",
+          "text": "Nebenwirkungen, Wechselwirkungen oder Unsicherheit — Klarheit gewinnen."
+        },
+        {
+          "title": "Ich brauche nur Beruhigung",
+          "text": "Manchmal musst du einfach wissen, dass es dir gut geht."
+        }
       ],
       "stepsEyebrow": "Einfach. Schnell. Klar.",
       "stepsTitleA": "Drei Schritte. Wenige Minuten.",
       "stepsTitleB": "Echte Orientierung.",
       "steps": [
-        { "title": "Erzähle Cira, was los ist", "text": "Beschreibe, wie du dich fühlst, in deinen Worten." },
-        { "title": "Optional: Vitalwerte scannen", "text": "Ein 30-Sekunden-Gesichtsscan ergänzt den Kontext." },
-        { "title": "Erhalte eine klare Richtung", "text": "Wisse genau, was als Nächstes zu tun ist." }
+        {
+          "title": "Erzähle Cira, was los ist",
+          "text": "Beschreibe, wie du dich fühlst, in deinen Worten."
+        },
+        {
+          "title": "Optional: Vitalwerte scannen",
+          "text": "Ein 30-Sekunden-Gesichtsscan ergänzt den Kontext."
+        },
+        {
+          "title": "Erhalte eine klare Richtung",
+          "text": "Wisse genau, was als Nächstes zu tun ist."
+        }
       ],
       "outcomesLabel": "Jeder Check endet mit einem davon",
-      "outcomes": ["Selbstversorgung", "Beobachten", "Zum Arzt", "Notfallversorgung"],
+      "outcomes": [
+        "Selbstversorgung",
+        "Beobachten",
+        "Zum Arzt",
+        "Notfallversorgung"
+      ],
       "audienceEyebrow": "Für das echte Leben gemacht",
       "audienceTitle": "Cira passt in die Momente, in denen du nicht alles stehen lassen kannst.",
       "audience": [
@@ -476,7 +532,11 @@
       "heroTitleA": "Sprich. Scanne. Verstehe",
       "heroTitleB": "deinen nächsten Schritt.",
       "heroSubtitle": "Cira ist eine KI-Krankenschwester, die deiner Geschichte zuhört, deine Vitalwerte per kurzem Gesichtsscan prüft und dir hilft zu entscheiden, ob du beobachten, einen Arzt aufsuchen oder schnell handeln solltest.",
-      "stepShortTitles": ["Sprich", "Scanne", "Nächster Schritt"],
+      "stepShortTitles": [
+        "Sprich",
+        "Scanne",
+        "Nächster Schritt"
+      ],
       "stepShortBodies": [
         "Erzähle, was los ist, in deinen eigenen Worten.",
         "Ein kurzer Gesichtsscan liest deine Echtzeit-Vitalwerte.",
@@ -540,7 +600,11 @@
       "heroSubtitle": "Cira gibt dir zuerst private KI-Krankenschwester-Orientierung. Wenn deine vollständige Einschätzung es nahelegt, kannst du direkt zu echter medizinischer Versorgung über Air Doctors Netzwerk von ~20.000 lizenzierten Ärzten in ~180 Ländern wechseln — Telemedizin oder vor Ort.",
       "heroCta1": "So funktioniert die Übergabe",
       "heroCta2": "Termin bei einem Arzt buchen",
-      "trustChips": ["Datenschutz by Design", "Lizenzierte Ärzte", "180 Länder"],
+      "trustChips": [
+        "Datenschutz by Design",
+        "Lizenzierte Ärzte",
+        "180 Länder"
+      ],
       "whyEyebrow": "Warum diese Seite existiert",
       "whyTitle": "Mehr als nur ein KI-Chat",
       "whySubtitle": "Viele denken, AskAinurse sei \"nur KI\". Ist es nicht. Die KI-Krankenschwester ist der erste Schritt — und wenn nötig, geht es weiter zu echten Ärzten statt mit einer Zusammenfassung allein gelassen zu werden.",
@@ -608,6 +672,107 @@
       "englishOnly": "Dieses rechtliche Dokument ist derzeit nur auf Englisch verfügbar. Eine übersetzte Version folgt bald.",
       "termsTitle": "Nutzungsbedingungen",
       "privacyTitle": "Datenschutzerklärung"
+    }
+  },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "createAccount": "Konto erstellen",
+    "subtitleLogin": "Melde dich an, um deine Konversation fortzusetzen",
+    "subtitleRegister": "Starte deine erste Auswertung in wenigen Schritten",
+    "preparingGoogle": "Google-Anmeldung wird vorbereitet...",
+    "orContinueEmail": "oder weiter mit E-Mail",
+    "tabSignIn": "Anmelden",
+    "tabCreateAccount": "Konto erstellen",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "emailEnter": "Gib deine E-Mail ein",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "continue": "Weiter",
+    "sendingCode": "Code wird gesendet...",
+    "sentCodeTo": "Wir haben einen Code gesendet an",
+    "enter6Digit": "6-stelligen Code eingeben",
+    "verifyCreate": "Bestätigen & Konto erstellen",
+    "verifying": "Wird überprüft...",
+    "useDifferentEmail": "Andere E-Mail verwenden",
+    "alreadyHave": "Bereits ein Konto? Anmelden",
+    "needAccount": "Kein Konto? Erstellen",
+    "sendVerificationCode": "Bestätigungscode senden",
+    "sending": "Wird gesendet...",
+    "usePasswordInstead": "Passwort verwenden",
+    "useOtpInstead": "Code (OTP) verwenden",
+    "forgotPassword": "Passwort vergessen?",
+    "verifySignIn": "Bestätigen & Anmelden",
+    "signingIn": "Anmeldung läuft...",
+    "signIn": "Anmelden",
+    "termsNotice": "Mit der Fortsetzung akzeptierst du die AGB und Datenschutzrichtlinie von Cira.",
+    "errors": {
+      "nameRequired": "Bitte gib deinen vollständigen Namen ein",
+      "passwordMin": "Das Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordsMismatch": "Die Passwörter stimmen nicht überein",
+      "loginFailed": "Anmeldung fehlgeschlagen",
+      "googleFailed": "Google-Anmeldung fehlgeschlagen",
+      "verifyFailed": "Überprüfung fehlgeschlagen",
+      "sendCodeFailed": "Bestätigungscode konnte nicht gesendet werden",
+      "sendCodeFailedShort": "Code konnte nicht gesendet werden",
+      "invalidCode": "Ungültiger Code"
+    },
+    "toast": {
+      "codeSent": "Bestätigungscode an deine E-Mail gesendet!",
+      "codeSentShort": "Bestätigungscode gesendet!",
+      "accountCreated": "Konto erstellt!"
+    }
+  },
+  "dashboard": {
+    "welcomeBack": "Willkommen zurück",
+    "goodMorning": "Guten Morgen",
+    "goodAfternoon": "Guten Tag",
+    "goodEvening": "Guten Abend",
+    "overallHealth": "Allgemeine Gesundheit",
+    "noScanData": "Noch keine Scan-Daten",
+    "good": "Gut",
+    "completeFirstScan": "Mache deinen ersten Gesichts-Scan, um dein Gesundheits-Dashboard zu sehen.",
+    "vitalSigns": "Vitalzeichen",
+    "vitalSignsSub": "Vollständig vom Gesichts-Scan gemessen",
+    "healthIndices": "Gesundheitsindizes",
+    "healthIndicesSub": "Basierend auf Scan und Nutzerdaten",
+    "healthRisks": "Gesundheitsrisiken",
+    "healthRisksSub": "Basierend auf Scan und Nutzerdaten",
+    "nav": {
+      "home": "Start",
+      "askCira": "Frag Cira",
+      "scan": "Scan",
+      "reports": "Berichte",
+      "logout": "Abmelden"
+    },
+    "risk": {
+      "low": "Niedrig",
+      "moderate": "Mittel",
+      "high": "Hoch"
+    },
+    "labels": {
+      "Blood Pressure": "Blutdruck",
+      "Heart Rate": "Herzfrequenz",
+      "Heart Rate Variability": "Herzfrequenzvariabilität",
+      "Cardiac Workload": "Herzbelastung",
+      "Breathing Rate": "Atemfrequenz",
+      "Stress Index": "Stressindex",
+      "Body Mass Index": "Body-Mass-Index",
+      "Parasympathetic Activity": "Parasympathische Aktivität",
+      "Vascular Age": "Gefäßalter",
+      "Wellness Score": "Wellness-Score",
+      "Waist-to-Height Ratio": "Taille-Größe-Verhältnis",
+      "Body Fat Percentage": "Körperfettanteil",
+      "Basal Metabolic Rate": "Grundumsatz",
+      "Body Shape Index": "Körperform-Index",
+      "Total Daily Energy": "Gesamtenergieumsatz",
+      "Cardiovascular Risk": "Herz-Kreislauf-Risiko",
+      "Coronary Heart Disease": "Koronare Herzkrankheit",
+      "Stroke Risk": "Schlaganfallrisiko",
+      "Heart Failure Risk": "Herzinsuffizienz-Risiko",
+      "Diabetes Risk": "Diabetesrisiko",
+      "Fatty Liver Disease": "Fettleber",
+      "Cardiovascular Event": "Kardiovaskuläres Ereignis"
     }
   }
 }
