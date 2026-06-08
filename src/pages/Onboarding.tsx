@@ -129,13 +129,13 @@ const Onboarding = () => {
                   inputMode="numeric"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  placeholder="e.g. 28"
+                  placeholder={t("onboarding.age.placeholder")}
                   min={10}
                   max={120}
                   autoFocus
                   className="w-full py-4 px-4 rounded-xl border-2 border-border bg-card text-foreground font-body text-lg text-center outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/40"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">years</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-body">{t("onboarding.age.unit")}</span>
               </div>
             )}
 
