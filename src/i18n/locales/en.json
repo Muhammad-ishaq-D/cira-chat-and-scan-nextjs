@@ -1,0 +1,140 @@
+{
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "skip": "Skip for now",
+    "finish": "Finish Setup",
+    "gotIt": "Got it",
+    "tryAgain": "Try again",
+    "learnMore": "Learn more"
+  },
+  "nav": {
+    "howItWorks": "How it works",
+    "technology": "Technology",
+    "whatCiraHelpsWith": "What Cira helps with",
+    "pricing": "Pricing",
+    "realDoctors": "Real doctors",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Log in",
+    "signup": "Sign up",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Log out"
+  },
+  "footer": {
+    "language": "Language",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "security": "Security & Privacy",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms",
+    "tagline": "Your AI health nurse — clinically validated vitals, available anytime.",
+    "copyright": "© 2026 Cira · askainurse.com",
+    "disclaimerLine": "Clinically validated vitals · Licensed physicians ·",
+    "disclaimer": "Cira does not replace professional medical advice."
+  },
+  "consent": {
+    "message": "Cira stores your health data to power your assessments. By continuing you agree to our",
+    "privacyPolicy": "Privacy Policy",
+    "and": "and",
+    "terms": "Terms",
+    "notMedical": "Not a medical service."
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "pricing": {
+    "badge": "Pricing",
+    "title1": "Simple. Honest.",
+    "title2": "Built for everyone.",
+    "subtitle": "No hidden fees. No insurance paperwork. Cancel in one click.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savePercent": "Save 20%",
+    "mostPopular": "Most Popular",
+    "trusted": "Trusted by users in 30+ countries",
+    "faqTitle": "Frequently asked questions",
+    "faqSubtitle": "Everything you need to know before you start.",
+    "ctaTitle": "Start with Cira today.",
+    "ctaSubtitle": "No signup needed for your first scan.",
+    "ctaButton": "Try Cira Free",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "desc": "Try Cira with no signup, no credit card, no catch.",
+        "period": "forever",
+        "cta": "Start Free"
+      },
+      "premium": {
+        "name": "Premium",
+        "desc": "Everything you need for ongoing health support.",
+        "perYear": "/year",
+        "perMonth": "/month",
+        "saveYearly": "Save $12 a year",
+        "cta": "Get Premium",
+        "footnote": "Less than a coffee. More than a checkup."
+      },
+      "family": {
+        "name": "Family",
+        "desc": "Cira for the whole household — up to 4 members.",
+        "saveYearly": "Save $24 a year",
+        "cta": "Get Family"
+      }
+    }
+  },
+  "onboarding": {
+    "sex": {
+      "label": "Biological Sex",
+      "sub": "This helps us personalize your health metrics",
+      "male": "♂ Male",
+      "female": "♀ Female"
+    },
+    "age": {
+      "label": "How old are you?",
+      "sub": "Age is used for risk assessments and vitals analysis",
+      "placeholder": "e.g. 28",
+      "unit": "years"
+    },
+    "height": {
+      "label": "Your height",
+      "sub": "Height in centimeters for BMI and body metrics",
+      "placeholder": "e.g. 175",
+      "unit": "cm"
+    },
+    "weight": {
+      "label": "Your weight",
+      "sub": "Weight in kilograms for accurate health indices",
+      "placeholder": "e.g. 70",
+      "unit": "kg"
+    },
+    "toastSuccess": "Profile updated!",
+    "toastError": "Failed to save profile"
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirmPassword": "Confirm password"
+  },
+  "language": {
+    "select": "Select language"
+  }
+}

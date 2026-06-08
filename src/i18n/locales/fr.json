@@ -1,0 +1,140 @@
+{
+  "common": {
+    "submit": "Envoyer",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "back": "Retour",
+    "next": "Suivant",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "loading": "Chargement...",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "ok": "OK",
+    "skip": "Passer pour l'instant",
+    "finish": "Terminer la configuration",
+    "gotIt": "Compris",
+    "tryAgain": "Réessayer",
+    "learnMore": "En savoir plus"
+  },
+  "nav": {
+    "howItWorks": "Comment ça marche",
+    "technology": "Technologie",
+    "whatCiraHelpsWith": "Ce que Cira peut faire",
+    "pricing": "Tarifs",
+    "realDoctors": "Vrais médecins",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "footer": {
+    "language": "Langue",
+    "product": "Produit",
+    "company": "Entreprise",
+    "legal": "Mentions légales",
+    "security": "Sécurité & confidentialité",
+    "privacyPolicy": "Politique de confidentialité",
+    "terms": "Conditions",
+    "tagline": "Votre infirmière santé IA — signes vitaux validés cliniquement, disponibles à tout moment.",
+    "copyright": "© 2026 Cira · askainurse.com",
+    "disclaimerLine": "Signes vitaux validés cliniquement · Médecins agréés ·",
+    "disclaimer": "Cira ne remplace pas un avis médical professionnel."
+  },
+  "consent": {
+    "message": "Cira stocke vos données de santé pour alimenter vos évaluations. En continuant, vous acceptez notre",
+    "privacyPolicy": "Politique de confidentialité",
+    "and": "et nos",
+    "terms": "Conditions",
+    "notMedical": "Ce n'est pas un service médical."
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oups ! Page introuvable",
+    "returnHome": "Retour à l'accueil"
+  },
+  "pricing": {
+    "badge": "Tarifs",
+    "title1": "Simple. Honnête.",
+    "title2": "Pensé pour tous.",
+    "subtitle": "Pas de frais cachés. Pas de paperasse d'assurance. Annulez en un clic.",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "savePercent": "Économisez 20%",
+    "mostPopular": "Le plus populaire",
+    "trusted": "Adopté par des utilisateurs dans plus de 30 pays",
+    "faqTitle": "Questions fréquentes",
+    "faqSubtitle": "Tout ce que vous devez savoir avant de commencer.",
+    "ctaTitle": "Commencez avec Cira aujourd'hui.",
+    "ctaSubtitle": "Aucune inscription requise pour votre premier scan.",
+    "ctaButton": "Essayer Cira gratuitement",
+    "plans": {
+      "free": {
+        "name": "Gratuit",
+        "desc": "Essayez Cira sans inscription, sans carte, sans engagement.",
+        "period": "pour toujours",
+        "cta": "Commencer gratuitement"
+      },
+      "premium": {
+        "name": "Premium",
+        "desc": "Tout ce qu'il vous faut pour un suivi santé continu.",
+        "perYear": "/an",
+        "perMonth": "/mois",
+        "saveYearly": "Économisez 12 $ par an",
+        "cta": "Obtenir Premium",
+        "footnote": "Moins qu'un café. Plus qu'un bilan."
+      },
+      "family": {
+        "name": "Famille",
+        "desc": "Cira pour toute la maison — jusqu'à 4 membres.",
+        "saveYearly": "Économisez 24 $ par an",
+        "cta": "Obtenir Famille"
+      }
+    }
+  },
+  "onboarding": {
+    "sex": {
+      "label": "Sexe biologique",
+      "sub": "Cela nous aide à personnaliser vos mesures de santé",
+      "male": "♂ Homme",
+      "female": "♀ Femme"
+    },
+    "age": {
+      "label": "Quel âge avez-vous ?",
+      "sub": "L'âge est utilisé pour les évaluations de risque et l'analyse des signes vitaux",
+      "placeholder": "ex. 28",
+      "unit": "ans"
+    },
+    "height": {
+      "label": "Votre taille",
+      "sub": "Taille en centimètres pour l'IMC et les mesures corporelles",
+      "placeholder": "ex. 175",
+      "unit": "cm"
+    },
+    "weight": {
+      "label": "Votre poids",
+      "sub": "Poids en kilogrammes pour des indices de santé précis",
+      "placeholder": "ex. 70",
+      "unit": "kg"
+    },
+    "toastSuccess": "Profil mis à jour !",
+    "toastError": "Échec de l'enregistrement du profil"
+  },
+  "form": {
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe"
+  },
+  "language": {
+    "select": "Choisir la langue"
+  }
+}
