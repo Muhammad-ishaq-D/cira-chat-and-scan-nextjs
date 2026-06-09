@@ -27,6 +27,7 @@ const readStoredUser = (): any => {
 };
 
 const BookDoctorCTA = ({ source = "report_card" }: Props) => {
+  const { t } = useTranslation();
   const handleClick = () => {
     const user = readStoredUser();
     const deviceId = getDeviceId();
