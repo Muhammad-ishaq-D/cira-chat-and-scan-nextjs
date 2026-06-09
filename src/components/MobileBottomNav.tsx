@@ -23,12 +23,12 @@ const routeToId: Record<string, string> = {
 const MobileBottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const loggedIn = isAuthenticated();
   const activeId = routeToId[location.pathname] || "";
 
-  // Replace last item with Profile when logged in
   const items = loggedIn
-    ? navItems.slice(0, 4).concat({ icon: UserRound, label: "Profile", id: "profile", path: "/profile" })
+    ? navItems.slice(0, 4).concat({ icon: UserRound, tKey: "nav.profile", id: "profile", path: "/profile" })
     : navItems;
 
   return (
@@ -37,25 +37,21 @@ const MobileBottomNav = () => {
         {items.map((item) => {
           const isActive = activeId === item.id;
           const Icon = item.icon;
+          const label = t(item.tKey);
 
-          // Profile item with popover
           if (item.id === "profile") {
             return (
               <ProfilePopover key={item.id}>
                 <button
                   className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[52px] ${
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground active:scale-95"
+                    isActive ? "text-primary" : "text-muted-foreground active:scale-95"
                   }`}
                 >
                   <UserRound size={20} strokeWidth={isActive ? 2.2 : 1.5} />
                   <span className={`text-[9px] font-medium leading-none ${isActive ? "font-semibold" : ""}`}>
-                    {item.label}
+                    {label}
                   </span>
-                  {isActive && (
-                    <div className="w-4 h-0.5 rounded-full bg-primary mt-0.5" />
-                  )}
+                  {isActive && <div className="w-4 h-0.5 rounded-full bg-primary mt-0.5" />}
                 </button>
               </ProfilePopover>
             );
@@ -66,9 +62,7 @@ const MobileBottomNav = () => {
               key={item.id}
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[52px] ${
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground active:scale-95"
+                isActive ? "text-primary" : "text-muted-foreground active:scale-95"
               }`}
             >
               {item.id === "chat" ? (
@@ -77,11 +71,9 @@ const MobileBottomNav = () => {
                 <Icon size={20} strokeWidth={isActive ? 2.2 : 1.5} />
               ) : null}
               <span className={`text-[9px] font-medium leading-none ${isActive ? "font-semibold" : ""}`}>
-                {item.label}
+                {label}
               </span>
-              {isActive && (
-                <div className="w-4 h-0.5 rounded-full bg-primary mt-0.5" />
-              )}
+              {isActive && <div className="w-4 h-0.5 rounded-full bg-primary mt-0.5" />}
             </button>
           );
         })}
