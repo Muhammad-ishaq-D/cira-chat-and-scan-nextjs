@@ -55,7 +55,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
 
                 <div className="space-y-6">
                     <div>
-                        <p className="text-sm font-medium font-body text-foreground mb-4">How was your Cira experience?</p>
+                        <p className="text-sm font-medium font-body text-foreground mb-4">{t("components.rating.question")}</p>
                         <div className="flex justify-between gap-2">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
