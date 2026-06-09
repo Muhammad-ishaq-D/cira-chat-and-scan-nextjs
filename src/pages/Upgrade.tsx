@@ -399,7 +399,7 @@ const Upgrade = () => {
                         className="w-full h-9 rounded-xl text-xs font-medium border border-emerald-500/40 text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
                         {isCancelling ? <Loader2 size={12} className="animate-spin" /> : null}
-                        Reactivate Subscription
+                        {t("upgrade.reactivate")}
                       </button>
                     ) : (
                       <button
@@ -408,7 +408,7 @@ const Upgrade = () => {
                         className="w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
                         {isCancelling ? <Loader2 size={12} className="animate-spin" /> : null}
-                        Cancel Subscription
+                        {t("upgrade.cancel")}
                       </button>
                     )}
                   </div>
