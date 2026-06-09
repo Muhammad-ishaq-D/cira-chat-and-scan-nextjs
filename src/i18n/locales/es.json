@@ -774,5 +774,111 @@
       "Fatty Liver Disease": "Hígado graso",
       "Cardiovascular Event": "Evento cardiovascular"
     }
+  },
+  "profile": {
+    "title": "Configuración del perfil",
+    "tapToChange": "Toca para cambiar la foto",
+    "personal": "Información personal",
+    "fullName": "Nombre completo",
+    "email": "Correo electrónico",
+    "emailLocked": "El correo no se puede cambiar",
+    "health": "Métricas de salud",
+    "biologicalSex": "Sexo biológico",
+    "male": "♂ Hombre",
+    "female": "♀ Mujer",
+    "age": "Edad",
+    "ageUnit": "años",
+    "height": "Altura",
+    "heightUnit": "cm",
+    "weight": "Peso",
+    "weightUnit": "kg",
+    "saveChanges": "Guardar cambios",
+    "saving": "Guardando...",
+    "dangerZone": "Zona de peligro",
+    "signOut": "Cerrar sesión",
+    "deleteAccount": "Eliminar cuenta",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "ageRange": "La edad debe estar entre 10 y 120",
+      "heightRange": "La altura debe estar entre 50 y 300 cm",
+      "weightRange": "El peso debe estar entre 10 y 500 kg",
+      "imageType": "Selecciona un archivo de imagen",
+      "imageSize": "La imagen debe pesar menos de 5MB",
+      "updateFailed": "No se pudo actualizar el perfil",
+      "deleteFailed": "No se pudo eliminar la cuenta"
+    },
+    "toast": {
+      "updated": "¡Perfil actualizado!",
+      "deleted": "Cuenta eliminada"
+    },
+    "confirmDelete": "¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer."
+  },
+  "reports": {
+    "title": "Informes",
+    "subtitle": "Consulta, descarga y gestiona tus informes de salud",
+    "tabs": {
+      "assessments": "Evaluaciones",
+      "scans": "Escaneos de vitales"
+    },
+    "searchPlaceholder": "Buscar informes...",
+    "empty": {
+      "reportsTitle": "No se encontraron informes",
+      "reportsSub": "Completa una evaluación detallada para generar tu primer informe",
+      "scansTitle": "Aún no hay escaneos",
+      "scansSub": "Realiza un escaneo facial para ver tus vitales aquí",
+      "startScan": "Iniciar escaneo"
+    },
+    "card": {
+      "detailedAssessment": "Evaluación detallada",
+      "ready": "Listo",
+      "preview": "Vista previa",
+      "download": "Descargar",
+      "upgradeDownload": "Actualiza para descargar",
+      "reportPreview": "Vista previa del informe",
+      "reportId": "ID del informe:",
+      "type": "Tipo:",
+      "generated": "Generado:",
+      "summary": "Resumen:",
+      "previewNote": "Este informe fue generado por Cira, enfermera IA.",
+      "faceScan": "Escaneo facial",
+      "selectAll": "Seleccionar todo",
+      "deselectAll": "Deseleccionar todo",
+      "selected": "{{count}} seleccionados",
+      "downloadCombined": "Descargar informe combinado",
+      "pro": "Pro",
+      "pdf": "PDF"
+    },
+    "toast": {
+      "upgrade": "Actualiza a Pro para descargar informes",
+      "upgradeAction": "Actualizar",
+      "pdfDownloaded": "PDF descargado",
+      "pdfFailed": "No se pudo generar el PDF",
+      "scanPdfDownloaded": "PDF del escaneo descargado",
+      "selectScan": "Selecciona al menos un escaneo",
+      "combinedDownloaded": "Informe combinado ({{count}} escaneos) descargado"
+    }
+  },
+  "menu": {
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "newChat": "Nuevo chat",
+    "product": "Producto",
+    "company": "Empresa",
+    "legal": "Legal",
+    "faceVitalScan": "Escaneo facial de vitales",
+    "ourStory": "Nuestra historia",
+    "hipaaPrivate": "HIPAA · Privado"
+  },
+  "profilePopover": {
+    "planSuffix": "Plan",
+    "credits": "Créditos",
+    "faceScans": "Escaneos faciales",
+    "scansRemaining": "{{count}} escaneos restantes",
+    "unlimited": "Ilimitado",
+    "chatCredits": "Créditos de chat",
+    "creditsRemaining": "{{count}} créditos restantes",
+    "profileSettings": "Ajustes del perfil",
+    "upgradePlan": "Mejorar plan",
+    "paymentHistory": "Historial de pagos"
   }
 }

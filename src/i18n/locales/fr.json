@@ -774,5 +774,111 @@
       "Fatty Liver Disease": "Stéatose hépatique",
       "Cardiovascular Event": "Événement cardiovasculaire"
     }
+  },
+  "profile": {
+    "title": "Paramètres du profil",
+    "tapToChange": "Touchez pour changer la photo",
+    "personal": "Informations personnelles",
+    "fullName": "Nom complet",
+    "email": "E-mail",
+    "emailLocked": "L'e-mail ne peut pas être modifié",
+    "health": "Mesures de santé",
+    "biologicalSex": "Sexe biologique",
+    "male": "♂ Homme",
+    "female": "♀ Femme",
+    "age": "Âge",
+    "ageUnit": "ans",
+    "height": "Taille",
+    "heightUnit": "cm",
+    "weight": "Poids",
+    "weightUnit": "kg",
+    "saveChanges": "Enregistrer",
+    "saving": "Enregistrement...",
+    "dangerZone": "Zone dangereuse",
+    "signOut": "Se déconnecter",
+    "deleteAccount": "Supprimer le compte",
+    "errors": {
+      "nameRequired": "Le nom est requis",
+      "ageRange": "L'âge doit être entre 10 et 120",
+      "heightRange": "La taille doit être entre 50 et 300 cm",
+      "weightRange": "Le poids doit être entre 10 et 500 kg",
+      "imageType": "Veuillez choisir un fichier image",
+      "imageSize": "L'image doit faire moins de 5 Mo",
+      "updateFailed": "Échec de la mise à jour du profil",
+      "deleteFailed": "Échec de la suppression du compte"
+    },
+    "toast": {
+      "updated": "Profil mis à jour !",
+      "deleted": "Compte supprimé"
+    },
+    "confirmDelete": "Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible."
+  },
+  "reports": {
+    "title": "Rapports",
+    "subtitle": "Consultez, téléchargez et gérez vos rapports de santé",
+    "tabs": {
+      "assessments": "Évaluations",
+      "scans": "Scans vitaux"
+    },
+    "searchPlaceholder": "Rechercher des rapports...",
+    "empty": {
+      "reportsTitle": "Aucun rapport trouvé",
+      "reportsSub": "Effectuez une évaluation détaillée pour générer votre premier rapport",
+      "scansTitle": "Aucun scan vital",
+      "scansSub": "Effectuez un scan facial pour voir vos vitaux ici",
+      "startScan": "Démarrer un scan"
+    },
+    "card": {
+      "detailedAssessment": "Évaluation détaillée",
+      "ready": "Prêt",
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "upgradeDownload": "Passez à Pro pour télécharger",
+      "reportPreview": "Aperçu du rapport",
+      "reportId": "ID du rapport :",
+      "type": "Type :",
+      "generated": "Généré :",
+      "summary": "Résumé :",
+      "previewNote": "Ce rapport a été généré par Cira, infirmière IA.",
+      "faceScan": "Scan facial",
+      "selectAll": "Tout sélectionner",
+      "deselectAll": "Tout désélectionner",
+      "selected": "{{count}} sélectionnés",
+      "downloadCombined": "Télécharger le rapport combiné",
+      "pro": "Pro",
+      "pdf": "PDF"
+    },
+    "toast": {
+      "upgrade": "Passez à Pro pour télécharger les rapports",
+      "upgradeAction": "Mettre à niveau",
+      "pdfDownloaded": "PDF téléchargé",
+      "pdfFailed": "Échec de la génération du PDF",
+      "scanPdfDownloaded": "PDF du scan téléchargé",
+      "selectScan": "Sélectionnez au moins un scan",
+      "combinedDownloaded": "Rapport combiné ({{count}} scans) téléchargé"
+    }
+  },
+  "menu": {
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "newChat": "Nouvelle discussion",
+    "product": "Produit",
+    "company": "Société",
+    "legal": "Mentions légales",
+    "faceVitalScan": "Scan facial des vitaux",
+    "ourStory": "Notre histoire",
+    "hipaaPrivate": "HIPAA · Privé"
+  },
+  "profilePopover": {
+    "planSuffix": "Plan",
+    "credits": "Crédits",
+    "faceScans": "Scans faciaux",
+    "scansRemaining": "{{count}} scans restants",
+    "unlimited": "Illimité",
+    "chatCredits": "Crédits de chat",
+    "creditsRemaining": "{{count}} crédits restants",
+    "profileSettings": "Paramètres du profil",
+    "upgradePlan": "Améliorer le plan",
+    "paymentHistory": "Historique des paiements"
   }
 }
