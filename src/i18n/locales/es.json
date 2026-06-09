@@ -880,5 +880,187 @@
     "profileSettings": "Ajustes del perfil",
     "upgradePlan": "Mejorar plan",
     "paymentHistory": "Historial de pagos"
+  },
+  "resetPassword": {
+    "title": "Restablecer contraseña",
+    "subtitle": "Introduce el código de tu correo y tu nueva contraseña",
+    "emailPlaceholder": "Correo",
+    "otpPlaceholder": "Ingresa el código de 6 dígitos",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "resetting": "Restableciendo...",
+    "reset": "Restablecer contraseña",
+    "backToSignIn": "Volver al inicio de sesión",
+    "errors": {
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "failed": "Error al restablecer la contraseña"
+    },
+    "success": "¡Contraseña restablecida! Inicia sesión."
+  },
+  "upgrade": {
+    "back": "Volver al panel",
+    "title": "Elige tu plan",
+    "subtitle": "Desbloquea información de salud avanzada y escaneos ilimitados con un plan a tu medida.",
+    "loadingPlan": "Cargando tu plan…",
+    "currentPlan": "Plan actual:",
+    "cancelsOn": "Cancela el {{date}}",
+    "renewsOn": "Se renueva el {{date}}",
+    "mostPopular": "Más popular",
+    "currentPlanBadge": "Plan actual",
+    "redirecting": "Redirigiendo…",
+    "free": "Gratis",
+    "upgradeTo": "Mejorar a {{plan}}",
+    "reactivate": "Reactivar suscripción",
+    "cancel": "Cancelar suscripción",
+    "rolloverNote": "Los créditos no usados pasan al mes siguiente (máx. 1× la asignación mensual de tu plan).",
+    "errors": {
+      "noPaymentLink": "No hay enlace de pago configurado para este plan.",
+      "signInAgain": "Inicia sesión de nuevo antes de mejorar.",
+      "updateFailed": "No se pudo actualizar la suscripción.",
+      "activationFailed": "La activación tarda más de lo esperado. Actualiza en un momento."
+    },
+    "toast": {
+      "planActive": "Tu plan {{plan}} ya está activo.",
+      "willCancel": "La suscripción se cancelará al final del período de facturación.",
+      "reactivated": "Suscripción reactivada — se renovará automáticamente."
+    },
+    "modal": {
+      "cancelTitle": "¿Cancelar suscripción?",
+      "reactivateTitle": "¿Reactivar suscripción?",
+      "cancelDesc": "Tu plan bajará a Básico de inmediato y Stripe dejará de cobrar. Puedes reactivarlo cuando quieras.",
+      "reactivateDesc": "Tu plan {{plan}} se reanudará. Stripe cobrará en la próxima fecha{{date}}.",
+      "goBack": "No, volver",
+      "confirmCancel": "Sí, cancelar",
+      "confirmReactivate": "Sí, reactivar"
+    },
+    "plans": {
+      "basic": {
+        "desc": "Empieza con información esencial de salud",
+        "features": [
+          "1 escaneo facial",
+          "100.000 créditos de chat",
+          "Signos vitales básicos",
+          "Resumen de riesgos",
+          "Soporte por correo"
+        ]
+      },
+      "pro": {
+        "desc": "Monitoreo avanzado para personas conscientes de su salud",
+        "features": [
+          "4 escaneos faciales/mes",
+          "500.000 créditos de chat",
+          "Todos los signos + tendencias",
+          "Índices detallados",
+          "3 consultas médicas",
+          "Exportar informes (PDF)",
+          "Soporte prioritario"
+        ]
+      },
+      "enterprise": {
+        "desc": "Inteligencia de salud completa para profesionales",
+        "features": [
+          "Escaneos ilimitados",
+          "Créditos ilimitados",
+          "10 consultas médicas",
+          "Diagnósticos IA avanzados",
+          "Soporte prioritario",
+          "Todos los informes",
+          "HIPAA privado"
+        ]
+      }
+    }
+  },
+  "paymentHistory": {
+    "back": "Volver al panel",
+    "title": "Historial de pagos",
+    "subtitle": "Consulta tus transacciones y facturas",
+    "currentPlan": "Plan actual",
+    "totalSpent": "Total gastado",
+    "cancelsOn": "Cancela el",
+    "nextBilling": "Próximo cobro",
+    "cancelScheduledTitle": "Cancelación programada",
+    "cancelScheduledBody": "Tu plan {{plan}} terminará el {{date}}. Tienes acceso completo hasta entonces.",
+    "undo": "Deshacer",
+    "manageSubscription": "Gestionar suscripción",
+    "renewsOn": "Tu plan se renueva el {{date}}",
+    "cancelPlan": "Cancelar plan",
+    "transactions": "Transacciones",
+    "noTransactions": "Aún no hay transacciones",
+    "confirmCancel": "¿Seguro que deseas cancelar tu suscripción? Conservarás el acceso hasta el final del período.",
+    "toast": {
+      "loadFailed": "No se pudo cargar el historial",
+      "willCancel": "La suscripción se cancelará al final del período",
+      "cancelFailed": "No se pudo cancelar la suscripción",
+      "reactivated": "Suscripción reactivada — se seguirá renovando",
+      "reactivateFailed": "No se pudo reactivar la suscripción"
+    }
+  },
+  "paymentSuccess": {
+    "activating": "Activando tu plan…",
+    "activatingBody": "Aplicando tu suscripción y asignando créditos. Tarda solo un momento.",
+    "issueTitle": "Problema de activación",
+    "noPlan": "No pudimos determinar qué plan compraste. Abre Mejorar y vuelve a intentarlo, o contacta soporte.",
+    "activationFailed": "No se pudo activar tu plan",
+    "tryAgain": "Intentar de nuevo",
+    "goToDashboard": "Ir al panel",
+    "viewPlan": "Ver detalles del plan",
+    "subscribeTo": "Suscribirse a {{plan}}",
+    "perMonth": "al mes",
+    "billedMonthlyRenews": "Facturado mensualmente · Se renueva {{date}}",
+    "billedMonthly": "Facturado mensualmente",
+    "tax": "Impuesto",
+    "totalPaid": "Total pagado hoy",
+    "statementFootnote": "Un pago a Cira aparecerá en tu estado de cuenta. La suscripción se renueva automáticamente. Cancela cuando quieras.",
+    "thanksTitle": "¡Gracias por suscribirte!",
+    "thanksBody": "Un pago a Cira aparecerá en tu estado de cuenta.",
+    "contactInfo": "Información de contacto",
+    "creditsAllocated": "Créditos asignados",
+    "nextBillingDate": "Próxima fecha de cobro",
+    "needHelp": "¿Necesitas ayuda?"
+  },
+  "doctor": {
+    "title": "Encuentra un médico",
+    "subtitle": "Conecta con médicos certificados para consultas virtuales",
+    "verifiedMds": "Todos verificados",
+    "searchPlaceholder": "Buscar por nombre o especialidad...",
+    "perSession": "por sesión",
+    "next": "Siguiente: {{slot}}",
+    "today": "Hoy",
+    "book": "Reservar",
+    "booking": "Reservando...",
+    "noDoctors": "No se encontraron médicos",
+    "noDoctorsSub": "Ajusta tu búsqueda o filtros",
+    "footnote": "Todos los médicos están certificados y verificados. Las consultas se realizan a través de nuestra red. En caso de emergencia, llama al 911 o ve a urgencias.",
+    "toast": {
+      "bookingSent": "¡Solicitud enviada!",
+      "bookingFailed": "Error en la reserva"
+    },
+    "specialties": {
+      "all": "Todas",
+      "gp": "Medicina general",
+      "cardiology": "Cardiología",
+      "dermatology": "Dermatología",
+      "neurology": "Neurología",
+      "orthopedics": "Ortopedia"
+    },
+    "nav": {
+      "doctor": "Médico"
+    }
+  },
+  "blog": {
+    "documentTitle": "Blog — Cira enfermera IA",
+    "documentDesc": "Información sobre salud con IA, escaneos faciales y bienestar preventivo del equipo Cira.",
+    "home": "Inicio",
+    "title": "El diario de Cira",
+    "subtitle": "Notas sobre salud asistida por IA, vitales faciales y la ciencia detrás de la prevención.",
+    "loadFailed": "No se pudo cargar el blog",
+    "empty": "Aún no hay artículos. Vuelve pronto.",
+    "minRead": "{{count}} min",
+    "footer": "© 2026 Cira — askainurse.com",
+    "allArticles": "Todos los artículos",
+    "notFound": "Artículo no encontrado",
+    "browseAll": "Ver todos los artículos",
+    "minReadFull": "{{count}} min de lectura"
   }
 }

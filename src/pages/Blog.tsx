@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { blogsApi, type BlogPost } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const Blog = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Blog — Cira AI Health Nurse";
+    document.title = t("blog.documentTitle");
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Insights on AI-powered health, vitals scanning, and preventive wellness from the Cira team.");
-  }, []);
+    if (meta) meta.setAttribute("content", t("blog.documentDesc"));
+  }, [t]);
 
   useEffect(() => {
     (async () => {
@@ -23,18 +25,18 @@ const Blog = () => {
         const list: BlogPost[] = Array.isArray(data) ? data : (data?.blogs || []);
         setPosts(list.filter((p) => (p.status ?? "published") === "published"));
       } catch (e: any) {
-        setError(e?.message || "Failed to load blogs");
+        setError(e?.message || t("blog.loadFailed"));
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-5xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft size={16} /> Home
+          <ArrowLeft size={16} /> {t("blog.home")}
         </button>
         <div className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -43,9 +45,9 @@ const Blog = () => {
       </header>
 
       <section className="max-w-5xl mx-auto px-6 py-10 text-center">
-        <h1 className="font-heading text-4xl md:text-5xl mb-3">The Cira Journal</h1>
+        <h1 className="font-heading text-4xl md:text-5xl mb-3">{t("blog.title")}</h1>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          Notes on AI-assisted health, face-scan vitals, and the science behind preventive care.
+          {t("blog.subtitle")}
         </p>
       </section>
 
@@ -66,7 +68,7 @@ const Blog = () => {
         ) : error ? (
           <div className="text-center text-muted-foreground py-20">{error}</div>
         ) : posts.length === 0 ? (
-          <div className="text-center text-muted-foreground py-20">No blog posts yet. Check back soon.</div>
+          <div className="text-center text-muted-foreground py-20">{t("blog.empty")}</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
@@ -98,13 +100,13 @@ const Blog = () => {
                     {post.published_at && (
                       <span className="flex items-center gap-1">
                         <Calendar size={12} />
-                        {new Date(post.published_at).toLocaleDateString()}
+                        {new Date(post.published_at).toLocaleDateString(i18n.language)}
                       </span>
                     )}
                     {post.reading_time ? (
                       <span className="flex items-center gap-1">
                         <Clock size={12} />
-                        {post.reading_time} min
+                        {t("blog.minRead", { count: post.reading_time })}
                       </span>
                     ) : null}
                   </div>
@@ -116,7 +118,7 @@ const Blog = () => {
       </section>
 
       <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground">
-        © 2026 Cira — askainurse.com
+        {t("blog.footer")}
       </footer>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2, CalendarDays, AlertCircle, TriangleAlert, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
@@ -59,6 +60,7 @@ const defaultPlans: Plan[] = [
 
 const Upgrade = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [plans, setPlans] = useState<Plan[]>(defaultPlans);
   const [redirectingId, setRedirectingId] = useState<string | null>(null);
@@ -188,16 +190,16 @@ const Upgrade = () => {
 
       if (cancelled) return;
       if (activated) {
-        toast.success(`Your ${targetKey} plan is now active.`);
+        toast.success(t("upgrade.toast.planActive", { plan: targetKey }));
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
       } else {
-        toast.error(activationError || "Plan activation is taking longer than expected. Please refresh in a moment.");
+        toast.error(activationError || t("upgrade.errors.activationFailed"));
       }
       setSearchParams({}, { replace: true });
     };
     sync();
     return () => { cancelled = true; };
-  }, [searchParams, refreshSubscription, setSearchParams]);
+  }, [searchParams, refreshSubscription, setSearchParams, t]);
 
   const handleUpgrade = (plan: Plan) => {
     if (plan.current) return;
@@ -205,7 +207,7 @@ const Upgrade = () => {
 
     const link = STRIPE_PAYMENT_LINKS[plan.name.toLowerCase()] || STRIPE_PAYMENT_LINKS[plan.id];
     if (!link) {
-      toast.error("Payment link is not configured for this plan.");
+      toast.error(t("upgrade.errors.noPaymentLink"));
       return;
     }
 
@@ -214,7 +216,7 @@ const Upgrade = () => {
 
     const userId = getUserId();
     if (!userId) {
-      toast.error("Please sign in again before upgrading.");
+      toast.error(t("upgrade.errors.signInAgain"));
       setRedirectingId(null);
       return;
     }
@@ -240,21 +242,21 @@ const Upgrade = () => {
     try {
       if (isCancel) {
         await billingApi.cancelSubscription();
-        toast.success("Subscription will cancel at the end of the billing period.");
+        toast.success(t("upgrade.toast.willCancel"));
       } else {
         await billingApi.reactivateSubscription();
-        toast.success("Subscription reactivated — it will keep renewing automatically.");
+        toast.success(t("upgrade.toast.reactivated"));
       }
       await refreshSubscription();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not update subscription.");
+      toast.error(err instanceof Error ? err.message : t("upgrade.errors.updateFailed"));
     } finally {
       setCancellingId(null);
     }
   };
 
   const renewalDate = subscription?.current_period_end
-    ? new Date(subscription.current_period_end).toLocaleDateString("en-US", {
+    ? new Date(subscription.current_period_end).toLocaleDateString(i18n.language, {
         year: "numeric", month: "long", day: "numeric",
       })
     : null;
@@ -272,7 +274,7 @@ const Upgrade = () => {
           onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
-          <ArrowLeft size={16} />Back to Dashboard
+          <ArrowLeft size={16} />{t("upgrade.back")}
         </button>
 
         <div className="text-center mb-12">
@@ -281,29 +283,29 @@ const Upgrade = () => {
             <Sparkles size={20} className="text-primary" />
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-3" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-            Choose Your Plan
+            {t("upgrade.title")}
           </h1>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Unlock advanced health insights and unlimited scans with a plan that fits your needs.
+            {t("upgrade.subtitle")}
           </p>
 
           {loadingPlan && (
             <p className="mt-4 text-xs text-muted-foreground flex items-center justify-center gap-2">
-              <Loader2 size={14} className="animate-spin" /> Loading your plan…
+              <Loader2 size={14} className="animate-spin" /> {t("upgrade.loadingPlan")}
             </p>
           )}
 
           {!loadingPlan && (
             <div className="mt-4 flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                Current plan: <span className="font-semibold capitalize">{currentPlanLabel}</span>
+                {t("upgrade.currentPlan")} <span className="font-semibold capitalize">{currentPlanLabel}</span>
               </span>
               {renewalDate && currentPlanKey !== "basic" && (
                 <span className={`inline-flex items-center gap-1.5 text-xs mt-1 ${subscription?.cancel_at_period_end ? "text-amber-600" : "text-muted-foreground"}`}>
                   <CalendarDays size={12} />
                   {subscription?.cancel_at_period_end
-                    ? `Cancels on ${renewalDate}`
-                    : `Renews on ${renewalDate}`}
+                    ? t("upgrade.cancelsOn", { date: renewalDate })
+                    : t("upgrade.renewsOn", { date: renewalDate })}
                 </span>
               )}
             </div>
@@ -318,9 +320,9 @@ const Upgrade = () => {
             const planKey = normalizePlanKey(plan.name);
             const isPaid = planKey !== "basic";
             let actionLabel: string;
-            if (plan.current) actionLabel = "Current Plan";
-            else if (!isPaid) actionLabel = "Free";
-            else actionLabel = `Upgrade to ${plan.name}`;
+            if (plan.current) actionLabel = t("upgrade.currentPlanBadge");
+            else if (!isPaid) actionLabel = t("upgrade.free");
+            else actionLabel = t("upgrade.upgradeTo", { plan: plan.name });
 
             return (
               <div
@@ -336,14 +338,14 @@ const Upgrade = () => {
                 {plan.current && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold uppercase tracking-wider">
-                      Current Plan
+                      {t("upgrade.currentPlanBadge")}
                     </span>
                   </div>
                 )}
                 {plan.popular && !plan.current && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
-                      <Star size={10} /> Most Popular
+                      <Star size={10} /> {t("upgrade.mostPopular")}
                     </span>
                   </div>
                 )}
@@ -383,7 +385,7 @@ const Upgrade = () => {
                     } disabled:opacity-60`}
                 >
                   {isRedirecting
-                    ? <><Loader2 size={14} className="animate-spin" /> Redirecting…</>
+                    ? <><Loader2 size={14} className="animate-spin" /> {t("upgrade.redirecting")}</>
                     : actionLabel}
                 </button>
 
@@ -397,7 +399,7 @@ const Upgrade = () => {
                         className="w-full h-9 rounded-xl text-xs font-medium border border-emerald-500/40 text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
                         {isCancelling ? <Loader2 size={12} className="animate-spin" /> : null}
-                        Reactivate Subscription
+                        {t("upgrade.reactivate")}
                       </button>
                     ) : (
                       <button
@@ -406,7 +408,7 @@ const Upgrade = () => {
                         className="w-full h-9 rounded-xl text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
                       >
                         {isCancelling ? <Loader2 size={12} className="animate-spin" /> : null}
-                        Cancel Subscription
+                        {t("upgrade.cancel")}
                       </button>
                     )}
                   </div>
@@ -420,7 +422,7 @@ const Upgrade = () => {
         {currentPlanKey !== "basic" && (
           <p className="mt-6 text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
             <AlertCircle size={12} />
-            Unused credits roll over each month (capped at 1× your plan's monthly allocation).
+            {t("upgrade.rolloverNote")}
           </p>
         )}
       </div>
@@ -448,24 +450,22 @@ const Upgrade = () => {
 
             {/* Title */}
             <h3 className="text-base font-semibold text-foreground text-center mb-2">
-              {confirmModal.isCancel ? "Cancel Subscription?" : "Reactivate Subscription?"}
+              {confirmModal.isCancel ? t("upgrade.modal.cancelTitle") : t("upgrade.modal.reactivateTitle")}
             </h3>
 
-            {/* Description */}
             <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
               {confirmModal.isCancel
-                ? `Your plan will be downgraded to Basic immediately and Stripe will stop future charges. You can reactivate anytime.`
-                : `Your ${currentPlanLabel} plan will resume. Stripe will charge you on the next billing date${renewalDate ? ` (${renewalDate})` : ""}.`
+                ? t("upgrade.modal.cancelDesc")
+                : t("upgrade.modal.reactivateDesc", { plan: currentPlanLabel, date: renewalDate ? ` (${renewalDate})` : "" })
               }
             </p>
 
-            {/* Actions */}
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmModal(null)}
                 className="flex-1 h-10 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent transition-all"
               >
-                No, go back
+                {t("upgrade.modal.goBack")}
               </button>
               <button
                 onClick={() => {
@@ -481,7 +481,7 @@ const Upgrade = () => {
                 }`}
               >
                 {cancellingId ? <Loader2 size={14} className="animate-spin" /> : null}
-                {confirmModal.isCancel ? "Yes, cancel" : "Yes, reactivate"}
+                {confirmModal.isCancel ? t("upgrade.modal.confirmCancel") : t("upgrade.modal.confirmReactivate")}
               </button>
             </div>
           </div>

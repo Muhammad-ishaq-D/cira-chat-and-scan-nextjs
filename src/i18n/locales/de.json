@@ -880,5 +880,187 @@
     "profileSettings": "Profileinstellungen",
     "upgradePlan": "Tarif upgraden",
     "paymentHistory": "Zahlungsverlauf"
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Gib den Code aus deiner E-Mail und dein neues Passwort ein",
+    "emailPlaceholder": "E-Mail",
+    "otpPlaceholder": "6-stelligen Code eingeben",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "resetting": "Zurücksetzen...",
+    "reset": "Passwort zurücksetzen",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "errors": {
+      "passwordMin": "Passwort muss mindestens 8 Zeichen haben",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "failed": "Passwort konnte nicht zurückgesetzt werden"
+    },
+    "success": "Passwort zurückgesetzt! Bitte anmelden."
+  },
+  "upgrade": {
+    "back": "Zurück zum Dashboard",
+    "title": "Wähle deinen Tarif",
+    "subtitle": "Schalte erweiterte Gesundheitseinblicke und unbegrenzte Scans mit einem passenden Tarif frei.",
+    "loadingPlan": "Tarif wird geladen…",
+    "currentPlan": "Aktueller Tarif:",
+    "cancelsOn": "Endet am {{date}}",
+    "renewsOn": "Verlängert sich am {{date}}",
+    "mostPopular": "Am beliebtesten",
+    "currentPlanBadge": "Aktueller Tarif",
+    "redirecting": "Weiterleitung…",
+    "free": "Kostenlos",
+    "upgradeTo": "Upgrade auf {{plan}}",
+    "reactivate": "Abo reaktivieren",
+    "cancel": "Abo kündigen",
+    "rolloverNote": "Ungenutzte Credits werden monatlich übertragen (max. 1× monatliche Zuteilung).",
+    "errors": {
+      "noPaymentLink": "Für diesen Tarif ist kein Zahlungslink konfiguriert.",
+      "signInAgain": "Bitte melde dich erneut an, bevor du upgradest.",
+      "updateFailed": "Abo konnte nicht aktualisiert werden.",
+      "activationFailed": "Aktivierung dauert länger als erwartet. Bitte gleich aktualisieren."
+    },
+    "toast": {
+      "planActive": "Dein {{plan}}-Tarif ist jetzt aktiv.",
+      "willCancel": "Abo endet zum Ende der Abrechnungsperiode.",
+      "reactivated": "Abo reaktiviert — es wird automatisch weiterlaufen."
+    },
+    "modal": {
+      "cancelTitle": "Abo kündigen?",
+      "reactivateTitle": "Abo reaktivieren?",
+      "cancelDesc": "Dein Tarif wird sofort auf Basic herabgestuft und Stripe stoppt weitere Zahlungen. Du kannst jederzeit reaktivieren.",
+      "reactivateDesc": "Dein {{plan}}-Tarif wird fortgesetzt. Stripe rechnet am nächsten Termin ab{{date}}.",
+      "goBack": "Nein, zurück",
+      "confirmCancel": "Ja, kündigen",
+      "confirmReactivate": "Ja, reaktivieren"
+    },
+    "plans": {
+      "basic": {
+        "desc": "Starte mit grundlegenden Gesundheitseinblicken",
+        "features": [
+          "1 Gesichtsscan",
+          "100.000 Chat-Credits",
+          "Grundlegende Vitalwerte",
+          "Risiko-Übersicht",
+          "E-Mail-Support"
+        ]
+      },
+      "pro": {
+        "desc": "Erweitertes Monitoring für gesundheitsbewusste Menschen",
+        "features": [
+          "4 Gesichtsscans/Monat",
+          "500.000 Chat-Credits",
+          "Alle Vitalwerte + Trends",
+          "Detaillierte Indizes",
+          "3 Arzt-Konsultationen",
+          "Berichte (PDF)",
+          "Priorisierter Support"
+        ]
+      },
+      "enterprise": {
+        "desc": "Vollständige Gesundheitsintelligenz für Profis",
+        "features": [
+          "Unbegrenzte Scans",
+          "Unbegrenzte Credits",
+          "10 Arzt-Konsultationen",
+          "Erweiterte KI-Diagnostik",
+          "Priorisierter Support",
+          "Alle Berichte",
+          "HIPAA-privat"
+        ]
+      }
+    }
+  },
+  "paymentHistory": {
+    "back": "Zurück zum Dashboard",
+    "title": "Zahlungsverlauf",
+    "subtitle": "Sieh alle Transaktionen und Rechnungen",
+    "currentPlan": "Aktueller Tarif",
+    "totalSpent": "Gesamt ausgegeben",
+    "cancelsOn": "Endet am",
+    "nextBilling": "Nächste Abrechnung",
+    "cancelScheduledTitle": "Kündigung geplant",
+    "cancelScheduledBody": "Dein {{plan}}-Tarif endet am {{date}}. Bis dahin hast du vollen Zugriff.",
+    "undo": "Rückgängig",
+    "manageSubscription": "Abo verwalten",
+    "renewsOn": "Dein Tarif verlängert sich am {{date}}",
+    "cancelPlan": "Tarif kündigen",
+    "transactions": "Transaktionen",
+    "noTransactions": "Noch keine Transaktionen",
+    "confirmCancel": "Möchtest du dein Abo wirklich kündigen? Du behältst den Zugriff bis zum Ende der Abrechnungsperiode.",
+    "toast": {
+      "loadFailed": "Zahlungsverlauf konnte nicht geladen werden",
+      "willCancel": "Abo endet zum Ende der Abrechnungsperiode",
+      "cancelFailed": "Abo konnte nicht gekündigt werden",
+      "reactivated": "Abo reaktiviert — wird weiterhin automatisch verlängert",
+      "reactivateFailed": "Abo konnte nicht reaktiviert werden"
+    }
+  },
+  "paymentSuccess": {
+    "activating": "Tarif wird aktiviert…",
+    "activatingBody": "Abo wird angewendet und Credits zugewiesen. Dauert nur einen Moment.",
+    "issueTitle": "Aktivierungsproblem",
+    "noPlan": "Wir konnten nicht ermitteln, welchen Tarif du gekauft hast. Öffne Upgrade und versuche es erneut, oder kontaktiere den Support.",
+    "activationFailed": "Tarif konnte nicht aktiviert werden",
+    "tryAgain": "Erneut versuchen",
+    "goToDashboard": "Zum Dashboard",
+    "viewPlan": "Tarifdetails ansehen",
+    "subscribeTo": "Abonniere {{plan}}",
+    "perMonth": "pro Monat",
+    "billedMonthlyRenews": "Monatlich abgerechnet · Verlängert sich {{date}}",
+    "billedMonthly": "Monatlich abgerechnet",
+    "tax": "Steuer",
+    "totalPaid": "Heute bezahlt",
+    "statementFootnote": "Eine Zahlung an Cira erscheint auf deinem Kontoauszug. Abo verlängert sich automatisch. Jederzeit kündbar.",
+    "thanksTitle": "Danke für dein Abo!",
+    "thanksBody": "Eine Zahlung an Cira erscheint auf deinem Kontoauszug.",
+    "contactInfo": "Kontaktdaten",
+    "creditsAllocated": "Zugewiesene Credits",
+    "nextBillingDate": "Nächstes Abrechnungsdatum",
+    "needHelp": "Brauchst du Hilfe?"
+  },
+  "doctor": {
+    "title": "Arzt finden",
+    "subtitle": "Verbinde dich mit zugelassenen Ärzten für virtuelle Konsultationen",
+    "verifiedMds": "Alle verifiziert",
+    "searchPlaceholder": "Nach Name oder Fachgebiet suchen...",
+    "perSession": "pro Sitzung",
+    "next": "Nächste: {{slot}}",
+    "today": "Heute",
+    "book": "Jetzt buchen",
+    "booking": "Wird gebucht...",
+    "noDoctors": "Keine Ärzte gefunden",
+    "noDoctorsSub": "Passe deine Suche oder Filter an",
+    "footnote": "Alle Ärzte sind zugelassen und verifiziert. Konsultationen finden über unser Partnernetzwerk statt. Im Notfall rufe den Notdienst oder gehe zur nächsten Notaufnahme.",
+    "toast": {
+      "bookingSent": "Buchungsanfrage gesendet!",
+      "bookingFailed": "Buchung fehlgeschlagen"
+    },
+    "specialties": {
+      "all": "Alle",
+      "gp": "Allgemeinmedizin",
+      "cardiology": "Kardiologie",
+      "dermatology": "Dermatologie",
+      "neurology": "Neurologie",
+      "orthopedics": "Orthopädie"
+    },
+    "nav": {
+      "doctor": "Arzt"
+    }
+  },
+  "blog": {
+    "documentTitle": "Blog — Cira KI-Krankenpflegerin",
+    "documentDesc": "Einblicke in KI-gestützte Gesundheit, Vital-Scans und präventive Wellness vom Cira-Team.",
+    "home": "Startseite",
+    "title": "Das Cira Journal",
+    "subtitle": "Notizen zu KI-gestützter Gesundheit, Gesichts-Scan-Vitalwerten und der Wissenschaft hinter Prävention.",
+    "loadFailed": "Blogs konnten nicht geladen werden",
+    "empty": "Noch keine Blogposts. Schau bald wieder vorbei.",
+    "minRead": "{{count}} Min",
+    "footer": "© 2026 Cira — askainurse.com",
+    "allArticles": "Alle Artikel",
+    "notFound": "Artikel nicht gefunden",
+    "browseAll": "Alle Artikel ansehen",
+    "minReadFull": "{{count}} Min Lesezeit"
   }
 }

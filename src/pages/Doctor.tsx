@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, LogOut, ScanFace, Sparkles, FileText, UserRound, Star, MapPin, Clock, Phone, Video, Calendar, Search, BadgeCheck, Loader2 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -10,17 +11,25 @@ import { getUser, logout } from "@/lib/auth";
 import { toast } from "sonner";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
-  { icon: UserRound, label: "Doctor", id: "doctor" },
+  { icon: Home, tKey: "dashboard.nav.home", id: "home" },
+  { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat" },
+  { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan" },
+  { icon: FileText, tKey: "dashboard.nav.reports", id: "reports" },
+  { icon: UserRound, tKey: "doctor.nav.doctor", id: "doctor" },
 ];
 
-const specialties = ["All", "General Practice", "Cardiology", "Dermatology", "Neurology", "Orthopedics"];
+const specialtyKeys: { value: string; tKey: string }[] = [
+  { value: "All", tKey: "doctor.specialties.all" },
+  { value: "General Practice", tKey: "doctor.specialties.gp" },
+  { value: "Cardiology", tKey: "doctor.specialties.cardiology" },
+  { value: "Dermatology", tKey: "doctor.specialties.dermatology" },
+  { value: "Neurology", tKey: "doctor.specialties.neurology" },
+  { value: "Orthopedics", tKey: "doctor.specialties.orthopedics" },
+];
 
 const Doctor = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("All");
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
@@ -60,9 +69,9 @@ const Doctor = () => {
     setSelectedDoctor(doctorId);
     try {
       await doctorApi.book(doctorId, { type: "video", timestamp: new Date().toISOString() });
-      toast.success("Booking request sent!");
+      toast.success(t("doctor.toast.bookingSent"));
     } catch (e: any) {
-      toast.error(e.message || "Booking failed");
+      toast.error(e.message || t("doctor.toast.bookingFailed"));
     } finally {
       setSelectedDoctor(null);
     }
@@ -70,7 +79,6 @@ const Doctor = () => {
 
   return (
     <div className="flex bg-background" style={{ height: '100dvh' }}>
-      {/* Sidebar */}
       <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
         <div className="mb-6"><img src={ciraLogo} alt="Cira" width={28} height={28} /></div>
         <div className="w-10 h-[1px] bg-border mb-3" />
@@ -80,14 +88,14 @@ const Doctor = () => {
             return (
               <button key={item.id} onClick={() => handleNav(item.id)} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${item.id === "doctor" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
                 {item.id === "chat" ? <AiSparkleIcon size={18} /> : <Icon size={18} strokeWidth={item.id === "doctor" ? 2 : 1.5} />}
-                <span className="text-[9px] font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-medium leading-none">{t(item.tKey)}</span>
               </button>
             );
           })}
         </div>
         <div className="mt-auto flex flex-col items-center gap-2">
           <button onClick={() => { logout(); navigate("/login"); }} className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all">
-            <LogOut size={18} strokeWidth={1.5} /><span className="text-[9px] font-medium leading-none">Logout</span>
+            <LogOut size={18} strokeWidth={1.5} /><span className="text-[9px] font-medium leading-none">{t("dashboard.nav.logout")}</span>
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium cursor-pointer ring-2 ring-primary/20">{initials}</div>
@@ -95,7 +103,6 @@ const Doctor = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 overflow-y-auto relative">
         <div className="fixed inset-0 pointer-events-none md:left-[72px]">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
@@ -106,22 +113,22 @@ const Doctor = () => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           <div className="flex items-start justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Find a Doctor</h1>
-              <p className="text-sm text-muted-foreground font-body">Connect with licensed physicians for virtual consultations</p>
+              <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("doctor.title")}</h1>
+              <p className="text-sm text-muted-foreground font-body">{t("doctor.subtitle")}</p>
             </div>
-            <span className="shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full text-emerald-600 bg-emerald-50 flex items-center gap-1"><BadgeCheck size={12} />All Verified MDs</span>
+            <span className="shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full text-emerald-600 bg-emerald-50 flex items-center gap-1"><BadgeCheck size={12} />{t("doctor.verifiedMds")}</span>
           </div>
 
           <div className="mb-6">
             <div className="relative">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or specialty..." className="w-full h-10 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" style={{ fontFamily: "'Inter', system-ui, sans-serif" }} />
+              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("doctor.searchPlaceholder")} className="w-full h-10 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" style={{ fontFamily: "'Inter', system-ui, sans-serif" }} />
             </div>
           </div>
 
           <div className="flex gap-2 mb-6 flex-wrap">
-            {specialties.map((spec) => (
-              <button key={spec} onClick={() => setSelectedSpecialty(spec)} className={`px-3.5 py-1.5 rounded-full text-xs font-medium font-body transition-all ${selectedSpecialty === spec ? "bg-primary text-primary-foreground shadow-sm" : "bg-card/80 backdrop-blur-sm text-muted-foreground border border-border/50 hover:border-border hover:text-foreground"}`}>{spec}</button>
+            {specialtyKeys.map((spec) => (
+              <button key={spec.value} onClick={() => setSelectedSpecialty(spec.value)} className={`px-3.5 py-1.5 rounded-full text-xs font-medium font-body transition-all ${selectedSpecialty === spec.value ? "bg-primary text-primary-foreground shadow-sm" : "bg-card/80 backdrop-blur-sm text-muted-foreground border border-border/50 hover:border-border hover:text-foreground"}`}>{t(spec.tKey)}</button>
             ))}
           </div>
 
@@ -150,7 +157,7 @@ const Doctor = () => {
                         </div>
                         <div className="text-right shrink-0">
                           <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{doc.fee}</span>
-                          <p className="text-[10px] text-muted-foreground/60">per session</p>
+                          <p className="text-[10px] text-muted-foreground/60">{t("doctor.perSession")}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4 mt-2 text-[11px] text-muted-foreground font-body">
@@ -160,14 +167,14 @@ const Doctor = () => {
                       </div>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                          {doc.nextSlot && <span className="flex items-center gap-1"><Clock size={11} />Next: {doc.nextSlot}</span>}
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${doc.available === "Today" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>{doc.available}</span>
+                          {doc.nextSlot && <span className="flex items-center gap-1"><Clock size={11} />{t("doctor.next", { slot: doc.nextSlot })}</span>}
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${doc.available === "Today" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>{doc.available === "Today" ? t("doctor.today") : doc.available}</span>
                         </div>
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="h-8 w-8 rounded-lg border border-border/60 flex items-center justify-center text-muted-foreground hover:bg-accent transition-all"><Phone size={13} /></button>
                           <button className="h-8 w-8 rounded-lg border border-border/60 flex items-center justify-center text-muted-foreground hover:bg-accent transition-all"><Video size={13} /></button>
                           <button onClick={() => handleBooking(doc.id)} disabled={selectedDoctor === doc.id} className="h-8 px-3 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-60">
-                            {selectedDoctor === doc.id ? <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />Booking...</span> : <><Calendar size={12} />Book Now</>}
+                            {selectedDoctor === doc.id ? <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />{t("doctor.booking")}</span> : <><Calendar size={12} />{t("doctor.book")}</>}
                           </button>
                         </div>
                       </div>
@@ -181,15 +188,14 @@ const Doctor = () => {
           {!loading && filteredDoctors.length === 0 && (
             <div className="text-center py-16">
               <UserRound size={40} className="text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground">No doctors found</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Try adjusting your search or filters</p>
+              <p className="text-sm text-muted-foreground">{t("doctor.noDoctors")}</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">{t("doctor.noDoctorsSub")}</p>
             </div>
           )}
 
           <div className="mt-6 p-4 rounded-xl bg-secondary/30">
             <p className="text-[10px] text-muted-foreground/60 text-center font-body">
-              🏥 All listed physicians are licensed and verified. Consultations are conducted through our partner network.
-              In an emergency, please call 911 or visit your nearest emergency room.
+              🏥 {t("doctor.footnote")}
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Loader2, AlertCircle, Zap, Crown, CheckCircle2, Scan, MessageCircle, UserCheck } from "lucide-react";
 import { billingApi } from "@/lib/apiClient";
 import { PENDING_PLAN_STORAGE_KEY } from "@/lib/stripe";
@@ -45,6 +46,7 @@ const PLAN_META: Record<string, {
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"activating" | "success" | "error">("activating");
   const [planName, setPlanName] = useState<string>("");
@@ -70,7 +72,7 @@ const PaymentSuccess = () => {
 
       if (!resolvedKey || resolvedKey === "basic") {
         if (!cancelled) {
-          setErrorMsg("Could not determine which plan you purchased. Open Upgrade and try again, or contact support.");
+          setErrorMsg(t("paymentSuccess.noPlan"));
           setStatus("error");
         }
         return;
@@ -86,31 +88,30 @@ const PaymentSuccess = () => {
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
       } catch (err: unknown) {
         if (cancelled) return;
-        setErrorMsg(err instanceof Error ? err.message : "Could not activate your plan");
+        setErrorMsg(err instanceof Error ? err.message : t("paymentSuccess.activationFailed"));
         setStatus("error");
       }
     };
     run();
     return () => { cancelled = true; };
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   const meta = PLAN_META[planKey] || PLAN_META["pro"];
   const PlanIcon = meta?.icon ?? Zap;
-  const nextBilling = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
+  const nextBilling = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(i18n.language, {
     year: "numeric", month: "long", day: "numeric",
   });
 
   const currency = payment?.currency ?? "usd";
   const fmt = (amount: number | null) =>
     amount != null
-      ? new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount)
+      ? new Intl.NumberFormat(i18n.language, { style: "currency", currency }).format(amount)
       : meta?.price ?? "$5.00";
 
   const displaySubtotal = fmt(payment?.subtotal ?? null);
   const displayTax = payment?.tax ? fmt(payment.tax) : null;
   const displayTotal = fmt(payment?.total ?? null);
 
-  // ── Activating state ─────────────────────────────────────────────────────────
   if (status === "activating") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-6">
@@ -124,14 +125,13 @@ const PaymentSuccess = () => {
           <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <Loader2 size={26} className="text-primary animate-spin" />
           </div>
-          <h1 className="text-lg font-semibold text-foreground mb-2">Activating your plan…</h1>
-          <p className="text-sm text-muted-foreground">Applying your subscription and allocating credits. This takes just a moment.</p>
+          <h1 className="text-lg font-semibold text-foreground mb-2">{t("paymentSuccess.activating")}</h1>
+          <p className="text-sm text-muted-foreground">{t("paymentSuccess.activatingBody")}</p>
         </div>
       </div>
     );
   }
 
-  // ── Error state ──────────────────────────────────────────────────────────────
   if (status === "error") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-6">
@@ -143,88 +143,76 @@ const PaymentSuccess = () => {
           <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={26} className="text-amber-500" />
           </div>
-          <h1 className="text-lg font-semibold text-foreground mb-2">Activation issue</h1>
+          <h1 className="text-lg font-semibold text-foreground mb-2">{t("paymentSuccess.issueTitle")}</h1>
           <p className="text-sm text-muted-foreground mb-8">{errorMsg}</p>
           <button
             onClick={() => navigate("/upgrade?paid=1")}
             className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium mb-3"
           >
-            Try Again
+            {t("paymentSuccess.tryAgain")}
           </button>
           <button
             onClick={() => navigate("/dashboard")}
             className="w-full h-11 rounded-xl border border-border/60 text-sm text-muted-foreground hover:bg-accent"
           >
-            Go to Dashboard
+            {t("paymentSuccess.goToDashboard")}
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Success state — full-screen split layout (mirrors Stripe) ───────────────
   return (
     <div className="h-screen overflow-hidden flex">
-
-      {/* ── Left panel: Order summary ──────────────────────────────────────────── */}
       <div className="w-[44%] h-full bg-muted/30 border-r border-border/50 flex flex-col px-14 py-12 overflow-y-auto">
-        {/* Brand */}
         <div className="flex items-center gap-2 mb-12">
           <img src={ciraLogo} alt="Cira" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </div>
 
-        {/* Subscribe label */}
         <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-3">
-          Subscribe to {planName}
+          {t("paymentSuccess.subscribeTo", { plan: planName })}
         </p>
 
-        {/* Big price */}
         <div className="flex items-end gap-1.5 mb-1">
           <span className="text-5xl font-bold text-foreground tracking-tight">{displaySubtotal}</span>
-          <span className="text-sm text-muted-foreground mb-2">per month</span>
+          <span className="text-sm text-muted-foreground mb-2">{t("paymentSuccess.perMonth")}</span>
         </div>
-        <p className="text-xs text-muted-foreground mb-10">Billed monthly · Renews {nextBilling}</p>
+        <p className="text-xs text-muted-foreground mb-10">{t("paymentSuccess.billedMonthlyRenews", { date: nextBilling })}</p>
 
-        {/* Plan icon + name row */}
         <div className="flex items-center gap-3 mb-10">
           <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${meta?.color} flex items-center justify-center shrink-0`}>
             <PlanIcon size={18} className={meta?.iconColor} />
           </div>
           <div>
             <p className="text-sm font-medium text-foreground capitalize">{planName}</p>
-            <p className="text-xs text-muted-foreground">Billed monthly</p>
+            <p className="text-xs text-muted-foreground">{t("paymentSuccess.billedMonthly")}</p>
           </div>
           <span className="ml-auto text-sm font-medium text-foreground">{displaySubtotal}</span>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-border/40" />
 
-        {/* Line items */}
         <div className="mt-4 space-y-3 text-sm">
           {displayTax && (
             <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Tax</span>
+              <span className="text-muted-foreground">{t("paymentSuccess.tax")}</span>
               <span className="font-medium text-foreground">{displayTax}</span>
             </div>
           )}
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Total paid today</span>
+            <span className="text-muted-foreground">{t("paymentSuccess.totalPaid")}</span>
             <span className="font-semibold text-foreground">{displayTotal}</span>
           </div>
         </div>
 
-        {/* Footer note */}
         <p className="text-[10px] text-muted-foreground mt-auto pt-10 leading-relaxed">
-          A payment to Cira will appear on your bank statement. Subscription renews automatically. Cancel anytime from your account.
+          {t("paymentSuccess.statementFootnote")}
         </p>
       </div>
 
-      {/* ── Right panel: Success message ───────────────────────────────────────── */}
       <div className="flex-1 h-full flex flex-col items-center justify-center px-14 py-12 bg-background overflow-hidden">
         <div className="w-full max-w-sm">
-          {/* Checkmark */}
           <div className="flex justify-center mb-5">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
               <CheckCircle2 size={34} className="text-emerald-500" strokeWidth={1.8} />
@@ -232,22 +220,21 @@ const PaymentSuccess = () => {
           </div>
 
           <h1 className="text-2xl font-bold text-foreground text-center mb-1">
-            Thanks for subscribing!
+            {t("paymentSuccess.thanksTitle")}
           </h1>
           <p className="text-sm text-muted-foreground text-center mb-7">
-            A payment to <span className="font-medium text-foreground">Cira </span> will appear on your statement.
+            {t("paymentSuccess.thanksBody")}
           </p>
 
-          {/* Info box */}
           <div className="border border-border/50 rounded-xl divide-y divide-border/40 mb-8 text-sm">
             {user?.email && (
               <div className="px-4 py-3.5">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Contact information</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t("paymentSuccess.contactInfo")}</p>
                 <p className="text-foreground font-medium">{user.email}</p>
               </div>
             )}
             <div className="px-4 py-3.5">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Credits allocated</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t("paymentSuccess.creditsAllocated")}</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs text-foreground">
                   <Scan size={13} className="text-primary shrink-0" />{meta?.scans}
@@ -261,27 +248,26 @@ const PaymentSuccess = () => {
               </div>
             </div>
             <div className="px-4 py-3.5">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Next billing date</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t("paymentSuccess.nextBillingDate")}</p>
               <p className="text-foreground font-medium">{nextBilling}</p>
             </div>
           </div>
 
-          {/* Actions */}
           <button
             onClick={() => navigate("/dashboard")}
             className="w-full h-11 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all mb-3"
           >
-            Go to Dashboard
+            {t("paymentSuccess.goToDashboard")}
           </button>
           <button
             onClick={() => navigate("/upgrade")}
             className="w-full h-10 rounded-xl border border-border/60 text-sm text-muted-foreground hover:bg-accent transition-all"
           >
-            View Plan Details
+            {t("paymentSuccess.viewPlan")}
           </button>
 
           <p className="text-center text-[11px] text-muted-foreground mt-6">
-            Need help?{" "}
+            {t("paymentSuccess.needHelp")}{" "}
             <a href="mailto:support@askainurse.com" className="text-primary hover:underline">
               support@askainurse.com
             </a>
