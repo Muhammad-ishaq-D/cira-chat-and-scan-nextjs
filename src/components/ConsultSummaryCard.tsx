@@ -179,7 +179,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
             </div>
             <div>
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                What to Do Next
+                {t("components.consultSummary.whatToDoNext")}
               </p>
               <div className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                 {formatText(data.self_care_advice)}
