@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
 import { adminApi, billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
