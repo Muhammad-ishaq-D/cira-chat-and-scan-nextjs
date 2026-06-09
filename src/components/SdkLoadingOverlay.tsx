@@ -205,7 +205,7 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {net.online ? <Wifi size={13} className="text-white/60" /> : <WifiOff size={13} className="text-red-400" />}
-            <span className="text-[11px] text-white/60 font-medium">Network</span>
+            <span className="text-[11px] text-white/60 font-medium">{t("components.sdkLoading.network")}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full ${quality.dot} animate-pulse`} />
