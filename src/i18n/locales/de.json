@@ -1492,6 +1492,10 @@
       "qualityGood": "Gut",
       "qualitySlow": "Langsam",
       "qualityStable": "Stabil"
+    },
+    "sessionExpired": {
+      "title": "Sitzung abgelaufen",
+      "description": "Du wurdest wegen Inaktivität zu deinem Schutz abgemeldet."
     }
   }
 }
