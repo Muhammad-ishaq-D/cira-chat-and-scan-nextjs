@@ -82,11 +82,11 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                     </div>
 
                     <div>
-                        <p className="text-sm font-medium font-body text-foreground mb-3">Additional feedback <span className="text-muted-foreground/60">(optional)</span></p>
+                        <p className="text-sm font-medium font-body text-foreground mb-3">{t("components.rating.feedbackLabel")} <span className="text-muted-foreground/60">{t("components.rating.optional")}</span></p>
                         <textarea
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            placeholder="Tell us what helped today and what we can improve next time"
+                            placeholder={t("components.rating.placeholder")}
                             className="w-full h-32 px-4 py-3 rounded-2xl bg-muted/50 border border-border text-sm font-body outline-none focus:border-primary transition-colors resize-none placeholder:text-muted-foreground/40"
                         />
                     </div>
