@@ -275,7 +275,7 @@ const Reports = () => {
                             <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
                               <span className="flex items-center gap-1"><Calendar size={12} />{report.date || report.created_at}</span>
                               {report.size && <span>{report.size}</span>}
-                              <span className="text-emerald-600 font-medium">{report.status || "Ready"}</span>
+                              <span className="text-emerald-600 font-medium">{report.status || t("reports.card.ready")}</span>
                             </div>
                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
