@@ -195,7 +195,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
           <div className="flex items-center gap-1.5">
             <AlertTriangle size={10} className="text-amber-500" />
             <p className="text-[9px] text-amber-700">
-              AI triage — not a diagnosis. Always consult a licensed healthcare provider.
+              {t("components.consultSummary.disclaimer")}
             </p>
           </div>
         </div>
