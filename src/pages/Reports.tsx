@@ -235,7 +235,7 @@ const Reports = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search reports..."
+                    placeholder={t("reports.searchPlaceholder")}
                     className="w-full h-10 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                     style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                   />
