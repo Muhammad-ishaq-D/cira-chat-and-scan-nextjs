@@ -182,8 +182,8 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
       <h2 className="text-white text-lg font-heading font-semibold mb-1">{phase}</h2>
       <p className="text-white/50 text-xs font-body mb-5">
         {status === "loading" && progress < 100
-          ? "First-time setup downloads ~10MB · then cached"
-          : "Setting up secure camera · Please wait"}
+          ? t("components.sdkLoading.firstTime")
+          : t("components.sdkLoading.settingUp")}
       </p>
 
       {/* Progress bar */}
