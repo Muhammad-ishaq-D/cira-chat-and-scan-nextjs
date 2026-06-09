@@ -192,9 +192,9 @@ const Reports = () => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-              Reports
+              {t("reports.title")}
             </h1>
-            <p className="text-sm text-muted-foreground font-body">View, download, and manage your health reports</p>
+            <p className="text-sm text-muted-foreground font-body">{t("reports.subtitle")}</p>
           </div>
 
           {/* Tabs */}
@@ -208,7 +208,7 @@ const Reports = () => {
               }`}
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              Assessments
+              {t("reports.tabs.assessments")}
               {reports.length > 0 && <span className="ml-1.5 text-xs opacity-70">{reports.length}</span>}
             </button>
             <button
@@ -220,7 +220,7 @@ const Reports = () => {
               }`}
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              Vital Scans
+              {t("reports.tabs.scans")}
               {scans.length > 0 && <span className="ml-1.5 text-xs opacity-70">{scans.length}</span>}
             </button>
           </div>
