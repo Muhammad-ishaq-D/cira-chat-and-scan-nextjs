@@ -116,7 +116,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
               <Crown size={14} className="text-amber-600" />
             </div>
-            <span className="text-xs font-medium text-foreground flex-1 text-left">Upgrade Plan</span>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">{t("profilePopover.upgradePlan")}</span>
             <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
           <button
