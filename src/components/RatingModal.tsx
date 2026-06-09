@@ -103,7 +103,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                             disabled={isSubmitting || rating === 0}
                             className="flex-1 py-3.5 rounded-2xl bg-[#007EA7] text-white text-sm font-medium font-body hover:opacity-90 transition-all disabled:opacity-50 disabled:grayscale"
                         >
-                            {isSubmitting ? "Submitting..." : "Rate"}
+                            {isSubmitting ? t("components.rating.submitting") : t("components.rating.submit")}
                         </button>
                     </div>
                 </div>
