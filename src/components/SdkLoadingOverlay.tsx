@@ -234,12 +234,12 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
 
       <div className="flex items-center gap-1.5 mt-5">
         <AlertCircle size={10} className="text-white/30 shrink-0" />
-        <p className="text-[10px] text-white/30">Credits deducted upon scan · 100% on-device</p>
+        <p className="text-[10px] text-white/30">{t("components.sdkLoading.creditsNote")}</p>
       </div>
 
       {!net.online && (
         <div className="mt-3 flex items-center gap-1.5 text-[11px] text-red-400">
-          <Gauge size={12} /> No connection — engine download paused
+          <Gauge size={12} /> {t("components.sdkLoading.noConnection")}
         </div>
       )}
     </div>
