@@ -1,14 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, ScanFace, FileText, UserRound, Sparkles } from "lucide-react";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ProfilePopover from "@/components/ProfilePopover";
 import { isAuthenticated } from "@/lib/auth";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home", path: "/dashboard" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat", path: "/chat" },
-  { icon: ScanFace, label: "Scan", id: "scan", path: "/vitals-scan" },
-  { icon: FileText, label: "Reports", id: "reports", path: "/reports" },
+  { icon: Home, tKey: "dashboard.nav.home", id: "home", path: "/dashboard" },
+  { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat", path: "/chat" },
+  { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan", path: "/vitals-scan" },
+  { icon: FileText, tKey: "dashboard.nav.reports", id: "reports", path: "/reports" },
 ];
 
 const routeToId: Record<string, string> = {
