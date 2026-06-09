@@ -25,6 +25,7 @@ const readStoredUser = (): any => {
 };
 
 const AirDoctorButton = () => {
+  const { t } = useTranslation();
   const handleClick = () => {
     const user = readStoredUser();
     const deviceId = getDeviceId();
