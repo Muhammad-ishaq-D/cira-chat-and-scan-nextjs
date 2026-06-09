@@ -135,12 +135,12 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
         <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 border-2 border-amber-500/30">
           <WifiOff size={24} className="text-amber-400" />
         </div>
-        <h2 className="text-white text-lg font-heading font-semibold mb-1">Connection issue</h2>
+        <h2 className="text-white text-lg font-heading font-semibold mb-1">{t("components.sdkLoading.connectionIssue")}</h2>
         <p className="text-white/60 text-xs font-body mb-1 max-w-xs">
-          The scanner engine is taking longer than expected to download.
+          {t("components.sdkLoading.takingLonger")}
         </p>
         <p className="text-white/40 text-[11px] font-body mb-5 max-w-xs">
-          Please check your internet connection and try again.
+          {t("components.sdkLoading.checkConnection")}
         </p>
 
         <div className="w-full max-w-xs bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 backdrop-blur-sm mb-5">
@@ -148,11 +148,11 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
             <div className="flex items-center gap-2">
               {net.online ? <Wifi size={13} className="text-white/60" /> : <WifiOff size={13} className="text-red-400" />}
               <span className="text-[11px] text-white/60 font-medium">
-                {net.online ? "Online" : "Offline"}
+                {net.online ? t("components.sdkLoading.online") : t("components.sdkLoading.offline")}
               </span>
             </div>
             <span className="text-[11px] text-white/60 tabular-nums">
-              {ping != null ? `${ping}ms` : "no response"}
+              {ping != null ? `${ping}ms` : t("components.sdkLoading.noResponse")}
             </span>
           </div>
         </div>
@@ -161,9 +161,9 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
           onClick={handleRetry}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
-          <RefreshCw size={14} /> Retry
+          <RefreshCw size={14} /> {t("components.sdkLoading.retry")}
         </button>
-        <p className="text-[10px] text-white/30 mt-4">Stuck at {displayed}% · waited 20s+</p>
+        <p className="text-[10px] text-white/30 mt-4">{t("components.sdkLoading.stuckAt", { percent: displayed })}</p>
       </div>
     );
   }
