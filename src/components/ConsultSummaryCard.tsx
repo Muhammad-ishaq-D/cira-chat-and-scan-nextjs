@@ -97,6 +97,7 @@ interface Props {
 }
 
 const ConsultSummaryCard = ({ data }: Props) => {
+  const { t } = useTranslation();
   const confidenceColor =
     data.confidence_score >= 85
       ? "text-emerald-600 bg-emerald-50"
@@ -106,9 +107,9 @@ const ConsultSummaryCard = ({ data }: Props) => {
 
   const urgencyLevel = data.confidence_score >= 80 ? "high" : data.confidence_score >= 50 ? "moderate" : "low";
   const urgencyConfig = {
-    high: { label: "Clear Finding", bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700" },
-    moderate: { label: "Needs Attention", bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
-    low: { label: "Uncertain", bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
+    high: { label: t("components.consultSummary.clearFinding"), bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700" },
+    moderate: { label: t("components.consultSummary.needsAttention"), bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
+    low: { label: t("components.consultSummary.uncertain"), bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
   };
   const urgency = urgencyConfig[urgencyLevel];
 
