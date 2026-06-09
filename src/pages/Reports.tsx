@@ -67,16 +67,16 @@ const Reports = () => {
 
   const handleDownload = async (report: any) => {
     if (isBasicPlan) {
-      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
       return;
     }
     try {
       await downloadReportPdf(report);
       logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
-      toast.success("PDF downloaded");
+      toast.success(t("reports.toast.pdfDownloaded"));
     } catch (e) {
       console.error("PDF generation failed:", e);
-      toast.error("Failed to generate PDF");
+      toast.error(t("reports.toast.pdfFailed"));
     }
   };
 
@@ -99,21 +99,21 @@ const Reports = () => {
 
   const handleDownloadCombined = async () => {
     if (isBasicPlan) {
-      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
       return;
     }
     const selected = scans.filter(s => selectedScans.has(s.id || s._id));
     if (selected.length === 0) {
-      toast.error("Select at least one scan");
+      toast.error(t("reports.toast.selectScan"));
       return;
     }
     try {
       await downloadCombinedScansPdf(selected);
       logAuditEvent("DOWNLOAD_COMBINED_SCANS_PDF", Array.from(selectedScans).join(","));
-      toast.success(`Combined report (${selected.length} scans) downloaded`);
+      toast.success(t("reports.toast.combinedDownloaded", { count: selected.length }));
     } catch (e) {
       console.error("Combined PDF failed:", e);
-      toast.error("Failed to generate PDF");
+      toast.error(t("reports.toast.pdfFailed"));
     }
   };
 
@@ -121,7 +121,7 @@ const Reports = () => {
     if (!d) return "N/A";
     try {
       const date = new Date(d);
-      if (!isNaN(date.getTime())) return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
+      if (!isNaN(date.getTime())) return date.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
     } catch {}
     return d;
   };
