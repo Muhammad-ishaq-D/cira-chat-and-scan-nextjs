@@ -81,13 +81,13 @@ const DetailedReportCard = ({ data }: Props) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                Detailed Health Assessment
+                {t("components.detailedReport.title")}
               </p>
-              <p className="text-[9px] text-muted-foreground">Comprehensive AI Clinical Report</p>
+              <p className="text-[9px] text-muted-foreground">{t("components.detailedReport.subtitle")}</p>
             </div>
             <div className="flex items-center gap-1.5">
               <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${severity.color}`}>
-                {severity.label}
+                {t(severity.labelKey)}
               </span>
               <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${confidenceColor}`}>
                 {data.confidence_score}%
