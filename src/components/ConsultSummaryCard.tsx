@@ -149,7 +149,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
         {/* Possible Conditions */}
         <div className="px-4 pb-3 pt-2">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            Possible Conditions
+            {t("components.consultSummary.possibleConditions")}
           </p>
           <div className="space-y-2">
             {data.possible_conditions.map((cond, i) => (
