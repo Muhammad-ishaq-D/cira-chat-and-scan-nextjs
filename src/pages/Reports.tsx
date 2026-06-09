@@ -435,21 +435,21 @@ const Reports = () => {
                           <button
                             onClick={async () => {
                               if (isBasicPlan) {
-                                toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+                                toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
                                 return;
                               }
                               try {
                                 await downloadSingleScanPdf(scan);
                                 logAuditEvent("DOWNLOAD_SINGLE_SCAN_PDF", scanId);
-                                toast.success("Scan PDF downloaded");
+                                toast.success(t("reports.toast.scanPdfDownloaded"));
                               } catch {
-                                toast.error("Failed to generate PDF");
+                                toast.error(t("reports.toast.pdfFailed"));
                               }
                             }}
                             className={`shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100 ${isBasicPlan ? "text-muted-foreground" : "text-foreground hover:bg-accent"}`}
                           >
                             {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                            <span className="hidden sm:inline">{isBasicPlan ? "Pro" : "PDF"}</span>
+                            <span className="hidden sm:inline">{isBasicPlan ? t("reports.card.pro") : t("reports.card.pdf")}</span>
                           </button>
                         </div>
                       </div>
