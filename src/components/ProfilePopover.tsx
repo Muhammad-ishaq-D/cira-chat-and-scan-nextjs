@@ -58,13 +58,13 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">{plan} Plan</span>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">{plan} {t("profilePopover.planSuffix")}</span>
           </div>
         </div>
 
         {/* Credits */}
         <div className="p-4 space-y-3 border-b border-border/40">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Credits</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("profilePopover.credits")}</p>
           {loading ? (
             <div className="flex justify-center py-2"><Loader2 size={16} className="animate-spin text-muted-foreground" /></div>
           ) : (
