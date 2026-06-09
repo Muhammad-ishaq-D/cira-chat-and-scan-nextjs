@@ -249,8 +249,8 @@ const Reports = () => {
               ) : filteredReports.length === 0 ? (
                 <div className="text-center py-16">
                   <FileText size={40} className="text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-sm text-muted-foreground">No reports found</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Complete a detailed assessment to generate your first report</p>
+                  <p className="text-sm text-muted-foreground">{t("reports.empty.reportsTitle")}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">{t("reports.empty.reportsSub")}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
