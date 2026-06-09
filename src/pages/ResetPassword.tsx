@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { resetPassword } from "@/lib/auth";
 import { toast } from "sonner";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [otp, setOtp] = useState("");
@@ -17,22 +19,22 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error(t("resetPassword.errors.passwordMin"));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("resetPassword.errors.passwordMismatch"));
       return;
     }
 
     setLoading(true);
     try {
       await resetPassword(email.trim(), otp, newPassword);
-      toast.success("Password reset successfully! Please sign in.");
+      toast.success(t("resetPassword.success"));
       navigate("/login");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Password reset failed");
+      toast.error(error instanceof Error ? error.message : t("resetPassword.errors.failed"));
     } finally {
       setLoading(false);
     }
@@ -47,10 +49,10 @@ const ResetPassword = () => {
         </div>
 
         <h1 className="font-heading text-2xl font-semibold text-foreground text-center mb-2">
-          Reset password
+          {t("resetPassword.title")}
         </h1>
         <p className="text-sm text-muted-foreground text-center font-body mb-8">
-          Enter the code from your email and your new password
+          {t("resetPassword.subtitle")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -58,7 +60,7 @@ const ResetPassword = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            placeholder={t("resetPassword.emailPlaceholder")}
             autoComplete="email"
             className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
             required
@@ -67,7 +69,7 @@ const ResetPassword = () => {
             type="text"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            placeholder="Enter 6-digit code"
+            placeholder={t("resetPassword.otpPlaceholder")}
             maxLength={6}
             className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm text-center tracking-[0.3em] outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground placeholder:tracking-normal"
             required
@@ -76,7 +78,7 @@ const ResetPassword = () => {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="New password"
+            placeholder={t("resetPassword.newPassword")}
             autoComplete="new-password"
             className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
             required
@@ -85,7 +87,7 @@ const ResetPassword = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm new password"
+            placeholder={t("resetPassword.confirmPassword")}
             autoComplete="new-password"
             className="w-full py-3 px-4 rounded-xl border border-border bg-card text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground"
             required
@@ -95,7 +97,7 @@ const ResetPassword = () => {
             disabled={loading}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {loading ? "Resetting..." : "Reset password"}
+            {loading ? t("resetPassword.resetting") : t("resetPassword.reset")}
           </button>
         </form>
 
@@ -104,7 +106,7 @@ const ResetPassword = () => {
           onClick={() => navigate("/login")}
           className="w-full text-xs text-muted-foreground hover:text-foreground font-body transition-colors mt-4"
         >
-          Back to sign in
+          {t("resetPassword.backToSignIn")}
         </button>
       </div>
     </div>
