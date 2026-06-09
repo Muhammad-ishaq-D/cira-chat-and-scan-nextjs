@@ -30,6 +30,7 @@ function readConnection(): NetInfo {
 }
 
 const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
+  const { t } = useTranslation();
   const [net, setNet] = useState<NetInfo>(() => readConnection());
   const [ping, setPing] = useState<number | null>(null);
   const [displayed, setDisplayed] = useState(0);
