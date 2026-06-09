@@ -157,7 +157,7 @@ const AdminBilling = () => {
                         tx.status === "refunded" ? "bg-blue-50 text-blue-700" :
                         "bg-muted text-muted-foreground"
                       }`}>
-                        {tx.status ? t(`admin.billing.${tx.status === "completed" ? "success" : tx.status}`, tx.status) : "—"}
+                        {tx.status ? (t(`admin.billing.${tx.status === "completed" ? "success" : tx.status}`, { defaultValue: tx.status }) as string) : "—"}
                       </span>
                     </td>
                     <td className="py-2.5 text-muted-foreground">
