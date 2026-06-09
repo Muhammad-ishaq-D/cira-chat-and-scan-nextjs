@@ -799,14 +799,14 @@ const Index = () => {
           </div>
 
           <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-            <p>{t("footer.copyright")}</p>
-            <div className="flex flex-col md:flex-row items-center gap-3">
+            <div className="flex items-center gap-4">
+              <p>{t("footer.copyright")}</p>
               <LanguageSwitcher />
-              <p className="text-center md:text-right">
-                {t("footer.disclaimerLine")}{" "}
-                <span className="italic">{t("footer.disclaimer")}</span>
-              </p>
             </div>
+            <p className="text-center md:text-right">
+              {t("footer.disclaimerLine")}{" "}
+              <span className="italic">{t("footer.disclaimer")}</span>
+            </p>
           </div>
         </div>
       </footer>
