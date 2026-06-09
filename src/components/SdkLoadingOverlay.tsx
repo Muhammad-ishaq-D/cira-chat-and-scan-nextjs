@@ -189,7 +189,7 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
       {/* Progress bar */}
       <div className="w-full max-w-xs mb-5">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] uppercase tracking-wider text-white/40 font-medium">Engine</span>
+          <span className="text-[11px] uppercase tracking-wider text-white/40 font-medium">{t("components.sdkLoading.engine")}</span>
           <span className="text-[11px] font-semibold text-white/80 tabular-nums">{shown}%</span>
         </div>
         <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
