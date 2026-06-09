@@ -288,14 +288,14 @@ const Reports = () => {
                                 }}
                                 className="h-8 px-3 rounded-lg border border-border/60 text-xs font-medium text-foreground hover:bg-accent transition-all flex items-center gap-1.5"
                               >
-                                <Eye size={13} />Preview
+                                <Eye size={13} />{t("reports.card.preview")}
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
                                 className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
                                 {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                                {isBasicPlan ? "Upgrade to Download" : "Download"}
+                                {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.download")}
                               </button>
                             </div>
                           </div>
