@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Download, Receipt, CheckCircle2, Clock, XCircle,
   Loader2, AlertTriangle, RotateCcw, Ban
@@ -22,19 +23,20 @@ const statusStyle = (status: string) => {
   return "text-red-600 bg-red-50";
 };
 
-const formatDate = (dateStr: string | null | undefined) => {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-};
-
 const PaymentHistory = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [payments, setPayments] = useState<any[]>([]);
   const [subscription, setSubscription] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString(i18n.language, { year: "numeric", month: "short", day: "numeric" });
+  };
 
   const load = async () => {
     try {
@@ -47,7 +49,7 @@ const PaymentHistory = () => {
       }
       if (subData.status === "fulfilled") setSubscription(subData.value);
     } catch {
-      toast.error("Failed to load payment history");
+      toast.error(t("paymentHistory.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -56,14 +58,14 @@ const PaymentHistory = () => {
   useEffect(() => { load(); }, []);
 
   const handleCancel = async () => {
-    if (!confirm("Are you sure you want to cancel your subscription? You'll keep access until the end of your billing period.")) return;
+    if (!confirm(t("paymentHistory.confirmCancel"))) return;
     setActionLoading(true);
     try {
       await billingApi.cancelSubscription();
-      toast.success("Subscription will cancel at the end of your billing period");
+      toast.success(t("paymentHistory.toast.willCancel"));
       await load();
     } catch (e: any) {
-      toast.error(e.message || "Failed to cancel subscription");
+      toast.error(e.message || t("paymentHistory.toast.cancelFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -73,10 +75,10 @@ const PaymentHistory = () => {
     setActionLoading(true);
     try {
       await billingApi.reactivateSubscription();
-      toast.success("Subscription reactivated — it will continue renewing automatically");
+      toast.success(t("paymentHistory.toast.reactivated"));
       await load();
     } catch (e: any) {
-      toast.error(e.message || "Failed to reactivate subscription");
+      toast.error(e.message || t("paymentHistory.toast.reactivateFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -103,7 +105,7 @@ const PaymentHistory = () => {
       <div className="relative z-10 max-w-3xl mx-auto px-6 py-12">
         <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
           <ArrowLeft size={16} />
-          Back to Dashboard
+          {t("paymentHistory.back")}
         </button>
 
         <div className="flex items-center gap-3 mb-8">
@@ -111,8 +113,8 @@ const PaymentHistory = () => {
             <Receipt size={20} className="text-emerald-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Payment History</h1>
-            <p className="text-sm text-muted-foreground">View all your transactions and invoices</p>
+            <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("paymentHistory.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("paymentHistory.subtitle")}</p>
           </div>
         </div>
 
@@ -122,23 +124,22 @@ const PaymentHistory = () => {
           </div>
         ) : (
           <>
-            {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Current Plan</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t("paymentHistory.currentPlan")}</p>
                 <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                   {subscription?.plan_name || "Basic"}
                 </p>
               </div>
               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Spent</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t("paymentHistory.totalSpent")}</p>
                 <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                   ${totalSpent.toFixed(2)}
                 </p>
               </div>
               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  {cancelAtPeriodEnd ? "Cancels On" : "Next Billing"}
+                  {cancelAtPeriodEnd ? t("paymentHistory.cancelsOn") : t("paymentHistory.nextBilling")}
                 </p>
                 <p className={`text-lg font-semibold ${cancelAtPeriodEnd ? "text-amber-600" : "text-foreground"}`} style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                   {formatDate(periodEnd)}
@@ -146,14 +147,13 @@ const PaymentHistory = () => {
               </div>
             </div>
 
-            {/* Cancellation banner */}
             {cancelAtPeriodEnd && (
               <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-6">
                 <AlertTriangle size={18} className="text-amber-500 mt-0.5 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-amber-800">Subscription cancellation scheduled</p>
+                  <p className="text-sm font-medium text-amber-800">{t("paymentHistory.cancelScheduledTitle")}</p>
                   <p className="text-xs text-amber-700 mt-0.5">
-                    Your {subscription?.plan_name} plan will end on <strong>{formatDate(periodEnd)}</strong>. You have full access until then.
+                    {t("paymentHistory.cancelScheduledBody", { plan: subscription?.plan_name, date: formatDate(periodEnd) })}
                   </p>
                 </div>
                 <button
@@ -162,17 +162,16 @@ const PaymentHistory = () => {
                   className="flex items-center gap-1.5 text-xs font-medium text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 shrink-0"
                 >
                   {actionLoading ? <Loader2 size={12} className="animate-spin" /> : <RotateCcw size={12} />}
-                  Undo
+                  {t("paymentHistory.undo")}
                 </button>
               </div>
             )}
 
-            {/* Subscription management */}
             {!isBasicPlan && !cancelAtPeriodEnd && (
               <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl px-5 py-4 mb-6">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Manage Subscription</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Your plan renews on {formatDate(periodEnd)}</p>
+                  <p className="text-sm font-medium text-foreground">{t("paymentHistory.manageSubscription")}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{t("paymentHistory.renewsOn", { date: formatDate(periodEnd) })}</p>
                 </div>
                 <button
                   onClick={handleCancel}
@@ -180,19 +179,18 @@ const PaymentHistory = () => {
                   className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                 >
                   {actionLoading ? <Loader2 size={12} className="animate-spin" /> : <Ban size={12} />}
-                  Cancel Plan
+                  {t("paymentHistory.cancelPlan")}
                 </button>
               </div>
             )}
 
-            {/* Transactions */}
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
               <div className="px-5 py-3 border-b border-border/40">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Transactions</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("paymentHistory.transactions")}</p>
               </div>
               {payments.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-sm text-muted-foreground">No transactions yet</p>
+                  <p className="text-sm text-muted-foreground">{t("paymentHistory.noTransactions")}</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border/30">
