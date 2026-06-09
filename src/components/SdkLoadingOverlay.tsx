@@ -214,17 +214,17 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
         </div>
         <div className="mt-2 grid grid-cols-3 gap-2 text-center">
           <div>
-            <p className="text-[9px] uppercase tracking-wider text-white/40">Type</p>
+            <p className="text-[9px] uppercase tracking-wider text-white/40">{t("components.sdkLoading.type")}</p>
             <p className="text-[11px] text-white/80 font-semibold tabular-nums">{net.effectiveType?.toUpperCase() ?? "—"}</p>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-wider text-white/40">Speed</p>
+            <p className="text-[9px] uppercase tracking-wider text-white/40">{t("components.sdkLoading.speed")}</p>
             <p className="text-[11px] text-white/80 font-semibold tabular-nums">
               {net.downlink != null ? `${net.downlink.toFixed(1)} Mb` : "—"}
             </p>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-wider text-white/40">Ping</p>
+            <p className="text-[9px] uppercase tracking-wider text-white/40">{t("components.sdkLoading.ping")}</p>
             <p className="text-[11px] text-white/80 font-semibold tabular-nums">
               {ping != null ? `${ping}ms` : net.rtt ? `${net.rtt}ms` : "—"}
             </p>
