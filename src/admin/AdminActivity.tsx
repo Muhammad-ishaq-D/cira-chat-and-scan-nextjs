@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Activity, Users, Eye, MousePointerClick, ScrollText, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, Filter, SortAsc, LayoutGrid, PieChart as PieChartIcon, ShieldCheck, RefreshCw } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, PieChart, Pie } from "recharts";
 import { adminApi } from "@/lib/apiClient";
@@ -84,6 +85,7 @@ const getEventColor = (type: string) => {
 };
 
 const AdminActivity = () => {
+  const { t, i18n } = useTranslation();
   const [tab, setTab] = useState<"sessions" | "aggregate" | "audit">("sessions");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [agg, setAgg] = useState<Aggregate | null>(null);
@@ -191,11 +193,11 @@ const AdminActivity = () => {
   };
 
   const aggCards = useMemo(() => ([
-    { label: "Active users (24h)", value: agg?.active_users_24h ?? "—", icon: Users, color: "text-blue-600 bg-blue-50/50" },
-    { label: "Sessions today", value: agg?.sessions_today ?? "—", icon: Activity, color: "text-emerald-600 bg-emerald-50/50" },
-    { label: "Total sessions", value: agg?.sessions_total ?? "—", icon: Eye, color: "text-purple-600 bg-purple-50/50" },
-    { label: "Avg session", value: fmtDuration(agg?.avg_duration_sec), icon: Clock, color: "text-orange-600 bg-orange-50/50" },
-  ]), [agg]);
+    { label: t("admin.activity.activeUsers24h"), value: agg?.active_users_24h ?? "—", icon: Users, color: "text-blue-600 bg-blue-50/50" },
+    { label: t("admin.activity.sessionsToday"), value: agg?.sessions_today ?? "—", icon: Activity, color: "text-emerald-600 bg-emerald-50/50" },
+    { label: t("admin.activity.totalSessions"), value: agg?.sessions_total ?? "—", icon: Eye, color: "text-purple-600 bg-purple-50/50" },
+    { label: t("admin.activity.avgSession"), value: fmtDuration(agg?.avg_duration_sec), icon: Clock, color: "text-orange-600 bg-orange-50/50" },
+  ]), [agg, t]);
 
   const filteredSessions = useMemo(() => {
     let list = [...sessions];
@@ -264,22 +266,22 @@ const AdminActivity = () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center"><Activity size={18} className="text-primary" /></div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>User Activity</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>{t("admin.activity.title")}</h1>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest pl-10">Real-time engagement intelligence</p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest pl-10">{t("admin.activity.subtitle")}</p>
         </div>
 
         <div className="flex items-center gap-2 bg-card/50 backdrop-blur-md border border-border/50 rounded-2xl p-1 shadow-sm">
-          {(["sessions", "aggregate", "audit"] as const).map((t) => {
-            let label = "Live Sessions";
+          {(["sessions", "aggregate", "audit"] as const).map((tb) => {
+            let label = t("admin.activity.liveSessions");
             let Icon = Users;
-            if (t === "aggregate") { label = "Analytics"; Icon = LayoutGrid; }
-            else if (t === "audit") { label = "HIPAA Audit Trail"; Icon = ShieldCheck; }
+            if (tb === "aggregate") { label = t("admin.activity.analytics"); Icon = LayoutGrid; }
+            else if (tb === "audit") { label = t("admin.activity.hipaa"); Icon = ShieldCheck; }
             return (
               <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === t ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
+                key={tb}
+                onClick={() => setTab(tb)}
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === tb ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
               >
                 <Icon size={14} />
                 {label}
@@ -298,7 +300,7 @@ const AdminActivity = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loadSessions()}
-                placeholder="Search sessions..."
+                placeholder={t("admin.activity.searchSessions")}
                 className="w-full pl-9 pr-3 py-2 text-sm bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
@@ -327,16 +329,16 @@ const AdminActivity = () => {
                 onChange={(e) => setUserFilter(e.target.value)}
                 className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
-                <option value="all">All Users</option>
-                <option value="member">Members</option>
-                <option value="guest">Guests</option>
+                <option value="all">{t("admin.activity.allUsers")}</option>
+                <option value="member">{t("admin.activity.members")}</option>
+                <option value="guest">{t("admin.activity.guests")}</option>
               </select>
 
               <button
                 onClick={() => setSortBy(s => s === "recent" ? "duration" : "recent")}
                 className="flex items-center gap-2 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all font-medium"
               >
-                <SortAsc size={12} /> {sortBy === "recent" ? "Recent" : "Longest"}
+                <SortAsc size={12} /> {sortBy === "recent" ? t("admin.activity.recent") : t("admin.activity.longest")}
               </button>
             </div>
           </div>
@@ -346,13 +348,13 @@ const AdminActivity = () => {
             {loading ? (
               <div className="p-12 flex flex-col items-center justify-center gap-3">
                 <Loader2 className="animate-spin text-primary" size={32} />
-                <p className="text-xs text-muted-foreground animate-pulse">Syncing session data...</p>
+                <p className="text-xs text-muted-foreground animate-pulse">{t("admin.activity.syncing")}</p>
               </div>
             ) : filteredSessions.length === 0 ? (
               <div className="p-16 text-center">
                 <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><Search size={20} className="text-muted-foreground/50" /></div>
-                <p className="text-sm text-foreground font-semibold">No sessions found</p>
-                <p className="text-xs text-muted-foreground mt-1">Try adjusting your filters or search term.</p>
+                <p className="text-sm text-foreground font-semibold">{t("admin.activity.noSessions")}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("admin.activity.noSessionsHint")}</p>
               </div>
             ) : (
               <div className="divide-y divide-border/40 relative z-10">
@@ -376,14 +378,14 @@ const AdminActivity = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="text-sm font-bold text-foreground truncate group-hover/item:text-primary transition-colors">
-                            {s.user_name || s.user_email || "Anonymous Guest"}
+                            {s.user_name || s.user_email || t("admin.activity.guestSession")}
                           </p>
                           {s.user_id ? (
                             <div className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 text-[8px] font-bold uppercase tracking-wider flex items-center gap-0.5">
-                              <ShieldCheck size={8} /> Pro
+                              <ShieldCheck size={8} /> {t("admin.activity.pro")}
                             </div>
                           ) : (
-                            <div className="px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground text-[8px] font-bold uppercase tracking-wider">Free</div>
+                            <div className="px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground text-[8px] font-bold uppercase tracking-wider">{t("admin.activity.free")}</div>
                           )}
                         </div>
                         <div className="flex items-center gap-3">
@@ -395,7 +397,7 @@ const AdminActivity = () => {
                           </div>
                           <div className="w-1 h-1 rounded-full bg-border" />
                           <p className="text-[11px] text-muted-foreground/80 font-medium">
-                            <span className="text-foreground/70">{s.event_count ?? 0}</span> interactions
+                            <span className="text-foreground/70">{s.event_count ?? 0}</span> {t("admin.activity.interactions")}
                           </p>
                         </div>
                       </div>
@@ -404,7 +406,7 @@ const AdminActivity = () => {
                           <Clock size={10} className="text-primary/70" />
                           {fmtDuration(s.duration_sec)}
                         </div>
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Started {s.started_at ? new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}</p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">{t("admin.activity.startedAt", { time: s.started_at ? new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—" })}</p>
                       </div>
                       <div className="w-8 h-8 rounded-full flex items-center justify-center group-hover/item:bg-primary/10 transition-colors">
                         <ChevronRight size={16} className="text-muted-foreground/30 group-hover/item:text-primary transition-colors shrink-0" />
@@ -437,8 +439,8 @@ const AdminActivity = () => {
             <div className="xl:col-span-2 bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm relative overflow-hidden group/chart">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover/chart:opacity-100 transition-opacity" />
               <div className="flex items-center justify-between mb-6 relative z-10">
-                <h3 className="text-sm font-bold flex items-center gap-2"><Activity size={18} className="text-primary" /> Traffic Overview</h3>
-                <div className="text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1 bg-primary/10 text-primary rounded-md">Live Pulse</div>
+                <h3 className="text-sm font-bold flex items-center gap-2"><Activity size={18} className="text-primary" /> {t("admin.activity.trafficOverview")}</h3>
+                <div className="text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1 bg-primary/10 text-primary rounded-md">{t("admin.activity.livePulse")}</div>
               </div>
               <div className="h-[240px] w-full relative z-10">
                 <ResponsiveContainer width="100%" height="100%">
@@ -463,7 +465,7 @@ const AdminActivity = () => {
             </div>
 
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm flex flex-col">
-              <h3 className="text-sm font-bold mb-6 flex items-center gap-2"><PieChartIcon size={18} className="text-primary" /> Browser Mix</h3>
+              <h3 className="text-sm font-bold mb-6 flex items-center gap-2"><PieChartIcon size={18} className="text-primary" /> {t("admin.activity.browserMix")}</h3>
               <div className="flex-1 min-h-[220px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -484,7 +486,7 @@ const AdminActivity = () => {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                  <p className="text-[10px] text-muted-foreground leading-none font-medium mb-1 uppercase tracking-widest">Growth</p>
+                  <p className="text-[10px] text-muted-foreground leading-none font-medium mb-1 uppercase tracking-widest">{t("admin.activity.growth")}</p>
                   <p className="text-xl font-bold leading-none">+12%</p>
                 </div>
               </div>
@@ -501,7 +503,7 @@ const AdminActivity = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Eye size={16} className="text-primary" /> Most Visited Pages</h3>
+              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Eye size={16} className="text-primary" /> {t("admin.activity.mostVisited")}</h3>
               {agg?.top_pages?.length ? (
                 <div className="space-y-3">
                   {agg.top_pages.slice(0, 6).map((p, i) => (
@@ -524,11 +526,11 @@ const AdminActivity = () => {
                     </div>
                   ))}
                 </div>
-              ) : <p className="text-xs text-muted-foreground">No page data yet.</p>}
+              ) : <p className="text-xs text-muted-foreground">{t("admin.activity.noPages")}</p>}
             </div>
 
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><MousePointerClick size={16} className="text-primary" /> Top Events</h3>
+              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><MousePointerClick size={16} className="text-primary" /> {t("admin.activity.topEvents")}</h3>
               {agg?.top_events?.length ? (
                 <div className="space-y-3">
                   {agg.top_events.slice(0, 6).map((e, i) => {
@@ -554,13 +556,13 @@ const AdminActivity = () => {
                     );
                   })}
                 </div>
-              ) : <p className="text-xs text-muted-foreground">No event data yet.</p>}
+              ) : <p className="text-xs text-muted-foreground">{t("admin.activity.noEvents")}</p>}
             </div>
           </div>
 
           {agg?.funnel?.length ? (
             <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><ScrollText size={16} className="text-primary" /> Conversion Funnel</h3>
+              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><ScrollText size={16} className="text-primary" /> {t("admin.activity.conversionFunnel")}</h3>
               <div className="space-y-4 max-w-2xl">
                 {agg.funnel.map((f, i) => {
                   const max = agg.funnel![0]?.count || 1;
@@ -598,7 +600,7 @@ const AdminActivity = () => {
                 value={auditSearch}
                 onChange={(e) => setAuditSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loadAuditLogs()}
-                placeholder="Search audit trail by user, action..."
+                placeholder={t("admin.activity.searchAudit")}
                 className="w-full pl-9 pr-3 py-2 text-sm bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
@@ -607,7 +609,7 @@ const AdminActivity = () => {
               className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-xl px-4 py-2 text-xs font-bold transition-all"
             >
               <RefreshCw size={14} className={auditLoading ? "animate-spin" : ""} />
-              Refresh Logs
+              {t("admin.activity.refreshLogs")}
             </button>
           </div>
 
@@ -615,9 +617,9 @@ const AdminActivity = () => {
             <div className="p-4 border-b border-border/40 bg-card/55 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={18} className="text-primary" />
-                <h3 className="text-sm font-bold text-foreground">Official HIPAA Security Audit Trail</h3>
+                <h3 className="text-sm font-bold text-foreground">{t("admin.activity.auditTitle")}</h3>
               </div>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-widest border border-emerald-100">Active</span>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-widest border border-emerald-100">{t("admin.activity.activeBadge")}</span>
             </div>
 
             {auditLoading ? (
@@ -636,11 +638,11 @@ const AdminActivity = () => {
                 <table className="w-full border-collapse text-left">
                   <thead>
                     <tr className="border-b border-border/50 bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      <th className="p-4">User</th>
-                      <th className="p-4">Latest Action</th>
-                      <th className="p-4 text-center">Total Operations</th>
-                      <th className="p-4">Last Active</th>
-                      <th className="p-4 text-right">Actions</th>
+                      <th className="p-4">{t("admin.activity.colUser")}</th>
+                      <th className="p-4">{t("admin.activity.colLatest")}</th>
+                      <th className="p-4 text-center">{t("admin.activity.colOps")}</th>
+                      <th className="p-4">{t("admin.activity.colLastActive")}</th>
+                      <th className="p-4 text-right">{t("admin.activity.colActions")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/40 text-xs">
@@ -666,11 +668,11 @@ const AdminActivity = () => {
                           </td>
                           <td className="p-4 text-center">
                             <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-bold text-[10px]">
-                              {group.logs.length} operations
+                              {t("admin.activity.ops", { n: group.logs.length })}
                             </span>
                           </td>
                           <td className="p-4 text-muted-foreground">
-                            {new Date(group.latest_timestamp).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            {new Date(group.latest_timestamp).toLocaleString(i18n.language, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                           </td>
                           <td className="p-4 text-right">
                             <button
@@ -680,7 +682,7 @@ const AdminActivity = () => {
                               }}
                               className="px-3 py-1.5 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] hover:bg-primary/95 hover:shadow-sm active:scale-95 transition-all"
                             >
-                              View Action Trail
+                              {t("admin.activity.viewTrail")}
                             </button>
                           </td>
                         </tr>
@@ -701,9 +703,9 @@ const AdminActivity = () => {
           <div className="relative ml-auto w-full sm:max-w-lg h-full bg-background border-l border-border shadow-2xl flex flex-col">
             <div className="p-4 border-b border-border flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold truncate">{openSession.user_name || openSession.user_email || "Guest session"}</p>
-                <p className="text-[11px] text-muted-foreground truncate">Session {openSession.session_id}</p>
-                <p className="text-[11px] text-muted-foreground">{fmtDuration(openSession.duration_sec)} · {openSession.event_count ?? events.length} events</p>
+                <p className="text-sm font-semibold truncate">{openSession.user_name || openSession.user_email || t("admin.activity.guestSession")}</p>
+                <p className="text-[11px] text-muted-foreground truncate">{t("admin.activity.sessionId", { id: openSession.session_id })}</p>
+                <p className="text-[11px] text-muted-foreground">{t("admin.activity.eventsSummary", { dur: fmtDuration(openSession.duration_sec), n: openSession.event_count ?? events.length })}</p>
               </div>
               <button onClick={() => setOpenSession(null)} className="p-1 rounded hover:bg-accent"><X size={16} /></button>
             </div>
@@ -711,7 +713,7 @@ const AdminActivity = () => {
               {loadingEvents ? (
                 <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-muted-foreground" /></div>
               ) : events.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-20">No events recorded for this session.</p>
+                <p className="text-xs text-muted-foreground text-center py-20">{t("admin.activity.noSessionEvents")}</p>
               ) : (
                 <div className="relative border-l border-border/60 ml-3 space-y-8 pb-10">
                   {events.map((e, i) => {
@@ -746,7 +748,7 @@ const AdminActivity = () => {
                           {i === events.length - 1 && (
                             <div className="mt-4 flex items-center gap-1.5 text-[9px] font-bold text-rose-500 uppercase tracking-widest relative z-10">
                               <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                              Drop-off point
+                              {t("admin.activity.dropOff")}
                             </div>
                           )}
                         </div>
@@ -771,7 +773,7 @@ const AdminActivity = () => {
                   <span className="text-sm font-bold text-foreground truncate">{selectedUserMeta.name}</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground truncate">{selectedUserMeta.email}</p>
-                <p className="text-[10px] font-bold text-primary mt-1 uppercase tracking-wider">{selectedUserLogs.length} HIPAA audit records</p>
+                <p className="text-[10px] font-bold text-primary mt-1 uppercase tracking-wider">{t("admin.activity.auditRecords", { n: selectedUserLogs.length })}</p>
               </div>
               <button onClick={() => { setSelectedUserLogs(null); setSelectedUserMeta(null); }} className="p-1 rounded hover:bg-accent"><X size={16} /></button>
             </div>
@@ -808,19 +810,19 @@ const AdminActivity = () => {
                           <div className="text-[11px] text-muted-foreground space-y-1.5 mt-1">
                             {log.record_id && (
                               <div className="flex items-start gap-1">
-                                <span className="font-semibold text-foreground shrink-0">Record ID:</span>
+                                <span className="font-semibold text-foreground shrink-0">{t("admin.activity.recordId")}</span>
                                 <span className="font-mono text-[10px] break-all">{log.record_id}</span>
                               </div>
                             )}
                             {log.ip_address && (
                               <div className="flex items-center gap-1">
-                                <span className="font-semibold text-foreground">IP Address:</span>
+                                <span className="font-semibold text-foreground">{t("admin.activity.ipAddress")}</span>
                                 <span className="font-mono text-[10px]">{log.ip_address}</span>
                               </div>
                             )}
                             <div className="flex items-center gap-1">
-                              <span className="font-semibold text-foreground">Date:</span>
-                              <span>{new Date(log.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                              <span className="font-semibold text-foreground">{t("admin.activity.date")}</span>
+                              <span>{new Date(log.timestamp).toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" })}</span>
                             </div>
                           </div>
                         </div>
