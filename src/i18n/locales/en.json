@@ -1492,6 +1492,10 @@
       "qualityGood": "Good",
       "qualitySlow": "Slow",
       "qualityStable": "Stable"
+    },
+    "sessionExpired": {
+      "title": "Session Expired",
+      "description": "You have been logged out due to inactivity for your protection."
     }
   }
 }

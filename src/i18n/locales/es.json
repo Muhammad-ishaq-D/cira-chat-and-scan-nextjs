@@ -1492,6 +1492,10 @@
       "qualityGood": "Buena",
       "qualitySlow": "Lenta",
       "qualityStable": "Estable"
+    },
+    "sessionExpired": {
+      "title": "Sesión expirada",
+      "description": "Se ha cerrado tu sesión por inactividad para tu protección."
     }
   }
 }

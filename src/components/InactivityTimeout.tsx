@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { logout, isAuthenticated } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
