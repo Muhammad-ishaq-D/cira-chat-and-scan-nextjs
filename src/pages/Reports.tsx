@@ -267,7 +267,7 @@ const Reports = () => {
                               {report.title}
                             </h3>
                             <span className="shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full text-purple-600 bg-purple-50">
-                              {report.type || "Detailed Assessment"}
+                              {report.type || t("reports.card.detailedAssessment")}
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{report.summary}</p>
