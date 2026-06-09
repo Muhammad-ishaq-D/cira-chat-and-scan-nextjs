@@ -450,24 +450,22 @@ const Upgrade = () => {
 
             {/* Title */}
             <h3 className="text-base font-semibold text-foreground text-center mb-2">
-              {confirmModal.isCancel ? "Cancel Subscription?" : "Reactivate Subscription?"}
+              {confirmModal.isCancel ? t("upgrade.modal.cancelTitle") : t("upgrade.modal.reactivateTitle")}
             </h3>
 
-            {/* Description */}
             <p className="text-sm text-muted-foreground text-center mb-6 leading-relaxed">
               {confirmModal.isCancel
-                ? `Your plan will be downgraded to Basic immediately and Stripe will stop future charges. You can reactivate anytime.`
-                : `Your ${currentPlanLabel} plan will resume. Stripe will charge you on the next billing date${renewalDate ? ` (${renewalDate})` : ""}.`
+                ? t("upgrade.modal.cancelDesc")
+                : t("upgrade.modal.reactivateDesc", { plan: currentPlanLabel, date: renewalDate ? ` (${renewalDate})` : "" })
               }
             </p>
 
-            {/* Actions */}
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmModal(null)}
                 className="flex-1 h-10 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent transition-all"
               >
-                No, go back
+                {t("upgrade.modal.goBack")}
               </button>
               <button
                 onClick={() => {
@@ -483,7 +481,7 @@ const Upgrade = () => {
                 }`}
               >
                 {cancellingId ? <Loader2 size={14} className="animate-spin" /> : null}
-                {confirmModal.isCancel ? "Yes, cancel" : "Yes, reactivate"}
+                {confirmModal.isCancel ? t("upgrade.modal.confirmCancel") : t("upgrade.modal.confirmReactivate")}
               </button>
             </div>
           </div>
