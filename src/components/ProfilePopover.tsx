@@ -75,8 +75,8 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
                     <Scan size={14} className="text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Face Scans</p>
-                    <p className="text-[10px] text-muted-foreground">{faceScans === "Unlimited" ? "Unlimited" : `${faceScans} scans remaining`}</p>
+                    <p className="text-xs font-medium text-foreground">{t("profilePopover.faceScans")}</p>
+                    <p className="text-[10px] text-muted-foreground">{faceScans === "Unlimited" ? t("profilePopover.unlimited") : t("profilePopover.scansRemaining", { count: faceScans })}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{faceScans}</span>
