@@ -242,21 +242,21 @@ const Upgrade = () => {
     try {
       if (isCancel) {
         await billingApi.cancelSubscription();
-        toast.success("Subscription will cancel at the end of the billing period.");
+        toast.success(t("upgrade.toast.willCancel"));
       } else {
         await billingApi.reactivateSubscription();
-        toast.success("Subscription reactivated — it will keep renewing automatically.");
+        toast.success(t("upgrade.toast.reactivated"));
       }
       await refreshSubscription();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not update subscription.");
+      toast.error(err instanceof Error ? err.message : t("upgrade.errors.updateFailed"));
     } finally {
       setCancellingId(null);
     }
   };
 
   const renewalDate = subscription?.current_period_end
-    ? new Date(subscription.current_period_end).toLocaleDateString("en-US", {
+    ? new Date(subscription.current_period_end).toLocaleDateString(i18n.language, {
         year: "numeric", month: "long", day: "numeric",
       })
     : null;
