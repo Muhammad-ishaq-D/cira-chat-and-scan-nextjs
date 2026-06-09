@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Check, Shield, Zap, Crown, Sparkles, Star, Loader2, CalendarDays, AlertCircle, TriangleAlert, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { billingApi } from "@/lib/apiClient";
