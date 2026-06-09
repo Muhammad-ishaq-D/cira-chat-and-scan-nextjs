@@ -21,6 +21,7 @@ const navItems = [
 
 const Reports = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [reports, setReports] = useState<any[]>([]);
@@ -29,7 +30,6 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
-  // Downloads available on all plans (including Basic)
   const [isBasicPlan, setIsBasicPlan] = useState(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
