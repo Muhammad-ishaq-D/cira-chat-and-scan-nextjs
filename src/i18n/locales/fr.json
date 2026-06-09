@@ -880,5 +880,187 @@
     "profileSettings": "Paramètres du profil",
     "upgradePlan": "Améliorer le plan",
     "paymentHistory": "Historique des paiements"
+  },
+  "resetPassword": {
+    "title": "Réinitialiser le mot de passe",
+    "subtitle": "Saisissez le code reçu par e-mail et votre nouveau mot de passe",
+    "emailPlaceholder": "E-mail",
+    "otpPlaceholder": "Entrez le code à 6 chiffres",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "resetting": "Réinitialisation...",
+    "reset": "Réinitialiser le mot de passe",
+    "backToSignIn": "Retour à la connexion",
+    "errors": {
+      "passwordMin": "Le mot de passe doit comporter au moins 8 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "failed": "Échec de la réinitialisation"
+    },
+    "success": "Mot de passe réinitialisé ! Veuillez vous connecter."
+  },
+  "upgrade": {
+    "back": "Retour au tableau de bord",
+    "title": "Choisissez votre plan",
+    "subtitle": "Débloquez des informations santé avancées et des scans illimités avec un plan adapté.",
+    "loadingPlan": "Chargement de votre plan…",
+    "currentPlan": "Plan actuel :",
+    "cancelsOn": "Annulé le {{date}}",
+    "renewsOn": "Renouvelé le {{date}}",
+    "mostPopular": "Le plus populaire",
+    "currentPlanBadge": "Plan actuel",
+    "redirecting": "Redirection…",
+    "free": "Gratuit",
+    "upgradeTo": "Passer à {{plan}}",
+    "reactivate": "Réactiver l'abonnement",
+    "cancel": "Annuler l'abonnement",
+    "rolloverNote": "Les crédits non utilisés sont reportés chaque mois (plafonné à 1× l'allocation mensuelle).",
+    "errors": {
+      "noPaymentLink": "Aucun lien de paiement configuré pour ce plan.",
+      "signInAgain": "Veuillez vous reconnecter avant de mettre à niveau.",
+      "updateFailed": "Impossible de mettre à jour l'abonnement.",
+      "activationFailed": "L'activation prend plus de temps que prévu. Actualisez dans un instant."
+    },
+    "toast": {
+      "planActive": "Votre plan {{plan}} est maintenant actif.",
+      "willCancel": "L'abonnement se terminera à la fin de la période de facturation.",
+      "reactivated": "Abonnement réactivé — il continuera à se renouveler automatiquement."
+    },
+    "modal": {
+      "cancelTitle": "Annuler l'abonnement ?",
+      "reactivateTitle": "Réactiver l'abonnement ?",
+      "cancelDesc": "Votre plan sera immédiatement rétrogradé en Basic et Stripe arrêtera les futurs prélèvements. Vous pouvez réactiver à tout moment.",
+      "reactivateDesc": "Votre plan {{plan}} reprendra. Stripe prélèvera à la prochaine date{{date}}.",
+      "goBack": "Non, retour",
+      "confirmCancel": "Oui, annuler",
+      "confirmReactivate": "Oui, réactiver"
+    },
+    "plans": {
+      "basic": {
+        "desc": "Commencez avec des informations santé essentielles",
+        "features": [
+          "1 scan facial",
+          "100 000 crédits chat",
+          "Signes vitaux de base",
+          "Aperçu des risques",
+          "Support e-mail"
+        ]
+      },
+      "pro": {
+        "desc": "Suivi avancé pour les personnes soucieuses de leur santé",
+        "features": [
+          "4 scans faciaux/mois",
+          "500 000 crédits chat",
+          "Tous les signes + tendances",
+          "Indices détaillés",
+          "3 consultations médicales",
+          "Exporter rapports (PDF)",
+          "Support prioritaire"
+        ]
+      },
+      "enterprise": {
+        "desc": "Intelligence santé complète pour les professionnels",
+        "features": [
+          "Scans illimités",
+          "Crédits illimités",
+          "10 consultations médicales",
+          "Diagnostics IA avancés",
+          "Support prioritaire",
+          "Tous les rapports",
+          "HIPAA privé"
+        ]
+      }
+    }
+  },
+  "paymentHistory": {
+    "back": "Retour au tableau de bord",
+    "title": "Historique des paiements",
+    "subtitle": "Consultez toutes vos transactions et factures",
+    "currentPlan": "Plan actuel",
+    "totalSpent": "Total dépensé",
+    "cancelsOn": "Annulé le",
+    "nextBilling": "Prochaine facturation",
+    "cancelScheduledTitle": "Annulation programmée",
+    "cancelScheduledBody": "Votre plan {{plan}} se terminera le {{date}}. Vous avez un accès complet jusqu'à cette date.",
+    "undo": "Annuler",
+    "manageSubscription": "Gérer l'abonnement",
+    "renewsOn": "Votre plan se renouvelle le {{date}}",
+    "cancelPlan": "Annuler le plan",
+    "transactions": "Transactions",
+    "noTransactions": "Aucune transaction",
+    "confirmCancel": "Voulez-vous vraiment annuler votre abonnement ? Vous conserverez l'accès jusqu'à la fin de la période.",
+    "toast": {
+      "loadFailed": "Échec du chargement de l'historique",
+      "willCancel": "L'abonnement se terminera à la fin de la période",
+      "cancelFailed": "Échec de l'annulation",
+      "reactivated": "Abonnement réactivé — il continuera à se renouveler",
+      "reactivateFailed": "Échec de la réactivation"
+    }
+  },
+  "paymentSuccess": {
+    "activating": "Activation de votre plan…",
+    "activatingBody": "Application de votre abonnement et attribution des crédits. Quelques instants seulement.",
+    "issueTitle": "Problème d'activation",
+    "noPlan": "Nous n'avons pas pu déterminer le plan acheté. Ouvrez Mettre à niveau et réessayez, ou contactez le support.",
+    "activationFailed": "Impossible d'activer votre plan",
+    "tryAgain": "Réessayer",
+    "goToDashboard": "Aller au tableau de bord",
+    "viewPlan": "Détails du plan",
+    "subscribeTo": "S'abonner à {{plan}}",
+    "perMonth": "par mois",
+    "billedMonthlyRenews": "Facturé mensuellement · Renouvelé {{date}}",
+    "billedMonthly": "Facturé mensuellement",
+    "tax": "Taxe",
+    "totalPaid": "Total payé aujourd'hui",
+    "statementFootnote": "Un paiement à Cira apparaîtra sur votre relevé bancaire. L'abonnement se renouvelle automatiquement. Annulez à tout moment.",
+    "thanksTitle": "Merci pour votre abonnement !",
+    "thanksBody": "Un paiement à Cira apparaîtra sur votre relevé.",
+    "contactInfo": "Informations de contact",
+    "creditsAllocated": "Crédits attribués",
+    "nextBillingDate": "Prochaine date de facturation",
+    "needHelp": "Besoin d'aide ?"
+  },
+  "doctor": {
+    "title": "Trouver un médecin",
+    "subtitle": "Connectez-vous avec des médecins agréés pour des consultations virtuelles",
+    "verifiedMds": "Tous vérifiés",
+    "searchPlaceholder": "Rechercher par nom ou spécialité...",
+    "perSession": "par session",
+    "next": "Prochaine : {{slot}}",
+    "today": "Aujourd'hui",
+    "book": "Réserver",
+    "booking": "Réservation...",
+    "noDoctors": "Aucun médecin trouvé",
+    "noDoctorsSub": "Ajustez votre recherche ou vos filtres",
+    "footnote": "Tous les médecins sont agréés et vérifiés. Les consultations sont effectuées via notre réseau partenaire. En cas d'urgence, appelez les secours ou rendez-vous aux urgences.",
+    "toast": {
+      "bookingSent": "Demande envoyée !",
+      "bookingFailed": "Échec de la réservation"
+    },
+    "specialties": {
+      "all": "Tous",
+      "gp": "Médecine générale",
+      "cardiology": "Cardiologie",
+      "dermatology": "Dermatologie",
+      "neurology": "Neurologie",
+      "orthopedics": "Orthopédie"
+    },
+    "nav": {
+      "doctor": "Médecin"
+    }
+  },
+  "blog": {
+    "documentTitle": "Blog — Cira infirmière IA",
+    "documentDesc": "Insights sur la santé alimentée par IA, les scans vitaux et le bien-être préventif de l'équipe Cira.",
+    "home": "Accueil",
+    "title": "Le journal Cira",
+    "subtitle": "Notes sur la santé assistée par IA, les vitaux par scan facial et la science derrière les soins préventifs.",
+    "loadFailed": "Échec du chargement des blogs",
+    "empty": "Aucun article pour le moment. Revenez bientôt.",
+    "minRead": "{{count}} min",
+    "footer": "© 2026 Cira — askainurse.com",
+    "allArticles": "Tous les articles",
+    "notFound": "Article introuvable",
+    "browseAll": "Voir tous les articles",
+    "minReadFull": "{{count}} min de lecture"
   }
 }

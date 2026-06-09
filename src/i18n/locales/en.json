@@ -401,14 +401,38 @@
         ]
       },
       "faqs": [
-        { "q": "Do I need to sign up to try it?", "a": "No. You can chat with Cira and run one face scan completely free — no account, no credit card, no commitment." },
-        { "q": "Can I cancel anytime?", "a": "Yes. Cancel in one click from your account. No emails, no phone calls, no retention pressure." },
-        { "q": "Do you offer refunds?", "a": "Yes — a 7-day money-back guarantee on Premium and Family plans. If Cira isn't right for you, we'll refund you in full." },
-        { "q": "What payment methods do you accept?", "a": "All major credit cards, debit cards, Apple Pay and Google Pay. Local payment methods are added in select markets." },
-        { "q": "Will my price ever go up?", "a": "Your price is locked in for as long as your subscription stays active. We honor the rate you signed up with." },
-        { "q": "Is my data private?", "a": "Yes. Face scans are processed 100% on-device — your video never leaves your phone. Your conversations and vitals are encrypted and never sold." },
-        { "q": "Is this a replacement for a doctor?", "a": "No. Cira is an AI nurse who helps you understand your symptoms and decide your next step. She does not replace professional medical advice." },
-        { "q": "Can I switch between Premium and Family?", "a": "Yes — upgrade, downgrade or switch plans at any time from your account settings." }
+        {
+          "q": "Do I need to sign up to try it?",
+          "a": "No. You can chat with Cira and run one face scan completely free — no account, no credit card, no commitment."
+        },
+        {
+          "q": "Can I cancel anytime?",
+          "a": "Yes. Cancel in one click from your account. No emails, no phone calls, no retention pressure."
+        },
+        {
+          "q": "Do you offer refunds?",
+          "a": "Yes — a 7-day money-back guarantee on Premium and Family plans. If Cira isn't right for you, we'll refund you in full."
+        },
+        {
+          "q": "What payment methods do you accept?",
+          "a": "All major credit cards, debit cards, Apple Pay and Google Pay. Local payment methods are added in select markets."
+        },
+        {
+          "q": "Will my price ever go up?",
+          "a": "Your price is locked in for as long as your subscription stays active. We honor the rate you signed up with."
+        },
+        {
+          "q": "Is my data private?",
+          "a": "Yes. Face scans are processed 100% on-device — your video never leaves your phone. Your conversations and vitals are encrypted and never sold."
+        },
+        {
+          "q": "Is this a replacement for a doctor?",
+          "a": "No. Cira is an AI nurse who helps you understand your symptoms and decide your next step. She does not replace professional medical advice."
+        },
+        {
+          "q": "Can I switch between Premium and Family?",
+          "a": "Yes — upgrade, downgrade or switch plans at any time from your account settings."
+        }
       ],
       "footer": "© 2026 AskAINurse · Cira AI"
     },
@@ -424,23 +448,55 @@
       "situationsTitleA": "Whatever is on your mind,",
       "situationsTitleB": "Cira meets you there.",
       "situations": [
-        { "title": "Should I see a doctor?", "text": "Not every symptom needs a visit. Cira helps you decide." },
-        { "title": "Something feels off", "text": "You don't know what it is — but you know it's not normal." },
-        { "title": "I feel sick", "text": "Cold, fever, fatigue — understand what's happening." },
-        { "title": "Is this urgent?", "text": "Know when to act immediately — and when you can wait." },
-        { "title": "Medication questions", "text": "Side effects, interactions, or uncertainty — get clarity." },
-        { "title": "I just want reassurance", "text": "Sometimes you just need to know you're okay." }
+        {
+          "title": "Should I see a doctor?",
+          "text": "Not every symptom needs a visit. Cira helps you decide."
+        },
+        {
+          "title": "Something feels off",
+          "text": "You don't know what it is — but you know it's not normal."
+        },
+        {
+          "title": "I feel sick",
+          "text": "Cold, fever, fatigue — understand what's happening."
+        },
+        {
+          "title": "Is this urgent?",
+          "text": "Know when to act immediately — and when you can wait."
+        },
+        {
+          "title": "Medication questions",
+          "text": "Side effects, interactions, or uncertainty — get clarity."
+        },
+        {
+          "title": "I just want reassurance",
+          "text": "Sometimes you just need to know you're okay."
+        }
       ],
       "stepsEyebrow": "Simple. Fast. Clear.",
       "stepsTitleA": "Three steps. A few minutes.",
       "stepsTitleB": "Real direction.",
       "steps": [
-        { "title": "Tell Cira what's going on", "text": "Describe how you feel, in your own words." },
-        { "title": "Optional: scan your vitals", "text": "A 30-second face scan adds context." },
-        { "title": "Get a clear direction", "text": "Know exactly what to do next." }
+        {
+          "title": "Tell Cira what's going on",
+          "text": "Describe how you feel, in your own words."
+        },
+        {
+          "title": "Optional: scan your vitals",
+          "text": "A 30-second face scan adds context."
+        },
+        {
+          "title": "Get a clear direction",
+          "text": "Know exactly what to do next."
+        }
       ],
       "outcomesLabel": "Every check ends with one of these",
-      "outcomes": ["Self-care", "Monitor", "See a doctor", "Urgent care"],
+      "outcomes": [
+        "Self-care",
+        "Monitor",
+        "See a doctor",
+        "Urgent care"
+      ],
       "audienceEyebrow": "Made for real life",
       "audienceTitle": "Cira fits the moments when you can't drop everything to figure things out.",
       "audience": [
@@ -476,7 +532,11 @@
       "heroTitleA": "Talk. Scan. Understand",
       "heroTitleB": "your next step.",
       "heroSubtitle": "Cira is an AI nurse who listens to your story, looks at your vitals through a short face scan, and helps you decide whether to watch, see a doctor, or act quickly.",
-      "stepShortTitles": ["Talk", "Scan", "Next step"],
+      "stepShortTitles": [
+        "Talk",
+        "Scan",
+        "Next step"
+      ],
       "stepShortBodies": [
         "Share what's going on, in your own words.",
         "A short face scan reads your real-time vitals.",
@@ -540,7 +600,11 @@
       "heroSubtitle": "Cira gives you private AI nurse guidance first. When your full assessment suggests it, you can step straight into real medical care via Air Doctor's network of ~20,000 licensed doctors across ~180 countries — telehealth or in-person.",
       "heroCta1": "See how the handoff works",
       "heroCta2": "Book care with a doctor",
-      "trustChips": ["Private by design", "Licensed clinicians", "180 countries"],
+      "trustChips": [
+        "Private by design",
+        "Licensed clinicians",
+        "180 countries"
+      ],
       "whyEyebrow": "Why this page exists",
       "whyTitle": "More than just an AI chat",
       "whySubtitle": "Many people assume AskAinurse is \"just AI.\" It isn't. The AI nurse is designed to be the first step — and when needed, you move on to real doctors instead of being left alone with a summary.",
@@ -816,5 +880,187 @@
     "profileSettings": "Profile Settings",
     "upgradePlan": "Upgrade Plan",
     "paymentHistory": "Payment History"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "subtitle": "Enter the code from your email and your new password",
+    "emailPlaceholder": "Email",
+    "otpPlaceholder": "Enter 6-digit code",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "resetting": "Resetting...",
+    "reset": "Reset password",
+    "backToSignIn": "Back to sign in",
+    "errors": {
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
+      "failed": "Password reset failed"
+    },
+    "success": "Password reset successfully! Please sign in."
+  },
+  "upgrade": {
+    "back": "Back to Dashboard",
+    "title": "Choose Your Plan",
+    "subtitle": "Unlock advanced health insights and unlimited scans with a plan that fits your needs.",
+    "loadingPlan": "Loading your plan…",
+    "currentPlan": "Current plan:",
+    "cancelsOn": "Cancels on {{date}}",
+    "renewsOn": "Renews on {{date}}",
+    "mostPopular": "Most Popular",
+    "currentPlanBadge": "Current Plan",
+    "redirecting": "Redirecting…",
+    "free": "Free",
+    "upgradeTo": "Upgrade to {{plan}}",
+    "reactivate": "Reactivate Subscription",
+    "cancel": "Cancel Subscription",
+    "rolloverNote": "Unused credits roll over each month (capped at 1× your plan's monthly allocation).",
+    "errors": {
+      "noPaymentLink": "Payment link is not configured for this plan.",
+      "signInAgain": "Please sign in again before upgrading.",
+      "updateFailed": "Could not update subscription.",
+      "activationFailed": "Plan activation is taking longer than expected. Please refresh in a moment."
+    },
+    "toast": {
+      "planActive": "Your {{plan}} plan is now active.",
+      "willCancel": "Subscription will cancel at the end of the billing period.",
+      "reactivated": "Subscription reactivated — it will keep renewing automatically."
+    },
+    "modal": {
+      "cancelTitle": "Cancel Subscription?",
+      "reactivateTitle": "Reactivate Subscription?",
+      "cancelDesc": "Your plan will be downgraded to Basic immediately and Stripe will stop future charges. You can reactivate anytime.",
+      "reactivateDesc": "Your {{plan}} plan will resume. Stripe will charge you on the next billing date{{date}}.",
+      "goBack": "No, go back",
+      "confirmCancel": "Yes, cancel",
+      "confirmReactivate": "Yes, reactivate"
+    },
+    "plans": {
+      "basic": {
+        "desc": "Get started with essential health insights",
+        "features": [
+          "1 Face Scan",
+          "100,000 Chat Credits",
+          "Basic Vital Signs",
+          "Health Risk Overview",
+          "Email Support"
+        ]
+      },
+      "pro": {
+        "desc": "Advanced monitoring for health-conscious individuals",
+        "features": [
+          "4 Face Scans / month",
+          "500,000 Chat Credits",
+          "All Vital Signs + Trends",
+          "Detailed Health Indices",
+          "3 Doctor Consults",
+          "Export Reports (PDF)",
+          "Priority Support"
+        ]
+      },
+      "enterprise": {
+        "desc": "Complete health intelligence for professionals",
+        "features": [
+          "Unlimited Face Scans",
+          "Unlimited Chat Credits",
+          "10 Doctor Consults",
+          "Advanced AI Diagnostics",
+          "Priority Support",
+          "All Reports",
+          "HIPAA Private"
+        ]
+      }
+    }
+  },
+  "paymentHistory": {
+    "back": "Back to Dashboard",
+    "title": "Payment History",
+    "subtitle": "View all your transactions and invoices",
+    "currentPlan": "Current Plan",
+    "totalSpent": "Total Spent",
+    "cancelsOn": "Cancels On",
+    "nextBilling": "Next Billing",
+    "cancelScheduledTitle": "Subscription cancellation scheduled",
+    "cancelScheduledBody": "Your {{plan}} plan will end on {{date}}. You have full access until then.",
+    "undo": "Undo",
+    "manageSubscription": "Manage Subscription",
+    "renewsOn": "Your plan renews on {{date}}",
+    "cancelPlan": "Cancel Plan",
+    "transactions": "Transactions",
+    "noTransactions": "No transactions yet",
+    "confirmCancel": "Are you sure you want to cancel your subscription? You'll keep access until the end of your billing period.",
+    "toast": {
+      "loadFailed": "Failed to load payment history",
+      "willCancel": "Subscription will cancel at the end of your billing period",
+      "cancelFailed": "Failed to cancel subscription",
+      "reactivated": "Subscription reactivated — it will continue renewing automatically",
+      "reactivateFailed": "Failed to reactivate subscription"
+    }
+  },
+  "paymentSuccess": {
+    "activating": "Activating your plan…",
+    "activatingBody": "Applying your subscription and allocating credits. This takes just a moment.",
+    "issueTitle": "Activation issue",
+    "noPlan": "Could not determine which plan you purchased. Open Upgrade and try again, or contact support.",
+    "activationFailed": "Could not activate your plan",
+    "tryAgain": "Try Again",
+    "goToDashboard": "Go to Dashboard",
+    "viewPlan": "View Plan Details",
+    "subscribeTo": "Subscribe to {{plan}}",
+    "perMonth": "per month",
+    "billedMonthlyRenews": "Billed monthly · Renews {{date}}",
+    "billedMonthly": "Billed monthly",
+    "tax": "Tax",
+    "totalPaid": "Total paid today",
+    "statementFootnote": "A payment to Cira will appear on your bank statement. Subscription renews automatically. Cancel anytime from your account.",
+    "thanksTitle": "Thanks for subscribing!",
+    "thanksBody": "A payment to Cira will appear on your statement.",
+    "contactInfo": "Contact information",
+    "creditsAllocated": "Credits allocated",
+    "nextBillingDate": "Next billing date",
+    "needHelp": "Need help?"
+  },
+  "doctor": {
+    "title": "Find a Doctor",
+    "subtitle": "Connect with licensed physicians for virtual consultations",
+    "verifiedMds": "All Verified MDs",
+    "searchPlaceholder": "Search by name or specialty...",
+    "perSession": "per session",
+    "next": "Next: {{slot}}",
+    "today": "Today",
+    "book": "Book Now",
+    "booking": "Booking...",
+    "noDoctors": "No doctors found",
+    "noDoctorsSub": "Try adjusting your search or filters",
+    "footnote": "All listed physicians are licensed and verified. Consultations are conducted through our partner network. In an emergency, please call 911 or visit your nearest emergency room.",
+    "toast": {
+      "bookingSent": "Booking request sent!",
+      "bookingFailed": "Booking failed"
+    },
+    "specialties": {
+      "all": "All",
+      "gp": "General Practice",
+      "cardiology": "Cardiology",
+      "dermatology": "Dermatology",
+      "neurology": "Neurology",
+      "orthopedics": "Orthopedics"
+    },
+    "nav": {
+      "doctor": "Doctor"
+    }
+  },
+  "blog": {
+    "documentTitle": "Blog — Cira AI Health Nurse",
+    "documentDesc": "Insights on AI-powered health, vitals scanning, and preventive wellness from the Cira team.",
+    "home": "Home",
+    "title": "The Cira Journal",
+    "subtitle": "Notes on AI-assisted health, face-scan vitals, and the science behind preventive care.",
+    "loadFailed": "Failed to load blogs",
+    "empty": "No blog posts yet. Check back soon.",
+    "minRead": "{{count}} min",
+    "footer": "© 2026 Cira — askainurse.com",
+    "allArticles": "All articles",
+    "notFound": "Post not found",
+    "browseAll": "Browse all posts",
+    "minReadFull": "{{count}} min read"
   }
 }
