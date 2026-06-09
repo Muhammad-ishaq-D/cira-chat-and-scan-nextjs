@@ -13,6 +13,7 @@ interface ProfilePopoverProps {
 
 const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const localUser = getUser();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
