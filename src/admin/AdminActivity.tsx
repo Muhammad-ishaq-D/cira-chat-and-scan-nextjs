@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Activity, Users, Eye, MousePointerClick, ScrollText, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, Filter, SortAsc, LayoutGrid, PieChart as PieChartIcon, ShieldCheck, RefreshCw } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, PieChart, Pie } from "recharts";
 import { adminApi } from "@/lib/apiClient";
@@ -85,7 +85,7 @@ const getEventColor = (type: string) => {
 };
 
 const AdminActivity = () => {
-  const { t, i18n } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [tab, setTab] = useState<"sessions" | "aggregate" | "audit">("sessions");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [agg, setAgg] = useState<Aggregate | null>(null);
@@ -672,7 +672,7 @@ const AdminActivity = () => {
                             </span>
                           </td>
                           <td className="p-4 text-muted-foreground">
-                            {new Date(group.latest_timestamp).toLocaleString(i18n.language, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            {new Date(group.latest_timestamp).toLocaleString("en", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                           </td>
                           <td className="p-4 text-right">
                             <button
@@ -822,7 +822,7 @@ const AdminActivity = () => {
                             )}
                             <div className="flex items-center gap-1">
                               <span className="font-semibold text-foreground">{t("admin.activity.date")}</span>
-                              <span>{new Date(log.timestamp).toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" })}</span>
+                              <span>{new Date(log.timestamp).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" })}</span>
                             </div>
                           </div>
                         </div>

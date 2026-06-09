@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { DollarSign, Users, CreditCard, Search } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminBilling = () => {
-  const { t, i18n } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [dashboard, setDashboard] = useState<any>(null);
   const [revenue, setRevenue] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -161,7 +161,7 @@ const AdminBilling = () => {
                       </span>
                     </td>
                     <td className="py-2.5 text-muted-foreground">
-                      {tx.created_at ? new Date(tx.created_at).toLocaleDateString(i18n.language) : "—"}
+                      {tx.created_at ? new Date(tx.created_at).toLocaleDateString("en") : "—"}
                     </td>
                   </tr>
                 ))}

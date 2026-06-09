@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Shield, Database, Save, ToggleLeft, ToggleRight } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ const defaultCredits: Record<string, string> = {
 };
 
 const AdminSettings = () => {
-  const { t } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [toggles, setToggles] = useState<SettingToggle[]>(defaultToggles);
   const [credits, setCredits] = useState(defaultCredits);
   const [saving, setSaving] = useState(false);

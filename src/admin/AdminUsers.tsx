@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
 import { adminApi, billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
@@ -97,7 +97,7 @@ const normalizeUser = (raw: RawUser): User => {
 };
 
 const AdminUsers = () => {
-  const { t, i18n } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -245,7 +245,7 @@ const AdminUsers = () => {
     try {
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return "—";
-      return d.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" });
+      return d.toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" });
     } catch { return "—"; }
   };
 
