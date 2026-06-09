@@ -126,7 +126,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
               <History size={14} className="text-emerald-600" />
             </div>
-            <span className="text-xs font-medium text-foreground flex-1 text-left">Payment History</span>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">{t("profilePopover.paymentHistory")}</span>
             <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
         </div>
