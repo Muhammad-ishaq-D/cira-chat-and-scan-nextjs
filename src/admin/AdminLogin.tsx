@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { toast } from "sonner";
 
@@ -7,6 +8,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,15 +26,15 @@ const AdminLogin = () => {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Invalid credentials");
+        throw new Error(err.error || t("admin.login.invalid"));
       }
       const data = await res.json();
       localStorage.setItem("cira_admin_token", data.token);
       localStorage.setItem("cira_admin", "true");
       navigate("/admin/dashboard");
     } catch (err: any) {
-      setError(err.message || "Login failed");
-      toast.error(err.message || "Login failed");
+      setError(err.message || t("admin.login.failed"));
+      toast.error(err.message || t("admin.login.failed"));
     } finally {
       setLoading(false);
     }
@@ -46,12 +48,12 @@ const AdminLogin = () => {
           <span className="font-heading text-2xl font-semibold text-foreground">Cira</span>
         </div>
         <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
-          <h1 className="font-heading text-xl font-semibold text-foreground text-center mb-1">Admin Login</h1>
-          <p className="text-xs text-muted-foreground text-center mb-6">Super Admin Access</p>
+          <h1 className="font-heading text-xl font-semibold text-foreground text-center mb-1">{t("admin.login.title")}</h1>
+          <p className="text-xs text-muted-foreground text-center mb-6">{t("admin.login.subtitle")}</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="text-xs font-medium text-foreground mb-1 block">Username</label>
+              <label className="text-xs font-medium text-foreground mb-1 block">{t("admin.login.username")}</label>
               <input
                 value={username}
                 onChange={(e) => { setUsername(e.target.value); setError(""); }}
@@ -60,7 +62,7 @@ const AdminLogin = () => {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-foreground mb-1 block">Password</label>
+              <label className="text-xs font-medium text-foreground mb-1 block">{t("admin.login.password")}</label>
               <input
                 type="password"
                 value={password}
@@ -75,7 +77,7 @@ const AdminLogin = () => {
               disabled={loading}
               className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("admin.login.signingIn") : t("admin.login.signIn")}
             </button>
           </form>
         </div>

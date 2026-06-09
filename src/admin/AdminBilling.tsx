@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { DollarSign, Users, CreditCard, Search, Filter } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { DollarSign, Users, CreditCard, Search } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminBilling = () => {
+  const { t, i18n } = useTranslation();
   const [dashboard, setDashboard] = useState<any>(null);
   const [revenue, setRevenue] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -69,17 +71,17 @@ const AdminBilling = () => {
   const totalUsers = dashboard?.total_users ?? 0;
 
   const stats = [
-    { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
-    { label: "Today's Revenue", value: `$${todayRevenue.toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
-    { label: "Active Subscriptions", value: activeSubs, icon: Users, color: "bg-blue-50 text-blue-600" },
-    { label: "Total Users", value: totalUsers, icon: Users, color: "bg-purple-50 text-purple-600" },
+    { label: t("admin.billing.totalRevenue"), value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
+    { label: t("admin.billing.todayRevenue"), value: `$${todayRevenue.toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: t("admin.billing.activeSubs"), value: activeSubs, icon: Users, color: "bg-blue-50 text-blue-600" },
+    { label: t("admin.billing.totalUsers"), value: totalUsers, icon: Users, color: "bg-purple-50 text-purple-600" },
   ];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Billing & Revenue</h1>
-        <p className="text-sm text-muted-foreground font-body">Financial overview and transaction history</p>
+        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.billing.title")}</h1>
+        <p className="text-sm text-muted-foreground font-body">{t("admin.billing.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -99,16 +101,15 @@ const AdminBilling = () => {
         })}
       </div>
 
-      {/* Transactions */}
       <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <h2 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Transactions</h2>
+          <h2 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.billing.transactions")}</h2>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t("admin.billing.search")}
                 value={txSearch}
                 onChange={(e) => setTxSearch(e.target.value)}
                 className="w-full sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -119,27 +120,27 @@ const AdminBilling = () => {
               onChange={(e) => setTxStatus(e.target.value)}
               className="text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
             >
-              <option value="all">All Status</option>
-              <option value="success">Success</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
+              <option value="all">{t("admin.billing.allStatus")}</option>
+              <option value="success">{t("admin.billing.success")}</option>
+              <option value="pending">{t("admin.billing.pending")}</option>
+              <option value="failed">{t("admin.billing.failed")}</option>
+              <option value="refunded">{t("admin.billing.refunded")}</option>
             </select>
           </div>
         </div>
 
         {transactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">No transactions found.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">{t("admin.billing.none")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50 text-left">
-                  <th className="pb-2 font-medium text-muted-foreground">User</th>
-                  <th className="pb-2 font-medium text-muted-foreground">Amount</th>
-                  <th className="pb-2 font-medium text-muted-foreground">Plan</th>
-                  <th className="pb-2 font-medium text-muted-foreground">Status</th>
-                  <th className="pb-2 font-medium text-muted-foreground">Date</th>
+                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.user")}</th>
+                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.amount")}</th>
+                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.plan")}</th>
+                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.status")}</th>
+                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.date")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -156,11 +157,11 @@ const AdminBilling = () => {
                         tx.status === "refunded" ? "bg-blue-50 text-blue-700" :
                         "bg-muted text-muted-foreground"
                       }`}>
-                        {tx.status || "—"}
+                        {tx.status ? t(`admin.billing.${tx.status === "completed" ? "success" : tx.status}`, tx.status) : "—"}
                       </span>
                     </td>
                     <td className="py-2.5 text-muted-foreground">
-                      {tx.created_at ? new Date(tx.created_at).toLocaleDateString() : "—"}
+                      {tx.created_at ? new Date(tx.created_at).toLocaleDateString(i18n.language) : "—"}
                     </td>
                   </tr>
                 ))}

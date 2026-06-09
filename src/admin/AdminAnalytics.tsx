@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { TrendingUp, Users, ScanFace, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Users, ScanFace } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminAnalytics = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,6 @@ const AdminAnalytics = () => {
     );
   }
 
-  // Extract trend totals from arrays if available
   const signupCount = Array.isArray(data?.signups_trend)
     ? data.signups_trend.reduce((sum: number, d: any) => sum + (d.count || 0), 0)
     : data?.new_signups ?? "—";
@@ -33,15 +34,15 @@ const AdminAnalytics = () => {
     : data?.scans_completed ?? "—";
 
   const stats = [
-    { label: "New Signups", value: signupCount, icon: Users, color: "bg-blue-50 text-blue-600", description: "Total registered users" },
-    { label: "Scans Completed", value: scanCount, icon: ScanFace, color: "bg-purple-50 text-purple-600", description: "Total vitals scans performed" },
+    { label: t("admin.analytics.newSignups"), value: signupCount, icon: Users, color: "bg-blue-50 text-blue-600", description: t("admin.analytics.newSignupsDesc") },
+    { label: t("admin.analytics.scansCompleted"), value: scanCount, icon: ScanFace, color: "bg-purple-50 text-purple-600", description: t("admin.analytics.scansCompletedDesc") },
   ];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Analytics</h1>
-        <p className="text-sm text-muted-foreground font-body">Platform usage and engagement insights</p>
+        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.analytics.title")}</h1>
+        <p className="text-sm text-muted-foreground font-body">{t("admin.analytics.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -64,7 +65,7 @@ const AdminAnalytics = () => {
 
       {!data && (
         <div className="text-center py-16">
-          <p className="text-sm text-muted-foreground">No analytics data available yet</p>
+          <p className="text-sm text-muted-foreground">{t("admin.analytics.noData")}</p>
         </div>
       )}
     </div>
