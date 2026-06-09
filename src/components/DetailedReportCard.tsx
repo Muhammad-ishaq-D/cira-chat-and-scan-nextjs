@@ -61,6 +61,7 @@ const Section = ({ icon: Icon, title, children, defaultOpen = true }: { icon: an
 };
 
 const DetailedReportCard = ({ data }: Props) => {
+  const { t } = useTranslation();
   const severity = severityConfig[data.assessment.severity] || severityConfig.moderate;
   const confidenceColor =
     data.confidence_score >= 85
