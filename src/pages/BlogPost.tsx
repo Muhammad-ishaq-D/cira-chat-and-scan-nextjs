@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -11,6 +12,7 @@ const blogContentClassName = "prose prose-neutral dark:prose-invert max-w-none p
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,12 +30,12 @@ const BlogPost = () => {
           if (meta) meta.setAttribute("content", p.meta_description || p.excerpt || p.title);
         }
       } catch (e: any) {
-        setError(e?.message || "Blog post not found");
+        setError(e?.message || t("blog.notFound"));
       } finally {
         setLoading(false);
       }
     })();
-  }, [slug]);
+  }, [slug, t]);
 
   const tags = Array.isArray(post?.tags)
     ? post?.tags
@@ -45,7 +47,7 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-3xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <Link to="/blog" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft size={16} /> All articles
+          <ArrowLeft size={16} /> {t("blog.allArticles")}
         </Link>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
           <img src={ciraLogo} alt="Cira" width={24} height={24} />
@@ -61,8 +63,8 @@ const BlogPost = () => {
         </div>
       ) : error || !post ? (
         <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-          <p className="text-muted-foreground mb-4">{error || "Post not found"}</p>
-          <Link to="/blog" className="text-primary hover:underline">Browse all posts</Link>
+          <p className="text-muted-foreground mb-4">{error || t("blog.notFound")}</p>
+          <Link to="/blog" className="text-primary hover:underline">{t("blog.browseAll")}</Link>
         </div>
       ) : (
         <article className="max-w-3xl mx-auto px-6 pb-20">
@@ -74,10 +76,10 @@ const BlogPost = () => {
                 <span className="flex items-center gap-1.5"><User size={14} /> {post.author}</span>
               )}
               {post.published_at && (
-                <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(post.published_at).toLocaleDateString()}</span>
+                <span className="flex items-center gap-1.5"><Calendar size={14} /> {new Date(post.published_at).toLocaleDateString(i18n.language)}</span>
               )}
               {post.reading_time ? (
-                <span className="flex items-center gap-1.5"><Clock size={14} /> {post.reading_time} min read</span>
+                <span className="flex items-center gap-1.5"><Clock size={14} /> {t("blog.minReadFull", { count: post.reading_time })}</span>
               ) : null}
             </div>
           </header>
@@ -94,8 +96,8 @@ const BlogPost = () => {
 
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-border">
-              {tags.map((t) => (
-                <span key={t} className="text-xs bg-muted px-3 py-1 rounded-full">{t}</span>
+              {tags.map((tag) => (
+                <span key={tag} className="text-xs bg-muted px-3 py-1 rounded-full">{tag}</span>
               ))}
             </div>
           )}
@@ -103,7 +105,7 @@ const BlogPost = () => {
       )}
 
       <footer className="max-w-4xl mx-auto px-6 pb-12 text-center text-xs text-muted-foreground">
-        © 2026 Cira — askainurse.com
+        {t("blog.footer")}
       </footer>
     </div>
   );
