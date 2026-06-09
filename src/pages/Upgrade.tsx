@@ -274,7 +274,7 @@ const Upgrade = () => {
           onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
-          <ArrowLeft size={16} />Back to Dashboard
+          <ArrowLeft size={16} />{t("upgrade.back")}
         </button>
 
         <div className="text-center mb-12">
@@ -283,29 +283,29 @@ const Upgrade = () => {
             <Sparkles size={20} className="text-primary" />
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-3" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-            Choose Your Plan
+            {t("upgrade.title")}
           </h1>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Unlock advanced health insights and unlimited scans with a plan that fits your needs.
+            {t("upgrade.subtitle")}
           </p>
 
           {loadingPlan && (
             <p className="mt-4 text-xs text-muted-foreground flex items-center justify-center gap-2">
-              <Loader2 size={14} className="animate-spin" /> Loading your plan…
+              <Loader2 size={14} className="animate-spin" /> {t("upgrade.loadingPlan")}
             </p>
           )}
 
           {!loadingPlan && (
             <div className="mt-4 flex flex-col items-center gap-1">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                Current plan: <span className="font-semibold capitalize">{currentPlanLabel}</span>
+                {t("upgrade.currentPlan")} <span className="font-semibold capitalize">{currentPlanLabel}</span>
               </span>
               {renewalDate && currentPlanKey !== "basic" && (
                 <span className={`inline-flex items-center gap-1.5 text-xs mt-1 ${subscription?.cancel_at_period_end ? "text-amber-600" : "text-muted-foreground"}`}>
                   <CalendarDays size={12} />
                   {subscription?.cancel_at_period_end
-                    ? `Cancels on ${renewalDate}`
-                    : `Renews on ${renewalDate}`}
+                    ? t("upgrade.cancelsOn", { date: renewalDate })
+                    : t("upgrade.renewsOn", { date: renewalDate })}
                 </span>
               )}
             </div>
