@@ -368,13 +368,13 @@ const Reports = () => {
               ) : scans.length === 0 ? (
                 <div className="text-center py-16">
                   <ScanFace size={40} className="text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-sm text-muted-foreground">No vital scans yet</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Complete a face scan to see your vitals here</p>
+                  <p className="text-sm text-muted-foreground">{t("reports.empty.scansTitle")}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">{t("reports.empty.scansSub")}</p>
                   <button
                     onClick={() => navigate("/vitals-scan")}
                     className="mt-4 h-9 px-5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all"
                   >
-                    Start a Scan
+                    {t("reports.empty.startScan")}
                   </button>
                 </div>
               ) : (
