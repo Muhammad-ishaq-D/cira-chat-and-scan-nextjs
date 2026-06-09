@@ -422,7 +422,7 @@ const Upgrade = () => {
         {currentPlanKey !== "basic" && (
           <p className="mt-6 text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
             <AlertCircle size={12} />
-            Unused credits roll over each month (capped at 1× your plan's monthly allocation).
+            {t("upgrade.rolloverNote")}
           </p>
         )}
       </div>
