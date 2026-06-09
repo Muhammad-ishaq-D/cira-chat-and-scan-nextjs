@@ -338,14 +338,14 @@ const Upgrade = () => {
                 {plan.current && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-semibold uppercase tracking-wider">
-                      Current Plan
+                      {t("upgrade.currentPlanBadge")}
                     </span>
                   </div>
                 )}
                 {plan.popular && !plan.current && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
-                      <Star size={10} /> Most Popular
+                      <Star size={10} /> {t("upgrade.mostPopular")}
                     </span>
                   </div>
                 )}
