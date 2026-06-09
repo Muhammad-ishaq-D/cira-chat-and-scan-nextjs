@@ -1,4 +1,5 @@
 import { Stethoscope } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getDeviceId } from "@/lib/freeCredits";
 import { getUser } from "@/lib/auth";
 
