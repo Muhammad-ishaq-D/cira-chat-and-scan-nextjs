@@ -623,7 +623,7 @@ const VitalsScan = () => {
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center mt-4 leading-relaxed">
-                +25 More Health Markers after scan
+                {t("vitalsScan.moreMarkers")}
               </p>
             </div>
           </div>
@@ -645,31 +645,31 @@ const VitalsScan = () => {
               {/* Header */}
               <div className="mb-4 md:mb-8 flex items-start justify-between gap-3">
                 <div>
-                  <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Scan Results</h1>
-                  <p className="text-[11px] md:text-sm text-muted-foreground font-body">Your vitals have been analyzed</p>
+                  <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">{t("vitalsScan.resultsTitle")}</h1>
+                  <p className="text-[11px] md:text-sm text-muted-foreground font-body">{t("vitalsScan.resultsSubtitle")}</p>
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
                       type="button"
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-border/60 bg-card/80 backdrop-blur-sm text-[10px] md:text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                      aria-label="Accuracy information"
+                      aria-label={t("vitalsScan.accuracy")}
                     >
                       <Info size={11} />
-                      Accuracy
+                      {t("vitalsScan.accuracy")}
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="end" className="w-72 p-3 text-[11px] leading-relaxed">
-                    <p className="font-semibold text-foreground mb-1.5 text-[12px]">Clinically validated accuracy</p>
+                    <p className="font-semibold text-foreground mb-1.5 text-[12px]">{t("vitalsScan.accuracyTitle")}</p>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li><span className="text-foreground font-medium">Heart Rate:</span> ±2 BPM vs ECG</li>
-                      <li><span className="text-foreground font-medium">Blood Pressure:</span> ±5 mmHg vs cuff</li>
-                      <li><span className="text-foreground font-medium">SpO₂:</span> ±2% vs pulse oximeter</li>
-                      <li><span className="text-foreground font-medium">Respiratory Rate:</span> ±2 breaths/min</li>
-                      <li><span className="text-foreground font-medium">HRV / Stress:</span> validated vs ECG</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accHR")}</span> {t("vitalsScan.accHRv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accBP")}</span> {t("vitalsScan.accBPv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accSpO2")}</span> {t("vitalsScan.accSpO2v")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accRR")}</span> {t("vitalsScan.accRRv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accHRV")}</span> {t("vitalsScan.accHRVv")}</li>
                     </ul>
                     <p className="mt-2 pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                      Screening tool only — not a substitute for medical diagnosis. Best with good lighting & a still face.
+                      {t("vitalsScan.accDisclaimer")}
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -681,8 +681,8 @@ const VitalsScan = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5" /></svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
-                    <p className="text-[10px] md:text-xs text-muted-foreground">Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
+                    <p className="text-sm font-semibold text-foreground font-heading">{t("vitalsScan.scanComplete")}</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">{t("vitalsScan.signalQuality", { value: results ? `${Math.round(results.signalQuality * 100)}%` : "--" })}</p>
                   </div>
                 </div>
               </div>
@@ -696,7 +696,7 @@ const VitalsScan = () => {
                         <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
                           <Icon size={11} className={v.color.split(" ")[0]} />
                         </div>
-                        <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{t(`vitalsScan.labels.${v.label}`, v.label)}</p>
                       </div>
                       <p className="text-base md:text-xl font-semibold text-foreground font-heading">
                         {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
@@ -711,7 +711,7 @@ const VitalsScan = () => {
                 <>
                   <div className="flex items-center gap-1.5 mb-2 mt-1">
                     <ShieldCheck size={13} className="text-primary" />
-                    <p className="text-xs font-semibold text-foreground font-heading">Health Indexes</p>
+                    <p className="text-xs font-semibold text-foreground font-heading">{t("vitalsScan.healthIndexes")}</p>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
                     {displayHealthIndexes.map((v) => {
@@ -722,7 +722,7 @@ const VitalsScan = () => {
                             <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
                               <Icon size={11} className={v.color.split(" ")[0]} />
                             </div>
-                            <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                            <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{t(`vitalsScan.labels.${v.label}`, v.label)}</p>
                           </div>
                           <p className="text-base md:text-xl font-semibold text-foreground font-heading">
                             {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
@@ -740,10 +740,10 @@ const VitalsScan = () => {
   onClick={() => window.location.reload()}
   className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all"
 >
-  Scan Again
+  {t("vitalsScan.scanAgain")}
 </button>
                 <button onClick={handleAnalyzeWithCira} className="h-10 px-4 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 transition-all flex-1 md:flex-none">
-                  Analyze with Cira
+                  {t("vitalsScan.analyzeWithCira")}
                 </button>
               </div>
             </div>
