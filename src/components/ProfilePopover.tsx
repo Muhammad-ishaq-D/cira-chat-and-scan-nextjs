@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -8,6 +9,7 @@ import { getUser } from "@/lib/auth";
 interface ProfilePopoverProps {
   children: React.ReactNode;
 }
+
 
 const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const navigate = useNavigate();
