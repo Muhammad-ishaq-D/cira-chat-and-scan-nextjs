@@ -342,11 +342,11 @@ const Reports = () => {
                       ) : (
                         <Square size={16} />
                       )}
-                      {selectedScans.size === scans.length ? "Deselect all" : "Select all"}
+                      {selectedScans.size === scans.length ? t("reports.card.deselectAll") : t("reports.card.selectAll")}
                     </button>
                     {selectedScans.size > 0 && (
                       <span className="text-xs text-muted-foreground">
-                        {selectedScans.size} selected
+                        {t("reports.card.selected", { count: selectedScans.size })}
                       </span>
                     )}
                   </div>
@@ -356,7 +356,7 @@ const Reports = () => {
                     className={`h-8 px-4 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                   >
                     {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                    {isBasicPlan ? "Upgrade to Download" : "Download Combined Report"}
+                    {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.downloadCombined")}
                   </button>
                 </div>
               )}
