@@ -385,7 +385,7 @@ const Upgrade = () => {
                     } disabled:opacity-60`}
                 >
                   {isRedirecting
-                    ? <><Loader2 size={14} className="animate-spin" /> Redirecting…</>
+                    ? <><Loader2 size={14} className="animate-spin" /> {t("upgrade.redirecting")}</>
                     : actionLabel}
                 </button>
 
