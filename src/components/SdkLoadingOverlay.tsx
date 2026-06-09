@@ -109,20 +109,20 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
   }, []);
 
   const quality = (() => {
-    if (!net.online) return { label: "Offline", color: "text-red-400", dot: "bg-red-400" };
+    if (!net.online) return { label: t("components.sdkLoading.offline"), color: "text-red-400", dot: "bg-red-400" };
     const eff = net.effectiveType;
-    if (eff === "4g" || (net.downlink && net.downlink >= 5)) return { label: "Excellent", color: "text-emerald-400", dot: "bg-emerald-400" };
-    if (eff === "3g" || (net.downlink && net.downlink >= 1.5)) return { label: "Good", color: "text-amber-400", dot: "bg-amber-400" };
-    if (eff === "2g" || eff === "slow-2g") return { label: "Slow", color: "text-orange-400", dot: "bg-orange-400" };
-    return { label: "Stable", color: "text-emerald-400", dot: "bg-emerald-400" };
+    if (eff === "4g" || (net.downlink && net.downlink >= 5)) return { label: t("components.sdkLoading.qualityExcellent"), color: "text-emerald-400", dot: "bg-emerald-400" };
+    if (eff === "3g" || (net.downlink && net.downlink >= 1.5)) return { label: t("components.sdkLoading.qualityGood"), color: "text-amber-400", dot: "bg-amber-400" };
+    if (eff === "2g" || eff === "slow-2g") return { label: t("components.sdkLoading.qualitySlow"), color: "text-orange-400", dot: "bg-orange-400" };
+    return { label: t("components.sdkLoading.qualityStable"), color: "text-emerald-400", dot: "bg-emerald-400" };
   })();
 
   const shown = Math.max(0, Math.min(100, status === "loading" ? Math.max(displayed, 2) : displayed));
   const phase = status === "idle"
-    ? "Preparing scanner"
+    ? t("components.sdkLoading.preparing")
     : progress < 100
-      ? "Downloading scanner engine"
-      : "Starting camera";
+      ? t("components.sdkLoading.downloading")
+      : t("components.sdkLoading.startingCamera");
 
   const handleRetry = () => {
     if (onRetry) onRetry();
