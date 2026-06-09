@@ -30,10 +30,10 @@ interface Props {
   data: DetailedReport;
 }
 
-const severityConfig = {
-  mild: { color: "text-emerald-600 bg-emerald-50 border-emerald-200", label: "Mild" },
-  moderate: { color: "text-amber-600 bg-amber-50 border-amber-200", label: "Moderate" },
-  severe: { color: "text-red-600 bg-red-50 border-red-200", label: "Severe" },
+const severityConfig: Record<"mild" | "moderate" | "severe", { color: string; labelKey: string }> = {
+  mild: { color: "text-emerald-600 bg-emerald-50 border-emerald-200", labelKey: "components.detailedReport.mild" },
+  moderate: { color: "text-amber-600 bg-amber-50 border-amber-200", labelKey: "components.detailedReport.moderate" },
+  severe: { color: "text-red-600 bg-red-50 border-red-200", labelKey: "components.detailedReport.severe" },
 };
 
 const likelihoodColor = (l: string) => {
