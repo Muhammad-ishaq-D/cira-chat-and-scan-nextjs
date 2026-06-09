@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Star, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
