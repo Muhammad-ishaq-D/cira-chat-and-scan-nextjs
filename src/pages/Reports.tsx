@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square, Lock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -12,10 +13,10 @@ import { toast } from "sonner";
 import { logAuditEvent } from "@/lib/audit";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, tKey: "dashboard.nav.home", id: "home" },
+  { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat" },
+  { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan" },
+  { icon: FileText, tKey: "dashboard.nav.reports", id: "reports" },
 ];
 
 const Reports = () => {
