@@ -1,12 +1,12 @@
 import { FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import AiSparkleIcon from "./AiSparkleIcon";
 
 /**
  * Animated indicator shown while Cira is generating an assessment report.
- * Replaces the previous static "processing your information..." text with a
- * friendlier, shimmering progress card.
  */
 export const ReportGeneratingIndicator = () => {
+  const { t } = useTranslation();
   return (
     <div className="max-w-[95%] md:max-w-[80%] animate-fade-in">
       <div className="flex items-center gap-2 mb-2">
@@ -16,7 +16,6 @@ export const ReportGeneratingIndicator = () => {
         </span>
       </div>
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card px-4 py-3.5 shadow-sm">
-        {/* Shimmer overlay */}
         <div
           className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite]"
           style={{
@@ -30,14 +29,13 @@ export const ReportGeneratingIndicator = () => {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[14px] md:text-[15px] font-medium text-foreground">
-              Generating your assessment report
+              {t("components.reportGenerating.text")}
               <span className="inline-flex ml-0.5">
                 <span className="animate-[bounce_1.4s_infinite] [animation-delay:0ms]">.</span>
                 <span className="animate-[bounce_1.4s_infinite] [animation-delay:200ms]">.</span>
                 <span className="animate-[bounce_1.4s_infinite] [animation-delay:400ms]">.</span>
               </span>
             </p>
-            {/* Progress bar */}
             <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full w-1/2 rounded-full bg-gradient-to-r from-primary/60 via-primary to-primary/60 animate-[slide-progress_1.6s_ease-in-out_infinite]"

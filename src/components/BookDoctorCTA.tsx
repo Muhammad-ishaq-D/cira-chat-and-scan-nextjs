@@ -1,4 +1,5 @@
 import { Stethoscope, Calendar, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getDeviceId } from "@/lib/freeCredits";
 import { getUser } from "@/lib/auth";
 
@@ -26,6 +27,7 @@ const readStoredUser = (): any => {
 };
 
 const BookDoctorCTA = ({ source = "report_card" }: Props) => {
+  const { t } = useTranslation();
   const handleClick = () => {
     const user = readStoredUser();
     const deviceId = getDeviceId();
@@ -68,10 +70,10 @@ const BookDoctorCTA = ({ source = "report_card" }: Props) => {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-semibold text-foreground leading-tight">
-            Talk to a licensed doctor
+            {t("components.bookDoctor.heading")}
           </p>
           <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-            Online consultation, available now
+            {t("components.bookDoctor.subheading")}
           </p>
         </div>
       </div>
@@ -80,7 +82,7 @@ const BookDoctorCTA = ({ source = "report_card" }: Props) => {
         className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[11px] font-semibold shadow-sm hover:shadow-md hover:scale-[1.01] transition-all active:scale-[0.99]"
       >
         <Stethoscope size={13} />
-        <span>Book a Doctor Online</span>
+        <span>{t("components.bookDoctor.cta")}</span>
         <ChevronRight size={13} />
       </button>
     </div>

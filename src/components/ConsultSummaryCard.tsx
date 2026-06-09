@@ -1,4 +1,5 @@
 import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ConsultSummary } from "@/lib/chatApi";
 import BookDoctorCTA from "./BookDoctorCTA";
 
@@ -96,6 +97,7 @@ interface Props {
 }
 
 const ConsultSummaryCard = ({ data }: Props) => {
+  const { t } = useTranslation();
   const confidenceColor =
     data.confidence_score >= 85
       ? "text-emerald-600 bg-emerald-50"
@@ -105,9 +107,9 @@ const ConsultSummaryCard = ({ data }: Props) => {
 
   const urgencyLevel = data.confidence_score >= 80 ? "high" : data.confidence_score >= 50 ? "moderate" : "low";
   const urgencyConfig = {
-    high: { label: "Clear Finding", bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700" },
-    moderate: { label: "Needs Attention", bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
-    low: { label: "Uncertain", bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
+    high: { label: t("components.consultSummary.clearFinding"), bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700" },
+    moderate: { label: t("components.consultSummary.needsAttention"), bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
+    low: { label: t("components.consultSummary.uncertain"), bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
   };
   const urgency = urgencyConfig[urgencyLevel];
 
@@ -122,9 +124,9 @@ const ConsultSummaryCard = ({ data }: Props) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                Assessment
+                {t("components.consultSummary.assessment")}
               </p>
-              <p className="text-[9px] text-muted-foreground">AI Triage Summary</p>
+              <p className="text-[9px] text-muted-foreground">{t("components.consultSummary.subtitle")}</p>
             </div>
             <div className="flex items-center gap-1.5">
               <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${urgency.bg} ${urgency.border} ${urgency.text}`}>
@@ -147,7 +149,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
         {/* Possible Conditions */}
         <div className="px-4 pb-3 pt-2">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            Possible Conditions
+            {t("components.consultSummary.possibleConditions")}
           </p>
           <div className="space-y-2">
             {data.possible_conditions.map((cond, i) => (
@@ -177,7 +179,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
             </div>
             <div>
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                What to Do Next
+                {t("components.consultSummary.whatToDoNext")}
               </p>
               <div className="text-[12px] text-foreground leading-relaxed" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                 {formatText(data.self_care_advice)}
@@ -193,7 +195,7 @@ const ConsultSummaryCard = ({ data }: Props) => {
           <div className="flex items-center gap-1.5">
             <AlertTriangle size={10} className="text-amber-500" />
             <p className="text-[9px] text-amber-700">
-              AI triage — not a diagnosis. Always consult a licensed healthcare provider.
+              {t("components.consultSummary.disclaimer")}
             </p>
           </div>
         </div>

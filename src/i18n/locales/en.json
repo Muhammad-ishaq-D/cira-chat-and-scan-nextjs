@@ -1408,5 +1408,90 @@
       "urlPrompt": "Enter URL",
       "imageUrlPrompt": "Image URL"
     }
+  },
+  "components": {
+    "airDoctor": {
+      "full": "Book a Doctor",
+      "short": "Doctor",
+      "title": "Book a Doctor Appointment"
+    },
+    "bookDoctor": {
+      "heading": "Talk to a licensed doctor",
+      "subheading": "Online consultation, available now",
+      "cta": "Book a Doctor Online"
+    },
+    "consultSummary": {
+      "assessment": "Assessment",
+      "subtitle": "AI Triage Summary",
+      "clearFinding": "Clear Finding",
+      "needsAttention": "Needs Attention",
+      "uncertain": "Uncertain",
+      "possibleConditions": "Possible Conditions",
+      "whatToDoNext": "What to Do Next",
+      "disclaimer": "AI triage — not a diagnosis. Always consult a licensed healthcare provider."
+    },
+    "detailedReport": {
+      "title": "Detailed Health Assessment",
+      "subtitle": "Comprehensive AI Clinical Report",
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe",
+      "chiefComplaint": "Chief Complaint",
+      "history": "History of Present Illness",
+      "reviewOfSystems": "Review of Systems",
+      "assessment": "Assessment",
+      "primaryDiagnosis": "Primary Diagnosis",
+      "differentialDiagnoses": "Differential Diagnoses",
+      "treatmentPlan": "Treatment Plan",
+      "immediateActions": "Immediate Actions",
+      "suggestedMeds": "Suggested Medications",
+      "lifestyle": "Lifestyle Recommendations",
+      "followUp": "Follow-up",
+      "redFlags": "Red Flags — Seek Immediate Care If",
+      "disclaimer": "AI-generated report. Always consult a licensed healthcare provider for diagnosis and treatment."
+    },
+    "rating": {
+      "title": "Rate Cira",
+      "subtitle": "Please share your rating and feedback.",
+      "question": "How was your Cira experience?",
+      "feedbackLabel": "Additional feedback",
+      "optional": "(optional)",
+      "placeholder": "Tell us what helped today and what we can improve next time",
+      "cancel": "Cancel",
+      "submit": "Rate",
+      "submitting": "Submitting...",
+      "selectError": "Please select a rating",
+      "thanks": "Thank you for your feedback!",
+      "submitFailed": "Failed to submit rating"
+    },
+    "reportGenerating": {
+      "text": "Generating your assessment report"
+    },
+    "sdkLoading": {
+      "preparing": "Preparing scanner",
+      "downloading": "Downloading scanner engine",
+      "startingCamera": "Starting camera",
+      "firstTime": "First-time setup downloads ~10MB · then cached",
+      "settingUp": "Setting up secure camera · Please wait",
+      "engine": "Engine",
+      "network": "Network",
+      "type": "Type",
+      "speed": "Speed",
+      "ping": "Ping",
+      "online": "Online",
+      "offline": "Offline",
+      "connectionIssue": "Connection issue",
+      "takingLonger": "The scanner engine is taking longer than expected to download.",
+      "checkConnection": "Please check your internet connection and try again.",
+      "noResponse": "no response",
+      "retry": "Retry",
+      "stuckAt": "Stuck at {{percent}}% · waited 20s+",
+      "creditsNote": "Credits deducted upon scan · 100% on-device",
+      "noConnection": "No connection — engine download paused",
+      "qualityExcellent": "Excellent",
+      "qualityGood": "Good",
+      "qualitySlow": "Slow",
+      "qualityStable": "Stable"
+    }
   }
 }

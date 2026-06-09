@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Star, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -10,6 +11,7 @@ interface RatingModalProps {
 }
 
 const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
+    const { t } = useTranslation();
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [feedback, setFeedback] = useState("");
@@ -19,17 +21,17 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
 
     const handleSubmit = async () => {
         if (rating === 0) {
-            toast.error("Please select a rating");
+            toast.error(t("components.rating.selectError"));
             return;
         }
 
         setIsSubmitting(true);
         try {
             await userApi.submitRating({ rating, feedback });
-            toast.success("Thank you for your feedback!");
+            toast.success(t("components.rating.thanks"));
             onSuccess();
         } catch (error: any) {
-            toast.error(error.message || "Failed to submit rating");
+            toast.error(error.message || t("components.rating.submitFailed"));
         } finally {
             setIsSubmitting(false);
         }
@@ -40,8 +42,8 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
             <div className="w-full max-w-sm bg-card rounded-[2.5rem] p-8 shadow-2xl shadow-black/20 border border-border/50 animate-in zoom-in-95 duration-300">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">Rate Cira</h2>
-                        <p className="text-sm text-muted-foreground font-body">Please share your rating and feedback.</p>
+                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">{t("components.rating.title")}</h2>
+                        <p className="text-sm text-muted-foreground font-body">{t("components.rating.subtitle")}</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -53,7 +55,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
 
                 <div className="space-y-6">
                     <div>
-                        <p className="text-sm font-medium font-body text-foreground mb-4">How was your Cira experience?</p>
+                        <p className="text-sm font-medium font-body text-foreground mb-4">{t("components.rating.question")}</p>
                         <div className="flex justify-between gap-2">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
@@ -80,11 +82,11 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                     </div>
 
                     <div>
-                        <p className="text-sm font-medium font-body text-foreground mb-3">Additional feedback <span className="text-muted-foreground/60">(optional)</span></p>
+                        <p className="text-sm font-medium font-body text-foreground mb-3">{t("components.rating.feedbackLabel")} <span className="text-muted-foreground/60">{t("components.rating.optional")}</span></p>
                         <textarea
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            placeholder="Tell us what helped today and what we can improve next time"
+                            placeholder={t("components.rating.placeholder")}
                             className="w-full h-32 px-4 py-3 rounded-2xl bg-muted/50 border border-border text-sm font-body outline-none focus:border-primary transition-colors resize-none placeholder:text-muted-foreground/40"
                         />
                     </div>
@@ -94,14 +96,14 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                             onClick={onClose}
                             className="flex-1 py-3.5 rounded-2xl border border-border text-sm font-medium font-body hover:bg-muted transition-colors"
                         >
-                            Cancel
+                            {t("components.rating.cancel")}
                         </button>
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting || rating === 0}
                             className="flex-1 py-3.5 rounded-2xl bg-[#007EA7] text-white text-sm font-medium font-body hover:opacity-90 transition-all disabled:opacity-50 disabled:grayscale"
                         >
-                            {isSubmitting ? "Submitting..." : "Rate"}
+                            {isSubmitting ? t("components.rating.submitting") : t("components.rating.submit")}
                         </button>
                     </div>
                 </div>

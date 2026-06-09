@@ -1408,5 +1408,90 @@
       "urlPrompt": "Entrez l'URL",
       "imageUrlPrompt": "URL de l'image"
     }
+  },
+  "components": {
+    "airDoctor": {
+      "full": "Consulter un médecin",
+      "short": "Médecin",
+      "title": "Prendre rendez-vous médical"
+    },
+    "bookDoctor": {
+      "heading": "Parlez à un médecin agréé",
+      "subheading": "Consultation en ligne, disponible maintenant",
+      "cta": "Consulter un médecin en ligne"
+    },
+    "consultSummary": {
+      "assessment": "Évaluation",
+      "subtitle": "Résumé du triage IA",
+      "clearFinding": "Constat clair",
+      "needsAttention": "Attention requise",
+      "uncertain": "Incertain",
+      "possibleConditions": "Conditions possibles",
+      "whatToDoNext": "Que faire ensuite",
+      "disclaimer": "Triage IA — pas un diagnostic. Consultez toujours un professionnel de santé agréé."
+    },
+    "detailedReport": {
+      "title": "Évaluation de santé détaillée",
+      "subtitle": "Rapport clinique IA complet",
+      "mild": "Léger",
+      "moderate": "Modéré",
+      "severe": "Sévère",
+      "chiefComplaint": "Motif principal",
+      "history": "Histoire de la maladie actuelle",
+      "reviewOfSystems": "Revue des systèmes",
+      "assessment": "Évaluation",
+      "primaryDiagnosis": "Diagnostic principal",
+      "differentialDiagnoses": "Diagnostics différentiels",
+      "treatmentPlan": "Plan de traitement",
+      "immediateActions": "Actions immédiates",
+      "suggestedMeds": "Médicaments suggérés",
+      "lifestyle": "Recommandations de mode de vie",
+      "followUp": "Suivi",
+      "redFlags": "Signaux d'alarme — consulter immédiatement si",
+      "disclaimer": "Rapport généré par IA. Consultez toujours un professionnel de santé agréé pour diagnostic et traitement."
+    },
+    "rating": {
+      "title": "Évaluer Cira",
+      "subtitle": "Partagez votre note et vos commentaires.",
+      "question": "Comment s'est passée votre expérience Cira ?",
+      "feedbackLabel": "Commentaires supplémentaires",
+      "optional": "(facultatif)",
+      "placeholder": "Dites-nous ce qui vous a aidé et ce que nous pouvons améliorer",
+      "cancel": "Annuler",
+      "submit": "Évaluer",
+      "submitting": "Envoi...",
+      "selectError": "Veuillez sélectionner une note",
+      "thanks": "Merci pour vos commentaires !",
+      "submitFailed": "Échec de l'envoi de la note"
+    },
+    "reportGenerating": {
+      "text": "Génération de votre rapport d'évaluation"
+    },
+    "sdkLoading": {
+      "preparing": "Préparation du scanner",
+      "downloading": "Téléchargement du moteur du scanner",
+      "startingCamera": "Démarrage de la caméra",
+      "firstTime": "Configuration initiale télécharge ~10Mo · puis mise en cache",
+      "settingUp": "Configuration de la caméra sécurisée · Veuillez patienter",
+      "engine": "Moteur",
+      "network": "Réseau",
+      "type": "Type",
+      "speed": "Vitesse",
+      "ping": "Ping",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "connectionIssue": "Problème de connexion",
+      "takingLonger": "Le téléchargement du moteur du scanner prend plus de temps que prévu.",
+      "checkConnection": "Veuillez vérifier votre connexion internet et réessayer.",
+      "noResponse": "pas de réponse",
+      "retry": "Réessayer",
+      "stuckAt": "Bloqué à {{percent}}% · plus de 20s",
+      "creditsNote": "Crédits déduits lors du scan · 100% sur l'appareil",
+      "noConnection": "Aucune connexion — téléchargement du moteur en pause",
+      "qualityExcellent": "Excellent",
+      "qualityGood": "Bon",
+      "qualitySlow": "Lent",
+      "qualityStable": "Stable"
+    }
   }
 }
