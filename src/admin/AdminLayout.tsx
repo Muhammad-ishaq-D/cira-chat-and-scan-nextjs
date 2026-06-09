@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText, Activity } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
@@ -17,7 +17,7 @@ const navItems = [
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const t = i18n.getFixedT("en");
 
   useEffect(() => {
     if (localStorage.getItem("cira_admin") !== "true" || !localStorage.getItem("cira_admin_token")) {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon, Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Code, Link2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Type, Undo, Redo, Palette } from "lucide-react";
 import { Link } from "react-router-dom";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
@@ -181,7 +181,7 @@ function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promis
 }
 
 const AdminBlogs = () => {
-  const { t } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

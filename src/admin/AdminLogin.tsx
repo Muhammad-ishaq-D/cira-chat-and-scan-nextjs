@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { toast } from "sonner";
 
@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

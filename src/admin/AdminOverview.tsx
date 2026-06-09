@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Users, ScanFace, CreditCard, TrendingUp, Activity, FileText, DollarSign } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 const AdminOverview = () => {
-  const { t, i18n } = useTranslation();
+  const t = i18n.getFixedT("en");
   const [dashboard, setDashboard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ const AdminOverview = () => {
       <div>
         <p className="text-sm text-muted-foreground font-body mb-1">{t("admin.overview.superAdmin")}</p>
         <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.overview.title")}</h1>
-        <p className="text-sm text-muted-foreground font-body">{new Date().toLocaleDateString(i18n.language, { month: "long", day: "numeric", year: "numeric" })}</p>
+        <p className="text-sm text-muted-foreground font-body">{new Date().toLocaleDateString("en", { month: "long", day: "numeric", year: "numeric" })}</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
