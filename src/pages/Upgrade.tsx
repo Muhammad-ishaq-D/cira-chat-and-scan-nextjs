@@ -60,6 +60,7 @@ const defaultPlans: Plan[] = [
 
 const Upgrade = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [plans, setPlans] = useState<Plan[]>(defaultPlans);
   const [redirectingId, setRedirectingId] = useState<string | null>(null);
