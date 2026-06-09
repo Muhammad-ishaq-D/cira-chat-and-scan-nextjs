@@ -207,7 +207,7 @@ const Upgrade = () => {
 
     const link = STRIPE_PAYMENT_LINKS[plan.name.toLowerCase()] || STRIPE_PAYMENT_LINKS[plan.id];
     if (!link) {
-      toast.error("Payment link is not configured for this plan.");
+      toast.error(t("upgrade.errors.noPaymentLink"));
       return;
     }
 
@@ -216,7 +216,7 @@ const Upgrade = () => {
 
     const userId = getUserId();
     if (!userId) {
-      toast.error("Please sign in again before upgrading.");
+      toast.error(t("upgrade.errors.signInAgain"));
       setRedirectingId(null);
       return;
     }
