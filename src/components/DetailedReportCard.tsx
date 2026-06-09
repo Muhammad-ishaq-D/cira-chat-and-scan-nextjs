@@ -104,18 +104,18 @@ const DetailedReportCard = ({ data }: Props) => {
         </div>
 
         {/* Chief Complaint */}
-        <Section icon={Stethoscope} title="Chief Complaint">
+        <Section icon={Stethoscope} title={t("components.detailedReport.chiefComplaint")}>
           <p className="text-[12px] text-foreground leading-relaxed">{data.chief_complaint}</p>
         </Section>
 
         {/* History */}
-        <Section icon={Activity} title="History of Present Illness" defaultOpen={false}>
+        <Section icon={Activity} title={t("components.detailedReport.history")} defaultOpen={false}>
           <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-line">{data.history_of_present_illness}</p>
         </Section>
 
         {/* Review of Systems */}
         {data.review_of_systems?.length > 0 && (
-          <Section icon={Heart} title="Review of Systems" defaultOpen={false}>
+          <Section icon={Heart} title={t("components.detailedReport.reviewOfSystems")} defaultOpen={false}>
             <div className="space-y-1.5">
               {data.review_of_systems.map((ros, i) => (
                 <div key={i} className="flex gap-2">
@@ -128,15 +128,15 @@ const DetailedReportCard = ({ data }: Props) => {
         )}
 
         {/* Assessment */}
-        <Section icon={Brain} title="Assessment">
+        <Section icon={Brain} title={t("components.detailedReport.assessment")}>
           <div className="space-y-2.5">
             <div>
-              <p className="text-[10px] text-muted-foreground font-medium mb-1">Primary Diagnosis</p>
+              <p className="text-[10px] text-muted-foreground font-medium mb-1">{t("components.detailedReport.primaryDiagnosis")}</p>
               <p className="text-[13px] font-semibold text-foreground">{data.assessment.primary_diagnosis}</p>
             </div>
             {data.assessment.differential_diagnoses?.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground font-medium mb-1.5">Differential Diagnoses</p>
+                <p className="text-[10px] text-muted-foreground font-medium mb-1.5">{t("components.detailedReport.differentialDiagnoses")}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {data.assessment.differential_diagnoses.map((dx, i) => (
                     <span key={i} className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium ${likelihoodColor(dx.likelihood)}`}>
@@ -151,11 +151,11 @@ const DetailedReportCard = ({ data }: Props) => {
         </Section>
 
         {/* Plan */}
-        <Section icon={TrendingUp} title="Treatment Plan">
+        <Section icon={TrendingUp} title={t("components.detailedReport.treatmentPlan")}>
           <div className="space-y-3">
             {data.plan.immediate_actions?.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground font-medium mb-1">Immediate Actions</p>
+                <p className="text-[10px] text-muted-foreground font-medium mb-1">{t("components.detailedReport.immediateActions")}</p>
                 <ul className="space-y-1">
                   {data.plan.immediate_actions.map((a, i) => (
                     <li key={i} className="flex items-start gap-1.5">
@@ -169,7 +169,7 @@ const DetailedReportCard = ({ data }: Props) => {
             {data.plan.medications_suggested?.length > 0 && (
               <div>
                 <p className="text-[10px] text-muted-foreground font-medium mb-1 flex items-center gap-1">
-                  <Pill size={10} /> Suggested Medications
+                  <Pill size={10} /> {t("components.detailedReport.suggestedMeds")}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {data.plan.medications_suggested.map((m, i) => (
@@ -180,7 +180,7 @@ const DetailedReportCard = ({ data }: Props) => {
             )}
             {data.plan.lifestyle_recommendations?.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground font-medium mb-1">Lifestyle Recommendations</p>
+                <p className="text-[10px] text-muted-foreground font-medium mb-1">{t("components.detailedReport.lifestyle")}</p>
                 <ul className="space-y-1">
                   {data.plan.lifestyle_recommendations.map((r, i) => (
                     <li key={i} className="flex items-start gap-1.5">
@@ -193,7 +193,7 @@ const DetailedReportCard = ({ data }: Props) => {
             )}
             {data.plan.follow_up && (
               <div className="bg-blue-50/50 rounded-lg p-2.5">
-                <p className="text-[10px] text-blue-700 font-medium">📅 Follow-up: {data.plan.follow_up}</p>
+                <p className="text-[10px] text-blue-700 font-medium">{t("components.detailedReport.followUp")}: {data.plan.follow_up}</p>
               </div>
             )}
           </div>
@@ -204,7 +204,7 @@ const DetailedReportCard = ({ data }: Props) => {
           <div className="px-4 py-3 bg-red-50/50 border-t border-red-100/50">
             <div className="flex items-center gap-1.5 mb-1.5">
               <AlertTriangle size={11} className="text-red-500" />
-              <p className="text-[10px] font-semibold text-red-700 uppercase tracking-wider">Red Flags — Seek Immediate Care If</p>
+              <p className="text-[10px] font-semibold text-red-700 uppercase tracking-wider">{t("components.detailedReport.redFlags")}</p>
             </div>
             <ul className="space-y-1">
               {data.red_flags.map((rf, i) => (
@@ -224,7 +224,7 @@ const DetailedReportCard = ({ data }: Props) => {
           <div className="flex items-center gap-1.5">
             <AlertTriangle size={10} className="text-amber-500" />
             <p className="text-[9px] text-amber-700">
-              AI-generated report. Always consult a licensed healthcare provider for diagnosis and treatment.
+              {t("components.detailedReport.disclaimer")}
             </p>
           </div>
         </div>
