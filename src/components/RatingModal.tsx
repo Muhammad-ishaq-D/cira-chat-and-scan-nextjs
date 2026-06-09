@@ -42,8 +42,8 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
             <div className="w-full max-w-sm bg-card rounded-[2.5rem] p-8 shadow-2xl shadow-black/20 border border-border/50 animate-in zoom-in-95 duration-300">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">Rate Cira</h2>
-                        <p className="text-sm text-muted-foreground font-body">Please share your rating and feedback.</p>
+                        <h2 className="text-2xl font-semibold font-heading text-foreground mb-1">{t("components.rating.title")}</h2>
+                        <p className="text-sm text-muted-foreground font-body">{t("components.rating.subtitle")}</p>
                     </div>
                     <button
                         onClick={onClose}
