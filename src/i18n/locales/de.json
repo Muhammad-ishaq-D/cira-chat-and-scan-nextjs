@@ -774,5 +774,111 @@
       "Fatty Liver Disease": "Fettleber",
       "Cardiovascular Event": "Kardiovaskuläres Ereignis"
     }
+  },
+  "profile": {
+    "title": "Profileinstellungen",
+    "tapToChange": "Tippe zum Ändern des Fotos",
+    "personal": "Persönliche Informationen",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail",
+    "emailLocked": "E-Mail kann nicht geändert werden",
+    "health": "Gesundheitsdaten",
+    "biologicalSex": "Biologisches Geschlecht",
+    "male": "♂ Männlich",
+    "female": "♀ Weiblich",
+    "age": "Alter",
+    "ageUnit": "J.",
+    "height": "Größe",
+    "heightUnit": "cm",
+    "weight": "Gewicht",
+    "weightUnit": "kg",
+    "saveChanges": "Änderungen speichern",
+    "saving": "Speichern...",
+    "dangerZone": "Gefahrenzone",
+    "signOut": "Abmelden",
+    "deleteAccount": "Konto löschen",
+    "errors": {
+      "nameRequired": "Name ist erforderlich",
+      "ageRange": "Alter muss zwischen 10 und 120 liegen",
+      "heightRange": "Größe muss zwischen 50 und 300 cm liegen",
+      "weightRange": "Gewicht muss zwischen 10 und 500 kg liegen",
+      "imageType": "Bitte wähle eine Bilddatei",
+      "imageSize": "Bild muss unter 5MB sein",
+      "updateFailed": "Profil konnte nicht aktualisiert werden",
+      "deleteFailed": "Konto konnte nicht gelöscht werden"
+    },
+    "toast": {
+      "updated": "Profil aktualisiert!",
+      "deleted": "Konto gelöscht"
+    },
+    "confirmDelete": "Möchtest du dein Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "reports": {
+    "title": "Berichte",
+    "subtitle": "Sieh, lade herunter und verwalte deine Gesundheitsberichte",
+    "tabs": {
+      "assessments": "Bewertungen",
+      "scans": "Vital-Scans"
+    },
+    "searchPlaceholder": "Berichte suchen...",
+    "empty": {
+      "reportsTitle": "Keine Berichte gefunden",
+      "reportsSub": "Schließe eine detaillierte Bewertung ab, um deinen ersten Bericht zu erstellen",
+      "scansTitle": "Noch keine Vital-Scans",
+      "scansSub": "Führe einen Gesichtsscan durch, um deine Vitalwerte zu sehen",
+      "startScan": "Scan starten"
+    },
+    "card": {
+      "detailedAssessment": "Detaillierte Bewertung",
+      "ready": "Bereit",
+      "preview": "Vorschau",
+      "download": "Herunterladen",
+      "upgradeDownload": "Upgrade zum Herunterladen",
+      "reportPreview": "Berichtsvorschau",
+      "reportId": "Bericht-ID:",
+      "type": "Typ:",
+      "generated": "Erstellt:",
+      "summary": "Zusammenfassung:",
+      "previewNote": "Dieser Bericht wurde von Cira, KI-Krankenpflegerin, erstellt.",
+      "faceScan": "Gesichtsscan",
+      "selectAll": "Alle auswählen",
+      "deselectAll": "Auswahl aufheben",
+      "selected": "{{count}} ausgewählt",
+      "downloadCombined": "Kombinierten Bericht herunterladen",
+      "pro": "Pro",
+      "pdf": "PDF"
+    },
+    "toast": {
+      "upgrade": "Upgrade auf Pro, um Berichte herunterzuladen",
+      "upgradeAction": "Upgrade",
+      "pdfDownloaded": "PDF heruntergeladen",
+      "pdfFailed": "PDF konnte nicht erstellt werden",
+      "scanPdfDownloaded": "Scan-PDF heruntergeladen",
+      "selectScan": "Wähle mindestens einen Scan",
+      "combinedDownloaded": "Kombinierter Bericht ({{count}} Scans) heruntergeladen"
+    }
+  },
+  "menu": {
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "newChat": "Neuer Chat",
+    "product": "Produkt",
+    "company": "Unternehmen",
+    "legal": "Rechtliches",
+    "faceVitalScan": "Gesichts-Vital-Scan",
+    "ourStory": "Unsere Geschichte",
+    "hipaaPrivate": "HIPAA · Privat"
+  },
+  "profilePopover": {
+    "planSuffix": "Tarif",
+    "credits": "Guthaben",
+    "faceScans": "Gesichtsscans",
+    "scansRemaining": "{{count}} Scans übrig",
+    "unlimited": "Unbegrenzt",
+    "chatCredits": "Chat-Guthaben",
+    "creditsRemaining": "{{count}} Credits übrig",
+    "profileSettings": "Profileinstellungen",
+    "upgradePlan": "Tarif upgraden",
+    "paymentHistory": "Zahlungsverlauf"
   }
 }

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -9,8 +10,10 @@ interface ProfilePopoverProps {
   children: React.ReactNode;
 }
 
+
 const ProfilePopover = ({ children }: ProfilePopoverProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const localUser = getUser();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -55,13 +58,13 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">{plan} Plan</span>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground uppercase tracking-wider">{plan} {t("profilePopover.planSuffix")}</span>
           </div>
         </div>
 
         {/* Credits */}
         <div className="p-4 space-y-3 border-b border-border/40">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Credits</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("profilePopover.credits")}</p>
           {loading ? (
             <div className="flex justify-center py-2"><Loader2 size={16} className="animate-spin text-muted-foreground" /></div>
           ) : (
@@ -72,8 +75,8 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
                     <Scan size={14} className="text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Face Scans</p>
-                    <p className="text-[10px] text-muted-foreground">{faceScans === "Unlimited" ? "Unlimited" : `${faceScans} scans remaining`}</p>
+                    <p className="text-xs font-medium text-foreground">{t("profilePopover.faceScans")}</p>
+                    <p className="text-[10px] text-muted-foreground">{faceScans === "Unlimited" ? t("profilePopover.unlimited") : t("profilePopover.scansRemaining", { count: faceScans })}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{faceScans}</span>
@@ -84,8 +87,8 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
                     <MessageCircle size={14} className="text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Chat Credits</p>
-                    <p className="text-[10px] text-muted-foreground">{chatCredits >= 1000 ? `${chatDisplay} credits remaining` : `${chatCredits} credits remaining`}</p>
+                    <p className="text-xs font-medium text-foreground">{t("profilePopover.chatCredits")}</p>
+                    <p className="text-[10px] text-muted-foreground">{t("profilePopover.creditsRemaining", { count: chatCredits >= 1000 ? chatDisplay : chatCredits })}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{chatDisplay}</span>
@@ -103,7 +106,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <Settings size={14} className="text-blue-600" />
             </div>
-            <span className="text-xs font-medium text-foreground flex-1 text-left">Profile Settings</span>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">{t("profilePopover.profileSettings")}</span>
             <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
           <button
@@ -113,7 +116,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
               <Crown size={14} className="text-amber-600" />
             </div>
-            <span className="text-xs font-medium text-foreground flex-1 text-left">Upgrade Plan</span>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">{t("profilePopover.upgradePlan")}</span>
             <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
           <button
@@ -123,7 +126,7 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
             <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
               <History size={14} className="text-emerald-600" />
             </div>
-            <span className="text-xs font-medium text-foreground flex-1 text-left">Payment History</span>
+            <span className="text-xs font-medium text-foreground flex-1 text-left">{t("profilePopover.paymentHistory")}</span>
             <ChevronRight size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
         </div>

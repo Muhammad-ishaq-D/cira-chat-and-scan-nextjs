@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, LogOut, ScanFace, Sparkles, FileText, Download, Eye, Calendar, Search, UserRound, Loader2, CheckSquare, Square, Lock } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -12,14 +13,15 @@ import { toast } from "sonner";
 import { logAuditEvent } from "@/lib/audit";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, tKey: "dashboard.nav.home", id: "home" },
+  { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat" },
+  { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan" },
+  { icon: FileText, tKey: "dashboard.nav.reports", id: "reports" },
 ];
 
 const Reports = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [reports, setReports] = useState<any[]>([]);
@@ -28,7 +30,6 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
-  // Downloads available on all plans (including Basic)
   const [isBasicPlan, setIsBasicPlan] = useState(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
@@ -66,16 +67,16 @@ const Reports = () => {
 
   const handleDownload = async (report: any) => {
     if (isBasicPlan) {
-      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
       return;
     }
     try {
       await downloadReportPdf(report);
       logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
-      toast.success("PDF downloaded");
+      toast.success(t("reports.toast.pdfDownloaded"));
     } catch (e) {
       console.error("PDF generation failed:", e);
-      toast.error("Failed to generate PDF");
+      toast.error(t("reports.toast.pdfFailed"));
     }
   };
 
@@ -98,21 +99,21 @@ const Reports = () => {
 
   const handleDownloadCombined = async () => {
     if (isBasicPlan) {
-      toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+      toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
       return;
     }
     const selected = scans.filter(s => selectedScans.has(s.id || s._id));
     if (selected.length === 0) {
-      toast.error("Select at least one scan");
+      toast.error(t("reports.toast.selectScan"));
       return;
     }
     try {
       await downloadCombinedScansPdf(selected);
       logAuditEvent("DOWNLOAD_COMBINED_SCANS_PDF", Array.from(selectedScans).join(","));
-      toast.success(`Combined report (${selected.length} scans) downloaded`);
+      toast.success(t("reports.toast.combinedDownloaded", { count: selected.length }));
     } catch (e) {
       console.error("Combined PDF failed:", e);
-      toast.error("Failed to generate PDF");
+      toast.error(t("reports.toast.pdfFailed"));
     }
   };
 
@@ -120,7 +121,7 @@ const Reports = () => {
     if (!d) return "N/A";
     try {
       const date = new Date(d);
-      if (!isNaN(date.getTime())) return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
+      if (!isNaN(date.getTime())) return date.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
     } catch {}
     return d;
   };
@@ -159,7 +160,7 @@ const Reports = () => {
                 ) : (
                   <Icon size={18} strokeWidth={item.id === "reports" ? 2 : 1.5} />
                 )}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{t(item.tKey)}</span>
               </button>
             );
           })}
@@ -170,7 +171,7 @@ const Reports = () => {
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
-            <span className="text-[9px] font-body font-medium leading-none">Logout</span>
+            <span className="text-[9px] font-body font-medium leading-none">{t("dashboard.nav.logout")}</span>
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
@@ -191,9 +192,9 @@ const Reports = () => {
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-              Reports
+              {t("reports.title")}
             </h1>
-            <p className="text-sm text-muted-foreground font-body">View, download, and manage your health reports</p>
+            <p className="text-sm text-muted-foreground font-body">{t("reports.subtitle")}</p>
           </div>
 
           {/* Tabs */}
@@ -207,7 +208,7 @@ const Reports = () => {
               }`}
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              Assessments
+              {t("reports.tabs.assessments")}
               {reports.length > 0 && <span className="ml-1.5 text-xs opacity-70">{reports.length}</span>}
             </button>
             <button
@@ -219,7 +220,7 @@ const Reports = () => {
               }`}
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              Vital Scans
+              {t("reports.tabs.scans")}
               {scans.length > 0 && <span className="ml-1.5 text-xs opacity-70">{scans.length}</span>}
             </button>
           </div>
@@ -234,7 +235,7 @@ const Reports = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search reports..."
+                    placeholder={t("reports.searchPlaceholder")}
                     className="w-full h-10 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                     style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
                   />
@@ -248,8 +249,8 @@ const Reports = () => {
               ) : filteredReports.length === 0 ? (
                 <div className="text-center py-16">
                   <FileText size={40} className="text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-sm text-muted-foreground">No reports found</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Complete a detailed assessment to generate your first report</p>
+                  <p className="text-sm text-muted-foreground">{t("reports.empty.reportsTitle")}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">{t("reports.empty.reportsSub")}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -266,7 +267,7 @@ const Reports = () => {
                               {report.title}
                             </h3>
                             <span className="shrink-0 text-[10px] font-medium px-2.5 py-0.5 rounded-full text-purple-600 bg-purple-50">
-                              {report.type || "Detailed Assessment"}
+                              {report.type || t("reports.card.detailedAssessment")}
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{report.summary}</p>
@@ -274,7 +275,7 @@ const Reports = () => {
                             <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
                               <span className="flex items-center gap-1"><Calendar size={12} />{report.date || report.created_at}</span>
                               {report.size && <span>{report.size}</span>}
-                              <span className="text-emerald-600 font-medium">{report.status || "Ready"}</span>
+                              <span className="text-emerald-600 font-medium">{report.status || t("reports.card.ready")}</span>
                             </div>
                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
@@ -287,14 +288,14 @@ const Reports = () => {
                                 }}
                                 className="h-8 px-3 rounded-lg border border-border/60 text-xs font-medium text-foreground hover:bg-accent transition-all flex items-center gap-1.5"
                               >
-                                <Eye size={13} />Preview
+                                <Eye size={13} />{t("reports.card.preview")}
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
                                 className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
                                 {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                                {isBasicPlan ? "Upgrade to Download" : "Download"}
+                                {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.download")}
                               </button>
                             </div>
                           </div>
@@ -306,14 +307,14 @@ const Reports = () => {
                           <div className="bg-secondary/30 rounded-xl p-5">
                             <div className="flex items-center gap-2 mb-3">
                               <FileText size={14} className="text-muted-foreground" />
-                              <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Report Preview</p>
+                              <p className="text-xs font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("reports.card.reportPreview")}</p>
                             </div>
                             <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                              <p><span className="font-medium text-foreground">Report ID:</span> {report.id}</p>
-                              <p><span className="font-medium text-foreground">Type:</span> {report.type || "Detailed Assessment"}</p>
-                              <p><span className="font-medium text-foreground">Generated:</span> {report.date || report.created_at}</p>
-                              <p><span className="font-medium text-foreground">Summary:</span> {report.summary}</p>
-                              <p className="pt-2 text-[10px] text-muted-foreground/60">⚕️ This report was generated by Cira AI Health Nurse.</p>
+                              <p><span className="font-medium text-foreground">{t("reports.card.reportId")}</span> {report.id}</p>
+                              <p><span className="font-medium text-foreground">{t("reports.card.type")}</span> {report.type || t("reports.card.detailedAssessment")}</p>
+                              <p><span className="font-medium text-foreground">{t("reports.card.generated")}</span> {report.date || report.created_at}</p>
+                              <p><span className="font-medium text-foreground">{t("reports.card.summary")}</span> {report.summary}</p>
+                              <p className="pt-2 text-[10px] text-muted-foreground/60">⚕️ {t("reports.card.previewNote")}</p>
                             </div>
                           </div>
                         </div>
@@ -341,11 +342,11 @@ const Reports = () => {
                       ) : (
                         <Square size={16} />
                       )}
-                      {selectedScans.size === scans.length ? "Deselect all" : "Select all"}
+                      {selectedScans.size === scans.length ? t("reports.card.deselectAll") : t("reports.card.selectAll")}
                     </button>
                     {selectedScans.size > 0 && (
                       <span className="text-xs text-muted-foreground">
-                        {selectedScans.size} selected
+                        {t("reports.card.selected", { count: selectedScans.size })}
                       </span>
                     )}
                   </div>
@@ -355,7 +356,7 @@ const Reports = () => {
                     className={`h-8 px-4 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                   >
                     {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                    {isBasicPlan ? "Upgrade to Download" : "Download Combined Report"}
+                    {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.downloadCombined")}
                   </button>
                 </div>
               )}
@@ -367,13 +368,13 @@ const Reports = () => {
               ) : scans.length === 0 ? (
                 <div className="text-center py-16">
                   <ScanFace size={40} className="text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-sm text-muted-foreground">No vital scans yet</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Complete a face scan to see your vitals here</p>
+                  <p className="text-sm text-muted-foreground">{t("reports.empty.scansTitle")}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">{t("reports.empty.scansSub")}</p>
                   <button
                     onClick={() => navigate("/vitals-scan")}
                     className="mt-4 h-9 px-5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-sm hover:shadow-md transition-all"
                   >
-                    Start a Scan
+                    {t("reports.empty.startScan")}
                   </button>
                 </div>
               ) : (
@@ -415,7 +416,7 @@ const Reports = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                                Face Scan
+                                {t("reports.card.faceScan")}
                               </p>
                               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                                 <Calendar size={10} />
@@ -434,21 +435,21 @@ const Reports = () => {
                           <button
                             onClick={async () => {
                               if (isBasicPlan) {
-                                toast.error("Upgrade to Pro to download reports", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 5000 });
+                                toast.error(t("reports.toast.upgrade"), { action: { label: t("reports.toast.upgradeAction"), onClick: () => navigate("/upgrade") }, duration: 5000 });
                                 return;
                               }
                               try {
                                 await downloadSingleScanPdf(scan);
                                 logAuditEvent("DOWNLOAD_SINGLE_SCAN_PDF", scanId);
-                                toast.success("Scan PDF downloaded");
+                                toast.success(t("reports.toast.scanPdfDownloaded"));
                               } catch {
-                                toast.error("Failed to generate PDF");
+                                toast.error(t("reports.toast.pdfFailed"));
                               }
                             }}
                             className={`shrink-0 h-8 px-3 rounded-lg border border-border/60 text-xs font-medium transition-all flex items-center gap-1.5 opacity-0 group-hover:opacity-100 ${isBasicPlan ? "text-muted-foreground" : "text-foreground hover:bg-accent"}`}
                           >
                             {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                            <span className="hidden sm:inline">{isBasicPlan ? "Pro" : "PDF"}</span>
+                            <span className="hidden sm:inline">{isBasicPlan ? t("reports.card.pro") : t("reports.card.pdf")}</span>
                           </button>
                         </div>
                       </div>

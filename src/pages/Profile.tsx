@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera } from "lucide-react";
-import ciraLogo from "@/assets/cira-logo.svg";
 import { userApi } from "@/lib/apiClient";
 import { getUser, logout, updateUserAvatar } from "@/lib/auth";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ type Sex = "male" | "female" | "";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const localUser = getUser();
 
   const [loading, setLoading] = useState(true);
@@ -49,25 +50,24 @@ const Profile = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      toast.error("Name is required");
+      toast.error(t("profile.errors.nameRequired"));
       return;
     }
     if (age && (Number(age) < 10 || Number(age) > 120)) {
-      toast.error("Age must be between 10 and 120");
+      toast.error(t("profile.errors.ageRange"));
       return;
     }
     if (height && (Number(height) < 50 || Number(height) > 300)) {
-      toast.error("Height must be between 50 and 300 cm");
+      toast.error(t("profile.errors.heightRange"));
       return;
     }
     if (weight && (Number(weight) < 10 || Number(weight) > 500)) {
-      toast.error("Weight must be between 10 and 500 kg");
+      toast.error(t("profile.errors.weightRange"));
       return;
     }
 
     setSaving(true);
     try {
-      // If there's a pending avatar, upload it first
       if (pendingAvatarFile) {
         const result = await userApi.uploadAvatar(pendingAvatarFile);
         setAvatar(result.avatar);
@@ -83,24 +83,24 @@ const Profile = () => {
         ...(weight ? { weight: Number(weight) } : {}),
         ...(sex ? { biological_sex: sex } : {}),
       });
-      toast.success("Profile updated!");
+      toast.success(t("profile.toast.updated"));
       setDirty(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to update profile");
+      toast.error(err.message || t("profile.errors.updateFailed"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
+    if (!window.confirm(t("profile.confirmDelete"))) return;
     try {
       await userApi.deleteAccount();
       logout();
       navigate("/login");
-      toast.success("Account deleted");
+      toast.success(t("profile.toast.deleted"));
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete account");
+      toast.error(err.message || t("profile.errors.deleteFailed"));
     }
   };
 
@@ -115,14 +115,13 @@ const Profile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
+      toast.error(t("profile.errors.imageType"));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5MB");
+      toast.error(t("profile.errors.imageSize"));
       return;
     }
-    // Create local preview and mark dirty
     const previewUrl = URL.createObjectURL(file);
     setPendingAvatarFile(file);
     setPendingAvatarPreview(previewUrl);
@@ -141,18 +140,16 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      {/* Header */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-lg mx-auto flex items-center gap-3 px-4 py-3">
           <button onClick={() => navigate("/dashboard")} className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-accent transition-colors">
             <ArrowLeft size={18} />
           </button>
-          <h1 className="font-heading text-lg font-semibold text-foreground">Profile Settings</h1>
+          <h1 className="font-heading text-lg font-semibold text-foreground">{t("profile.title")}</h1>
         </div>
       </div>
 
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* Avatar */}
         <div className="flex flex-col items-center gap-3">
           <div className="relative group">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-2xl font-semibold overflow-hidden">
@@ -164,27 +161,21 @@ const Profile = () => {
             </div>
             <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
               <Camera size={20} className="text-white" />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
             </label>
           </div>
-          <p className="text-xs text-muted-foreground font-body">Tap to change photo</p>
+          <p className="text-xs text-muted-foreground font-body">{t("profile.tapToChange")}</p>
           <p className="text-sm text-muted-foreground font-body">{email}</p>
         </div>
 
-        {/* Personal Info */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground font-heading flex items-center gap-2">
-            <User size={16} className="text-primary" /> Personal Information
+            <User size={16} className="text-primary" /> {t("profile.personal")}
           </h2>
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-muted-foreground font-body mb-1 block">Full Name</label>
+              <label className="text-xs text-muted-foreground font-body mb-1 block">{t("profile.fullName")}</label>
               <input
                 type="text"
                 value={name}
@@ -196,7 +187,7 @@ const Profile = () => {
 
             <div>
               <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
-                <Mail size={12} /> Email
+                <Mail size={12} /> {t("profile.email")}
               </label>
               <input
                 type="email"
@@ -204,20 +195,19 @@ const Profile = () => {
                 disabled
                 className="w-full py-2.5 px-3 rounded-xl border border-border bg-muted text-muted-foreground font-body text-sm cursor-not-allowed"
               />
-              <p className="text-[10px] text-muted-foreground mt-1">Email cannot be changed</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{t("profile.emailLocked")}</p>
             </div>
           </div>
         </div>
 
-        {/* Health Metrics */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="text-sm font-semibold text-foreground font-heading flex items-center gap-2">
-            <Ruler size={16} className="text-primary" /> Health Metrics
+            <Ruler size={16} className="text-primary" /> {t("profile.health")}
           </h2>
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-muted-foreground font-body mb-1 block">Biological Sex</label>
+              <label className="text-xs text-muted-foreground font-body mb-1 block">{t("profile.biologicalSex")}</label>
               <div className="grid grid-cols-2 gap-2">
                 {(["male", "female"] as const).map((option) => (
                   <button
@@ -230,7 +220,7 @@ const Profile = () => {
                         : "border-border bg-background text-foreground hover:border-primary/30"
                     }`}
                   >
-                    {option === "male" ? "♂ Male" : "♀ Female"}
+                    {t(`profile.${option}`)}
                   </button>
                 ))}
               </div>
@@ -239,7 +229,7 @@ const Profile = () => {
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
-                  <Calendar size={12} /> Age
+                  <Calendar size={12} /> {t("profile.age")}
                 </label>
                 <div className="relative">
                   <input
@@ -252,13 +242,13 @@ const Profile = () => {
                     max={120}
                     className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40"
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">yrs</span>
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{t("profile.ageUnit")}</span>
                 </div>
               </div>
 
               <div>
                 <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
-                  <Ruler size={12} /> Height
+                  <Ruler size={12} /> {t("profile.height")}
                 </label>
                 <div className="relative">
                   <input
@@ -271,13 +261,13 @@ const Profile = () => {
                     max={300}
                     className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40"
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">cm</span>
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{t("profile.heightUnit")}</span>
                 </div>
               </div>
 
               <div>
                 <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
-                  <Weight size={12} /> Weight
+                  <Weight size={12} /> {t("profile.weight")}
                 </label>
                 <div className="relative">
                   <input
@@ -290,38 +280,36 @@ const Profile = () => {
                     max={500}
                     className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-foreground font-body text-sm outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/40"
                   />
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">kg</span>
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{t("profile.weightUnit")}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Save */}
         <button
           onClick={handleSave}
           disabled={saving || !dirty}
           className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium font-body shadow-lg shadow-primary/20 hover:shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("profile.saving") : t("profile.saveChanges")}
         </button>
 
-        {/* Danger Zone */}
         <div className="border border-destructive/20 rounded-2xl p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-destructive font-heading">Danger Zone</h2>
+          <h2 className="text-sm font-semibold text-destructive font-heading">{t("profile.dangerZone")}</h2>
           <div className="flex flex-col sm:flex-row gap-2">
             <button
               onClick={handleLogout}
               className="flex-1 py-2.5 px-4 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors flex items-center justify-center gap-2"
             >
-              <LogOut size={14} /> Sign Out
+              <LogOut size={14} /> {t("profile.signOut")}
             </button>
             <button
               onClick={handleDeleteAccount}
               className="flex-1 py-2.5 px-4 rounded-xl border border-destructive/30 text-destructive text-sm font-medium font-body hover:bg-destructive/5 transition-colors flex items-center justify-center gap-2"
             >
-              <Trash2 size={14} /> Delete Account
+              <Trash2 size={14} /> {t("profile.deleteAccount")}
             </button>
           </div>
         </div>
