@@ -87,8 +87,8 @@ const ProfilePopover = ({ children }: ProfilePopoverProps) => {
                     <MessageCircle size={14} className="text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground">Chat Credits</p>
-                    <p className="text-[10px] text-muted-foreground">{chatCredits >= 1000 ? `${chatDisplay} credits remaining` : `${chatCredits} credits remaining`}</p>
+                    <p className="text-xs font-medium text-foreground">{t("profilePopover.chatCredits")}</p>
+                    <p className="text-[10px] text-muted-foreground">{t("profilePopover.creditsRemaining", { count: chatCredits >= 1000 ? chatDisplay : chatCredits })}</p>
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{chatDisplay}</span>
