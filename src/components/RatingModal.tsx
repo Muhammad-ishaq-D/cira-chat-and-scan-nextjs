@@ -11,6 +11,7 @@ interface RatingModalProps {
 }
 
 const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
+    const { t } = useTranslation();
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [feedback, setFeedback] = useState("");
@@ -20,17 +21,17 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
 
     const handleSubmit = async () => {
         if (rating === 0) {
-            toast.error("Please select a rating");
+            toast.error(t("components.rating.selectError"));
             return;
         }
 
         setIsSubmitting(true);
         try {
             await userApi.submitRating({ rating, feedback });
-            toast.success("Thank you for your feedback!");
+            toast.success(t("components.rating.thanks"));
             onSuccess();
         } catch (error: any) {
-            toast.error(error.message || "Failed to submit rating");
+            toast.error(error.message || t("components.rating.submitFailed"));
         } finally {
             setIsSubmitting(false);
         }
