@@ -1408,5 +1408,90 @@
       "urlPrompt": "URL eingeben",
       "imageUrlPrompt": "Bild-URL"
     }
+  },
+  "components": {
+    "airDoctor": {
+      "full": "Arzt buchen",
+      "short": "Arzt",
+      "title": "Arzttermin buchen"
+    },
+    "bookDoctor": {
+      "heading": "Mit einem approbierten Arzt sprechen",
+      "subheading": "Online-Konsultation, jetzt verfügbar",
+      "cta": "Arzt online buchen"
+    },
+    "consultSummary": {
+      "assessment": "Beurteilung",
+      "subtitle": "KI-Triage-Zusammenfassung",
+      "clearFinding": "Klarer Befund",
+      "needsAttention": "Aufmerksamkeit erforderlich",
+      "uncertain": "Unsicher",
+      "possibleConditions": "Mögliche Diagnosen",
+      "whatToDoNext": "Nächste Schritte",
+      "disclaimer": "KI-Triage — keine Diagnose. Konsultiere immer einen lizenzierten Arzt."
+    },
+    "detailedReport": {
+      "title": "Detaillierte Gesundheitsbewertung",
+      "subtitle": "Umfassender klinischer KI-Bericht",
+      "mild": "Leicht",
+      "moderate": "Mäßig",
+      "severe": "Schwer",
+      "chiefComplaint": "Hauptbeschwerde",
+      "history": "Aktuelle Krankengeschichte",
+      "reviewOfSystems": "Systemüberprüfung",
+      "assessment": "Beurteilung",
+      "primaryDiagnosis": "Hauptdiagnose",
+      "differentialDiagnoses": "Differentialdiagnosen",
+      "treatmentPlan": "Behandlungsplan",
+      "immediateActions": "Sofortmaßnahmen",
+      "suggestedMeds": "Empfohlene Medikamente",
+      "lifestyle": "Lebensstil-Empfehlungen",
+      "followUp": "Nachsorge",
+      "redFlags": "Warnzeichen — sofortige Hilfe suchen wenn",
+      "disclaimer": "KI-generierter Bericht. Konsultiere immer einen lizenzierten Arzt für Diagnose und Behandlung."
+    },
+    "rating": {
+      "title": "Cira bewerten",
+      "subtitle": "Bitte teile deine Bewertung und dein Feedback.",
+      "question": "Wie war deine Cira-Erfahrung?",
+      "feedbackLabel": "Zusätzliches Feedback",
+      "optional": "(optional)",
+      "placeholder": "Erzähl uns, was heute geholfen hat und was wir verbessern können",
+      "cancel": "Abbrechen",
+      "submit": "Bewerten",
+      "submitting": "Wird gesendet...",
+      "selectError": "Bitte wähle eine Bewertung",
+      "thanks": "Vielen Dank für dein Feedback!",
+      "submitFailed": "Bewertung konnte nicht gesendet werden"
+    },
+    "reportGenerating": {
+      "text": "Erstelle deinen Bewertungsbericht"
+    },
+    "sdkLoading": {
+      "preparing": "Scanner wird vorbereitet",
+      "downloading": "Scanner-Engine wird heruntergeladen",
+      "startingCamera": "Kamera wird gestartet",
+      "firstTime": "Erstmaliger Download ~10MB · danach zwischengespeichert",
+      "settingUp": "Sichere Kamera wird eingerichtet · Bitte warten",
+      "engine": "Engine",
+      "network": "Netzwerk",
+      "type": "Typ",
+      "speed": "Geschwindigkeit",
+      "ping": "Ping",
+      "online": "Online",
+      "offline": "Offline",
+      "connectionIssue": "Verbindungsproblem",
+      "takingLonger": "Der Download der Scanner-Engine dauert länger als erwartet.",
+      "checkConnection": "Bitte überprüfe deine Internetverbindung und versuche es erneut.",
+      "noResponse": "keine Antwort",
+      "retry": "Erneut versuchen",
+      "stuckAt": "Stehen geblieben bei {{percent}}% · 20s+ gewartet",
+      "creditsNote": "Credits werden beim Scan abgezogen · 100% auf dem Gerät",
+      "noConnection": "Keine Verbindung — Engine-Download pausiert",
+      "qualityExcellent": "Ausgezeichnet",
+      "qualityGood": "Gut",
+      "qualitySlow": "Langsam",
+      "qualityStable": "Stabil"
+    }
   }
 }

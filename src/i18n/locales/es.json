@@ -1408,5 +1408,90 @@
       "urlPrompt": "Ingresa URL",
       "imageUrlPrompt": "URL de imagen"
     }
+  },
+  "components": {
+    "airDoctor": {
+      "full": "Reservar un médico",
+      "short": "Médico",
+      "title": "Reservar cita médica"
+    },
+    "bookDoctor": {
+      "heading": "Habla con un médico certificado",
+      "subheading": "Consulta en línea, disponible ahora",
+      "cta": "Reservar médico en línea"
+    },
+    "consultSummary": {
+      "assessment": "Evaluación",
+      "subtitle": "Resumen de triaje con IA",
+      "clearFinding": "Hallazgo claro",
+      "needsAttention": "Requiere atención",
+      "uncertain": "Incierto",
+      "possibleConditions": "Posibles condiciones",
+      "whatToDoNext": "Qué hacer a continuación",
+      "disclaimer": "Triaje de IA, no un diagnóstico. Siempre consulta a un profesional de la salud."
+    },
+    "detailedReport": {
+      "title": "Evaluación de salud detallada",
+      "subtitle": "Informe clínico completo con IA",
+      "mild": "Leve",
+      "moderate": "Moderado",
+      "severe": "Severo",
+      "chiefComplaint": "Motivo principal",
+      "history": "Historia de la enfermedad actual",
+      "reviewOfSystems": "Revisión por sistemas",
+      "assessment": "Evaluación",
+      "primaryDiagnosis": "Diagnóstico principal",
+      "differentialDiagnoses": "Diagnósticos diferenciales",
+      "treatmentPlan": "Plan de tratamiento",
+      "immediateActions": "Acciones inmediatas",
+      "suggestedMeds": "Medicamentos sugeridos",
+      "lifestyle": "Recomendaciones de estilo de vida",
+      "followUp": "Seguimiento",
+      "redFlags": "Señales de alarma — busca atención inmediata si",
+      "disclaimer": "Informe generado por IA. Siempre consulta a un profesional de la salud para diagnóstico y tratamiento."
+    },
+    "rating": {
+      "title": "Califica Cira",
+      "subtitle": "Comparte tu calificación y comentarios.",
+      "question": "¿Cómo fue tu experiencia con Cira?",
+      "feedbackLabel": "Comentarios adicionales",
+      "optional": "(opcional)",
+      "placeholder": "Cuéntanos qué te ayudó hoy y qué podemos mejorar",
+      "cancel": "Cancelar",
+      "submit": "Calificar",
+      "submitting": "Enviando...",
+      "selectError": "Por favor selecciona una calificación",
+      "thanks": "¡Gracias por tus comentarios!",
+      "submitFailed": "No se pudo enviar la calificación"
+    },
+    "reportGenerating": {
+      "text": "Generando tu informe de evaluación"
+    },
+    "sdkLoading": {
+      "preparing": "Preparando escáner",
+      "downloading": "Descargando motor del escáner",
+      "startingCamera": "Iniciando cámara",
+      "firstTime": "La configuración inicial descarga ~10MB · luego se almacena en caché",
+      "settingUp": "Configurando cámara segura · Por favor espera",
+      "engine": "Motor",
+      "network": "Red",
+      "type": "Tipo",
+      "speed": "Velocidad",
+      "ping": "Ping",
+      "online": "En línea",
+      "offline": "Sin conexión",
+      "connectionIssue": "Problema de conexión",
+      "takingLonger": "El motor del escáner está tardando más de lo esperado en descargarse.",
+      "checkConnection": "Verifica tu conexión a internet e inténtalo de nuevo.",
+      "noResponse": "sin respuesta",
+      "retry": "Reintentar",
+      "stuckAt": "Atascado en {{percent}}% · más de 20s",
+      "creditsNote": "Créditos descontados al escanear · 100% en el dispositivo",
+      "noConnection": "Sin conexión — descarga del motor pausada",
+      "qualityExcellent": "Excelente",
+      "qualityGood": "Buena",
+      "qualitySlow": "Lenta",
+      "qualityStable": "Estable"
+    }
   }
 }
