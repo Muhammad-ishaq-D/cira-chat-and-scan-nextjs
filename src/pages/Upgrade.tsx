@@ -190,16 +190,16 @@ const Upgrade = () => {
 
       if (cancelled) return;
       if (activated) {
-        toast.success(`Your ${targetKey} plan is now active.`);
+        toast.success(t("upgrade.toast.planActive", { plan: targetKey }));
         sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
       } else {
-        toast.error(activationError || "Plan activation is taking longer than expected. Please refresh in a moment.");
+        toast.error(activationError || t("upgrade.errors.activationFailed"));
       }
       setSearchParams({}, { replace: true });
     };
     sync();
     return () => { cancelled = true; };
-  }, [searchParams, refreshSubscription, setSearchParams]);
+  }, [searchParams, refreshSubscription, setSearchParams, t]);
 
   const handleUpgrade = (plan: Plan) => {
     if (plan.current) return;
