@@ -1492,6 +1492,10 @@
       "qualityGood": "Bon",
       "qualitySlow": "Lent",
       "qualityStable": "Stable"
+    },
+    "sessionExpired": {
+      "title": "Session expirée",
+      "description": "Vous avez été déconnecté pour inactivité pour votre protection."
     }
   }
 }

@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 const InactivityTimeout = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,12 +20,12 @@ const InactivityTimeout = () => {
     if (isAuthenticated()) {
       logout();
       toast({
-        title: "Session Expired",
-        description: "You have been logged out due to inactivity for your protection.",
+        title: t("components.sessionExpired.title"),
+        description: t("components.sessionExpired.description"),
       });
       navigate("/login");
     }
-  }, [navigate, toast]);
+  }, [navigate, toast, t]);
 
   useEffect(() => {
     // Only track inactivity if the user is logged in
