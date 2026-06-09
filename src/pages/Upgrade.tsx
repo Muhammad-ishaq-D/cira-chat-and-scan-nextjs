@@ -320,9 +320,9 @@ const Upgrade = () => {
             const planKey = normalizePlanKey(plan.name);
             const isPaid = planKey !== "basic";
             let actionLabel: string;
-            if (plan.current) actionLabel = "Current Plan";
-            else if (!isPaid) actionLabel = "Free";
-            else actionLabel = `Upgrade to ${plan.name}`;
+            if (plan.current) actionLabel = t("upgrade.currentPlanBadge");
+            else if (!isPaid) actionLabel = t("upgrade.free");
+            else actionLabel = t("upgrade.upgradeTo", { plan: plan.name });
 
             return (
               <div
