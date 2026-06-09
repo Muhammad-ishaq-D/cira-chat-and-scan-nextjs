@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye, Upload, Image as ImageIcon, Bold, Italic, Underline, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Code, Link2, AlignLeft, AlignCenter, AlignRight, AlignJustify, Type, Undo, Redo, Palette } from "lucide-react";
 import { Link } from "react-router-dom";
 import { adminApi, type BlogPost } from "@/lib/apiClient";
@@ -180,6 +181,7 @@ function compressCoverImage(file: File, maxWidth = 1600, quality = 0.82): Promis
 }
 
 const AdminBlogs = () => {
+  const { t } = useTranslation();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -431,7 +433,7 @@ const AdminBlogs = () => {
       sel.addRange(newRange);
       savedRangeRef.current = newRange.cloneRange();
     } catch {
-      toast.error("Select text inside the content field first");
+      toast.error(t("admin.blogs.editorReplaceMsg"));
     }
     syncContentFromDom();
   };
@@ -460,16 +462,16 @@ const AdminBlogs = () => {
   const handleCoverFile = async (file: File | undefined | null) => {
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      toast.error("Image is too large (max 8 MB)");
+      toast.error(t("admin.blogs.imageTooLarge"));
       return;
     }
     setUploadingCover(true);
     try {
       const dataUrl = await compressCoverImage(file);
       setEditing((prev) => (prev ? { ...prev, cover_image: dataUrl } : prev));
-      toast.success("Cover image ready");
+      toast.success(t("admin.blogs.coverReady"));
     } catch (e: any) {
-      toast.error(e?.message || "Failed to process image");
+      toast.error(e?.message || t("admin.blogs.imageProcessFail"));
     } finally {
       setUploadingCover(false);
       if (coverInputRef.current) coverInputRef.current.value = "";
@@ -483,7 +485,7 @@ const AdminBlogs = () => {
       const list: BlogPost[] = Array.isArray(data) ? data : (data?.blogs || []);
       setBlogs(list);
     } catch (e: any) {
-      toast.error(e?.message || "Failed to load blogs");
+      toast.error(e?.message || t("admin.blogs.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -516,20 +518,20 @@ const AdminBlogs = () => {
         setEditing(normalizeBlogForEditor({ ...b, ...full }));
       }
     } catch (e: any) {
-      toast.error(e?.message || "Failed to load full post content");
+      toast.error(e?.message || t("admin.blogs.loadFullFailed"));
     }
   };
 
   const handleSave = async () => {
     if (!editing?.title || !editing?.content) {
-      toast.error("Title and content are required");
+      toast.error(t("admin.blogs.required"));
       return;
     }
     const payload: Partial<BlogPost> = {
       ...editing,
       slug: editing.slug || slugify(editing.title),
       tags: typeof editing.tags === "string"
-        ? editing.tags.split(",").map((t) => t.trim()).filter(Boolean)
+        ? editing.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
         : editing.tags,
       reading_time: editing.reading_time
         ? Number(editing.reading_time)
@@ -539,28 +541,28 @@ const AdminBlogs = () => {
     try {
       if (editing.id) {
         await adminApi.updateBlog(editing.id, payload);
-        toast.success("Blog updated");
+        toast.success(t("admin.blogs.updated"));
       } else {
         await adminApi.createBlog(payload);
-        toast.success("Blog created");
+        toast.success(t("admin.blogs.created"));
       }
       setEditing(null);
       await load();
     } catch (e: any) {
-      toast.error(e?.message || "Failed to save");
+      toast.error(e?.message || t("admin.blogs.saveFailed"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (b: BlogPost) => {
-    if (!confirm(`Delete "${b.title}"? This cannot be undone.`)) return;
+    if (!confirm(t("admin.blogs.deleteConfirm", { title: b.title }))) return;
     try {
       await adminApi.deleteBlog(b.id);
-      toast.success("Deleted");
+      toast.success(t("admin.blogs.deleted"));
       setBlogs((prev) => prev.filter((p) => p.id !== b.id));
     } catch (e: any) {
-      toast.error(e?.message || "Failed to delete");
+      toast.error(e?.message || t("admin.blogs.deleteFailed"));
     }
   };
 
@@ -568,14 +570,14 @@ const AdminBlogs = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-heading text-2xl md:text-3xl">Blogs</h1>
-          <p className="text-sm text-muted-foreground">Create, edit and publish blog posts.</p>
+          <h1 className="font-heading text-2xl md:text-3xl">{t("admin.blogs.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("admin.blogs.subtitle")}</p>
         </div>
         <button
           onClick={openNew}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition"
         >
-          <Plus size={16} /> New post
+          <Plus size={16} /> {t("admin.blogs.newPost")}
         </button>
       </div>
 
@@ -585,7 +587,7 @@ const AdminBlogs = () => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search posts..."
+            placeholder={t("admin.blogs.searchPosts")}
             className="w-full pl-9 pr-3 py-2 rounded-lg bg-card border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
@@ -597,7 +599,7 @@ const AdminBlogs = () => {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-card border border-border rounded-2xl p-10 text-center text-sm text-muted-foreground">
-          No blog posts yet. Click "New post" to create one.
+          {t("admin.blogs.empty")}
         </div>
       ) : (
         <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
@@ -635,13 +637,13 @@ const AdminBlogs = () => {
                         setViewing(full);
                       }
                     } catch {}
-                  }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="View">
+                  }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title={t("admin.blogs.view")}>
                     <Eye size={16} />
                   </button>
-                  <button onClick={() => { void openEdit(b); }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title="Edit">
+                  <button onClick={() => { void openEdit(b); }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground" title={t("admin.blogs.edit")}>
                     <Pencil size={16} />
                   </button>
-                  <button onClick={() => handleDelete(b)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive" title="Delete">
+                  <button onClick={() => handleDelete(b)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive" title={t("admin.blogs.delete")}>
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -657,7 +659,7 @@ const AdminBlogs = () => {
           <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 bg-card border-b border-border px-5 py-3 flex items-center justify-between z-10">
               <div className="min-w-0">
-                <h2 className="font-heading text-lg truncate">Preview</h2>
+                <h2 className="font-heading text-lg truncate">{t("admin.blogs.preview")}</h2>
                 <p className="text-xs text-muted-foreground truncate">/{viewing.slug}</p>
               </div>
               <div className="flex items-center gap-2">
@@ -665,7 +667,7 @@ const AdminBlogs = () => {
                   onClick={() => { const b = viewing; setViewing(null); void openEdit(b); }}
                   className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5"
                 >
-                  <Pencil size={12} /> Edit
+                  <Pencil size={12} /> {t("admin.blogs.edit")}
                 </button>
                 <button onClick={() => setViewing(null)} className="p-1.5 rounded-lg hover:bg-accent">
                   <X size={18} />
@@ -682,8 +684,8 @@ const AdminBlogs = () => {
                 <span className={`text-[10px] uppercase font-medium px-1.5 py-0.5 rounded ${viewing.status === "draft" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}>
                   {viewing.status || "published"}
                 </span>
-                {viewing.author && <span className="text-xs text-muted-foreground">By {viewing.author}</span>}
-                {viewing.reading_time && <span className="text-xs text-muted-foreground">· {viewing.reading_time} min read</span>}
+                {viewing.author && <span className="text-xs text-muted-foreground">{t("admin.blogs.by", { name: viewing.author })}</span>}
+                {viewing.reading_time && <span className="text-xs text-muted-foreground">· {t("admin.blogs.minRead", { n: viewing.reading_time })}</span>}
               </div>
               <h1 className="font-heading text-2xl md:text-3xl mb-3">{viewing.title}</h1>
               {viewing.excerpt && <p className="text-base text-muted-foreground mb-6">{viewing.excerpt}</p>}
@@ -708,13 +710,13 @@ const AdminBlogs = () => {
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
           <div className="bg-card border border-border rounded-t-2xl md:rounded-2xl w-full max-w-4xl h-[100dvh] md:h-auto md:max-h-[95vh] flex flex-col overflow-hidden">
             <div className="bg-card border-b border-border px-4 md:px-5 py-3 flex items-center justify-between shrink-0">
-              <h2 className="font-heading text-lg">{editing.id ? "Edit post" : "New post"}</h2>
+              <h2 className="font-heading text-lg">{editing.id ? t("admin.blogs.editPost") : t("admin.blogs.newPostTitle")}</h2>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPreviewMode(!previewMode)}
                   className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent"
                 >
-                  {previewMode ? "Edit" : "Preview"}
+                  {previewMode ? t("admin.blogs.editBtn") : t("admin.blogs.previewBtn")}
                 </button>
                 <button onClick={() => setEditing(null)} className="p-1.5 rounded-lg hover:bg-accent">
                   <X size={18} />
@@ -724,7 +726,7 @@ const AdminBlogs = () => {
 
             <div className="p-4 md:p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="Title *">
+                <Field label={t("admin.blogs.title2")}>
                   <input
                     value={editing.title || ""}
                     onChange={(e) => {
@@ -736,10 +738,10 @@ const AdminBlogs = () => {
                       });
                     }}
                     className="input"
-                    placeholder="e.g. 5 ways AI is changing preventive healthcare"
+                    placeholder={t("admin.blogs.titlePh")}
                   />
                 </Field>
-                <Field label="Slug">
+                <Field label={t("admin.blogs.slug")}>
                   <input
                     value={editing.slug || ""}
                     onChange={(e) => {
@@ -747,23 +749,23 @@ const AdminBlogs = () => {
                       setEditing({ ...editing, slug: slugify(e.target.value) });
                     }}
                     className="input"
-                    placeholder="auto-generated from title"
+                    placeholder={t("admin.blogs.slugPh")}
                   />
                 </Field>
               </div>
 
-              <Field label="Excerpt">
+              <Field label={t("admin.blogs.excerpt")}>
                 <textarea
                   value={editing.excerpt || ""}
                   onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })}
                   rows={2}
                   className="input"
-                  placeholder="A short summary (1-2 sentences) shown on the blog list and in social previews"
+                  placeholder={t("admin.blogs.excerptPh")}
                 />
               </Field>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <Field label="Cover image">
+                <Field label={t("admin.blogs.coverImage")}>
                   <input
                     ref={coverInputRef}
                     type="file"
@@ -784,14 +786,14 @@ const AdminBlogs = () => {
                           className="text-xs px-3 py-1.5 rounded-lg border border-border hover:bg-accent inline-flex items-center gap-1.5 disabled:opacity-50"
                         >
                           {uploadingCover ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                          Replace
+                          {t("admin.blogs.replace")}
                         </button>
                         <button
                           type="button"
                           onClick={() => setEditing({ ...editing, cover_image: "" })}
                           className="text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 inline-flex items-center gap-1.5"
                         >
-                          <Trash2 size={12} /> Remove
+                          <Trash2 size={12} /> {t("admin.blogs.remove")}
                         </button>
                       </div>
                     </div>
@@ -805,19 +807,19 @@ const AdminBlogs = () => {
                       {uploadingCover ? (
                         <>
                           <Loader2 size={18} className="animate-spin" />
-                          <span>Processing image...</span>
+                          <span>{t("admin.blogs.uploading")}</span>
                         </>
                       ) : (
                         <>
                           <ImageIcon size={18} />
-                          <span>Click to upload cover image</span>
-                          <span className="text-[10px]">JPG, PNG, WEBP — max 8 MB</span>
+                          <span>{t("admin.blogs.uploadCta")}</span>
+                          <span className="text-[10px]">{t("admin.blogs.uploadHint")}</span>
                         </>
                       )}
                     </button>
                   )}
                 </Field>
-                <Field label="Author">
+                <Field label={t("admin.blogs.author")}>
                   <input
                     value={editing.author || ""}
                     onChange={(e) => setEditing({ ...editing, author: e.target.value })}
@@ -828,7 +830,7 @@ const AdminBlogs = () => {
 
 
               <div className="grid sm:grid-cols-3 gap-3">
-                <Field label="Tags">
+                <Field label={t("admin.blogs.tags")}>
                   <div className="flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-lg bg-background border border-border focus-within:ring-2 focus-within:ring-primary/30 min-h-[40px]">
                     {(Array.isArray(editing.tags) ? (editing.tags as string[]) : []).map((tag) => (
                       <span
@@ -868,37 +870,37 @@ const AdminBlogs = () => {
                         }
                       }}
                       onBlur={() => tagInput.trim() && addTag(tagInput)}
-                      placeholder={(Array.isArray(editing.tags) && editing.tags.length) ? "" : "Type and press Enter"}
+                      placeholder={(Array.isArray(editing.tags) && editing.tags.length) ? "" : t("admin.blogs.tagsPh")}
                       className="flex-1 min-w-[120px] bg-transparent outline-none text-sm py-1"
                     />
                   </div>
                 </Field>
-                <Field label="Status">
+                <Field label={t("admin.blogs.status")}>
                   <select
                     value={editing.status || "published"}
                     onChange={(e) => setEditing({ ...editing, status: e.target.value as any })}
                     className="input"
                   >
-                    <option value="published">Published</option>
-                    <option value="draft">Draft</option>
+                    <option value="published">{t("admin.blogs.published")}</option>
+                    <option value="draft">{t("admin.blogs.draft")}</option>
                   </select>
                 </Field>
-                <Field label="Reading time (min)">
+                <Field label={t("admin.blogs.readingTime")}>
                   <input
                     type="number"
                     value={editing.reading_time ?? ""}
                     onChange={(e) => setEditing({ ...editing, reading_time: e.target.value ? Number(e.target.value) : undefined })}
                     className="input"
-                    placeholder="auto"
+                    placeholder={t("admin.blogs.readingTimePh")}
                   />
                 </Field>
               </div>
 
-              <Field label="Content *">
+              <Field label={t("admin.blogs.content")}>
                 {previewMode ? (
                   <div
                     className={`${renderedBlogContentClassName} border border-border rounded-lg p-4 min-h-[300px] bg-background`}
-                    dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || "<p><em>Nothing to preview</em></p>") }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(editing.content || `<p><em>${t("admin.blogs.nothingToPreview")}</em></p>`) }}
                   />
                 ) : (
                   <div className="border border-border rounded-lg overflow-hidden bg-background">
@@ -924,11 +926,11 @@ const AdminBlogs = () => {
                       <ToolbarBtn title="Justify" active={activeAlign === "full"} onClick={() => exec("justifyFull")}><AlignJustify size={14} /></ToolbarBtn>
                       <ToolbarSep />
                       <ToolbarBtn title="Link" onClick={() => {
-                        const url = window.prompt("Enter URL", "https://");
+                        const url = window.prompt(t("admin.blogs.urlPrompt"), "https://");
                         if (url) exec("createLink", url);
                       }}><Link2 size={14} /></ToolbarBtn>
                       <ToolbarBtn title="Image" onClick={() => {
-                        const url = window.prompt("Image URL", "https://");
+                        const url = window.prompt(t("admin.blogs.imageUrlPrompt"), "https://");
                         if (url) exec("insertImage", url);
                       }}><ImageIcon size={14} /></ToolbarBtn>
                       <ToolbarSep />
@@ -1013,16 +1015,16 @@ const AdminBlogs = () => {
               </Field>
 
               <details className="border border-border rounded-lg">
-                <summary className="px-4 py-2 cursor-pointer text-sm font-medium">SEO meta</summary>
+                <summary className="px-4 py-2 cursor-pointer text-sm font-medium">{t("admin.blogs.seoMeta")}</summary>
                 <div className="p-4 space-y-3">
-                  <Field label="Meta title">
+                  <Field label={t("admin.blogs.metaTitle")}>
                     <input
                       value={editing.meta_title || ""}
                       onChange={(e) => setEditing({ ...editing, meta_title: e.target.value })}
                       className="input"
                     />
                   </Field>
-                  <Field label="Meta description">
+                  <Field label={t("admin.blogs.metaDescription")}>
                     <textarea
                       value={editing.meta_description || ""}
                       onChange={(e) => setEditing({ ...editing, meta_description: e.target.value })}
@@ -1036,7 +1038,7 @@ const AdminBlogs = () => {
 
             <div className="bg-card border-t border-border px-4 md:px-5 py-3 flex justify-end gap-2 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]">
               <button onClick={() => setEditing(null)} className="px-4 py-2 rounded-lg text-sm border border-border hover:bg-accent">
-                Cancel
+                {t("admin.blogs.cancel")}
               </button>
               <button
                 onClick={handleSave}
@@ -1044,7 +1046,7 @@ const AdminBlogs = () => {
                 className="px-4 py-2 rounded-lg text-sm bg-primary text-primary-foreground font-medium disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {saving && <Loader2 size={14} className="animate-spin" />}
-                {editing.id ? "Save changes" : "Create post"}
+                {editing.id ? t("admin.blogs.saveChanges") : t("admin.blogs.createPost")}
               </button>
             </div>
           </div>

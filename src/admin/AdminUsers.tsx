@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
 import { adminApi, billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
@@ -96,6 +97,7 @@ const normalizeUser = (raw: RawUser): User => {
 };
 
 const AdminUsers = () => {
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -115,7 +117,7 @@ const AdminUsers = () => {
       const list: RawUser[] = Array.isArray(data) ? data : (data?.users || data?.data || []);
       setUsers(list.map(normalizeUser));
     } catch (e: any) {
-      toast.error("Failed to load users");
+      toast.error(t("admin.users.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -166,9 +168,9 @@ const AdminUsers = () => {
       const next = isSuspended === 0 ? 1 : 0;
       setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, is_suspended: next } : u)));
       if (selectedUser?.id === id) setSelectedUser(prev => prev ? { ...prev, is_suspended: next } : null);
-      toast.success("User status updated");
+      toast.success(t("admin.users.statusUpdated"));
     } catch (e: any) {
-      toast.error(e.message || "Failed to update status");
+      toast.error(e.message || t("admin.users.statusFailed"));
     }
   };
 
@@ -201,10 +203,10 @@ const AdminUsers = () => {
       if (type === "1") payload.amount = Number(amount);
       else payload.face_scans = Number(amount);
       await adminApi.adjustCredits(id, payload.amount ?? 0, payload.reason);
-      toast.success("Credits adjusted");
+      toast.success(t("admin.users.creditsAdjusted"));
       loadUsers();
     } catch (e: any) {
-      toast.error(e.message || "Failed to adjust credits");
+      toast.error(e.message || t("admin.users.creditsFailed"));
     }
   };
 
@@ -226,10 +228,10 @@ const AdminUsers = () => {
       if (selectedUser?.id === planModalUser.id) {
         setSelectedUser((prev) => (prev ? { ...prev, plan: plan.name, credits: newCredits } : null));
       }
-      toast.success(`Plan changed to ${plan.name}`);
+      toast.success(t("admin.users.planChanged", { name: plan.name }));
       setPlanModalUser(null);
     } catch (e: any) {
-      toast.error(e.message || "Failed to change plan");
+      toast.error(e.message || t("admin.users.planFailed"));
     } finally {
       setApplyingPlan(null);
     }
@@ -243,7 +245,7 @@ const AdminUsers = () => {
     try {
       const d = new Date(dateStr);
       if (isNaN(d.getTime())) return "—";
-      return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      return d.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" });
     } catch { return "—"; }
   };
 
@@ -259,15 +261,15 @@ const AdminUsers = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>User Management</h1>
-        <p className="text-sm text-muted-foreground font-body">{users.length} total • {activeCount} active • {suspendedCount} suspended</p>
+        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.users.title")}</h1>
+        <p className="text-sm text-muted-foreground font-body">{t("admin.users.counts", { total: users.length, active: activeCount, suspended: suspendedCount })}</p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Total Users", value: users.length, icon: "👥" },
-          { label: "Active", value: activeCount, icon: "🟢" },
-          { label: "Suspended", value: suspendedCount, icon: "🔴" },
+          { label: t("admin.users.totalUsers"), value: users.length, icon: "👥" },
+          { label: t("admin.users.active"), value: activeCount, icon: "🟢" },
+          { label: t("admin.users.suspended"), value: suspendedCount, icon: "🔴" },
         ].map((s) => (
           <div key={s.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-3">
             <div className="flex items-center gap-2 mb-1"><span className="text-sm">{s.icon}</span><span className="text-[11px] text-muted-foreground">{s.label}</span></div>
@@ -278,7 +280,7 @@ const AdminUsers = () => {
 
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or email..." className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.users.searchPlaceholder")} className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm text-sm outline-none focus:ring-2 focus:ring-primary/30" />
       </div>
 
       {loading ? (
@@ -291,12 +293,12 @@ const AdminUsers = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/20">
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">User</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">Plan</th>
-                    <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">Credits</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">Joined</th>
-                    <th className="text-center px-4 py-3 font-medium text-muted-foreground text-xs">Status</th>
-                    <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">Actions</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.user")}</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.plan")}</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.credits")}</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.joined")}</th>
+                    <th className="text-center px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.status")}</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs">{t("admin.users.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -323,7 +325,7 @@ const AdminUsers = () => {
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                          {u.is_suspended ? "Suspended" : "Active"}
+                          {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -337,7 +339,7 @@ const AdminUsers = () => {
                     </tr>
                   ))}
                   {filtered.length === 0 && (
-                    <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">No users found</td></tr>
+                    <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">{t("admin.users.noUsers")}</td></tr>
                   )}
                 </tbody>
               </table>
@@ -358,7 +360,7 @@ const AdminUsers = () => {
                   )}
                   <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground truncate">{u.name}</p><p className="text-xs text-muted-foreground truncate">{u.email}</p></div>
                   <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                    {u.is_suspended ? "Suspended" : "Active"}
+                    {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mb-3 text-xs">
@@ -367,7 +369,7 @@ const AdminUsers = () => {
                   <span className="text-foreground font-medium inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(u.credits)}</span>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                  <span className="text-xs text-muted-foreground">Joined {formatDate(u.created_at)}</span>
+                  <span className="text-xs text-muted-foreground">{t("admin.users.joinedShort", { date: formatDate(u.created_at) })}</span>
                   <div className="flex gap-1">
                     <button onClick={(e) => { e.stopPropagation(); openPlanModal(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors"><Edit3 size={14} className="text-muted-foreground" /></button>
                     <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
@@ -378,7 +380,7 @@ const AdminUsers = () => {
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="bg-card/80 border border-border/50 rounded-xl p-8 text-center text-sm text-muted-foreground">No users found</div>
+              <div className="bg-card/80 border border-border/50 rounded-xl p-8 text-center text-sm text-muted-foreground">{t("admin.users.noUsers")}</div>
             )}
           </div>
         </>
@@ -408,20 +410,20 @@ const AdminUsers = () => {
               </div>
               <div className="flex gap-2">
                 <span className={`text-xs font-medium px-3 py-1 rounded-full ${selectedUser.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                  {selectedUser.is_suspended ? "Suspended" : "Active"}
+                  {selectedUser.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
                 </span>
                 <span className={`text-xs font-medium px-3 py-1 rounded-full ${planBadgeClass(selectedUser.plan)}`}>{selectedUser.plan}</span>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm"><Mail size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.email}</span></div>
                 <div className="flex items-center gap-3 text-sm"><Coins size={14} className="text-amber-500" /><span className="text-foreground">{formatCredits(selectedUser.credits)}</span></div>
-                <div className="flex items-center gap-3 text-sm"><Crown size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.plan} plan</span></div>
-                <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">Joined {formatDate(selectedUser.created_at)}</span></div>
+                <div className="flex items-center gap-3 text-sm"><Crown size={14} className="text-muted-foreground" /><span className="text-foreground">{selectedUser.plan} {t("admin.users.planSuffix")}</span></div>
+                <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-muted-foreground" /><span className="text-foreground">{t("admin.users.joinedShort", { date: formatDate(selectedUser.created_at) })}</span></div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => openPlanModal(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />Change Plan</button>
+                <button onClick={() => openPlanModal(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2"><Edit3 size={14} />{t("admin.users.changePlan")}</button>
                 <button onClick={() => requestToggleStatus(selectedUser)} className="flex-1 py-2.5 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-all flex items-center justify-center gap-2">
-                  {selectedUser.is_suspended ? <><CheckCircle size={14} />Activate</> : <><Ban size={14} />Suspend</>}
+                  {selectedUser.is_suspended ? <><CheckCircle size={14} />{t("admin.users.activate")}</> : <><Ban size={14} />{t("admin.users.suspend")}</>}
                 </button>
               </div>
             </div>
@@ -437,9 +439,9 @@ const AdminUsers = () => {
             <div className="p-6">
               <div className="flex items-start justify-between mb-1">
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Change Plan</h2>
+                  <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.users.changePlanTitle")}</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    For <span className="font-medium text-foreground">{planModalUser.name}</span> · Current: <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · Credits: <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(planModalUser.credits)}</span>
+                    {t("admin.users.changePlanFor", { name: planModalUser.name })} <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${planBadgeClass(planModalUser.plan)}`}>{planModalUser.plan}</span> · {t("admin.users.creditsLabel")} <span className="font-medium text-foreground inline-flex items-center gap-1"><Coins size={12} className="text-amber-500" />{formatCredits(planModalUser.credits)}</span>
                   </p>
                 </div>
                 <button
@@ -451,7 +453,7 @@ const AdminUsers = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-muted-foreground mb-5">Selecting a plan replaces the user's credits with the plan's full allocation.</p>
+              <p className="text-xs text-muted-foreground mb-5">{t("admin.users.replaceCredits")}</p>
 
               <div className="grid md:grid-cols-3 gap-4">
                 {planOptions.map((plan) => {
@@ -465,7 +467,7 @@ const AdminUsers = () => {
                       {plan.popular && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                           <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1">
-                            <Star size={10} /> Most Popular
+                            <Star size={10} /> {t("admin.users.mostPopular")}
                           </span>
                         </div>
                       )}
@@ -495,7 +497,7 @@ const AdminUsers = () => {
                             : "border border-border/60 text-foreground hover:bg-accent"
                           } disabled:opacity-60`}
                       >
-                        {isApplying ? <><Loader2 size={14} className="animate-spin" />Applying...</> : isCurrent ? "Current Plan" : `Set ${plan.name}`}
+                        {isApplying ? <><Loader2 size={14} className="animate-spin" />{t("admin.users.applying")}</> : isCurrent ? t("admin.users.currentPlan") : t("admin.users.setPlan", { name: plan.name })}
                       </button>
                     </div>
                   );
@@ -517,9 +519,9 @@ const AdminUsers = () => {
                   <AlertTriangle size={20} />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Suspend this user?</h3>
+                  <h3 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.users.suspendConfirmTitle")}</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Are you sure you want to suspend <span className="font-medium text-foreground">{suspendConfirmUser.name}</span>? They will lose access to their account until reactivated.
+                    {t("admin.users.suspendConfirmDesc", { name: suspendConfirmUser.name })}
                   </p>
                 </div>
               </div>
@@ -529,14 +531,14 @@ const AdminUsers = () => {
                   disabled={suspending}
                   className="px-4 py-2 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-60"
                 >
-                  Cancel
+                  {t("admin.users.cancel")}
                 </button>
                 <button
                   onClick={confirmSuspend}
                   disabled={suspending}
                   className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-60"
                 >
-                  {suspending ? <><Loader2 size={14} className="animate-spin" />Suspending...</> : <><Ban size={14} />Suspend User</>}
+                  {suspending ? <><Loader2 size={14} className="animate-spin" />{t("admin.users.suspending")}</> : <><Ban size={14} />{t("admin.users.suspendUser")}</>}
                 </button>
               </div>
             </div>

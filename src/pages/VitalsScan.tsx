@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -18,10 +19,10 @@ import { logAuditEvent } from "@/lib/audit";
 import SdkLoadingOverlay from "@/components/SdkLoadingOverlay";
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, labelKey: "home", id: "home" },
+  { icon: Sparkles, labelKey: "askCira", id: "chat" },
+  { icon: ScanFace, labelKey: "scan", id: "scan" },
+  { icon: FileText, labelKey: "reports", id: "reports" },
 ];
 
 const CANVAS_ID = "shenai-canvas";
@@ -51,6 +52,7 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 
 const VitalsScan = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
@@ -127,12 +129,12 @@ const VitalsScan = () => {
           });
           const scanData = await scanCheck.json();
           if (!scanData.allowed) {
-            toast.error("Free guest scan limit reached. Login to get more scans.");
+            toast.error(t("vitalsScan.toastGuestLimit"));
             navigate("/login");
             return;
           }
         } catch {
-          toast.error("Could not verify scan eligibility. Please try again.");
+          toast.error(t("vitalsScan.toastEligibility"));
           return;
         }
 
@@ -161,8 +163,8 @@ const VitalsScan = () => {
           setUserProfile(freshProfile);
           const scansLeft = freshProfile?.credits?.face_scans;
           if (scansLeft !== "Unlimited" && typeof scansLeft === "number" && scansLeft <= 0) {
-            toast.error("No scan credits remaining. Upgrade your plan.", {
-              action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+            toast.error(t("vitalsScan.toastNoCredits"), {
+              action: { label: t("vitalsScan.toastUpgrade"), onClick: () => navigate("/upgrade") },
               duration: 8000,
             });
           }
@@ -180,7 +182,7 @@ const VitalsScan = () => {
       cleanup();
       hasInitRef.current = false;
     };
-  }, [cleanup, initialize, isGuest, navigate]);
+  }, [cleanup, initialize, isGuest, navigate, t]);
 
 
   useEffect(() => {
@@ -198,7 +200,7 @@ const VitalsScan = () => {
             headers: { "Content-Type": "application/json", "X-Device-Id": getDeviceId() },
           });
         } catch { }
-        toast.success("Scan complete! (Guest mode — login to save)");
+        toast.success(t("vitalsScan.toastScanCompleteGuest"));
         return;
       }
 
@@ -244,25 +246,25 @@ const VitalsScan = () => {
         if (isActive && historyData) {
           setScanHistory(Array.isArray(historyData) ? historyData : historyData.scans || []);
         }
-        toast.success("Scan saved · 1 scan credit used");
+        toast.success(t("vitalsScan.toastScanSaved"));
       } catch (err: any) {
         if (!isActive) return;
         if (err?.message?.includes("insufficient") || err?.message?.includes("credits")) {
-          toast.error("No scan credits remaining. Upgrade your plan.", {
-            action: { label: "Upgrade", onClick: () => navigate("/upgrade") },
+          toast.error(t("vitalsScan.toastNoCredits"), {
+            action: { label: t("vitalsScan.toastUpgrade"), onClick: () => navigate("/upgrade") },
             duration: 8000,
           });
         } else {
           const msg = typeof err?.message === 'string' ? err.message : String(err);
           console.error("[Scan] Submit error:", msg);
-          toast.error(msg || "Failed to save scan to backend");
+          toast.error(msg || t("vitalsScan.toastSaveFailed"));
         }
       }
     };
 
     saveScan();
     return () => { isActive = false; };
-  }, [results, navigate, isGuest]);
+  }, [results, navigate, isGuest, t]);
 
   const displayVitals = results ? formatVitalsForDisplay(results) : [];
   const displayHealthIndexes = results?.healthRisks ? formatHealthIndexes(results.healthRisks) : [];
@@ -298,8 +300,8 @@ const VitalsScan = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "scan") {
-                    if (noScansLeft) {
-                      toast.error("No scan credits remaining. Upgrade your plan.", { action: { label: "Upgrade", onClick: () => navigate("/upgrade") }, duration: 6000 });
+                  if (noScansLeft) {
+                      toast.error(t("vitalsScan.toastNoCredits"), { action: { label: t("vitalsScan.toastUpgrade"), onClick: () => navigate("/upgrade") }, duration: 6000 });
                       return;
                     }
                     navigate("/vitals-scan");
@@ -309,7 +311,7 @@ const VitalsScan = () => {
                 }} className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${item.id === "scan" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}>
                   {item.id === "chat" ? <AiSparkleIcon size={18} /> : <Icon size={18} strokeWidth={item.id === "scan" ? 2 : 1.5} />}
-                  <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                  <span className="text-[9px] font-body font-medium leading-none">{t(`vitalsScan.nav.${item.labelKey}`)}</span>
                 </button>
               );
             })}
@@ -317,7 +319,7 @@ const VitalsScan = () => {
           <div className="mt-auto flex flex-col items-center gap-2">
             <button onClick={() => { logout(); navigate("/login"); }} className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all">
               <LogOut size={18} strokeWidth={1.5} />
-              <span className="text-[9px] font-body font-medium leading-none">Logout</span>
+              <span className="text-[9px] font-body font-medium leading-none">{t("vitalsScan.nav.logout")}</span>
             </button>
             <ProfilePopover>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">{initials}</div>
@@ -348,7 +350,7 @@ const VitalsScan = () => {
                       <ScanFace size={14} className="text-primary shrink-0" />
                       <div className="min-w-0">
                         <p className="truncate font-medium text-foreground">{scan.date || scan.created_at}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{scan.hr || scan.heart_rate || "--"} bpm · {scan.status || "Completed"}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{scan.hr || scan.heart_rate || "--"} bpm · {scan.status || t("vitalsScan.completed")}</p>
                       </div>
                     </div>
                   </button>
@@ -376,15 +378,15 @@ const VitalsScan = () => {
           {/* ── Left: Instructions Panel ── */}
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-80 xl:w-96 shrink-0 bg-white border-r border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
-              <h2 className="font-heading font-bold text-foreground text-base mb-1">How to Scan</h2>
-              <p className="text-xs text-muted-foreground mb-6 leading-relaxed">Follow these steps for an accurate reading.</p>
+              <h2 className="font-heading font-bold text-foreground text-base mb-1">{t("vitalsScan.howToScan")}</h2>
+              <p className="text-xs text-muted-foreground mb-6 leading-relaxed">{t("vitalsScan.howToScanDesc")}</p>
 
               <div className="space-y-4">
                 {[
-                  { step: "1", desc: "Ensure your face is well-lit. Natural light or a bright room works best." },
-                  { step: "2", desc: "Center your face in the camera and keep it within the markers." },
-                  { step: "3", desc: "Keep your head and body steady during the 30-second measurement." },
-                  { step: "4", desc: "Breathe naturally. Don't hold your breath or take deep breaths." },
+                  { step: "1", desc: t("vitalsScan.step1") },
+                  { step: "2", desc: t("vitalsScan.step2") },
+                  { step: "3", desc: t("vitalsScan.step3") },
+                  { step: "4", desc: t("vitalsScan.step4") },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-3 items-start">
                     <div className="w-5 h-5 rounded-full border border-primary/40 flex items-center justify-center shrink-0 mt-0.5">
@@ -400,8 +402,8 @@ const VitalsScan = () => {
               <div className="flex items-start gap-2.5 mb-4">
                 <ShieldCheck size={14} className="text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-foreground">100% Private</p>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">All analysis happens on your device. No video is recorded or transmitted.</p>
+                  <p className="text-xs font-semibold text-foreground">{t("vitalsScan.privateTitle")}</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">{t("vitalsScan.privateDesc")}</p>
                 </div>
               </div>
 
@@ -409,9 +411,9 @@ const VitalsScan = () => {
                 <div className="flex items-start gap-2.5 mb-5">
                   <AlertCircle size={14} className="text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-primary">Scan Credits</p>
+                    <p className="text-xs font-semibold text-primary">{t("vitalsScan.scanCreditsTitle")}</p>
                     <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
-                      {scansLeft === "Unlimited" ? "Unlimited scans available" : `${scansLeft ?? 0} scan${scansLeft === 1 ? "" : "s"} remaining`}
+                      {scansLeft === "Unlimited" ? t("vitalsScan.unlimitedScans") : t("vitalsScan.scansRemaining", { count: (scansLeft ?? 0) as number })}
                     </p>
                   </div>
                 </div>
@@ -423,7 +425,7 @@ const VitalsScan = () => {
                   className="w-full h-9 rounded-xl border border-border/60 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
                   <Menu size={14} strokeWidth={1.5} />
-                  Scan History
+                  {t("vitalsScan.scanHistoryBtn")}
                 </button>
               )}
             </div>
@@ -450,7 +452,7 @@ const VitalsScan = () => {
                   {status === "processing" || progress >= 100 ? (
                     <div className="flex-1 flex items-center justify-center py-1">
                       <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin mr-3" />
-                      <span className="text-sm font-medium text-white">Analyzing results...</span>
+                      <span className="text-sm font-medium text-white">{t("vitalsScan.analyzingResults")}</span>
                     </div>
                   ) : (
                     <>
@@ -471,21 +473,21 @@ const VitalsScan = () => {
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-10 px-6">
                 <AlertCircle size={40} className={`mb-3 opacity-80 ${status === "unsupported" ? "text-amber-400" : "text-destructive"}`} />
                 <h3 className="text-white text-base font-heading font-semibold mb-2 text-center">
-                  {status === "unsupported" ? "Browser not supported" : "Something went wrong"}
+                  {status === "unsupported" ? t("vitalsScan.errorUnsupported") : t("vitalsScan.errorTitle")}
                 </h3>
                 <p className="text-white/70 text-xs font-body mb-5 max-w-sm text-center leading-relaxed">{error}</p>
                 {status === "unsupported" && (
                   <div className="text-[11px] text-white/50 font-body mb-5 max-w-xs text-center leading-relaxed">
-                    Tip: copy the link and open it in <span className="text-white/80">Safari</span> or <span className="text-white/80">Chrome</span> directly.
+                    {t("vitalsScan.errorTip")}
                   </div>
                 )}
                 <div className="flex gap-2.5">
                   <button onClick={() => navigate(isGuest ? "/" : "/dashboard")} className="h-10 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-medium transition-all">
-                    Go back
+                    {t("vitalsScan.goBack")}
                   </button>
                   {status !== "unsupported" && (
                     <button onClick={reset} className="h-10 px-5 rounded-full bg-primary text-primary-foreground text-xs font-medium transition-all">
-                      Try again
+                      {t("vitalsScan.tryAgain")}
                     </button>
                   )}
                 </div>
@@ -494,7 +496,7 @@ const VitalsScan = () => {
 
             {/* Top bar — home button only (history moved to left panel) */}
             <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-end p-3 md:p-4">
-              <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title="Back to Dashboard">
+              <button onClick={() => navigate("/dashboard")} className="w-10 h-10 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm bg-black/20 border border-white/10" title={t("vitalsScan.backToDashboard")}>
                 <Home size={18} strokeWidth={1.5} />
               </button>
             </div>
@@ -522,7 +524,7 @@ const VitalsScan = () => {
                     style={{ pointerEvents: 'auto' }}
                   >
                     <Crown size={20} />
-                    <span>Upgrade to Scan</span>
+                    <span>{t("vitalsScan.upgradeToScan")}</span>
                   </button>
                 ) : (
                   <button
@@ -537,7 +539,7 @@ const VitalsScan = () => {
                     style={{ pointerEvents: 'auto' }}
                   >
                     <Heart size={22} />
-                    <span>Start</span>
+                    <span>{t("vitalsScan.start")}</span>
                   </button>
                 )
               )}
@@ -553,10 +555,10 @@ const VitalsScan = () => {
           <div className={(status === "idle" || status === "loading") ? "hidden" : "hidden lg:flex w-80 xl:w-96 shrink-0 bg-white border-l border-gray-100 flex-col overflow-y-auto"}>
             <div className="p-6">
               <h2 className="font-heading font-bold text-foreground text-lg leading-snug mb-2">
-                Monitor your health metrics in just 30 seconds
+                {t("vitalsScan.monitorTitle")}
               </h2>
               <p className="text-xs text-muted-foreground leading-relaxed mb-5">
-                Measure heart rate, blood pressure, HRV, stress index, and more via a 30-second face scan.
+                {t("vitalsScan.monitorDesc")}
               </p>
 
               {/* Status indicator */}
@@ -570,7 +572,7 @@ const VitalsScan = () => {
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-primary">
-                        {status === "processing" || progress >= 100 ? "Analyzing..." : "Measuring..."}
+                        {status === "processing" || progress >= 100 ? t("vitalsScan.statusAnalyzing") : t("vitalsScan.statusMeasuring")}
                       </p>
                       {status !== "processing" && progress < 100 && (
                         <div className="mt-1 h-1 bg-primary/20 rounded-full overflow-hidden">
@@ -583,12 +585,12 @@ const VitalsScan = () => {
                 ) : status === "ready" ? (
                   <>
                     <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <p className="text-xs font-medium text-emerald-700">Ready to scan</p>
+                    <p className="text-xs font-medium text-emerald-700">{t("vitalsScan.statusReady")}</p>
                   </>
                 ) : (
                   <>
                     <div className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
-                    <p className="text-xs font-medium text-muted-foreground">Initializing...</p>
+                    <p className="text-xs font-medium text-muted-foreground">{t("vitalsScan.statusInitializing")}</p>
                   </>
                 )}
               </div>
@@ -610,7 +612,7 @@ const VitalsScan = () => {
                     <div key={vital.label} className="flex flex-col gap-2 p-3 rounded-xl bg-gray-50/70 border border-gray-100">
                       <Icon size={16} className={vital.color} strokeWidth={1.5} />
                       <div>
-                        <p className="text-[10px] text-muted-foreground font-body leading-tight">{vital.label}</p>
+                        <p className="text-[10px] text-muted-foreground font-body leading-tight">{t(`vitalsScan.labels.${vital.label}`, vital.label)}</p>
                         {(status === "measuring" || status === "processing") && (
                           <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse mt-1" />
                         )}
@@ -621,7 +623,7 @@ const VitalsScan = () => {
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center mt-4 leading-relaxed">
-                +25 More Health Markers after scan
+                {t("vitalsScan.moreMarkers")}
               </p>
             </div>
           </div>
@@ -643,31 +645,31 @@ const VitalsScan = () => {
               {/* Header */}
               <div className="mb-4 md:mb-8 flex items-start justify-between gap-3">
                 <div>
-                  <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">Scan Results</h1>
-                  <p className="text-[11px] md:text-sm text-muted-foreground font-body">Your vitals have been analyzed</p>
+                  <h1 className="text-lg md:text-2xl font-semibold text-foreground font-heading">{t("vitalsScan.resultsTitle")}</h1>
+                  <p className="text-[11px] md:text-sm text-muted-foreground font-body">{t("vitalsScan.resultsSubtitle")}</p>
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
                       type="button"
                       className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-border/60 bg-card/80 backdrop-blur-sm text-[10px] md:text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                      aria-label="Accuracy information"
+                      aria-label={t("vitalsScan.accuracy")}
                     >
                       <Info size={11} />
-                      Accuracy
+                      {t("vitalsScan.accuracy")}
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="end" className="w-72 p-3 text-[11px] leading-relaxed">
-                    <p className="font-semibold text-foreground mb-1.5 text-[12px]">Clinically validated accuracy</p>
+                    <p className="font-semibold text-foreground mb-1.5 text-[12px]">{t("vitalsScan.accuracyTitle")}</p>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li><span className="text-foreground font-medium">Heart Rate:</span> ±2 BPM vs ECG</li>
-                      <li><span className="text-foreground font-medium">Blood Pressure:</span> ±5 mmHg vs cuff</li>
-                      <li><span className="text-foreground font-medium">SpO₂:</span> ±2% vs pulse oximeter</li>
-                      <li><span className="text-foreground font-medium">Respiratory Rate:</span> ±2 breaths/min</li>
-                      <li><span className="text-foreground font-medium">HRV / Stress:</span> validated vs ECG</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accHR")}</span> {t("vitalsScan.accHRv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accBP")}</span> {t("vitalsScan.accBPv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accSpO2")}</span> {t("vitalsScan.accSpO2v")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accRR")}</span> {t("vitalsScan.accRRv")}</li>
+                      <li><span className="text-foreground font-medium">{t("vitalsScan.accHRV")}</span> {t("vitalsScan.accHRVv")}</li>
                     </ul>
                     <p className="mt-2 pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                      Screening tool only — not a substitute for medical diagnosis. Best with good lighting & a still face.
+                      {t("vitalsScan.accDisclaimer")}
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -679,8 +681,8 @@ const VitalsScan = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M20 6L9 17l-5-5" /></svg>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground font-heading">Scan Complete</p>
-                    <p className="text-[10px] md:text-xs text-muted-foreground">Signal quality: {results ? `${Math.round(results.signalQuality * 100)}%` : "--"}</p>
+                    <p className="text-sm font-semibold text-foreground font-heading">{t("vitalsScan.scanComplete")}</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">{t("vitalsScan.signalQuality", { value: results ? `${Math.round(results.signalQuality * 100)}%` : "--" })}</p>
                   </div>
                 </div>
               </div>
@@ -694,7 +696,7 @@ const VitalsScan = () => {
                         <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
                           <Icon size={11} className={v.color.split(" ")[0]} />
                         </div>
-                        <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{t(`vitalsScan.labels.${v.label}`, v.label)}</p>
                       </div>
                       <p className="text-base md:text-xl font-semibold text-foreground font-heading">
                         {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
@@ -709,7 +711,7 @@ const VitalsScan = () => {
                 <>
                   <div className="flex items-center gap-1.5 mb-2 mt-1">
                     <ShieldCheck size={13} className="text-primary" />
-                    <p className="text-xs font-semibold text-foreground font-heading">Health Indexes</p>
+                    <p className="text-xs font-semibold text-foreground font-heading">{t("vitalsScan.healthIndexes")}</p>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-6">
                     {displayHealthIndexes.map((v) => {
@@ -720,7 +722,7 @@ const VitalsScan = () => {
                             <div className={`w-5 h-5 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center ${v.color.split(" ")[1]}`}>
                               <Icon size={11} className={v.color.split(" ")[0]} />
                             </div>
-                            <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{v.label}</p>
+                            <p className="text-[9px] md:text-[11px] text-muted-foreground font-body leading-tight">{t(`vitalsScan.labels.${v.label}`, v.label)}</p>
                           </div>
                           <p className="text-base md:text-xl font-semibold text-foreground font-heading">
                             {v.value}<span className="text-[9px] md:text-xs text-muted-foreground font-normal ml-0.5">{v.unit}</span>
@@ -738,10 +740,10 @@ const VitalsScan = () => {
   onClick={() => window.location.reload()}
   className="h-10 px-4 md:px-6 rounded-xl border border-border/60 text-foreground text-sm font-medium hover:bg-accent transition-all"
 >
-  Scan Again
+  {t("vitalsScan.scanAgain")}
 </button>
                 <button onClick={handleAnalyzeWithCira} className="h-10 px-4 md:px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-sm font-medium shadow-lg shadow-primary/20 transition-all flex-1 md:flex-none">
-                  Analyze with Cira
+                  {t("vitalsScan.analyzeWithCira")}
                 </button>
               </div>
             </div>
