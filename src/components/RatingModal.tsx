@@ -96,7 +96,7 @@ const RatingModal = ({ isOpen, onClose, onSuccess }: RatingModalProps) => {
                             onClick={onClose}
                             className="flex-1 py-3.5 rounded-2xl border border-border text-sm font-medium font-body hover:bg-muted transition-colors"
                         >
-                            Cancel
+                            {t("components.rating.cancel")}
                         </button>
                         <button
                             onClick={handleSubmit}
