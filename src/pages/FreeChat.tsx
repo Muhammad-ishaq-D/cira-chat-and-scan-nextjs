@@ -345,6 +345,7 @@ const buildAssessmentToolFollowUp = (payload: any, isRetry = false) => {
 
 const FreeChat = () => {
   const navigate = useNavigate();
+  const { t: tr } = useTranslation();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report" | "action_buttons"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport; buttons?: Array<{ id: string; label: string; description?: string }> }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
