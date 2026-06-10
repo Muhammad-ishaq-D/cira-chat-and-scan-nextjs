@@ -955,14 +955,14 @@ const FreeChat = () => {
       <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
         {/* Top bar */}
         <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-          <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title="Chat History">
+          <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title={tr("components.chatHistory.title")}>
             <Menu size={18} strokeWidth={1.5} />
           </button>
         </div>
         <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
           <button onClick={() => navigate("/login")} className="px-3 h-9 rounded-xl flex items-center gap-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-all bg-card/60 backdrop-blur-sm border border-primary/20 shadow-sm">
             <LogIn size={14} />
-            Login
+            {tr("components.chatHistory.login")}
           </button>
         </div>
 
