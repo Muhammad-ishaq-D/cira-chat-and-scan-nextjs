@@ -1402,7 +1402,7 @@ const Chat = () => {
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
                     className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
-                    title="Delete chat"
+                    title={tr("components.chatHistory.deleteChat")}
                   >
                     <Trash2 size={13} />
                   </button>
