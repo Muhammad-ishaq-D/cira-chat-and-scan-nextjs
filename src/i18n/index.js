@@ -15,9 +15,97 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 const STORAGE_KEY = "cira_lang";
+const SUPPORTED = ["en", "es", "de", "fr"];
+
+// Map IANA timezone region -> language code. Used as a fallback when the
+// browser language alone doesn't tell us enough (e.g. user has English OS
+// but lives in Spain).
+const TIMEZONE_LANG_MAP = {
+  // Spanish-speaking regions
+  "Europe/Madrid": "es",
+  "America/Mexico_City": "es",
+  "America/Argentina/Buenos_Aires": "es",
+  "America/Bogota": "es",
+  "America/Lima": "es",
+  "America/Santiago": "es",
+  "America/Caracas": "es",
+  "America/Montevideo": "es",
+  "America/Asuncion": "es",
+  "America/La_Paz": "es",
+  "America/Guayaquil": "es",
+  "America/Costa_Rica": "es",
+  "America/Panama": "es",
+  "America/El_Salvador": "es",
+  "America/Guatemala": "es",
+  "America/Tegucigalpa": "es",
+  "America/Managua": "es",
+  "America/Havana": "es",
+  "America/Santo_Domingo": "es",
+  // German-speaking regions
+  "Europe/Berlin": "de",
+  "Europe/Vienna": "de",
+  "Europe/Zurich": "de",
+  "Europe/Luxembourg": "de",
+  // French-speaking regions
+  "Europe/Paris": "fr",
+  "Europe/Brussels": "fr",
+  "Europe/Monaco": "fr",
+  "Africa/Abidjan": "fr",
+  "Africa/Dakar": "fr",
+  "Africa/Algiers": "fr",
+  "Africa/Tunis": "fr",
+  "Africa/Casablanca": "fr",
+  "America/Montreal": "fr",
+};
+
+const detectRegionLang = () => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return TIMEZONE_LANG_MAP[tz] || null;
+  } catch {
+    return null;
+  }
+};
+
+// Custom detector: localStorage -> navigator language -> timezone region -> en
+const customDetector = {
+  name: "ciraAutoDetect",
+  lookup() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved && SUPPORTED.includes(saved.split("-")[0])) {
+        return saved.split("-")[0];
+      }
+    } catch {}
+
+    if (typeof navigator !== "undefined") {
+      const langs = [
+        ...(navigator.languages || []),
+        navigator.language,
+      ].filter(Boolean);
+      for (const l of langs) {
+        const base = l.split("-")[0].toLowerCase();
+        if (SUPPORTED.includes(base)) return base;
+      }
+    }
+
+    const region = detectRegionLang();
+    if (region) return region;
+
+    return "en";
+  },
+  cacheUserLanguage(lng) {
+    try {
+      localStorage.setItem(STORAGE_KEY, lng);
+    } catch {}
+  },
+};
+
+const detector = new LanguageDetector();
+detector.addDetector(customDetector);
 
 i18n
-  .use(LanguageDetector)
+  .use(detector)
   .use(initReactI18next)
   .init({
     resources: {
@@ -27,12 +115,11 @@ i18n
       fr: { translation: fr },
     },
     fallbackLng: "en",
-    supportedLngs: ["en", "es", "de", "fr"],
+    supportedLngs: SUPPORTED,
     interpolation: { escapeValue: false },
     detection: {
-      order: ["localStorage", "navigator", "htmlTag"],
-      lookupLocalStorage: STORAGE_KEY,
-      caches: ["localStorage"],
+      order: ["ciraAutoDetect"],
+      caches: ["ciraAutoDetect"],
     },
   });
 
