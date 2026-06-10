@@ -1396,7 +1396,7 @@ const Chat = () => {
                   onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
                 >
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="truncate font-medium">{chat.title || "Untitled chat"}</p>
+                    <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
                   </div>
                   <button
