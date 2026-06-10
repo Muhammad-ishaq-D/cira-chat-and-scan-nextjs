@@ -11,6 +11,7 @@ import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicato
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import {
   getDeviceId,
