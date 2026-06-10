@@ -1784,7 +1784,7 @@ const Chat = () => {
             </div>
           </form>
           <div className="text-center px-3 pb-1">
-            <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
+            <p className="text-[9px] text-muted-foreground/60">{tr("components.chatHistory.disclaimer")}</p>
           </div>
         </div>
       </div>
