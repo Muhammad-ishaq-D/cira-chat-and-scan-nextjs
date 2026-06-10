@@ -1370,7 +1370,7 @@ const Chat = () => {
                 <button
                   onClick={() => { setActiveChat(null); clearLiveTypingState(); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                  title="New chat"
+                  title={tr("components.chatHistory.newChat")}
                 >
                   <Plus size={16} />
                 </button>
