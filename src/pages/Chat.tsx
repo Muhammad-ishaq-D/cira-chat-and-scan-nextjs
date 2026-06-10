@@ -17,6 +17,7 @@ import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 // Render basic markdown: **bold**, *italic*, `code`
 const renderFormattedText = (text: string) => {
