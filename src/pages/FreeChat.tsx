@@ -1219,6 +1219,7 @@ const FreeChat = () => {
                         type="button"
                         onClick={() => {
                           setSelectedLanguage(lang.id);
+                          syncGlobalFromChat(lang.id);
                           setShowLangDropdown(false);
                         }}
                         className={`w-full text-left flex items-center gap-2.5 px-3 py-2 text-[12px] hover:bg-accent transition-colors ${selectedLanguage === lang.id ? 'bg-accent/50 font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
