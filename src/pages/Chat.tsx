@@ -15,6 +15,7 @@ import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
 import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
+import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import { toast } from "sonner";
 
 // Render basic markdown: **bold**, *italic*, `code`
