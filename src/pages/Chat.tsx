@@ -266,7 +266,8 @@ const Chat = () => {
       book_desc: "Connect with a licensed doctor near you",
       just_chat_msg: "💬 I just want to chat",
       assessment_msg: "🩺 I'd like a health assessment",
-      placeholder: "Ask Cira anything..."
+      placeholder: "Ask Cira anything...",
+      disclaimer: "Cira can make mistakes. Not a medical service. Verify important info with a clinician."
     },
     fr: {
       welcome: "Comment aimeriez-vous commencer ? 💙",
@@ -280,7 +281,8 @@ const Chat = () => {
       book_desc: "Connectez-vous avec un médecin près de chez vous",
       just_chat_msg: "💬 Je veux juste discuter",
       assessment_msg: "🩺 Je voudrais une évaluation de santé",
-      placeholder: "Demandez n'importe quoi à Cira..."
+      placeholder: "Demandez n'importe quoi à Cira...",
+      disclaimer: "Cira peut faire des erreurs. Ce n'est pas un service médical. Vérifiez les informations importantes auprès d'un clinicien."
     },
     es: {
       welcome: "¿Cómo te gustaría empezar? 💙",
@@ -294,7 +296,8 @@ const Chat = () => {
       book_desc: "Conéctate con un médico licenciado cerca de ti",
       just_chat_msg: "💬 Solo quiero chatear",
       assessment_msg: "🩺 Me gustaría una evaluación de salud",
-      placeholder: "Pregúntale a Cira cualquier cosa..."
+      placeholder: "Pregúntale a Cira cualquier cosa...",
+      disclaimer: "Cira puede cometer errores. No es un servicio médico. Verifica la información importante con un profesional clínico."
     },
     de: {
       welcome: "Wie möchten Sie beginnen? 💙",
@@ -308,7 +311,8 @@ const Chat = () => {
       book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
       just_chat_msg: "💬 Ich möchte nur chatten",
       assessment_msg: "🩺 Ich hätte gerne eine Gesundheitsbewertung",
-      placeholder: "Fragen Sie Cira alles..."
+      placeholder: "Fragen Sie Cira alles...",
+      disclaimer: "Cira kann Fehler machen. Kein medizinischer Dienst. Wichtige Informationen mit einer Fachperson überprüfen."
     },
     it: {
       welcome: "Come vorresti iniziare? 💙",
@@ -322,7 +326,8 @@ const Chat = () => {
       book_desc: "Connettiti con un medico autorizzato vicino a te",
       just_chat_msg: "💬 Voglio solo chiacchierare",
       assessment_msg: "🩺 Vorrei una valutazione della salute",
-      placeholder: "Chiedi qualsiasi cosa a Cira..."
+      placeholder: "Chiedi qualsiasi cosa a Cira...",
+      disclaimer: "Cira può commettere errori. Non è un servizio medico. Verifica le informazioni importanti con un medico."
     },
     pt: {
       welcome: "Como você gostaria de começar? 💙",
@@ -336,7 +341,8 @@ const Chat = () => {
       book_desc: "Conecte-se com um médico licenciado perto de você",
       just_chat_msg: "💬 Eu só quero conversar",
       assessment_msg: "🩺 Eu gostaria de uma avaliação de saúde",
-      placeholder: "Pergunte qualquer coisa à Cira..."
+      placeholder: "Pergunte qualquer coisa à Cira...",
+      disclaimer: "Cira pode cometer erros. Não é um serviço médico. Verifique informações importantes com um clínico."
     },
     hi: {
       welcome: "आप कैसे शुरू करना चाहेंगे? 💙",
@@ -350,7 +356,8 @@ const Chat = () => {
       book_desc: "अपने पास के लाइसेंस प्राप्त डॉक्टर से जुड़ें",
       just_chat_msg: "💬 मैं बस चैट करना चाहता हूँ",
       assessment_msg: "🩺 मुझे स्वास्थ्य मूल्यांकन चाहिए",
-      placeholder: "सीरा से कुछ भी पूछें..."
+      placeholder: "सीरा से कुछ भी पूछें...",
+      disclaimer: "Cira गलतियाँ कर सकती है। यह कोई चिकित्सा सेवा नहीं है। महत्वपूर्ण जानकारी किसी चिकित्सक से सत्यापित करें।"
     },
     id: {
       welcome: "Bagaimana Anda ingin memulai? 💙",
@@ -364,7 +371,8 @@ const Chat = () => {
       book_desc: "Terhubung dengan dokter berlisensi di dekat Anda",
       just_chat_msg: "💬 Saya hanya ingin mengobrol",
       assessment_msg: "🩺 Saya ingin penilaian kesehatan",
-      placeholder: "Tanya Cira apa saja..."
+      placeholder: "Tanya Cira apa saja...",
+      disclaimer: "Cira bisa membuat kesalahan. Bukan layanan medis. Verifikasi informasi penting dengan dokter."
     },
     ja: {
       welcome: "どのように始めますか？ 💙",
@@ -378,7 +386,8 @@ const Chat = () => {
       book_desc: "お近くの公認医師に相談してください",
       just_chat_msg: "💬 チャットしたいだけです",
       assessment_msg: "🩺 健康診断をお願いします",
-      placeholder: "Ciraにお聞きください..."
+      placeholder: "Ciraにお聞きください...",
+      disclaimer: "Ciraは間違えることがあります。医療サービスではありません。重要な情報は臨床医に確認してください。"
     },
     ko: {
       welcome: "어떻게 시작할까요? 💙",
@@ -392,7 +401,8 @@ const Chat = () => {
       book_desc: "가까운 공인 의사와 연결하세요",
       just_chat_msg: "💬 그냥 대화하고 싶어요",
       assessment_msg: "🩺 건강 평가를 받고 싶습니다",
-      placeholder: "Cira에게 무엇이든 물어보세요..."
+      placeholder: "Cira에게 무엇이든 물어보세요...",
+      disclaimer: "Cira는 실수할 수 있습니다. 의료 서비스가 아닙니다. 중요한 정보는 임상의에게 확인하세요."
     },
     ar: {
       welcome: "كيف تريد أن تبدأ؟ 💙",
@@ -406,7 +416,8 @@ const Chat = () => {
       book_desc: "تواصل مع طبيب مرخص بالقرب منك",
       just_chat_msg: "💬 أريد فقط الدردشة",
       assessment_msg: "🩺 أريد تقييماً صحياً",
-      placeholder: "اسأل سيرا أي شيء..."
+      placeholder: "اسأل سيرا أي شيء...",
+      disclaimer: "قد ترتكب سيرا أخطاء. ليست خدمة طبية. تحقق من المعلومات المهمة مع طبيب."
     },
     zh: {
       welcome: "您想如何开始？💙",
@@ -420,7 +431,8 @@ const Chat = () => {
       book_desc: "与您附近的持牌医生联系",
       just_chat_msg: "💬 我只想聊聊",
       assessment_msg: "🩺 我想进行健康评估",
-      placeholder: "向 Cira 询问任何问题..."
+      placeholder: "向 Cira 询问任何问题...",
+      disclaimer: "Cira 可能会出错。非医疗服务。请向临床医生核实重要信息。"
     },
     ru: {
       welcome: "Как вы хотите начать? 💙",
@@ -434,7 +446,8 @@ const Chat = () => {
       book_desc: "Свяжитесь с лицензированным врачом рядом с вами",
       just_chat_msg: "💬 Я просто хочу пообщаться",
       assessment_msg: "🩺 Я хочу пройти оценку здоровья",
-      placeholder: "Спросите Cira о чём угодно..."
+      placeholder: "Спросите Cira о чём угодно...",
+      disclaimer: "Cira может ошибаться. Это не медицинская служба. Проверяйте важную информацию у врача."
     },
     pl: {
       welcome: "Jak chciałbyś zacząć? 💙",
@@ -448,7 +461,8 @@ const Chat = () => {
       book_desc: "Połącz się z licencjonowanym lekarzem w pobliżu",
       just_chat_msg: "💬 Chcę tylko porozmawiać",
       assessment_msg: "🩺 Chciałbym ocenę zdrowia",
-      placeholder: "Zapytaj Cirę o cokolwiek..."
+      placeholder: "Zapytaj Cirę o cokolwiek...",
+      disclaimer: "Cira może popełniać błędy. To nie usługa medyczna. Ważne informacje weryfikuj z klinicystą."
     }
   };
 
@@ -1784,7 +1798,7 @@ const Chat = () => {
             </div>
           </form>
           <div className="text-center px-3 pb-1">
-            <p className="text-[9px] text-muted-foreground/60">{tr("components.chatHistory.disclaimer")}</p>
+            <p className="text-[9px] text-muted-foreground/60">{t.disclaimer || tr("components.chatHistory.disclaimer")}</p>
           </div>
         </div>
       </div>
