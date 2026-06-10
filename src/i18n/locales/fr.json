@@ -1508,6 +1508,9 @@
       "loginTitle": "Connectez-vous pour sauvegarder vos données",
       "loginSubtitle": "L'historique des chats et scans ne sera pas sauvegardé sans compte",
       "messagesToday": "{{current}}/{{limit}} messages aujourd'hui",
+      "freeMessagesToday": "{{current}}/{{limit}} messages gratuits aujourd'hui",
+      "loginForUnlimited": "Connectez-vous pour un accès illimité",
+      "disclaimer": "Cira peut faire des erreurs. Ce n'est pas un service médical. Vérifiez les informations importantes auprès d'un clinicien.",
       "login": "Connexion"
     }
   }
