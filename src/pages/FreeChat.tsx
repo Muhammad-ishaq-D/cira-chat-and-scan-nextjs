@@ -11,6 +11,7 @@ import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicato
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
+import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import {
   getDeviceId,
   getFreeChatHistory,
@@ -355,7 +356,11 @@ const FreeChat = () => {
   const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
   const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
   const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getInitialChatLang());
+
+  // Keep chat language synced with global i18n selection
+  useEffect(() => subscribeChatLang(setSelectedLanguage), []);
+
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -1214,6 +1219,7 @@ const FreeChat = () => {
                         type="button"
                         onClick={() => {
                           setSelectedLanguage(lang.id);
+                          syncGlobalFromChat(lang.id);
                           setShowLangDropdown(false);
                         }}
                         className={`w-full text-left flex items-center gap-2.5 px-3 py-2 text-[12px] hover:bg-accent transition-colors ${selectedLanguage === lang.id ? 'bg-accent/50 font-semibold' : 'text-muted-foreground hover:text-foreground'}`}

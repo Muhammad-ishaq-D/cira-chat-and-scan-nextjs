@@ -15,6 +15,7 @@ import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
 import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
+import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import { toast } from "sonner";
 
 // Render basic markdown: **bold**, *italic*, `code`
@@ -213,7 +214,11 @@ const Chat = () => {
   const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getInitialChatLang());
+
+  // Keep chat language synced with global i18n selection
+  useEffect(() => subscribeChatLang(setSelectedLanguage), []);
+
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -1731,6 +1736,7 @@ const Chat = () => {
                         type="button"
                         onClick={() => {
                           setSelectedLanguage(lang.id);
+                          syncGlobalFromChat(lang.id);
                           setShowLangDropdown(false);
                         }}
                         className={`w-full text-left flex items-center gap-2.5 px-3 py-2 text-[12px] hover:bg-accent transition-colors ${selectedLanguage === lang.id ? 'bg-accent/50 font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
