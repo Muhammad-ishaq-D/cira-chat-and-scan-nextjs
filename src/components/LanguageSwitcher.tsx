@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Globe } from "lucide-react";
+import { Globe, ChevronDown } from "lucide-react";
 import { SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n";
 
 interface LanguageSwitcherProps {
@@ -19,6 +19,7 @@ const LanguageSwitcher = ({ className = "", variant = "default" }: LanguageSwitc
         <Globe className="w-4 h-4" aria-hidden />
         <span className="sr-only">{t("language.select")}</span>
         <span className="uppercase tracking-wide">{current}</span>
+        <ChevronDown className="w-3.5 h-3.5 opacity-60" aria-hidden />
         <select
           aria-label={t("language.select")}
           value={current}
