@@ -1496,6 +1496,19 @@
     "sessionExpired": {
       "title": "Session expirée",
       "description": "Vous avez été déconnecté pour inactivité pour votre protection."
+    },
+    "chatHistory": {
+      "title": "Historique des chats",
+      "newChat": "Nouveau chat",
+      "recent": "Récents",
+      "empty": "Aucun historique de chat",
+      "untitled": "Chat sans titre",
+      "delete": "Supprimer",
+      "deleteChat": "Supprimer le chat",
+      "loginTitle": "Connectez-vous pour sauvegarder vos données",
+      "loginSubtitle": "L'historique des chats et scans ne sera pas sauvegardé sans compte",
+      "messagesToday": "{{current}}/{{limit}} messages aujourd'hui",
+      "login": "Connexion"
     }
   }
 }
