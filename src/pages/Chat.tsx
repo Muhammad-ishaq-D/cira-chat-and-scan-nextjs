@@ -1383,9 +1383,9 @@ const Chat = () => {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
               {chatHistory.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
+                <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
               ) : chatHistory.map((chat: any) => (
                 <div
                   key={chat.id}
