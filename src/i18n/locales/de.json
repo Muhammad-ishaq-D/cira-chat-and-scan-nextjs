@@ -1496,6 +1496,19 @@
     "sessionExpired": {
       "title": "Sitzung abgelaufen",
       "description": "Du wurdest wegen Inaktivität zu deinem Schutz abgemeldet."
+    },
+    "chatHistory": {
+      "title": "Chatverlauf",
+      "newChat": "Neuer Chat",
+      "recent": "Zuletzt",
+      "empty": "Noch kein Chatverlauf",
+      "untitled": "Unbenannter Chat",
+      "delete": "Löschen",
+      "deleteChat": "Chat löschen",
+      "loginTitle": "Anmelden, um deine Daten zu speichern",
+      "loginSubtitle": "Chat- und Scan-Verlauf werden ohne Konto nicht gespeichert",
+      "messagesToday": "{{current}}/{{limit}} Nachrichten heute",
+      "login": "Anmelden"
     }
   }
 }
