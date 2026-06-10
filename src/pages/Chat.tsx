@@ -17,6 +17,7 @@ import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 // Render basic markdown: **bold**, *italic*, `code`
 const renderFormattedText = (text: string) => {
@@ -195,6 +196,7 @@ const stripJustChatInstructions = (text: string): string => {
 
 const Chat = () => {
   const navigate = useNavigate();
+  const { t: tr } = useTranslation();
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
@@ -1363,12 +1365,12 @@ const Chat = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
-              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>Chat History</p>
+              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{tr("components.chatHistory.title")}</p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => { setActiveChat(null); clearLiveTypingState(); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
                   className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                  title="New chat"
+                  title={tr("components.chatHistory.newChat")}
                 >
                   <Plus size={16} />
                 </button>
@@ -1381,9 +1383,9 @@ const Chat = () => {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
               {chatHistory.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
+                <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
               ) : chatHistory.map((chat: any) => (
                 <div
                   key={chat.id}
@@ -1394,13 +1396,13 @@ const Chat = () => {
                   onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
                 >
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="truncate font-medium">{chat.title || "Untitled chat"}</p>
+                    <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
                     className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
-                    title="Delete chat"
+                    title={tr("components.chatHistory.deleteChat")}
                   >
                     <Trash2 size={13} />
                   </button>
@@ -1417,7 +1419,7 @@ const Chat = () => {
         <button
           onClick={() => setShowHistory(!showHistory)}
           className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm"
-          title="Chat History"
+          title={tr("components.chatHistory.title")}
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>

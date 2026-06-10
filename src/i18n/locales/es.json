@@ -1496,6 +1496,19 @@
     "sessionExpired": {
       "title": "Sesión expirada",
       "description": "Se ha cerrado tu sesión por inactividad para tu protección."
+    },
+    "chatHistory": {
+      "title": "Historial de chat",
+      "newChat": "Nuevo chat",
+      "recent": "Recientes",
+      "empty": "Aún no hay historial de chat",
+      "untitled": "Chat sin título",
+      "delete": "Eliminar",
+      "deleteChat": "Eliminar chat",
+      "loginTitle": "Inicia sesión para guardar tus datos",
+      "loginSubtitle": "El historial de chat y escaneos no se guardará sin una cuenta",
+      "messagesToday": "{{current}}/{{limit}} mensajes hoy",
+      "login": "Iniciar sesión"
     }
   }
 }

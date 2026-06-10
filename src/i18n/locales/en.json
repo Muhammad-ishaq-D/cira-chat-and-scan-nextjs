@@ -1496,6 +1496,19 @@
     "sessionExpired": {
       "title": "Session Expired",
       "description": "You have been logged out due to inactivity for your protection."
+    },
+    "chatHistory": {
+      "title": "Chat History",
+      "newChat": "New chat",
+      "recent": "Recent",
+      "empty": "No chat history yet",
+      "untitled": "Untitled chat",
+      "delete": "Delete",
+      "deleteChat": "Delete chat",
+      "loginTitle": "Login to save your data",
+      "loginSubtitle": "Chat & scan history won't be saved without an account",
+      "messagesToday": "{{current}}/{{limit}} messages today",
+      "login": "Login"
     }
   }
 }
