@@ -179,7 +179,7 @@ const Index = () => {
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
-          <LanguageSwitcher variant="minimal" className="hidden sm:inline-flex" />
+          <LanguageSwitcher variant="header" className="hidden sm:inline-flex" />
           {isAuthenticated() ? (
             (() => {
               const user = getUser();
