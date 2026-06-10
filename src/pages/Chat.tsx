@@ -1798,7 +1798,7 @@ const Chat = () => {
             </div>
           </form>
           <div className="text-center px-3 pb-1">
-            <p className="text-[9px] text-muted-foreground/60">{tr("components.chatHistory.disclaimer")}</p>
+            <p className="text-[9px] text-muted-foreground/60">{t.disclaimer || tr("components.chatHistory.disclaimer")}</p>
           </div>
         </div>
       </div>
