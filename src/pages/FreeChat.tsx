@@ -901,9 +901,9 @@ const FreeChat = () => {
           <div className="fixed inset-0 z-40 bg-black/10" onClick={() => setShowHistory(false)} />
           <div className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out] left-0" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
-              <p className="text-sm font-semibold text-foreground font-heading">Chat History</p>
+              <p className="text-sm font-semibold text-foreground font-heading">{tr("components.chatHistory.title")}</p>
               <div className="flex items-center gap-2">
-                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title="New chat">
+                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title={tr("components.chatHistory.newChat")}>
                   <Plus size={16} />
                 </button>
                 <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
@@ -917,8 +917,8 @@ const FreeChat = () => {
               <button onClick={() => navigate("/login")} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium hover:bg-primary/20 transition-all">
                 <LogIn size={14} />
                 <div className="text-left">
-                  <p className="font-semibold text-[11px]">Login to save your data</p>
-                  <p className="text-[9px] text-primary/70">Chat & scan history won't be saved without an account</p>
+                  <p className="font-semibold text-[11px]">{tr("components.chatHistory.loginTitle")}</p>
+                  <p className="text-[9px] text-primary/70">{tr("components.chatHistory.loginSubtitle")}</p>
                 </div>
               </button>
             </div>
@@ -927,21 +927,21 @@ const FreeChat = () => {
             <div className="px-3 pt-2 pb-1">
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <Sparkles size={10} />
-                <span>{guestRemaining}/{guestDailyLimit} messages today</span>
+                <span>{tr("components.chatHistory.messagesToday", { current: guestRemaining, limit: guestDailyLimit })}</span>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">Recent</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
               {chatHistory.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">No chat history yet</p>
+                <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
               ) : chatHistory.map((chat) => (
                 <div key={chat.id} className="group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer text-muted-foreground hover:bg-accent/50 hover:text-foreground" onClick={() => loadSession(chat)}>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="truncate font-medium">{chat.title || "Untitled"}</p>
+                    <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(chat.created_at).toLocaleDateString()}</p>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); handleDeleteChat(chat.id); }} className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0" title="Delete">
+                  <button onClick={(e) => { e.stopPropagation(); handleDeleteChat(chat.id); }} className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0" title={tr("components.chatHistory.delete")}>
                     <Trash2 size={13} />
                   </button>
                 </div>
