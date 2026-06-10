@@ -1508,6 +1508,9 @@
       "loginTitle": "Anmelden, um deine Daten zu speichern",
       "loginSubtitle": "Chat- und Scan-Verlauf werden ohne Konto nicht gespeichert",
       "messagesToday": "{{current}}/{{limit}} Nachrichten heute",
+      "freeMessagesToday": "{{current}}/{{limit}} kostenlose Nachrichten heute",
+      "loginForUnlimited": "Anmelden für unbegrenzt",
+      "disclaimer": "Cira kann Fehler machen. Kein medizinischer Dienst. Wichtige Informationen mit einer Fachperson überprüfen.",
       "login": "Anmelden"
     }
   }

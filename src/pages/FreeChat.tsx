@@ -1263,8 +1263,8 @@ const FreeChat = () => {
           </form>
           {/* Disclaimer + Daily limit counter */}
           <div className="text-center px-3 space-y-0.5">
-            <p className="text-[9px] text-muted-foreground/60">Cira can make mistakes. Not a medical service. Verify important info with a clinician.</p>
-            <p className="text-[9px] text-muted-foreground/50">{guestRemaining}/{guestDailyLimit} free messages today · <button onClick={() => navigate("/login")} className="text-primary hover:underline">Login for unlimited</button></p>
+            <p className="text-[9px] text-muted-foreground/60">{tr("components.chatHistory.disclaimer")}</p>
+            <p className="text-[9px] text-muted-foreground/50">{tr("components.chatHistory.freeMessagesToday", { current: guestRemaining, limit: guestDailyLimit })} · <button onClick={() => navigate("/login")} className="text-primary hover:underline">{tr("components.chatHistory.loginForUnlimited")}</button></p>
           </div>
         </div>
       </div>

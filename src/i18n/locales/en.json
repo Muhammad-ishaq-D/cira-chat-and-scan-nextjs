@@ -1508,6 +1508,9 @@
       "loginTitle": "Login to save your data",
       "loginSubtitle": "Chat & scan history won't be saved without an account",
       "messagesToday": "{{current}}/{{limit}} messages today",
+      "freeMessagesToday": "{{current}}/{{limit}} free messages today",
+      "loginForUnlimited": "Login for unlimited",
+      "disclaimer": "Cira can make mistakes. Not a medical service. Verify important info with a clinician.",
       "login": "Login"
     }
   }
