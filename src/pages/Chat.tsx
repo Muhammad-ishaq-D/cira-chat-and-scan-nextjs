@@ -214,7 +214,11 @@ const Chat = () => {
   const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getInitialChatLang());
+
+  // Keep chat language synced with global i18n selection
+  useEffect(() => subscribeChatLang(setSelectedLanguage), []);
+
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
