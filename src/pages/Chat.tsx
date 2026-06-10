@@ -1745,7 +1745,7 @@ const Chat = () => {
                 </button>
 
                 {showLangDropdown && (
-                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] max-h-[280px] overflow-y-auto bg-card rounded-xl border border-border shadow-lg py-1.5 z-50 animate-fade-in origin-bottom-left">
+                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] max-h-[280px] overflow-y-auto bg-card rounded-xl border border-border shadow-lg py-1.5 z-50 animate-fade-in origin-bottom-left [scrollbar-width:thin] [scrollbar-color:hsl(var(--border))_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/60 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {languages.map(lang => (
                       <button
                         key={lang.id}
