@@ -1256,7 +1256,7 @@ const FreeChat = () => {
                 </button>
 
                 {showLangDropdown && (
-                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] bg-card rounded-xl border border-border shadow-lg overflow-hidden py-1.5 z-50 animate-fade-in origin-bottom-left">
+                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] max-h-[280px] overflow-y-auto bg-card rounded-xl border border-border shadow-lg py-1.5 z-50 animate-fade-in origin-bottom-left">
                     {languages.map(lang => (
                       <button
                         key={lang.id}
@@ -1273,6 +1273,7 @@ const FreeChat = () => {
                       </button>
                     ))}
                   </div>
+
                 )}
               </div>
 
