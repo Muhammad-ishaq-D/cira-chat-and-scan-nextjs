@@ -1508,6 +1508,9 @@
       "loginTitle": "Inicia sesión para guardar tus datos",
       "loginSubtitle": "El historial de chat y escaneos no se guardará sin una cuenta",
       "messagesToday": "{{current}}/{{limit}} mensajes hoy",
+      "freeMessagesToday": "{{current}}/{{limit}} mensajes gratuitos hoy",
+      "loginForUnlimited": "Inicia sesión para ilimitado",
+      "disclaimer": "Cira puede cometer errores. No es un servicio médico. Verifica la información importante con un profesional clínico.",
       "login": "Iniciar sesión"
     }
   }
