@@ -196,6 +196,7 @@ const stripJustChatInstructions = (text: string): string => {
 
 const Chat = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState("chat");
