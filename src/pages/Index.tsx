@@ -178,43 +178,46 @@ const Index = () => {
             <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">{t("index.beta")}</span>
           </div>
         </div>
-        {isAuthenticated() ? (
-          (() => {
-            const user = getUser();
-            const initials = (user?.name || user?.email || "U")
-              .split(" ")
-              .map((n) => n[0])
-              .filter(Boolean)
-              .slice(0, 2)
-              .join("")
-              .toUpperCase();
-            return (
-              <button
-                onClick={() => navigate("/dashboard")}
-                aria-label={t("index.goDashboardAria")}
-                className="rounded-full hover:scale-105 transition-transform duration-200"
-              >
-                {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name || "Profile"}
-                    width={36}
-                    height={36}
-                    className="w-9 h-9 rounded-full object-cover border border-border/60"
-                  />
-                ) : (
-                  <span className="w-9 h-9 rounded-full bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center border border-border/60">
-                    {initials}
-                  </span>
-                )}
-              </button>
-            );
-          })()
-        ) : (
-          <button onClick={() => navigate("/login")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
-            {t("index.loginBtn")}
-          </button>
-        )}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <LanguageSwitcher variant="minimal" className="hidden sm:inline-flex" />
+          {isAuthenticated() ? (
+            (() => {
+              const user = getUser();
+              const initials = (user?.name || user?.email || "U")
+                .split(" ")
+                .map((n) => n[0])
+                .filter(Boolean)
+                .slice(0, 2)
+                .join("")
+                .toUpperCase();
+              return (
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  aria-label={t("index.goDashboardAria")}
+                  className="rounded-full hover:scale-105 transition-transform duration-200"
+                >
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name || "Profile"}
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full object-cover border border-border/60"
+                    />
+                  ) : (
+                    <span className="w-9 h-9 rounded-full bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center border border-border/60">
+                      {initials}
+                    </span>
+                  )}
+                </button>
+              );
+            })()
+          ) : (
+            <button onClick={() => navigate("/login")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200">
+              {t("index.loginBtn")}
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* Hero */}
