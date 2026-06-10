@@ -1419,7 +1419,7 @@ const Chat = () => {
         <button
           onClick={() => setShowHistory(!showHistory)}
           className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm"
-          title="Chat History"
+          title={tr("components.chatHistory.title")}
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
