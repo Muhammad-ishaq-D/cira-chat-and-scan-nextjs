@@ -319,6 +319,10 @@ const Upgrade = () => {
             const isCancelling = cancellingId === plan.id;
             const planKey = normalizePlanKey(plan.name);
             const isPaid = planKey !== "basic";
+            const localizedDesc = t(`upgrade.plans.${planKey}.desc`, { defaultValue: plan.desc });
+            const localizedFeaturesRaw = t(`upgrade.plans.${planKey}.features`, { returnObjects: true, defaultValue: plan.features });
+            const localizedFeatures = Array.isArray(localizedFeaturesRaw) ? localizedFeaturesRaw : plan.features;
+            const priceDisplay = plan.price === "Free" ? t("upgrade.free") : plan.price;
             let actionLabel: string;
             if (plan.current) actionLabel = t("upgrade.currentPlanBadge");
             else if (!isPaid) actionLabel = t("upgrade.free");
@@ -356,16 +360,16 @@ const Upgrade = () => {
                 <h3 className="text-lg font-semibold text-foreground mb-1" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                   {plan.name}
                 </h3>
-                <p className="text-xs text-muted-foreground mb-4">{plan.desc}</p>
+                <p className="text-xs text-muted-foreground mb-4">{localizedDesc}</p>
                 <div className="mb-6">
                   <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                    {plan.price}
+                    {priceDisplay}
                   </span>
                   <span className="text-sm text-muted-foreground">{plan.period}</span>
                 </div>
 
                 <ul className="space-y-2.5 mb-6 flex-1">
-                  {plan.features.map((f) => (
+                  {localizedFeatures.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-xs text-foreground">
                       <Check size={14} className="text-emerald-500 mt-0.5 shrink-0" />{f}
                     </li>
