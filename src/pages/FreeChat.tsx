@@ -937,6 +937,8 @@ const FreeChat = () => {
   };
 
   return (
+    <>
+      <SEO title="Free AI health chat — no signup" description="Ask Cira your health questions for free. Get AI nurse guidance instantly with no account required." path="/free-chat" />
     <div className="flex bg-background" style={{ height: "100dvh" }}>
       {/* Chat history drawer */}
       {showHistory && (
