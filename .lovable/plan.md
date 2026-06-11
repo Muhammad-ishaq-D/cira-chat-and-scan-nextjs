@@ -82,11 +82,11 @@ I'll document these in `.lovable/plan.md` for your backend dev. Out of scope for
 
 No DB / schema changes on the Lovable side (your backend lives outside Cloud).
 
-### Open questions before I build
+### User decisions (provided)
 
-1. **Retention windows** — OK with vitals 24mo, chats 12mo, logs 90d? Or different?
-2. **Legal entity name + registered address** for the Data Controller block — provide now or leave a `[YOUR COMPANY]` placeholder I'll mark TODO?
-3. **Hard delete vs anonymize** on account deletion — preference?
+1. **Retention windows** — vitals 24mo, chats 12mo, logs 90d (applied in Privacy Policy and backend spec).
+2. **Legal entity** — Askainurse, la boue, Charn Issara Tower 1 - Ground Floor, Bangkok, 41250, Thailand (applied in Privacy Policy).
+3. **Account deletion** — anonymize (not hard-delete) within 30 days (applied in backend spec).
 
 ---
 
