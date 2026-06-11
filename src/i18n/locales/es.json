@@ -1513,5 +1513,72 @@
       "disclaimer": "Cira puede cometer errores. No es un servicio médico. Verifica la información importante con un profesional clínico.",
       "login": "Iniciar sesión"
     }
+  },
+  "symptomChecker": {
+    "seoTitle": "Verificador de síntomas con IA gratis — Cira Enfermera IA",
+    "seoDescription": "Verificador de síntomas con IA gratuito. Describe tus síntomas y obtén una evaluación tipo enfermería, causas probables y orientación clara en minutos.",
+    "nav": {
+      "startFreeChat": "Iniciar chat gratis"
+    },
+    "hero": {
+      "eyebrow": "Verificador de síntomas con IA gratis",
+      "title": "Revisa tus síntomas con una enfermera IA — gratis.",
+      "subtitle": "Describe lo que sientes en lenguaje común. Cira hace las preguntas adecuadas, resume las causas probables y te dice si puedes cuidarte en casa, ver a un médico o acudir a urgencias.",
+      "ctaPrimary": "Iniciar verificación gratuita",
+      "ctaSecondary": "Cómo funciona →",
+      "disclaimer": "Cira es una enfermera IA para apoyo en decisiones, no sustituye un diagnóstico médico profesional. En caso de emergencia, llama al número local de emergencias."
+    },
+    "symptoms": {
+      "title": "Qué puedes revisar",
+      "subtitle": "Síntomas comunes que las personas consultan con Cira — desde molestias cotidianas hasta señales de alarma que requieren un médico.",
+      "items": {
+        "fever": "Fiebre y escalofríos",
+        "headache": "Dolor de cabeza y migraña",
+        "chest": "Dolor torácico o palpitaciones",
+        "breath": "Falta de aire",
+        "abdominal": "Dolor abdominal",
+        "medication": "Efectos secundarios de medicamentos"
+      }
+    },
+    "steps": {
+      "title": "Cómo funciona el verificador de síntomas",
+      "stepLabel": "Paso {{n}}",
+      "one": {
+        "title": "Describe lo que sientes",
+        "text": "Escribe tus síntomas en lenguaje común — sin tecnicismos. Cira hace preguntas aclaratorias como lo haría una enfermera."
+      },
+      "two": {
+        "title": "Recibe una evaluación estructurada",
+        "text": "Cira revisa inicio, gravedad, antecedentes y factores de riesgo, y resume las causas probables y las señales de alarma a vigilar."
+      },
+      "three": {
+        "title": "Conoce tu próximo paso",
+        "text": "Cuidado en casa, ver a un médico de cabecera o acudir a urgencias. Orientación clara, sin adivinanzas."
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "q1": {
+        "q": "¿El verificador de síntomas con IA es realmente gratis?",
+        "a": "Sí. Puedes iniciar una evaluación de síntomas gratuita con Cira sin registrarte. Los chats gratis incluyen triaje guiado y orientación clara sobre próximos pasos."
+      },
+      "q2": {
+        "q": "¿Qué tan preciso es un verificador de síntomas con IA?",
+        "a": "Cira utiliza un proceso clínicamente estructurado (inicio, gravedad, síntomas asociados, antecedentes, señales de alarma) basado en protocolos de triaje de enfermería. No es un diagnóstico — es apoyo para decidir si cuidarte en casa, ver a un médico o acudir a urgencias."
+      },
+      "q3": {
+        "q": "¿Mis datos son privados?",
+        "a": "Sí. Las conversaciones están cifradas en tránsito y nunca se venden. Puedes usar Cira de forma anónima sin cuenta."
+      },
+      "q4": {
+        "q": "¿Cuándo debo ir a urgencias en lugar de usar un verificador de síntomas?",
+        "a": "Si tienes dolor torácico, dolor de cabeza súbito e intenso, dificultad para respirar, debilidad en un lado, desmayo, sangrado severo o cualquier síntoma que ponga en peligro la vida — llama de inmediato al número local de emergencias. Cira también señalará estas alarmas durante el triaje."
+      }
+    },
+    "cta": {
+      "title": "Listo cuando tú lo estés.",
+      "text": "Anónimo, gratis, disponible 24/7. Obtén un próximo paso claro en minutos.",
+      "button": "Iniciar verificación gratuita"
+    }
   }
 }

@@ -1513,5 +1513,72 @@
       "disclaimer": "Cira peut faire des erreurs. Ce n'est pas un service médical. Vérifiez les informations importantes auprès d'un clinicien.",
       "login": "Connexion"
     }
+  },
+  "symptomChecker": {
+    "seoTitle": "Vérificateur de symptômes IA gratuit — Cira Infirmière IA",
+    "seoDescription": "Vérificateur de symptômes IA gratuit. Décrivez vos symptômes et recevez une évaluation infirmière, les causes probables et des conseils clairs en quelques minutes.",
+    "nav": {
+      "startFreeChat": "Démarrer un chat gratuit"
+    },
+    "hero": {
+      "eyebrow": "Vérificateur de symptômes IA gratuit",
+      "title": "Vérifiez vos symptômes avec une infirmière IA — gratuitement.",
+      "subtitle": "Décrivez ce que vous ressentez en langage simple. Cira pose les bonnes questions, résume les causes probables et vous indique s'il faut vous soigner à la maison, voir un médecin ou consulter en urgence.",
+      "ctaPrimary": "Démarrer la vérification gratuite",
+      "ctaSecondary": "Comment ça marche →",
+      "disclaimer": "Cira est une infirmière IA d'aide à la décision, elle ne remplace pas un diagnostic médical professionnel. En cas d'urgence, appelez votre numéro d'urgence local."
+    },
+    "symptoms": {
+      "title": "Ce que vous pouvez vérifier",
+      "subtitle": "Symptômes courants pour lesquels les gens consultent Cira — des préoccupations quotidiennes aux signes d'alerte nécessitant un médecin.",
+      "items": {
+        "fever": "Fièvre et frissons",
+        "headache": "Maux de tête et migraine",
+        "chest": "Douleur thoracique ou palpitations",
+        "breath": "Essoufflement",
+        "abdominal": "Douleur abdominale",
+        "medication": "Effets secondaires des médicaments"
+      }
+    },
+    "steps": {
+      "title": "Comment fonctionne le vérificateur de symptômes",
+      "stepLabel": "Étape {{n}}",
+      "one": {
+        "title": "Décrivez ce que vous ressentez",
+        "text": "Tapez vos symptômes en langage simple — pas de jargon médical. Cira pose des questions clarificatrices comme le ferait une infirmière."
+      },
+      "two": {
+        "title": "Obtenez une évaluation structurée",
+        "text": "Cira examine l'apparition, la gravité, les antécédents et les facteurs de risque, puis résume les causes probables et les signes d'alerte à surveiller."
+      },
+      "three": {
+        "title": "Connaissez la prochaine étape",
+        "text": "Soins à la maison, médecin traitant ou consultation d'urgence. Conseils clairs, sans incertitude."
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "q1": {
+        "q": "Le vérificateur de symptômes IA est-il vraiment gratuit ?",
+        "a": "Oui. Vous pouvez démarrer une évaluation de symptômes gratuite avec Cira sans inscription. Les chats gratuits incluent un triage guidé et des conseils clairs sur la suite."
+      },
+      "q2": {
+        "q": "Quelle est la précision d'un vérificateur de symptômes IA ?",
+        "a": "Cira utilise un questionnaire cliniquement structuré (apparition, gravité, symptômes associés, antécédents, signes d'alerte) basé sur des protocoles de triage infirmier. Ce n'est pas un diagnostic — c'est une aide à la décision pour choisir entre l'auto-soin, la consultation ou l'urgence."
+      },
+      "q3": {
+        "q": "Mes données sont-elles privées ?",
+        "a": "Oui. Les conversations sont chiffrées en transit et ne sont jamais vendues. Vous pouvez utiliser Cira anonymement sans compte."
+      },
+      "q4": {
+        "q": "Quand dois-je aller aux urgences au lieu d'utiliser un vérificateur de symptômes ?",
+        "a": "En cas de douleur thoracique, mal de tête soudain et intense, difficulté à respirer, faiblesse d'un côté, évanouissement, saignement sévère ou tout symptôme mettant en jeu la vie — appelez immédiatement votre numéro d'urgence local. Cira signalera aussi ces alertes pendant le triage."
+      }
+    },
+    "cta": {
+      "title": "Prêt quand vous l'êtes.",
+      "text": "Anonyme, gratuit, disponible 24h/24. Obtenez une étape suivante claire en quelques minutes.",
+      "button": "Démarrer la vérification gratuite"
+    }
   }
 }

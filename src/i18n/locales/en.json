@@ -1513,5 +1513,72 @@
       "disclaimer": "Cira can make mistakes. Not a medical service. Verify important info with a clinician.",
       "login": "Login"
     }
+  },
+  "symptomChecker": {
+    "seoTitle": "Free AI Symptom Checker — Cira AI Nurse",
+    "seoDescription": "Free AI symptom checker. Describe your symptoms and get nurse-style triage, likely causes, and clear next-step guidance in minutes.",
+    "nav": {
+      "startFreeChat": "Start free chat"
+    },
+    "hero": {
+      "eyebrow": "Free AI Symptom Checker",
+      "title": "Check your symptoms with an AI nurse — free.",
+      "subtitle": "Describe what you're feeling in plain language. Cira asks the right follow-up questions, summarizes likely causes, and tells you whether to self-care, see a doctor, or seek urgent care.",
+      "ctaPrimary": "Start free symptom check",
+      "ctaSecondary": "How it works →",
+      "disclaimer": "Cira is an AI nurse for decision support, not a substitute for professional medical diagnosis. In an emergency, call your local emergency number."
+    },
+    "symptoms": {
+      "title": "What you can check",
+      "subtitle": "Common symptoms people bring to Cira — from everyday concerns to warning signs that need a doctor.",
+      "items": {
+        "fever": "Fever & chills",
+        "headache": "Headache & migraine",
+        "chest": "Chest pain or palpitations",
+        "breath": "Shortness of breath",
+        "abdominal": "Abdominal pain",
+        "medication": "Medication side effects"
+      }
+    },
+    "steps": {
+      "title": "How the symptom checker works",
+      "stepLabel": "Step {{n}}",
+      "one": {
+        "title": "Describe what you feel",
+        "text": "Type your symptoms in plain language — no medical jargon needed. Cira asks clarifying questions like a nurse would."
+      },
+      "two": {
+        "title": "Get a structured assessment",
+        "text": "Cira reviews onset, severity, history and risk factors, then summarizes the likely causes and red flags to watch for."
+      },
+      "three": {
+        "title": "Know your next step",
+        "text": "Self-care at home, see a primary care doctor, or seek urgent care. Clear guidance, no guessing."
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "q1": {
+        "q": "Is the AI symptom checker really free?",
+        "a": "Yes. You can start a free symptom assessment with Cira without signing up. Free chats include guided triage and clear next-step guidance."
+      },
+      "q2": {
+        "q": "How accurate is an AI symptom checker?",
+        "a": "Cira uses a clinically structured intake (onset, severity, associated symptoms, history, red flags) modeled on nurse triage protocols. It is not a diagnosis — it is decision support to help you decide whether to self-care, see a doctor, or seek urgent care."
+      },
+      "q3": {
+        "q": "Is my data private?",
+        "a": "Yes. Conversations are encrypted in transit and never sold. You can use Cira anonymously without an account."
+      },
+      "q4": {
+        "q": "When should I go to the ER instead of using a symptom checker?",
+        "a": "If you have chest pain, sudden severe headache, trouble breathing, weakness on one side, fainting, severe bleeding, or any life-threatening symptom — call your local emergency number immediately. Cira will also flag these red flags during triage."
+      }
+    },
+    "cta": {
+      "title": "Ready when you are.",
+      "text": "Anonymous, free, available 24/7. Get a clear next step in minutes.",
+      "button": "Start free symptom check"
+    }
   }
 }
