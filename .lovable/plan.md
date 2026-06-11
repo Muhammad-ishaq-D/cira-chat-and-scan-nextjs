@@ -87,3 +87,57 @@ No DB / schema changes on the Lovable side (your backend lives outside Cloud).
 1. **Retention windows** — OK with vitals 24mo, chats 12mo, logs 90d? Or different?
 2. **Legal entity name + registered address** for the Data Controller block — provide now or leave a `[YOUR COMPANY]` placeholder I'll mark TODO?
 3. **Hard delete vs anonymize** on account deletion — preference?
+
+---
+
+## Backend handoff — implement these on the Node.js/MySQL API
+
+### Endpoints (JWT-protected)
+
+```
+GET    /api/user/gdpr/export
+       → 200 application/json
+       Body: { profile, vitalsScans[], reports[], chats[], payments[], consents[], exportedAt }
+
+DELETE /api/user/gdpr/account
+       → 200; hard-delete or queue 30-day anonymization job
+       Side-effects: invalidate JWT, cascade delete vitals_scans, reports, chats, payments
+
+POST   /api/user/gdpr/consent
+       Body: { version, analytics, functional, decidedAt, userAgent }
+       → 201; append-only insert into consent_log
+```
+
+### New table
+
+```sql
+CREATE TABLE consent_log (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  anon_id VARCHAR(64) NULL,
+  version SMALLINT NOT NULL,
+  analytics TINYINT(1) NOT NULL,
+  functional TINYINT(1) NOT NULL,
+  ip VARCHAR(45) NULL,
+  user_agent VARCHAR(512) NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user (user_id),
+  INDEX idx_created (created_at)
+);
+```
+
+### Retention cron (daily)
+
+- `DELETE FROM vitals_scans WHERE created_at < NOW() - INTERVAL 24 MONTH;`
+- `DELETE FROM chats WHERE updated_at < NOW() - INTERVAL 12 MONTH;`
+- `DELETE FROM audit_logs WHERE created_at < NOW() - INTERVAL 90 DAY;`
+
+### Infrastructure
+
+- MySQL `require_secure_transport=ON`, encrypted backups
+- Sub-processor DPAs on file: Anthropic, Shen AI, hosting, Stripe/Paddle
+- Breach runbook: notify supervisory authority within 72h
+
+Until these endpoints are deployed, the UI degrades gracefully:
+- "Export my data" shows a toast pointing to privacy@askainurse.com
+- "Delete my account" falls back to the existing `DELETE /api/user/account` endpoint
