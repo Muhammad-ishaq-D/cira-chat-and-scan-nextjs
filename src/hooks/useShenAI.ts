@@ -404,6 +404,8 @@ export function useShenAI() {
           enableFullFrameProcessing: false,
           cameraAspectRatio: 0,
 
+          ...(language ? { language } : {}),
+
           ...(Object.keys(riskFactors).length > 0
             ? { risksFactors: riskFactors }
             : {}),
