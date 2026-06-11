@@ -139,7 +139,7 @@ const VitalsScan = () => {
           return;
         }
 
-        initialize(CANVAS_ID);
+        initialize(CANVAS_ID, undefined, sdkLang);
         return;
       }
 
@@ -151,7 +151,7 @@ const VitalsScan = () => {
         height: cachedUser?.height || undefined,
         weight: cachedUser?.weight || undefined,
         gender: cachedUser?.biological_sex || cachedUser?.gender || undefined,
-      });
+      }, sdkLang);
 
       // Fetch history + fresh profile in parallel (non-blocking)
       vitalsApi.getHistory()
