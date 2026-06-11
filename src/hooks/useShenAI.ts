@@ -342,7 +342,7 @@ export function useShenAI() {
   useEffect(() => cleanup, [cleanup]);
 
   const initialize = useCallback(
-    async (canvasId: string, userProfile?: UserProfileData) => {
+    async (canvasId: string, userProfile?: UserProfileData, language?: string) => {
       cleanup();
 
       const isMobile =
@@ -403,6 +403,8 @@ export function useShenAI() {
           applyPrecisionModeToBloodPressure: true,
           enableFullFrameProcessing: false,
           cameraAspectRatio: 0,
+
+          ...(language ? { language } : {}),
 
           ...(Object.keys(riskFactors).length > 0
             ? { risksFactors: riskFactors }

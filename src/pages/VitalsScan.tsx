@@ -52,7 +52,8 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 
 const VitalsScan = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const sdkLang = (i18n.language || "en").split("-")[0];
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
@@ -138,7 +139,7 @@ const VitalsScan = () => {
           return;
         }
 
-        initialize(CANVAS_ID);
+        initialize(CANVAS_ID, undefined, sdkLang);
         return;
       }
 
@@ -150,7 +151,7 @@ const VitalsScan = () => {
         height: cachedUser?.height || undefined,
         weight: cachedUser?.weight || undefined,
         gender: cachedUser?.biological_sex || cachedUser?.gender || undefined,
-      });
+      }, sdkLang);
 
       // Fetch history + fresh profile in parallel (non-blocking)
       vitalsApi.getHistory()
@@ -182,7 +183,7 @@ const VitalsScan = () => {
       cleanup();
       hasInitRef.current = false;
     };
-  }, [cleanup, initialize, isGuest, navigate, t]);
+  }, [cleanup, initialize, isGuest, navigate, t, sdkLang]);
 
 
   useEffect(() => {
