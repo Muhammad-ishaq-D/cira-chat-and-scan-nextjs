@@ -4,6 +4,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import helpDecide from "@/assets/help-decide.jpg";
 import helpRealLife from "@/assets/help-reallife.jpg";
 import helpClarity from "@/assets/help-clarity.jpg";
+import SEO from "@/components/SEO";
 import {
   Stethoscope,
   AlertCircle,
@@ -35,6 +36,8 @@ const WhatCiraHelpsWith = () => {
   const audience = t("pages.whatCiraHelpsWith.audience", { returnObjects: true }) as string[];
 
   return (
+    <>
+      <SEO title="What Cira helps with — symptoms & vitals" description="From everyday symptoms to vital signs and chronic risks. See what your AI nurse Cira can help with." path="/what-cira-helps-with" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
         <button onClick={() => navigate("/")} className="flex items-center gap-3">
@@ -194,6 +197,7 @@ const WhatCiraHelpsWith = () => {
         <p>{t("pages.whatCiraHelpsWith.footer2")}</p>
       </footer>
     </div>
+    </>
   );
 };
 

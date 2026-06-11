@@ -26,6 +26,7 @@ import talkImg from "@/assets/how-talk.jpg";
 import scanImg from "@/assets/how-scan.jpg";
 import nextImg from "@/assets/how-next.jpg";
 import chronicImg from "@/assets/how-chronic.jpg";
+import SEO from "@/components/SEO";
 
 const steps = [
   {
@@ -140,6 +141,8 @@ const HowItWorks = () => {
   const stepsLocalized = steps.map((s, i) => ({ ...s, title: shortTitles[i] ?? s.title, body: shortBodies[i] ?? s.body }));
 
   return (
+    <>
+      <SEO title="How Cira works — chat, scan, guidance" description="Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works." path="/how-it-works" />
     <div className="min-h-screen bg-background">
       {/* Top nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
@@ -504,6 +507,7 @@ const HowItWorks = () => {
         <p>© 2026 Cira — askainurse.com</p>
       </footer>
     </div>
+    </>
   );
 };
 

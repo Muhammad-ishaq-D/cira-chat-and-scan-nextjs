@@ -14,6 +14,7 @@ import {
 import { userApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import SEO from "@/components/SEO";
 
 const GOOGLE_CLIENT_ID = "189012024552-c7u7miv6r56n1nv3e9litsd3gglo2i0e.apps.googleusercontent.com";
 const GOOGLE_CONTEXT_RESET_KEY = "cira_google_popup_reset";
@@ -349,6 +350,8 @@ const Login = () => {
   }, [googleContextReady, redirectAfterAuth]);
 
   return (
+    <>
+      <SEO title="Sign in to Cira — your AI health nurse" description="Log in or create your Cira account. Chat with an AI nurse, run vital scans, and track your health in one place." path="/login" />
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -602,6 +605,7 @@ const Login = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

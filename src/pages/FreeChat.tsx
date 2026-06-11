@@ -13,6 +13,7 @@ import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
+import SEO from "@/components/SEO";
 import {
   getDeviceId,
   getFreeChatHistory,
@@ -936,6 +937,8 @@ const FreeChat = () => {
   };
 
   return (
+    <>
+      <SEO title="Free AI health chat — no signup" description="Ask Cira your health questions for free. Get AI nurse guidance instantly with no account required." path="/free-chat" />
     <div className="flex bg-background" style={{ height: "100dvh" }}>
       {/* Chat history drawer */}
       {showHistory && (
@@ -1313,6 +1316,7 @@ const FreeChat = () => {
       </div>
       <ConsentBanner />
     </div>
+    </>
   );
 };
 

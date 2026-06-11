@@ -3,12 +3,15 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import founderPhoto from "@/assets/founder-jeanmarc.jpg";
 import realScan from "@/assets/real-scan.webp";
 import { useNavigate } from "react-router-dom";
+import SEO from "@/components/SEO";
 
 const OurStory = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
+    <>
+      <SEO title="Our story — why we built Cira" description="From a Bangkok blood pressure scare to a global AI health nurse. The founder story behind Cira." path="/our-story" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-center gap-3 px-6 py-8">
         <img src={ciraLogo} alt="Cira" width={28} height={28} />
@@ -82,6 +85,7 @@ const OurStory = () => {
         <p>{t("ourStory.footer2")}</p>
       </footer>
     </div>
+    </>
   );
 };
 

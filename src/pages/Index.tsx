@@ -12,6 +12,7 @@ import { isAuthenticated, getUser } from "@/lib/auth";
 import ConsentBanner from "@/components/ConsentBanner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import HamburgerMenu from "@/components/HamburgerMenu";
+import SEO from "@/components/SEO";
 
 const HeroChatPreview = () => {
   const { t } = useTranslation();
@@ -167,6 +168,33 @@ const Index = () => {
   }, []);
 
   return (
+    <>
+      <SEO
+        title="Cira — your AI health nurse, anytime"
+        description="Talk to Cira, your AI nurse. Ask health questions, scan vitals with your camera, and get clear next steps."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "MedicalOrganization",
+            name: "Cira",
+            url: "https://cira-chat-and-scan.lovable.app/",
+            logo: "https://cira-chat-and-scan.lovable.app/favicon.svg",
+            description: "AI health nurse offering symptom guidance and camera-based vital sign scans.",
+            sameAs: ["https://askainurse.com"],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: "Cira",
+            url: "https://cira-chat-and-scan.lovable.app/",
+            applicationCategory: "HealthApplication",
+            operatingSystem: "Web",
+            description: "Chat with an AI nurse and scan your vitals from any device with a camera.",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+          },
+        ]}
+      />
     <div ref={pageRef} className="min-h-screen bg-background">
       {/* Nav */}
       <nav className="flex items-center justify-between pl-3 pr-6 sm:pl-4 lg:pl-6 py-5 max-w-full lg:max-w-7xl mx-auto">
@@ -815,6 +843,7 @@ const Index = () => {
       </footer>
       <ConsentBanner />
     </div>
+    </>
   );
 };
 

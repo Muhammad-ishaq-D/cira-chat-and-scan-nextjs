@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { forgotPassword } from "@/lib/auth";
 import { toast } from "sonner";
+import SEO from "@/components/SEO";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -28,6 +29,8 @@ const ForgotPassword = () => {
   };
 
   return (
+    <>
+      <SEO title="Forgot password — Cira" description="Reset your Cira password. We'll email you a one-time code to securely regain access to your account." path="/forgot-password" noindex />
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -70,6 +73,7 @@ const ForgotPassword = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 
