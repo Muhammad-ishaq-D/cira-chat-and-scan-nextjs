@@ -1342,7 +1342,7 @@ const Chat = () => {
                 ) : (
                   <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
                 )}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{tr(item.tKey, { defaultValue: item.label })}</span>
               </button>
             );
           })}
