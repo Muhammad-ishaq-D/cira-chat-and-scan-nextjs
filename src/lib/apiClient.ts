@@ -203,51 +203,6 @@ export const reportsApi = {
   getAll: () => get("/api/reports"),
   getReport: (id: string) => get(`/api/reports/${id}`),
   downloadUrl: (id: string) => `${API_BASE}/api/reports/${id}/download`,
-  translateForPdf: async (report: any) => {
-    const source = {
-      title: report?.title || "",
-      summary: report?.summary || "",
-      data: report?.data || {},
-    };
-
-    const prompt = `Translate this health report payload to English for PDF export only.
-Return ONLY valid JSON with exactly these top-level keys: title, summary, data.
-Preserve every object key, array order, number, percentage, boolean, null, and medical meaning.
-Translate only human-readable string values to clear clinical English.
-Do not add markdown, comments, explanations, or code fences.
-
-JSON payload:
-${JSON.stringify(source)}`;
-
-    const response = await post<any>("/api/anthropic/chat", {
-      messages: [{ role: "user", text: prompt }],
-      model: "claude-sonnet-4-6",
-      max_tokens: 8192,
-      temperature: 0,
-      language: "en",
-    });
-
-    const text = Array.isArray(response?.content)
-      ? response.content
-          .filter((block: any) => block?.type === "text" && typeof block.text === "string")
-          .map((block: any) => block.text)
-          .join("\n")
-      : typeof response?.text === "string"
-        ? response.text
-        : typeof response?.message === "string"
-          ? response.message
-          : "";
-
-    const jsonText = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "").trim();
-    const parsed = JSON.parse(jsonText) as { title?: string; summary?: string; data?: any };
-
-    return {
-      ...report,
-      title: parsed.title || report?.title,
-      summary: parsed.summary || report?.summary,
-      data: parsed.data || report?.data,
-    };
-  },
 };
 
 // ─── Audit Logs ──────────────────────────────────────────────────

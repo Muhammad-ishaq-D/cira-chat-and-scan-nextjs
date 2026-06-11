@@ -31,7 +31,6 @@ const Reports = () => {
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
   const [isBasicPlan, setIsBasicPlan] = useState(false);
-  const [downloadingReportId, setDownloadingReportId] = useState<string | null>(null);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -72,16 +71,12 @@ const Reports = () => {
       return;
     }
     try {
-      setDownloadingReportId(report.id || report._id || "report");
-      const englishReport = await reportsApi.translateForPdf(report);
-      await downloadReportPdf(englishReport);
+      await downloadReportPdf(report);
       logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
       toast.success(t("reports.toast.pdfDownloaded"));
     } catch (e) {
       console.error("PDF generation failed:", e);
       toast.error(t("reports.toast.pdfFailed"));
-    } finally {
-      setDownloadingReportId(null);
     }
   };
 
@@ -297,11 +292,10 @@ const Reports = () => {
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
-                                disabled={downloadingReportId === (report.id || report._id || "report")}
-                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-wait ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
+                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
-                                {downloadingReportId === (report.id || report._id || "report") ? <Loader2 size={13} className="animate-spin" /> : isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                                {isBasicPlan ? t("reports.card.upgradeDownload") : downloadingReportId === (report.id || report._id || "report") ? t("reports.card.downloading") : t("reports.card.download")}
+                                {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                                {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.download")}
                               </button>
                             </div>
                           </div>
