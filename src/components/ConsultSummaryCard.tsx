@@ -1,6 +1,9 @@
-import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight } from "lucide-react";
+import { AlertTriangle, Shield, Stethoscope, Sparkles, ChevronRight, Download } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import type { ConsultSummary } from "@/lib/chatApi";
+import { downloadReportPdf } from "@/lib/reportPdf";
 import BookDoctorCTA from "./BookDoctorCTA";
 
 const renderInline = (text: string, keyPrefix = "") => {
@@ -98,6 +101,30 @@ interface Props {
 
 const ConsultSummaryCard = ({ data }: Props) => {
   const { t } = useTranslation();
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      await downloadReportPdf({
+        title: "AI Triage Summary",
+        type: "Quick Assessment",
+        date: new Date().toLocaleDateString("en-US"),
+        data: {
+          summary: data.summary,
+          possible_conditions: data.possible_conditions,
+          follow_up: data.self_care_advice,
+          confidence_score: data.confidence_score,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to download report");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const confidenceColor =
     data.confidence_score >= 85
       ? "text-emerald-600 bg-emerald-50"
@@ -188,6 +215,17 @@ const ConsultSummaryCard = ({ data }: Props) => {
           </div>
         </div>
 
+
+        <div className="px-4 pb-3 pt-1">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="w-full h-9 rounded-xl border border-border/60 bg-card hover:bg-accent transition-all flex items-center justify-center gap-1.5 text-[12px] font-medium text-foreground disabled:opacity-60"
+          >
+            <Download size={13} />
+            {downloading ? "Preparing PDF…" : "Download report (PDF)"}
+          </button>
+        </div>
 
         <BookDoctorCTA source="consult_summary_card" />
 
