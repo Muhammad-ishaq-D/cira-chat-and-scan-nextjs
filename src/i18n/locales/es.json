@@ -857,6 +857,7 @@
       "ready": "Listo",
       "preview": "Vista previa",
       "download": "Descargar",
+      "downloading": "Preparando PDF en inglés...",
       "upgradeDownload": "Actualiza para descargar",
       "reportPreview": "Vista previa del informe",
       "reportId": "ID del informe:",
