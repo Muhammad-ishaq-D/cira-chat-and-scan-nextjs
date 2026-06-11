@@ -342,7 +342,7 @@ export function useShenAI() {
   useEffect(() => cleanup, [cleanup]);
 
   const initialize = useCallback(
-    async (canvasId: string, userProfile?: UserProfileData) => {
+    async (canvasId: string, userProfile?: UserProfileData, language?: string) => {
       cleanup();
 
       const isMobile =
