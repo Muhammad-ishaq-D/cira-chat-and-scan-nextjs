@@ -48,8 +48,8 @@ const PrivacyPolicy = () => {
                 The data controller responsible for your personal data is:
               </p>
               <ul className="list-disc pl-5 space-y-1 mt-2">
-                <li><strong>[Your Company Legal Name]</strong> (the operator of askainurse.com)</li>
-                <li>Registered address: <strong>[Your registered address]</strong></li>
+                <li><strong>Askainurse</strong> (the operator of askainurse.com)</li>
+                <li>Registered address: <strong>la boue, Charn Issara Tower 1 - Ground Floor, Bangkok, 41250, Thailand</strong></li>
                 <li>Privacy contact / DPO: <a className="underline" href="mailto:privacy@askainurse.com">privacy@askainurse.com</a></li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">
