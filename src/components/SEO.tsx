@@ -12,9 +12,10 @@ interface SEOProps {
   image?: string;
   noindex?: boolean;
   jsonLd?: Record<string, any> | Record<string, any>[];
+  type?: "website" | "article";
 }
 
-const SEO = ({ title, description, path, image, noindex, jsonLd }: SEOProps) => {
+const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website" }: SEOProps) => {
   const { i18n } = useTranslation();
   const lang = (i18n.language || "en").split("-")[0];
   const url = `${SITE_URL}${path}`;
@@ -31,7 +32,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd }: SEOProps) => 
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <link rel="canonical" href={url} />
 
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={type} />
       <meta property="og:title" content={safeTitle} />
       <meta property="og:description" content={safeDesc} />
       <meta property="og:url" content={url} />

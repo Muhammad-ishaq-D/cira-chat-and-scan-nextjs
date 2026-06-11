@@ -55,6 +55,7 @@ const BlogPost = () => {
         description={seoDesc}
         path={seoPath}
         image={post?.cover_image || undefined}
+        type="article"
         jsonLd={post ? {
           "@context": "https://schema.org",
           "@type": "Article",
