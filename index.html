@@ -24,13 +24,24 @@
          so a page-level prefetch would download the 10MB WASM twice (once for
          the page cache, once through the SW). Nginx already serves the file
          with immutable cache + gzip, so the SW fetch is fast on repeat visits. -->
-  <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) with GDPR-compliant Consent Mode v2 default denied -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
+    // Default everything to denied until the user makes a choice (GDPR).
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
     gtag('js', new Date());
-    gtag('config', 'G-KQ560MCJ9Y');
+    gtag('config', 'G-KQ560MCJ9Y', { anonymize_ip: true });
   </script>
   <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
 

@@ -43,17 +43,39 @@
     "security": "Security & Privacy",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms",
+    "cookiePrefs": "Cookie preferences",
     "tagline": "Your AI health nurse — clinically validated vitals, available anytime.",
     "copyright": "© 2026 Cira · askainurse.com",
     "disclaimerLine": "Clinically validated vitals · Licensed physicians ·",
     "disclaimer": "Cira does not replace professional medical advice."
   },
   "consent": {
-    "message": "Cira stores your health data to power your assessments. By continuing you agree to our",
+    "bannerLabel": "Cookie & privacy preferences",
+    "title": "Your privacy",
+    "message": "We use strictly necessary cookies to run Cira, and optional cookies for analytics and saved preferences. You can change your choice anytime from the footer.",
     "privacyPolicy": "Privacy Policy",
     "and": "and",
     "terms": "Terms",
-    "notMedical": "Not a medical service."
+    "notMedical": "Not a medical service.",
+    "customize": "Customize",
+    "hideDetails": "Hide categories",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "savePrefs": "Save choices",
+    "cat": {
+      "necessary": {
+        "title": "Strictly necessary",
+        "desc": "Required for login, security and remembering your consent choice. Always on."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "desc": "Anonymous usage stats (Google Analytics) so we can improve the product."
+      },
+      "functional": {
+        "title": "Functional preferences",
+        "desc": "Remembers your language and UI choices between visits."
+      }
+    }
   },
   "notFound": {
     "title": "404",

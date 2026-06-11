@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera } from "lucide-react";
-import { userApi } from "@/lib/apiClient";
+import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera, ShieldCheck, Download, Cookie } from "lucide-react";
+import { userApi, gdprApi } from "@/lib/apiClient";
 import { getUser, logout, updateUserAvatar } from "@/lib/auth";
 import { toast } from "sonner";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { openConsentBanner, revokeConsent } from "@/lib/consent";
 
 type Sex = "male" | "female" | "";
 
@@ -92,16 +93,64 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm(t("profile.confirmDelete"))) return;
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleExportData = async () => {
+    setExporting(true);
     try {
-      await userApi.deleteAccount();
+      const blob = await gdprApi.exportData();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.download = `cira-data-export-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(t("profile.gdpr.exportSuccess", "Your data export was downloaded."));
+    } catch (err: any) {
+      toast.error(
+        err?.message?.includes("404") || err?.message?.includes("failed")
+          ? t("profile.gdpr.exportSoon", "Data export is coming soon. Email privacy@askainurse.com to request a copy.")
+          : err?.message || t("profile.gdpr.exportFailed", "Could not export your data.")
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmation = window.prompt(
+      t(
+        "profile.gdpr.deleteConfirmPrompt",
+        'This permanently deletes your account, vitals, chats and reports. Type "DELETE" to confirm.'
+      )
+    );
+    if (confirmation !== "DELETE") return;
+    setDeleting(true);
+    try {
+      try {
+        await gdprApi.deleteAccount();
+      } catch {
+        // Fallback to legacy endpoint if GDPR route not deployed yet
+        await userApi.deleteAccount();
+      }
       logout();
       navigate("/login");
-      toast.success(t("profile.toast.deleted"));
+      toast.success(t("profile.toast.deleted", "Account deleted."));
     } catch (err: any) {
-      toast.error(err.message || t("profile.errors.deleteFailed"));
+      toast.error(err.message || t("profile.errors.deleteFailed", "Failed to delete account."));
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const handleWithdrawConsent = () => {
+    revokeConsent();
+    openConsentBanner();
+    toast.success(t("profile.gdpr.consentReopened", "Update your cookie preferences below."));
   };
 
   const handleLogout = () => {
@@ -296,6 +345,43 @@ const Profile = () => {
           {saving ? t("profile.saving") : t("profile.saveChanges")}
         </button>
 
+        {/* GDPR — Privacy & Data */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="text-sm font-semibold text-foreground font-heading flex items-center gap-2">
+            <ShieldCheck size={16} className="text-primary" /> {t("profile.gdpr.title", "Privacy & data")}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t(
+              "profile.gdpr.intro",
+              "Exercise your GDPR rights at any time — download a copy of your data, change your cookie choices, or permanently delete your account."
+            )}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={handleExportData}
+              disabled={exporting}
+              className="py-2.5 px-4 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              {t("profile.gdpr.exportBtn", "Export my data")}
+            </button>
+            <button
+              onClick={handleWithdrawConsent}
+              className="py-2.5 px-4 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors flex items-center justify-center gap-2"
+            >
+              <Cookie size={14} /> {t("profile.gdpr.cookieBtn", "Cookie preferences")}
+            </button>
+          </div>
+
+          <p className="text-[10px] text-muted-foreground">
+            {t(
+              "profile.gdpr.contactLine",
+              "For other data requests email privacy@askainurse.com. We respond within 30 days."
+            )}
+          </p>
+        </div>
+
         <div className="border border-destructive/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-sm font-semibold text-destructive font-heading">{t("profile.dangerZone")}</h2>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -307,9 +393,11 @@ const Profile = () => {
             </button>
             <button
               onClick={handleDeleteAccount}
-              className="flex-1 py-2.5 px-4 rounded-xl border border-destructive/30 text-destructive text-sm font-medium font-body hover:bg-destructive/5 transition-colors flex items-center justify-center gap-2"
+              disabled={deleting}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-destructive/30 text-destructive text-sm font-medium font-body hover:bg-destructive/5 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <Trash2 size={14} /> {t("profile.deleteAccount")}
+              {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              {t("profile.deleteAccount")}
             </button>
           </div>
         </div>

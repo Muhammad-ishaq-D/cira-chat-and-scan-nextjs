@@ -149,6 +149,37 @@ export const userApi = {
   submitRating: (data: { rating: number; feedback?: string }) => post("/api/user/rate", data),
 };
 
+// ─── GDPR / Data Subject Rights ─────────────────────────────────
+// Backend spec (Node/MySQL):
+//   GET    /api/user/gdpr/export   → 200 JSON { profile, vitalsScans, reports, chats, payments, consents }
+//   DELETE /api/user/gdpr/account  → 200; hard-delete or anonymize within 30d
+//   POST   /api/user/gdpr/consent  → append-only consent audit log
+// All endpoints are JWT-protected.
+export const gdprApi = {
+  /** Download a full data export as a Blob (JSON). */
+  exportData: async (): Promise<Blob> => {
+    const res = await authFetch("/api/user/gdpr/export");
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || err.message || `Export failed (${res.status})`);
+    }
+    return res.blob();
+  },
+  /** Permanently delete the user's account and associated data. */
+  deleteAccount: () => del("/api/user/gdpr/account"),
+  /** Append-only consent log. Best-effort; safe to ignore failures. */
+  recordConsent: (record: {
+    version: number;
+    analytics: boolean;
+    functional: boolean;
+    decidedAt: number;
+  }) =>
+    post("/api/user/gdpr/consent", {
+      ...record,
+      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+    }),
+};
+
 // ─── Chat Sessions ──────────────────────────────────────────────
 export const chatApi = {
   /** GET /api/chat/history — all user sessions for sidebar */
