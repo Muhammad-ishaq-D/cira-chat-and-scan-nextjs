@@ -62,6 +62,24 @@ const VitalsScan = () => {
     } catch { scanLangOverrideRef.current = ""; }
   }
   const sdkLang = (scanLangOverrideRef.current || i18n.language || "en").split("-")[0];
+
+  // When launched from chat with a language override, temporarily switch the
+  // page's i18n language so surrounding UI matches the chat selection.
+  // Restore the previous language on unmount.
+  useEffect(() => {
+    const override = scanLangOverrideRef.current;
+    if (!override) return;
+    const prev = i18n.language;
+    if (prev.split("-")[0] !== override) {
+      i18n.changeLanguage(override);
+    }
+    return () => {
+      if (prev && prev !== i18n.language) {
+        i18n.changeLanguage(prev);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
