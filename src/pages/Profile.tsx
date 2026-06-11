@@ -112,9 +112,7 @@ const Profile = () => {
       toast.success(t("profile.gdpr.exportSuccess", "Your data export was downloaded."));
     } catch (err: any) {
       toast.error(
-        err?.message?.includes("404") || err?.message?.includes("failed")
-          ? t("profile.gdpr.exportSoon", "Data export is coming soon. Email privacy@askainurse.com to request a copy.")
-          : err?.message || t("profile.gdpr.exportFailed", "Could not export your data.")
+        err?.message || t("profile.gdpr.exportFailed", "Could not export your data.")
       );
     } finally {
       setExporting(false);
@@ -131,12 +129,7 @@ const Profile = () => {
     if (confirmation !== "DELETE") return;
     setDeleting(true);
     try {
-      try {
-        await gdprApi.deleteAccount();
-      } catch {
-        // Fallback to legacy endpoint if GDPR route not deployed yet
-        await userApi.deleteAccount();
-      }
+      await gdprApi.deleteAccount();
       logout();
       navigate("/login");
       toast.success(t("profile.toast.deleted", "Account deleted."));
