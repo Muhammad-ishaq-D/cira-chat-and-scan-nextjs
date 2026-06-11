@@ -27,6 +27,7 @@ import Privacy from "./pages/Privacy.tsx";
 import HowItWorks from "./pages/HowItWorks.tsx";
 import Technology from "./pages/Technology.tsx";
 import WhatCiraHelpsWith from "./pages/WhatCiraHelpsWith.tsx";
+import SymptomChecker from "./pages/SymptomChecker.tsx";
 import Pricing from "./pages/Pricing.tsx";
 import RealDoctors from "./pages/RealDoctors.tsx";
 import Terms from "./pages/Terms.tsx";
