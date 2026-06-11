@@ -12,9 +12,10 @@ interface SEOProps {
   image?: string;
   noindex?: boolean;
   jsonLd?: Record<string, any> | Record<string, any>[];
+  type?: "website" | "article";
 }
 
-const SEO = ({ title, description, path, image, noindex, jsonLd }: SEOProps) => {
+const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website" }: SEOProps) => {
   const { i18n } = useTranslation();
   const lang = (i18n.language || "en").split("-")[0];
   const url = `${SITE_URL}${path}`;
