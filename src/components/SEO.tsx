@@ -32,7 +32,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <link rel="canonical" href={url} />
 
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={type} />
       <meta property="og:title" content={safeTitle} />
       <meta property="og:description" content={safeDesc} />
       <meta property="og:url" content={url} />
