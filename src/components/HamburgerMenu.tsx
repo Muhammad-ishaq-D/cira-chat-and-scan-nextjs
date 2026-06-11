@@ -5,6 +5,14 @@ import { Menu, X, ChevronRight, Lock, Plus } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { isAuthenticated } from "@/lib/auth";
+import { Globe, Check } from "lucide-react";
+import { SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Item = { tKey: string; path?: string; href?: string };
 
