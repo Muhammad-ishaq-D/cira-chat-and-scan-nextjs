@@ -53,7 +53,15 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 const VitalsScan = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const sdkLang = (i18n.language || "en").split("-")[0];
+  const scanLangOverrideRef = useRef<string | null>(null);
+  if (scanLangOverrideRef.current === null) {
+    try {
+      const o = sessionStorage.getItem("cira_scan_lang_override");
+      scanLangOverrideRef.current = o || "";
+      if (o) sessionStorage.removeItem("cira_scan_lang_override");
+    } catch { scanLangOverrideRef.current = ""; }
+  }
+  const sdkLang = (scanLangOverrideRef.current || i18n.language || "en").split("-")[0];
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
