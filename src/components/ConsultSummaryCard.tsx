@@ -101,7 +101,29 @@ interface Props {
 
 const ConsultSummaryCard = ({ data }: Props) => {
   const { t } = useTranslation();
-  const confidenceColor =
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      await downloadReportPdf({
+        title: "AI Triage Summary",
+        type: "Quick Assessment",
+        date: new Date().toLocaleDateString("en-US"),
+        data: {
+          summary: data.summary,
+          possible_conditions: data.possible_conditions,
+          follow_up: data.self_care_advice,
+          confidence_score: data.confidence_score,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to download report");
+    } finally {
+      setDownloading(false);
+    }
+  };
     data.confidence_score >= 85
       ? "text-emerald-600 bg-emerald-50"
       : data.confidence_score >= 60
