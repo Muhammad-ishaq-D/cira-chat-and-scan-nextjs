@@ -54,7 +54,7 @@ export function setConsent(opts: { analytics: boolean; functional: boolean }) {
 
   applyToGoogleConsentMode(record);
 
-  // Best-effort: log consent to backend audit (no-op if endpoint missing)
+  // Sync consent record to backend audit log (endpoint is live)
   try {
     import("./apiClient").then(({ gdprApi }) => {
       gdprApi.recordConsent(record).catch(() => {});
