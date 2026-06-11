@@ -54,6 +54,7 @@ const VitalsScan = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const scanLangOverrideRef = useRef<string | null>(null);
+  const prevLangRef = useRef<string | null>(null);
   if (scanLangOverrideRef.current === null) {
     try {
       const o = sessionStorage.getItem("cira_scan_lang_override");
@@ -61,6 +62,25 @@ const VitalsScan = () => {
       if (o) sessionStorage.removeItem("cira_scan_lang_override");
     } catch { scanLangOverrideRef.current = ""; }
   }
+  // Temporarily switch page UI language to the chat-picked override (e.g. Hindi)
+  // while inside the scanner; restore previous language on unmount.
+  useEffect(() => {
+    const override = scanLangOverrideRef.current;
+    if (override) {
+      const base = override.split("-")[0];
+      if (base && base !== (i18n.language || "").split("-")[0]) {
+        prevLangRef.current = i18n.language;
+        i18n.changeLanguage(base);
+      }
+    }
+    return () => {
+      if (prevLangRef.current) {
+        i18n.changeLanguage(prevLangRef.current);
+        prevLangRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const sdkLang = (scanLangOverrideRef.current || i18n.language || "en").split("-")[0];
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
