@@ -755,6 +755,7 @@ const VitalsScan = () => {
       {/* Bottom nav only visible on results view, hidden for guests */}
       {!isCameraView && !isGuest && <MobileBottomNav />}
     </div>
+    </>
   );
 };
 
