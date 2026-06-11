@@ -287,7 +287,7 @@ const Index = () => {
           <div className="flex flex-col items-center gap-2 animate-fade-in order-1" style={{ animationDelay: "0.3s" }}>
             <div className="flex items-center gap-3">
               <div className="relative">
-                <img src={faceNormal} alt="Face scan" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg" />
+                <img src={faceNormal} alt="Face scan" width={128} height={128} fetchPriority="high" decoding="async" className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg" />
                 <span className="absolute -bottom-1.5 -right-1.5 bg-card border border-border text-[9px] sm:text-[10px] font-body text-muted-foreground px-1.5 py-0.5 rounded-full shadow">{t("index.youLabel")}</span>
               </div>
               <div className="flex flex-col items-center gap-0.5">
