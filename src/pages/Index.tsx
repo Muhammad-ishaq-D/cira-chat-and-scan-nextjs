@@ -815,6 +815,7 @@ const Index = () => {
                 <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.howItWorks")}</button></li>
                 <li><button onClick={() => navigate("/technology")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.technology")}</button></li>
                 <li><button onClick={() => navigate("/what-cira-helps-with")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.whatCiraHelpsWith")}</button></li>
+                <li><button onClick={() => navigate("/symptom-checker")} className="text-muted-foreground hover:text-primary transition-colors">Symptom checker</button></li>
                 <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">{t("nav.pricing")}</button></li>
               </ul>
             </div>
