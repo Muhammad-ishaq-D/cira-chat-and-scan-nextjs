@@ -378,13 +378,12 @@ const buildAssessmentToolFollowUp = (payload: any, isRetry = false) => {
   const payloadJson = JSON.stringify(payload, null, 2);
   const renderTool = pathway === "detailed" ? "render_detailed_report" : "render_ai_consult_summary";
   const reportLabel = pathway === "detailed" ? "detailed clinical report" : "quick assessment summary";
-  const englishDirective = `IMPORTANT: All field values in the ${renderTool} tool call MUST be written in English, regardless of the conversation language. Reports are always generated in English.`;
 
   if (isRetry) {
-    return `You already called prepare_consultation_payload. Do NOT call prepare_consultation_payload again.\n\nUsing ONLY the consultation payload below, your next response MUST contain exactly one tool call: ${renderTool}.\n${englishDirective}\nDo not ask more questions.\nDo not output normal text.\n\nConsultation payload:\n${payloadJson}`;
+    return `You already called prepare_consultation_payload. Do NOT call prepare_consultation_payload again.\n\nUsing ONLY the consultation payload below, your next response MUST contain exactly one tool call: ${renderTool}.\nDo not ask more questions.\nDo not output normal text.\n\nConsultation payload:\n${payloadJson}`;
   }
 
-  return `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\n${englishDirective}\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
+  return `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
 };
 
 const FreeChat = () => {
