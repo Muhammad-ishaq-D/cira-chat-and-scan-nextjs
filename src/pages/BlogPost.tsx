@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { blogsApi, type BlogPost as BlogPostType } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
+import SEO from "@/components/SEO";
 
 const blogContentClassName = "prose prose-neutral dark:prose-invert max-w-none prose-headings:font-heading prose-a:text-primary [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4 [&_li]:my-1 [&_li]:pl-1";
 
@@ -43,7 +44,27 @@ const BlogPost = () => {
       ? post.tags.split(",").map((t) => t.trim()).filter(Boolean)
       : [];
 
+  const seoTitle = post?.meta_title || post?.title || "Cira Blog";
+  const seoDesc = post?.meta_description || post?.excerpt || "Read the latest from Cira — AI health & wellbeing articles.";
+  const seoPath = `/blog/${slug || ""}`;
+
   return (
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        path={seoPath}
+        image={post?.cover_image || undefined}
+        jsonLd={post ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.title,
+          description: post.excerpt || undefined,
+          image: post.cover_image || undefined,
+          datePublished: post.published_at || undefined,
+          author: post.author ? { "@type": "Person", name: post.author } : undefined,
+        } : undefined}
+      />
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-3xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <Link to="/blog" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -108,6 +129,7 @@ const BlogPost = () => {
         {t("blog.footer")}
       </footer>
     </div>
+    </>
   );
 };
 
