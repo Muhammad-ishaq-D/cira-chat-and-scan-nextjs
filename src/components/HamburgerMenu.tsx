@@ -137,6 +137,34 @@ const HamburgerMenu = () => {
               {t("nav.login")}
             </button>
           )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-border text-sm font-body text-foreground hover:bg-accent/60 transition-colors">
+                <span className="flex items-center gap-2">
+                  <Globe size={14} className="text-muted-foreground" />
+                  <span>{t("footer.language")}</span>
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  {SUPPORTED_LANGUAGES.find((l) => l.code === (i18n.language || "en").split("-")[0])?.label}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-[240px] z-[100]">
+              {SUPPORTED_LANGUAGES.map((l) => {
+                const active = (i18n.language || "en").split("-")[0] === l.code;
+                return (
+                  <DropdownMenuItem
+                    key={l.code}
+                    onClick={() => changeLanguage(l.code)}
+                    className="flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{l.label}</span>
+                    {active && <Check size={14} className="text-primary" />}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <p className="text-[10px] text-muted-foreground/70 font-body">v1.0.0</p>
         </div>
       </SheetContent>
