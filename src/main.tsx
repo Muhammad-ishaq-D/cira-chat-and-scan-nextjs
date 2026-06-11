@@ -4,8 +4,10 @@ import App from "./App.tsx";
 import "./index.css";
 import "./i18n";
 import { initActivityTracker } from "./lib/activityTracker";
+import { initConsentSync } from "./lib/consent";
 
 initActivityTracker();
+initConsentSync();
 
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>

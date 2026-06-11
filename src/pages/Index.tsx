@@ -835,6 +835,7 @@ const Index = () => {
                 <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.security")}</button></li>
                 <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.privacyPolicy")}</button></li>
                 <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.terms")}</button></li>
+                <li><button onClick={() => import("@/lib/consent").then(m => m.openConsentBanner())} className="text-muted-foreground hover:text-primary transition-colors">{t("footer.cookiePrefs", "Cookie preferences")}</button></li>
               </ul>
             </div>
           </div>

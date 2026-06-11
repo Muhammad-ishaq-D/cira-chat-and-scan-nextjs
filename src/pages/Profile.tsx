@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera } from "lucide-react";
-import { userApi } from "@/lib/apiClient";
+import { ArrowLeft, User, Mail, Calendar, Ruler, Weight, Save, Loader2, LogOut, Trash2, Camera, ShieldCheck, Download, Cookie } from "lucide-react";
+import { userApi, gdprApi } from "@/lib/apiClient";
 import { getUser, logout, updateUserAvatar } from "@/lib/auth";
 import { toast } from "sonner";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { openConsentBanner, revokeConsent } from "@/lib/consent";
 
 type Sex = "male" | "female" | "";
 
