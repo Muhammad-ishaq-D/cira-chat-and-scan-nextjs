@@ -48,7 +48,7 @@ const sections: { titleKey: string; items: Item[] }[] = [
 
 const HamburgerMenu = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const loggedIn = isAuthenticated();
 
