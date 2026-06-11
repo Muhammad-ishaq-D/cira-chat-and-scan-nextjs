@@ -1338,7 +1338,7 @@ const Chat = () => {
                   setActiveNav(item.id);
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
-                  if (item.id === "scan") { if (canScan()) navigate("/vitals-scan"); }
+                  if (item.id === "scan") { if (canScan()) { setScanLangOverride(); navigate("/vitals-scan"); } }
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
                 }}
