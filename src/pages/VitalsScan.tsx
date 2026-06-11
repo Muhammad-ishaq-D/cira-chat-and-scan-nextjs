@@ -286,11 +286,13 @@ const VitalsScan = () => {
   const isCameraView = status !== "finished";
 
   return (
+    <>
+    <h1 className="sr-only">AI Vitals Scan — Camera-based heart rate, blood pressure and breathing</h1>
     <div className="flex bg-background" style={{ height: '100dvh' }}>
       {/* Sidebar — desktop only, hidden during camera view and for guests */}
       {!isCameraView && !isGuest && (
         <div className="hidden md:flex w-[72px] border-r border-border bg-card flex-col items-center py-4 shrink-0">
-          <div className="mb-4"><img src={ciraLogo} alt="Cira" width={28} height={28} /></div>
+          <div className="mb-4"><img src={ciraLogo} alt="Cira health logo" width={28} height={28} /></div>
           <div className="w-10 h-[1px] bg-border mb-3" />
           <div className="flex-1 flex flex-col items-center gap-1">
             {navItems.map((item) => {

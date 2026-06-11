@@ -62,7 +62,7 @@ const Pricing = () => {
     <div className="min-h-screen bg-[#fdfaf3] text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
-          <img src={ciraLogo} alt="Cira" width={32} height={32} />
+          <img src={ciraLogo} alt="Cira health logo" width={32} height={32} />
           <span className="text-2xl font-semibold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>Cira</span>
         </button>
         <button

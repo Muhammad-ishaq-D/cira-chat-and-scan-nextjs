@@ -14,7 +14,7 @@ const OurStory = () => {
       <SEO title="Our story — why we built Cira" description="From a Bangkok blood pressure scare to a global AI health nurse. The founder story behind Cira." path="/our-story" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-center gap-3 px-6 py-8">
-        <img src={ciraLogo} alt="Cira" width={28} height={28} />
+        <img src={ciraLogo} alt="Cira health logo" width={28} height={28} />
         <span className="font-heading text-xl font-semibold text-foreground">{t("ourStory.header")}</span>
       </nav>
 
