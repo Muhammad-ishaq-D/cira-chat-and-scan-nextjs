@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
-const SITE_URL = "https://cira-chat-and-scan.lovable.app";
+const SITE_URL = "https://askainurse.com";
 const DEFAULT_OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png";
 
