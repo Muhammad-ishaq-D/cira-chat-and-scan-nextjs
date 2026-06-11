@@ -297,10 +297,11 @@ const Reports = () => {
                               </button>
                               <button
                                 onClick={() => handleDownload(report)}
-                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
+                                disabled={downloadingReportId === (report.id || report._id || "report")}
+                                className={`h-8 px-3 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-wait ${isBasicPlan ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground"}`}
                               >
-                                {isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
-                                {isBasicPlan ? t("reports.card.upgradeDownload") : t("reports.card.download")}
+                                {downloadingReportId === (report.id || report._id || "report") ? <Loader2 size={13} className="animate-spin" /> : isBasicPlan ? <Lock size={13} /> : <Download size={13} />}
+                                {isBasicPlan ? t("reports.card.upgradeDownload") : downloadingReportId === (report.id || report._id || "report") ? t("reports.card.downloading") : t("reports.card.download")}
                               </button>
                             </div>
                           </div>
