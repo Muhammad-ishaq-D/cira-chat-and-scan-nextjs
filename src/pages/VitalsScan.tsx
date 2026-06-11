@@ -53,15 +53,7 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 const VitalsScan = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  // Allow Chat (Ask Cira) to override scan language via sessionStorage.
-  // Other entry points fall back to the global (landing-page) i18n language.
-  const scanLangOverride = (() => {
-    try { return sessionStorage.getItem("cira_scan_lang"); } catch { return null; }
-  })();
-  useEffect(() => {
-    return () => { try { sessionStorage.removeItem("cira_scan_lang"); } catch {} };
-  }, []);
-  const sdkLang = ((scanLangOverride || i18n.language || "en").split("-")[0]).toLowerCase();
+  const sdkLang = (i18n.language || "en").split("-")[0];
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
