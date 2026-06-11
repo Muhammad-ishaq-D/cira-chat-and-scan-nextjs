@@ -183,7 +183,7 @@ const VitalsScan = () => {
       cleanup();
       hasInitRef.current = false;
     };
-  }, [cleanup, initialize, isGuest, navigate, t]);
+  }, [cleanup, initialize, isGuest, navigate, t, sdkLang]);
 
 
   useEffect(() => {
