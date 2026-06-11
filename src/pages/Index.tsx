@@ -193,6 +193,15 @@ const Index = () => {
             description: "Chat with an AI nurse and scan your vitals from any device with a camera.",
             offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
           },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          },
         ]}
       />
     <div ref={pageRef} className="min-h-screen bg-background">
