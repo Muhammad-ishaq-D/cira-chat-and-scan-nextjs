@@ -167,10 +167,10 @@ const scanVitals = [
 ];
 
 const navItems = [
-  { icon: Home, label: "Home", id: "home" },
-  { icon: Sparkles, label: "Ask Cira", id: "chat" },
-  { icon: ScanFace, label: "Scan", id: "scan" },
-  { icon: FileText, label: "Reports", id: "reports" },
+  { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
+  { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
+  { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
+  { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
 
 const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
@@ -1342,7 +1342,7 @@ const Chat = () => {
                 ) : (
                   <Icon size={18} strokeWidth={activeNav === item.id ? 2 : 1.5} />
                 )}
-                <span className="text-[9px] font-body font-medium leading-none">{item.label}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{tr(item.tKey, { defaultValue: item.label })}</span>
               </button>
             );
           })}
@@ -1355,7 +1355,7 @@ const Chat = () => {
             className="w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <LogOut size={18} strokeWidth={1.5} />
-            <span className="text-[9px] font-body font-medium leading-none">Logout</span>
+            <span className="text-[9px] font-body font-medium leading-none">{tr("common.logout", { defaultValue: "Logout" })}</span>
           </button>
           <ProfilePopover>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-xs font-medium font-body cursor-pointer ring-2 ring-primary/20">
