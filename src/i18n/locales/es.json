@@ -279,7 +279,9 @@
       "dbp": "Presión arterial diastólica",
       "bmi": "Índice de masa corporal",
       "sec30": "30 seg"
-    }
+    },
+    "heroH1Lead": "Enfermera de salud con IA —",
+    "heroH1Tail": "Verificador de síntomas y escáner vital"
   },
   "pricing": {
     "badge": "Precios",

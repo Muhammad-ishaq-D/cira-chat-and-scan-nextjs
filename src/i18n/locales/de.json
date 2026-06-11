@@ -279,7 +279,9 @@
       "dbp": "Diastolischer Blutdruck",
       "bmi": "Body-Mass-Index",
       "sec30": "30 Sek."
-    }
+    },
+    "heroH1Lead": "KI-Gesundheitspflegekraft —",
+    "heroH1Tail": "Symptom-Checker & Vitaldaten-Scan"
   },
   "pricing": {
     "badge": "Preise",

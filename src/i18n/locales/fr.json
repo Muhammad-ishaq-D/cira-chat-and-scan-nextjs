@@ -279,7 +279,9 @@
       "dbp": "Tension diastolique",
       "bmi": "Indice de masse corporelle",
       "sec30": "30 s"
-    }
+    },
+    "heroH1Lead": "Infirmière santé IA —",
+    "heroH1Tail": "Vérificateur de symptômes & scan vital"
   },
   "pricing": {
     "badge": "Tarifs",
