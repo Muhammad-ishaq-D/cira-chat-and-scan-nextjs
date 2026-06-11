@@ -41,7 +41,7 @@ const WhatCiraHelpsWith = () => {
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
         <button onClick={() => navigate("/")} className="flex items-center gap-3">
-          <img src={ciraLogo} alt="Cira" width={28} height={28} />
+          <img src={ciraLogo} alt="Cira health logo" width={28} height={28} />
           <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
         </button>
         <button
@@ -72,7 +72,7 @@ const WhatCiraHelpsWith = () => {
         </div>
 
         <div className="mt-16 rounded-3xl overflow-hidden border border-border">
-          <img src={helpDecide} alt="" loading="lazy" width={1280} height={800} className="w-full h-auto" />
+          <img src={helpDecide} alt="Person checking symptoms on their phone while deciding whether to see a doctor" loading="lazy" width={1280} height={800} className="w-full h-auto" />
         </div>
       </header>
 
@@ -146,7 +146,7 @@ const WhatCiraHelpsWith = () => {
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="grid md:grid-cols-2 gap-14 items-center">
           <div className="rounded-3xl overflow-hidden border border-border">
-            <img src={helpRealLife} alt="" loading="lazy" width={1280} height={800} className="w-full h-auto" />
+            <img src={helpRealLife} alt="Parent comforting a sick child at home while consulting an AI health nurse" loading="lazy" width={1280} height={800} className="w-full h-auto" />
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-body mb-4">{t("pages.whatCiraHelpsWith.audienceEyebrow")}</p>
@@ -176,7 +176,7 @@ const WhatCiraHelpsWith = () => {
 
       <section className="max-w-4xl mx-auto px-6 py-20 text-center">
         <div className="rounded-3xl overflow-hidden border border-border mb-10">
-          <img src={helpClarity} alt="" loading="lazy" width={1280} height={800} className="w-full h-auto" />
+          <img src={helpClarity} alt="Calm person reading a clear AI-generated health summary on a laptop" loading="lazy" width={1280} height={800} className="w-full h-auto" />
         </div>
         <h2 className="font-heading text-[40px] md:text-[52px] font-semibold text-foreground leading-tight mb-5">
           {t("pages.whatCiraHelpsWith.ctaTitle")}

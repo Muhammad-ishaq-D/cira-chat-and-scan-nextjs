@@ -939,6 +939,7 @@ const FreeChat = () => {
   return (
     <>
       <SEO title="Free AI health chat — no signup" description="Ask Cira your health questions for free. Get AI nurse guidance instantly with no account required." path="/free-chat" />
+    <h1 className="sr-only">Free AI Health Chat with Cira</h1>
     <div className="flex bg-background" style={{ height: "100dvh" }}>
       {/* Chat history drawer */}
       {showHistory && (
@@ -948,10 +949,10 @@ const FreeChat = () => {
             <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
               <p className="text-sm font-semibold text-foreground font-heading">{tr("components.chatHistory.title")}</p>
               <div className="flex items-center gap-2">
-                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title={tr("components.chatHistory.newChat")}>
+                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title={tr("components.chatHistory.newChat")} aria-label={tr("components.chatHistory.newChat")}>
                   <Plus size={16} />
                 </button>
-                <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
+                <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" aria-label="Close chat history">
                   <X size={16} />
                 </button>
               </div>
@@ -1000,7 +1001,7 @@ const FreeChat = () => {
       <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
         {/* Top bar */}
         <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-          <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title={tr("components.chatHistory.title")}>
+          <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title={tr("components.chatHistory.title")} aria-label={tr("components.chatHistory.title")}>
             <Menu size={18} strokeWidth={1.5} />
           </button>
         </div>

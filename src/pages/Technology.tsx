@@ -144,7 +144,7 @@ const Technology = () => {
           <ArrowLeft className="w-4 h-4" /> {t("pages.back")}
         </button>
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
-          <img src={ciraLogo} alt="Cira" width={24} height={24} />
+          <img src={ciraLogo} alt="Cira health logo" width={24} height={24} />
           <span className="font-heading text-lg">Cira</span>
         </button>
         <button

@@ -54,7 +54,7 @@ const HeroChatPreview = () => {
   return (
     <div className="rounded-xl border border-border bg-card p-2.5 shadow-md w-[220px]">
       <div className="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/30">
-        <img src={ciraLogo} alt="Cira" className="w-5 h-5 rounded-full" />
+        <img src={ciraLogo} alt="Cira health logo" className="w-5 h-5 rounded-full" />
         <span className="text-[10px] font-semibold text-foreground font-heading">Cira</span>
         <span className="ml-auto text-[8px] text-emerald-500 font-medium flex items-center gap-0.5">
           <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> {t("index.heroChat.online")}
@@ -193,6 +193,15 @@ const Index = () => {
             description: "Chat with an AI nurse and scan your vitals from any device with a camera.",
             offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
           },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          },
         ]}
       />
     <div ref={pageRef} className="min-h-screen bg-background">
@@ -201,7 +210,7 @@ const Index = () => {
         <div className="flex items-center gap-2">
           <HamburgerMenu />
           <div className="flex items-center gap-2 ml-4 sm:ml-6 lg:ml-8">
-            <img src={ciraLogo} alt="Cira" width={28} height={28} />
+            <img src={ciraLogo} alt="Cira health logo" width={28} height={28} />
             <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
             <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">{t("index.beta")}</span>
           </div>
@@ -792,7 +801,7 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
             <div className="col-span-2 md:col-span-1">
               <button onClick={() => navigate("/")} className="flex items-center gap-2 mb-4">
-                <img src={ciraLogo} alt="Cira" width={28} height={28} />
+                <img src={ciraLogo} alt="Cira health logo" width={28} height={28} />
                 <span className="font-heading text-lg font-semibold text-foreground">Cira</span>
               </button>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
