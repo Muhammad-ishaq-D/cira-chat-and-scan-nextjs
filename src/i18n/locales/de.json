@@ -46,14 +46,36 @@
     "tagline": "Deine KI-Gesundheitsassistentin — klinisch validierte Vitalwerte, jederzeit verfügbar.",
     "copyright": "© 2026 Cira · askainurse.com",
     "disclaimerLine": "Klinisch validierte Vitalwerte · Zugelassene Ärzte ·",
-    "disclaimer": "Cira ersetzt keine professionelle medizinische Beratung."
+    "disclaimer": "Cira ersetzt keine professionelle medizinische Beratung.",
+    "cookiePrefs": "Cookie-Einstellungen"
   },
   "consent": {
-    "message": "Cira speichert deine Gesundheitsdaten, um deine Auswertungen zu ermöglichen. Mit Fortfahren stimmst du unserer",
+    "message": "Wir verwenden unbedingt erforderliche Cookies, um Cira zu betreiben, und optionale Cookies für Analyse und gespeicherte Einstellungen. Du kannst deine Auswahl jederzeit im Footer ändern.",
     "privacyPolicy": "Datenschutzerklärung",
     "and": "und den",
     "terms": "AGB",
-    "notMedical": "Kein medizinischer Dienst."
+    "notMedical": "Kein medizinischer Dienst.",
+    "bannerLabel": "Cookie- & Datenschutzeinstellungen",
+    "title": "Deine Privatsphäre",
+    "customize": "Anpassen",
+    "hideDetails": "Kategorien ausblenden",
+    "acceptAll": "Alle akzeptieren",
+    "rejectAll": "Alle ablehnen",
+    "savePrefs": "Auswahl speichern",
+    "cat": {
+      "necessary": {
+        "title": "Unbedingt erforderlich",
+        "desc": "Erforderlich für Login, Sicherheit und das Speichern deiner Einwilligung. Immer aktiv."
+      },
+      "analytics": {
+        "title": "Analyse",
+        "desc": "Anonyme Nutzungsstatistiken (Google Analytics), damit wir das Produkt verbessern können."
+      },
+      "functional": {
+        "title": "Funktionale Einstellungen",
+        "desc": "Merkt sich deine Sprach- und UI-Einstellungen zwischen Besuchen."
+      }
+    }
   },
   "notFound": {
     "title": "404",

@@ -46,14 +46,36 @@
     "tagline": "Tu enfermera de salud con IA — constantes vitales clínicamente validadas, disponible en cualquier momento.",
     "copyright": "© 2026 Cira · askainurse.com",
     "disclaimerLine": "Constantes vitales clínicamente validadas · Médicos colegiados ·",
-    "disclaimer": "Cira no reemplaza el consejo médico profesional."
+    "disclaimer": "Cira no reemplaza el consejo médico profesional.",
+    "cookiePrefs": "Preferencias de cookies"
   },
   "consent": {
-    "message": "Cira guarda tus datos de salud para potenciar tus evaluaciones. Al continuar, aceptas nuestra",
+    "message": "Usamos cookies estrictamente necesarias para el funcionamiento de Cira, y cookies opcionales para analítica y preferencias guardadas. Puedes cambiar tu elección en cualquier momento desde el pie de página.",
     "privacyPolicy": "Política de Privacidad",
     "and": "y",
     "terms": "Términos",
-    "notMedical": "No es un servicio médico."
+    "notMedical": "No es un servicio médico.",
+    "bannerLabel": "Preferencias de cookies y privacidad",
+    "title": "Tu privacidad",
+    "customize": "Personalizar",
+    "hideDetails": "Ocultar categorías",
+    "acceptAll": "Aceptar todo",
+    "rejectAll": "Rechazar todo",
+    "savePrefs": "Guardar elecciones",
+    "cat": {
+      "necessary": {
+        "title": "Estrictamente necesarias",
+        "desc": "Necesarias para el inicio de sesión, la seguridad y recordar tu elección de consentimiento. Siempre activas."
+      },
+      "analytics": {
+        "title": "Analítica",
+        "desc": "Estadísticas de uso anónimas (Google Analytics) para que podamos mejorar el producto."
+      },
+      "functional": {
+        "title": "Preferencias funcionales",
+        "desc": "Recuerda tu idioma y preferencias de la interfaz entre visitas."
+      }
+    }
   },
   "notFound": {
     "title": "404",
