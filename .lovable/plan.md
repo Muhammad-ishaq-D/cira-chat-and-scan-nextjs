@@ -1,47 +1,89 @@
+## GDPR Compliance Plan
 
+You selected all four areas. The frontend pieces I can ship inside Lovable today. The backend pieces live in your external Node.js/MySQL API (`VITE_API_URL`) — I'll wire the UI to call new endpoints and give you the exact spec to implement server-side.
 
-## Plan: Freemium "Ask Cira" Flow + Build Fix
+---
 
-### Problem Summary
-1. **Build error**: `shenai-sdk` fails to install from local path (cache issue)
-2. **Feature request**: Convert the app to freemium — anyone can use Cira without login, with device-based credit limits
+### 1. Cookie / Consent Banner v2 (frontend)
 
-### Changes
+Replace `src/components/ConsentBanner.tsx` (currently a single "Got it" dismiss) with a GDPR-grade banner:
 
-#### 1. Fix shenai-sdk build error
-The local `file:./shenai-sdk` dependency fails bun install. Fix by ensuring the package resolves correctly — likely need to clear the lockfile entry or adjust the dependency reference. Will delete `bun.lock`/`bun.lockb` and reinstall.
+- **Three actions:** `Accept all`, `Reject all`, `Customize`.
+- **Categories** (toggles in Customize panel):
+  - Strictly necessary — always on, not toggleable (auth JWT, `cira_device_id`, consent record itself).
+  - Analytics — Google Analytics. Off by default.
+  - Functional — language preference, UI prefs. Off by default.
+  - We have no marketing/ad cookies, so that category is omitted.
+- **Storage:** new `src/lib/consent.ts` exposing `getConsent()`, `setConsent({analytics, functional})`, `hasDecided()`, plus a `consent-changed` event.
+- **Versioned record:** `cira_consent_v2 = { version: 2, decidedAt, analytics: bool, functional: bool }`. Bumping the version re-prompts users.
+- **GA gating:** load `gtag` only when `analytics === true`. Unload / set `'consent', 'update'` denied if user revokes. Update `src/lib/audit.ts` and any GA call sites.
+- **Re-open from anywhere:** add "Cookie preferences" link in the footer that re-opens the banner.
+- **Withdraw consent:** same link works from Profile page.
 
-#### 2. Home page: "Try a free scan" → "Ask Cira"
-- In `src/pages/Index.tsx`, change button text from "Try a free scan →" to "Ask Cira →"
-- Change `handleAskCira` to navigate to `/free-chat` instead of `/login`
-- Update subtitle hints (remove "Camera only", add "No signup needed")
+### 2. Data Subject Rights UI (frontend + backend contract)
 
-#### 3. Create `/free-chat` page (new file: `src/pages/FreeChat.tsx`)
-A standalone chat page that works without authentication:
-- **Based on existing `Chat.tsx`** but stripped of login requirements (no `getToken()` gating, no `ProtectedRoute`)
-- **Device-based credits** tracked via `localStorage`:
-  - `cira_free_credits` — starts at 100,000, decremented per API call
-  - `cira_free_scans` — starts at 1, decremented on scan use
-  - Generate a unique `cira_device_id` (UUID) stored in localStorage for tracking
-- **All 4 modes available**: Quick Assessment, Detailed Assessment, Vital Scan + Assessment, Just Chat
-- **Sidebar** shows:
-  - Chat history (local only, stored in localStorage)
-  - A prominent "Login to save your data" button that navigates to `/login`
-  - Warning text: "Chat history and scan data are not saved without an account"
-- **API calls**: Send `deviceId` header instead of JWT Bearer token; backend can use this for rate limiting. If the backend requires auth, fall back to an anonymous/guest token approach
-- **Credit exhaustion**: When credits hit 0, show upgrade/login prompt
+New section on `src/pages/Profile.tsx` → "Privacy & Data":
 
-#### 4. Register route in `App.tsx`
-- Add `<Route path="/free-chat" element={<FreeChat />} />` (no `ProtectedRoute` wrapper)
+- **Export my data** button → calls `GET /api/user/gdpr/export` (JWT) → downloads `cira-data-export-<userId>-<date>.json`. Frontend just streams the blob.
+- **Delete my account** button → opens a confirm dialog (typed "DELETE" confirmation) → `DELETE /api/user/gdpr/account` → on 200, clears local storage, logs out, redirects to `/` with a toast.
+- **Withdraw consent** link → opens consent banner in edit mode.
+- **Download my reports** → already exists, keep as-is.
 
-#### 5. Adjust `VitalsScan.tsx` for guest access
-- Allow navigation to `/vitals-scan` without login when coming from free-chat
-- Check `cira_free_scans` in localStorage; if 0, block and show "Login to get more scans"
-- After scan, redirect back to `/free-chat` with vitals in sessionStorage (existing pattern)
+**Backend spec for you to implement (Node/MySQL):**
 
-### Technical Notes
-- Device credits use localStorage keys with a generated device UUID to prevent trivial resets
-- The free chat API calls will include a `X-Device-Id` header so the backend can enforce server-side limits too
-- Chat history for free users is stored only in localStorage (not persisted to backend)
-- The existing `Chat.tsx` (authenticated) remains unchanged for logged-in users
+```
+GET    /api/user/gdpr/export       → 200 JSON { profile, vitalsScans[], reports[], chats[], payments[], consents[] }
+DELETE /api/user/gdpr/account      → 200; hard-delete or anonymize within 30d per policy
+GET    /api/user/gdpr/consent      → returns current server-side consent log (optional but recommended)
+POST   /api/user/gdpr/consent      → body { analytics, functional, version, userAgent } — append-only audit log
+```
 
+If those endpoints don't exist yet, the UI will show a friendly "Coming soon — email privacy@askainurse.com" fallback so nothing breaks.
+
+### 3. Legal Pages Refresh (frontend)
+
+Update `src/pages/PrivacyPolicy.tsx`, `src/pages/Privacy.tsx`, and `src/pages/Terms.tsx`:
+
+- Add **Data Controller** identity block (legal entity name, address, email). I'll use placeholders — you'll fill in the real entity.
+- Add **DPO / privacy contact** section (`privacy@askainurse.com`).
+- Expand **Lawful basis** table per processing purpose (consent, contract, legitimate interest).
+- Add **Sub-processors** table (Anthropic, Shen AI, GA, hosting, MySQL host) with locations.
+- Add **International transfers** SCC language.
+- Add **Automated decision-making** clause (AI-generated health responses, not solely automated decisions with legal effect).
+- Add **Data retention schedule** table (account: until deletion; vitals: 24mo; chats: 12mo; logs: 90d — please confirm or adjust).
+- Add **Your rights** including access, rectification, erasure, restriction, portability, objection, withdraw consent, lodge complaint with supervisory authority.
+- Add **Children**: minimum age 16 in EU.
+- Add **"Last updated"** date.
+
+### 4. Backend / Data Processing items (your Node API — spec only)
+
+I'll document these in `.lovable/plan.md` for your backend dev. Out of scope for Lovable code edits:
+
+- Implement the four `/api/user/gdpr/*` endpoints above.
+- Add `consent_log` table: `id, user_id NULL, anon_id, analytics, functional, version, ip, user_agent, created_at`.
+- 30-day deletion job: hard-delete or anonymize on `DELETE /gdpr/account`.
+- Retention cron: purge vitals_scans > 24mo, chats > 12mo (configurable).
+- TLS-at-rest confirmation for MySQL (`require_secure_transport=ON`), backup encryption.
+- Sub-processor DPAs on file (Anthropic, Shen, hosting).
+- Breach-notification runbook (72h to supervisory authority).
+
+---
+
+### Files I will touch
+
+- `src/components/ConsentBanner.tsx` — full rewrite, 3-action + categories.
+- `src/lib/consent.ts` — new.
+- `src/lib/audit.ts` — gate GA on consent.
+- `src/pages/Profile.tsx` — add Privacy & Data section.
+- `src/pages/PrivacyPolicy.tsx`, `src/pages/Privacy.tsx`, `src/pages/Terms.tsx` — expanded copy.
+- `src/i18n/locales/{en,de,es,fr}.json` — new strings for banner + privacy section.
+- Footer component(s) — add "Cookie preferences" link.
+- `.lovable/plan.md` — backend spec handoff.
+
+No DB / schema changes on the Lovable side (your backend lives outside Cloud).
+
+### Open questions before I build
+
+1. **Retention windows** — OK with vitals 24mo, chats 12mo, logs 90d? Or different?
+2. **Legal entity name + registered address** for the Data Controller block — provide now or leave a `[YOUR COMPANY]` placeholder I'll mark TODO?
+3. **Hard delete vs anonymize** on account deletion — preference?
