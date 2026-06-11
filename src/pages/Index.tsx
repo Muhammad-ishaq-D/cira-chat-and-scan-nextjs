@@ -843,6 +843,7 @@ const Index = () => {
       </footer>
       <ConsentBanner />
     </div>
+    </>
   );
 };
 
