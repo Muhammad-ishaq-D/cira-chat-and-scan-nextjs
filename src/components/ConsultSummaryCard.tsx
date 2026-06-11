@@ -124,6 +124,8 @@ const ConsultSummaryCard = ({ data }: Props) => {
       setDownloading(false);
     }
   };
+
+  const confidenceColor =
     data.confidence_score >= 85
       ? "text-emerald-600 bg-emerald-50"
       : data.confidence_score >= 60
