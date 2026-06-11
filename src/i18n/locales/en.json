@@ -279,7 +279,9 @@
       "dbp": "Diastolic Blood Pressure",
       "bmi": "Body Mass Index",
       "sec30": "30 sec"
-    }
+    },
+    "heroH1Lead": "AI Health Nurse —",
+    "heroH1Tail": "Symptom Checker & Vital Scan"
   },
   "pricing": {
     "badge": "Pricing",

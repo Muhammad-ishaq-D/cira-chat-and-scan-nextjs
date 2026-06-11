@@ -275,7 +275,7 @@ const Index = () => {
             </span>
           </div>
           <h1 className="font-heading text-3xl sm:text-5xl md:text-[56px] font-semibold text-foreground leading-[1.1] tracking-tight">
-            {t("index.heroTitle1")}<br /><span className="text-primary">{t("index.heroTitle2")}</span>
+            {t("index.heroH1Lead")}<br /><span className="text-primary">{t("index.heroH1Tail")}</span>
           </h1>
         </div>
 
