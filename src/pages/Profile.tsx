@@ -345,6 +345,43 @@ const Profile = () => {
           {saving ? t("profile.saving") : t("profile.saveChanges")}
         </button>
 
+        {/* GDPR — Privacy & Data */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="text-sm font-semibold text-foreground font-heading flex items-center gap-2">
+            <ShieldCheck size={16} className="text-primary" /> {t("profile.gdpr.title", "Privacy & data")}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t(
+              "profile.gdpr.intro",
+              "Exercise your GDPR rights at any time — download a copy of your data, change your cookie choices, or permanently delete your account."
+            )}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={handleExportData}
+              disabled={exporting}
+              className="py-2.5 px-4 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              {t("profile.gdpr.exportBtn", "Export my data")}
+            </button>
+            <button
+              onClick={handleWithdrawConsent}
+              className="py-2.5 px-4 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors flex items-center justify-center gap-2"
+            >
+              <Cookie size={14} /> {t("profile.gdpr.cookieBtn", "Cookie preferences")}
+            </button>
+          </div>
+
+          <p className="text-[10px] text-muted-foreground">
+            {t(
+              "profile.gdpr.contactLine",
+              "For other data requests email privacy@askainurse.com. We respond within 30 days."
+            )}
+          </p>
+        </div>
+
         <div className="border border-destructive/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-sm font-semibold text-destructive font-heading">{t("profile.dangerZone")}</h2>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -356,9 +393,11 @@ const Profile = () => {
             </button>
             <button
               onClick={handleDeleteAccount}
-              className="flex-1 py-2.5 px-4 rounded-xl border border-destructive/30 text-destructive text-sm font-medium font-body hover:bg-destructive/5 transition-colors flex items-center justify-center gap-2"
+              disabled={deleting}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-destructive/30 text-destructive text-sm font-medium font-body hover:bg-destructive/5 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <Trash2 size={14} /> {t("profile.deleteAccount")}
+              {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              {t("profile.deleteAccount")}
             </button>
           </div>
         </div>
