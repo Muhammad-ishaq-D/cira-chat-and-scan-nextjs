@@ -52,7 +52,8 @@ const formatHealthIndexes = (h: HealthRisksData) => [
 
 const VitalsScan = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const sdkLang = (i18n.language || "en").split("-")[0];
   const [searchParams] = useSearchParams();
   const isGuest = searchParams.get("guest") === "1" || !isAuthenticated();
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
