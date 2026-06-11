@@ -1513,5 +1513,72 @@
       "disclaimer": "Cira kann Fehler machen. Kein medizinischer Dienst. Wichtige Informationen mit einer Fachperson überprüfen.",
       "login": "Anmelden"
     }
+  },
+  "symptomChecker": {
+    "seoTitle": "Kostenloser KI-Symptom-Checker — Cira KI-Pflegekraft",
+    "seoDescription": "Kostenloser KI-Symptom-Checker. Beschreiben Sie Ihre Symptome und erhalten Sie eine pflegerische Einschätzung, mögliche Ursachen und klare nächste Schritte in Minuten.",
+    "nav": {
+      "startFreeChat": "Kostenlosen Chat starten"
+    },
+    "hero": {
+      "eyebrow": "Kostenloser KI-Symptom-Checker",
+      "title": "Überprüfen Sie Ihre Symptome mit einer KI-Pflegekraft — kostenlos.",
+      "subtitle": "Beschreiben Sie in einfachen Worten, was Sie spüren. Cira stellt die richtigen Folgefragen, fasst mögliche Ursachen zusammen und sagt Ihnen, ob Selbstpflege, Arztbesuch oder Notfallversorgung nötig ist.",
+      "ctaPrimary": "Kostenlose Symptomprüfung starten",
+      "ctaSecondary": "So funktioniert es →",
+      "disclaimer": "Cira ist eine KI-Pflegekraft zur Entscheidungshilfe und ersetzt keine professionelle medizinische Diagnose. Wählen Sie im Notfall Ihre örtliche Notrufnummer."
+    },
+    "symptoms": {
+      "title": "Was Sie prüfen können",
+      "subtitle": "Häufige Symptome, mit denen Menschen zu Cira kommen — von alltäglichen Beschwerden bis zu Warnzeichen, die ärztliche Hilfe erfordern.",
+      "items": {
+        "fever": "Fieber & Schüttelfrost",
+        "headache": "Kopfschmerzen & Migräne",
+        "chest": "Brustschmerzen oder Herzklopfen",
+        "breath": "Kurzatmigkeit",
+        "abdominal": "Bauchschmerzen",
+        "medication": "Nebenwirkungen von Medikamenten"
+      }
+    },
+    "steps": {
+      "title": "So funktioniert der Symptom-Checker",
+      "stepLabel": "Schritt {{n}}",
+      "one": {
+        "title": "Beschreiben Sie, was Sie spüren",
+        "text": "Tippen Sie Ihre Symptome in einfachen Worten — keine Fachsprache nötig. Cira stellt klärende Fragen wie eine Pflegekraft."
+      },
+      "two": {
+        "title": "Erhalten Sie eine strukturierte Einschätzung",
+        "text": "Cira prüft Beginn, Schwere, Vorgeschichte und Risikofaktoren und fasst die wahrscheinlichen Ursachen sowie Warnzeichen zusammen."
+      },
+      "three": {
+        "title": "Kennen Sie Ihren nächsten Schritt",
+        "text": "Selbstpflege zu Hause, Hausarzt oder Notfallversorgung. Klare Anleitung, kein Rätselraten."
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "q1": {
+        "q": "Ist der KI-Symptom-Checker wirklich kostenlos?",
+        "a": "Ja. Sie können ohne Anmeldung eine kostenlose Symptomprüfung mit Cira starten. Kostenlose Chats umfassen geführtes Triage und klare nächste Schritte."
+      },
+      "q2": {
+        "q": "Wie genau ist ein KI-Symptom-Checker?",
+        "a": "Cira nutzt eine klinisch strukturierte Abfrage (Beginn, Schwere, Begleitsymptome, Vorgeschichte, Warnzeichen) nach Triage-Protokollen der Pflege. Es ist keine Diagnose — es ist Entscheidungshilfe, ob Selbstpflege, Arztbesuch oder Notfallversorgung sinnvoll ist."
+      },
+      "q3": {
+        "q": "Sind meine Daten privat?",
+        "a": "Ja. Gespräche sind während der Übertragung verschlüsselt und werden nicht verkauft. Sie können Cira anonym ohne Konto nutzen."
+      },
+      "q4": {
+        "q": "Wann sollte ich in die Notaufnahme statt einen Symptom-Checker nutzen?",
+        "a": "Bei Brustschmerzen, plötzlichen starken Kopfschmerzen, Atemnot, einseitiger Schwäche, Ohnmacht, starken Blutungen oder lebensbedrohlichen Symptomen — rufen Sie sofort Ihre örtliche Notrufnummer. Cira weist während des Triage ebenfalls auf diese Warnzeichen hin."
+      }
+    },
+    "cta": {
+      "title": "Bereit, wenn Sie es sind.",
+      "text": "Anonym, kostenlos, rund um die Uhr verfügbar. Erhalten Sie in Minuten einen klaren nächsten Schritt.",
+      "button": "Kostenlose Symptomprüfung starten"
+    }
   }
 }
