@@ -93,16 +93,64 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm(t("profile.confirmDelete"))) return;
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleExportData = async () => {
+    setExporting(true);
     try {
-      await userApi.deleteAccount();
+      const blob = await gdprApi.exportData();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.download = `cira-data-export-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(t("profile.gdpr.exportSuccess", "Your data export was downloaded."));
+    } catch (err: any) {
+      toast.error(
+        err?.message?.includes("404") || err?.message?.includes("failed")
+          ? t("profile.gdpr.exportSoon", "Data export is coming soon. Email privacy@askainurse.com to request a copy.")
+          : err?.message || t("profile.gdpr.exportFailed", "Could not export your data.")
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmation = window.prompt(
+      t(
+        "profile.gdpr.deleteConfirmPrompt",
+        'This permanently deletes your account, vitals, chats and reports. Type "DELETE" to confirm.'
+      )
+    );
+    if (confirmation !== "DELETE") return;
+    setDeleting(true);
+    try {
+      try {
+        await gdprApi.deleteAccount();
+      } catch {
+        // Fallback to legacy endpoint if GDPR route not deployed yet
+        await userApi.deleteAccount();
+      }
       logout();
       navigate("/login");
-      toast.success(t("profile.toast.deleted"));
+      toast.success(t("profile.toast.deleted", "Account deleted."));
     } catch (err: any) {
-      toast.error(err.message || t("profile.errors.deleteFailed"));
+      toast.error(err.message || t("profile.errors.deleteFailed", "Failed to delete account."));
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const handleWithdrawConsent = () => {
+    revokeConsent();
+    openConsentBanner();
+    toast.success(t("profile.gdpr.consentReopened", "Update your cookie preferences below."));
   };
 
   const handleLogout = () => {
