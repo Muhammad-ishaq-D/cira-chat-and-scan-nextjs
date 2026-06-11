@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { blogsApi, type BlogPost } from "@/lib/apiClient";
 import ciraLogo from "@/assets/cira-logo.svg";
+import SEO from "@/components/SEO";
 
 const Blog = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const Blog = () => {
   }, [t]);
 
   return (
+    <>
+      <SEO title="Cira blog — AI health & wellbeing" description="Articles on AI in healthcare, vital signs, prevention, and using Cira to understand your body better." path="/blog" />
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-5xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -121,6 +124,7 @@ const Blog = () => {
         {t("blog.footer")}
       </footer>
     </div>
+    </>
   );
 };
 

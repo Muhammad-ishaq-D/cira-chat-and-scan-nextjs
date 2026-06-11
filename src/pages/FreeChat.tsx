@@ -13,6 +13,7 @@ import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
+import SEO from "@/components/SEO";
 import {
   getDeviceId,
   getFreeChatHistory,
@@ -91,6 +92,8 @@ const LiveTypewriterText = ({
   }, [speed]);
 
   return (
+    <>
+      <SEO title="Free AI health chat — no signup" description="Ask Cira your health questions for free. Get AI nurse guidance instantly with no account required." path="/free-chat" />
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
     </span>
@@ -1313,6 +1316,7 @@ const FreeChat = () => {
       </div>
       <ConsentBanner />
     </div>
+    </>
   );
 };
 

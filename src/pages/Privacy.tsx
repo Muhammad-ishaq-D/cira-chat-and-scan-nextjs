@@ -11,6 +11,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import talkImg from "@/assets/privacy-talk.jpg";
 import scanImg from "@/assets/privacy-scan.jpg";
 import nextImg from "@/assets/privacy-next.jpg";
+import SEO from "@/components/SEO";
 
 const principles = [
   { icon: EyeOff, label: "No raw face video storage" },
@@ -70,6 +71,8 @@ const Privacy = () => {
   const { t } = useTranslation();
 
   return (
+    <>
+      <SEO title="Privacy & data protection — Cira" description="On-device scans, encryption in transit, MFA access. How Cira keeps your health data private and secure." path="/privacy" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <button
@@ -362,6 +365,7 @@ const Privacy = () => {
         © 2026 Cira — askainurse.com
       </footer>
     </div>
+    </>
   );
 };
 

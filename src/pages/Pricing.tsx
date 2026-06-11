@@ -5,6 +5,7 @@ import { ArrowLeft, Check, Sparkles, Star, Users, Heart, Shield } from "lucide-r
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import SEO from "@/components/SEO";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -56,6 +57,8 @@ const Pricing = () => {
   ];
 
   return (
+    <>
+      <SEO title="Pricing — Cira AI health nurse" description="Simple plans for AI health chat and camera-based vital scans. Start free, upgrade when you need more." path="/pricing" />
     <div className="min-h-screen bg-[#fdfaf3] text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2">
@@ -229,6 +232,7 @@ const Pricing = () => {
         <p>{t("pages.pricing.footer")}</p>
       </footer>
     </div>
+    </>
   );
 };
 

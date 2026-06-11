@@ -5,6 +5,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import handoffImg from "@/assets/doctors-handoff.jpg";
 import telehealthImg from "@/assets/doctors-telehealth.jpg";
 import globalImg from "@/assets/doctors-global.jpg";
+import SEO from "@/components/SEO";
 
 const AIR_DOCTOR_URL = "https://www.air-dr.com/";
 
@@ -27,6 +28,8 @@ const RealDoctors = () => {
   ];
 
   return (
+    <>
+      <SEO title="Real doctors network — Cira" description="Connect with licensed doctors through Cira when you need human care beyond your AI nurse." path="/real-doctors" />
     <div className="min-h-screen bg-[#fdfaf3] text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       {/* Nav */}
       <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
@@ -306,6 +309,7 @@ const RealDoctors = () => {
         <p>© 2026 Cira — askainurse.com</p>
       </footer>
     </div>
+    </>
   );
 };
 
