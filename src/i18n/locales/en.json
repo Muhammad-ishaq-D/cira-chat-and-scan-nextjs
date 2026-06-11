@@ -857,6 +857,7 @@
       "ready": "Ready",
       "preview": "Preview",
       "download": "Download",
+      "downloading": "Preparing English PDF...",
       "upgradeDownload": "Upgrade to Download",
       "reportPreview": "Report Preview",
       "reportId": "Report ID:",
