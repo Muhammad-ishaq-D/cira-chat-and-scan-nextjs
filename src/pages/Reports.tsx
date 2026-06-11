@@ -31,6 +31,7 @@ const Reports = () => {
   const [scansLoading, setScansLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"assessments" | "scans">("assessments");
   const [isBasicPlan, setIsBasicPlan] = useState(false);
+  const [downloadingReportId, setDownloadingReportId] = useState<string | null>(null);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
@@ -71,12 +72,16 @@ const Reports = () => {
       return;
     }
     try {
-      await downloadReportPdf(report);
+      setDownloadingReportId(report.id || report._id || "report");
+      const englishReport = await reportsApi.translateForPdf(report);
+      await downloadReportPdf(englishReport);
       logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
       toast.success(t("reports.toast.pdfDownloaded"));
     } catch (e) {
       console.error("PDF generation failed:", e);
       toast.error(t("reports.toast.pdfFailed"));
+    } finally {
+      setDownloadingReportId(null);
     }
   };
 
