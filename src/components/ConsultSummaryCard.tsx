@@ -216,6 +216,17 @@ const ConsultSummaryCard = ({ data }: Props) => {
         </div>
 
 
+        <div className="px-4 pb-3 pt-1">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="w-full h-9 rounded-xl border border-border/60 bg-card hover:bg-accent transition-all flex items-center justify-center gap-1.5 text-[12px] font-medium text-foreground disabled:opacity-60"
+          >
+            <Download size={13} />
+            {downloading ? "Preparing PDF…" : "Download report (PDF)"}
+          </button>
+        </div>
+
         <BookDoctorCTA source="consult_summary_card" />
 
         <div className="px-4 py-2 border-t border-border/20 bg-amber-50/50">
