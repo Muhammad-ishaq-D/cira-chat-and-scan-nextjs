@@ -1168,15 +1168,24 @@ const Chat = () => {
     return true;
   };
 
+  const setScanLangOverride = () => {
+    try {
+      const base = (selectedLanguage || "en").split("-")[0].toLowerCase();
+      sessionStorage.setItem("cira_scan_lang", base);
+    } catch {}
+  };
+
   const startScan = () => {
     if (!canScan()) return;
     setShowScanModal(false);
+    setScanLangOverride();
     navigate("/vitals-scan");
   };
 
   const completeScanAndChat = () => {
     if (!canScan()) return;
     setShowScanModal(false);
+    setScanLangOverride();
     navigate("/vitals-scan");
   };
 
@@ -1187,6 +1196,7 @@ const Chat = () => {
       if (!canScan()) return;
       syncChatMode(mode);
       setShowModeSelection(false);
+      setScanLangOverride();
       navigate("/vitals-scan");
       return;
     }
