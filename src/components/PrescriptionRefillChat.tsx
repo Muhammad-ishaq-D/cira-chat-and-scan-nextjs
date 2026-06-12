@@ -51,7 +51,14 @@ export type RefillAnswers = {
   submissionMode: "upload" | "manual" | null;
   consult: ConsultAnswers;
   patient: PatientInfo;
+  email: string;
+  paid: boolean;
 };
+
+const REFILL_PRICE_CENTS = 500;
+const REFILL_PRICE_DISPLAY = "$5.00";
+const PRESCRIBER_NAME = "Dr. Didier Decamps";
+const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
 const TOTAL_STEPS = 8;
 
