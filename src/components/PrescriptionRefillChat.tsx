@@ -766,7 +766,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
         {/* Step 3 */}
         {step === 3 && (sub3 === "q1" || sub3 === "q2" || sub3 === "q3") && (
-          <Bubble role="ai" wide>
+          <Bubble role="ai">
             <YesNoButtons
               onYes={() =>
                 sub3 === "q1" ? handleQ1(true) : sub3 === "q2" ? handleQ2(true) : handleQ3(true)
@@ -788,7 +788,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
         {step === 3 && sub3 === "flagged" && (
-          <Bubble role="ai" wide>
+          <Bubble role="ai">
             <FlaggedCard
               onBook={handleBookDoctor}
               onStartOver={handleStartOver}
