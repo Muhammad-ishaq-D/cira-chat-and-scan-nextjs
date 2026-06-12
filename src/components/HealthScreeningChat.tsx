@@ -90,11 +90,71 @@ const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
   const [phase, setPhase] = useState<"chatting" | "cleared" | "flagged" | "error">("chatting");
   const [flagReason, setFlagReason] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [fallbackMode, setFallbackMode] = useState(false);
+  const [fallbackQuestionIndex, setFallbackQuestionIndex] = useState(0);
+  const [fallbackFlagged, setFallbackFlagged] = useState(false);
 
   const startedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const startFallbackScreening = async () => {
+    setFallbackMode(true);
+    setFallbackQuestionIndex(0);
+    setFallbackFlagged(false);
+    setPhase("chatting");
+    setError("");
+    await new Promise((r) => setTimeout(r, 350));
+    setMessages((prev) => [
+      ...prev,
+      { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[0].textKey) },
+    ]);
+  };
+
+  const sendFallback = async (message: string) => {
+    setSending(true);
+    setTyping(true);
+    setError("");
+    await new Promise((r) => setTimeout(r, 450));
+
+    const currentQuestion = SCREENING_QUESTIONS[fallbackQuestionIndex];
+    const flagged = fallbackFlagged || shouldFlagLocalResponse(currentQuestion, message);
+    const nextIndex = fallbackQuestionIndex + 1;
+
+    if (nextIndex < SCREENING_QUESTIONS.length) {
+      setFallbackFlagged(flagged);
+      setFallbackQuestionIndex(nextIndex);
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[nextIndex].textKey) },
+      ]);
+      setSending(false);
+      setTyping(false);
+      return;
+    }
+
+    if (flagged) {
+      setPhase("flagged");
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningRecommendation") },
+      ]);
+    } else {
+      setPhase("cleared");
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningCleared") },
+      ]);
+      setTimeout(() => onCleared(`local-${refillId}-${Date.now()}`), 900);
+    }
+    setSending(false);
+    setTyping(false);
+  };
+
   const send = async (message: string, isHidden = false) => {
+    if (fallbackMode) {
+      await sendFallback(message);
+      return;
+    }
     setSending(true);
     setTyping(true);
     setError("");
@@ -108,7 +168,13 @@ const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
         headers,
         body: JSON.stringify({ refill_id: refillId, message }),
       });
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      if (!res.ok) {
+        if (res.status >= 500) {
+          await startFallbackScreening();
+          return;
+        }
+        throw new Error(`Request failed (${res.status})`);
+      }
       const data = (await res.json()) as RefillChatResponse;
 
       // Simulate small typing pause so the indicator is visible even on fast responses
