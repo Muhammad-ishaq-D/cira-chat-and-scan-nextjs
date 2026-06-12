@@ -1942,4 +1942,136 @@ const PaymentCard = ({
   );
 };
 
+// ============= Step 8 =============
+
+function generateRefNumber() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return `RX-${out}`;
+}
+
+const SuccessCard = ({
+  refNumber,
+  isLoggedIn,
+  signupDismissed,
+  onCreateAccount,
+  onDismissSignup,
+  onDone,
+}: {
+  refNumber: string;
+  isLoggedIn: boolean;
+  signupDismissed: boolean;
+  onCreateAccount: () => void;
+  onDismissSignup: () => void;
+  onDone: () => void;
+}) => {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(refNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // ignore
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Animated check */}
+      <div className="flex flex-col items-center text-center">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mb-3 animate-scale-in">
+          <CheckCircle2 className="w-9 h-9 text-emerald-500" strokeWidth={2.5} />
+        </div>
+        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+          {t("pages.prescriptionRefill.chat.successTitle")}
+        </h3>
+        <p className="mt-2 text-foreground/80 leading-relaxed" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.successBody")}
+        </p>
+        <p className="mt-2 text-muted-foreground" style={{ fontSize: 13 }}>
+          {t("pages.prescriptionRefill.chat.successSpamNote")}
+        </p>
+      </div>
+
+      {/* Reference number card */}
+      <div className="rounded-2xl border border-border bg-background/60 p-4 text-center space-y-2">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+          {t("pages.prescriptionRefill.chat.referenceNumber")}
+        </p>
+        <p className="font-mono font-semibold text-foreground tracking-wider" style={{ fontSize: 22 }}>
+          {refNumber}
+        </p>
+        <button
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-2 text-foreground hover:bg-accent transition-colors"
+          style={{ minHeight: 40, fontSize: 14 }}
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 text-emerald-500" />
+              {t("pages.prescriptionRefill.chat.copied")}
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              {t("pages.prescriptionRefill.chat.copy")}
+            </>
+          )}
+        </button>
+      </div>
+
+      <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
+        {t("pages.prescriptionRefill.chat.refundNote")}
+      </p>
+
+      {isLoggedIn ? (
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-3 text-center">
+          <p className="text-primary font-medium" style={{ fontSize: 14 }}>
+            {t("pages.prescriptionRefill.chat.addedToHistory")}
+          </p>
+        </div>
+      ) : (
+        !signupDismissed && (
+          <div className="rounded-2xl border border-border bg-background/60 p-4 space-y-3 animate-fade-in">
+            <p className="text-foreground font-medium text-center" style={{ fontSize: 15 }}>
+              {t("pages.prescriptionRefill.chat.signupPrompt")}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={onDismissSignup}
+                className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors order-2 sm:order-1"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.maybeLater")}
+              </button>
+              <button
+                onClick={() => {
+                  onDismissSignup();
+                  onCreateAccount();
+                }}
+                className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.createAccount")}
+              </button>
+            </div>
+          </div>
+        )
+      )}
+
+      <button
+        onClick={onDone}
+        className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+        style={{ minHeight: 48, fontSize: 15 }}
+      >
+        {t("pages.prescriptionRefill.chat.done")}
+      </button>
+    </div>
+  );
+};
+
 export default PrescriptionRefillChat;
