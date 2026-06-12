@@ -236,8 +236,9 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
           ]);
         }
       }
-    } catch (e: any) {
-      setError(e?.message || t("pages.prescriptionRefill.chat.screeningError"));
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : t("pages.prescriptionRefill.chat.screeningError");
+      setError(message);
       setPhase("error");
     } finally {
       setSending(false);
@@ -285,12 +286,16 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(trackingData),
       }).catch(() => {});
-    } catch {}
+    } catch {
+      void 0;
+    }
     try {
       const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
       clicks.push(trackingData);
       localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
-    } catch {}
+    } catch {
+      void 0;
+    }
     window.open(AIR_DOCTOR_URL, "_blank", "noopener,noreferrer");
   };
 
