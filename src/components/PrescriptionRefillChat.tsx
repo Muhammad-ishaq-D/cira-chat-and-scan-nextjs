@@ -1020,7 +1020,7 @@ const Bubble = ({
     }`}
   >
     <div
-      className={`${wide ? "max-w-[95%] md:max-w-[80%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-3.5 py-2.5 leading-relaxed ${
+      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
         role === "user"
           ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
           : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
