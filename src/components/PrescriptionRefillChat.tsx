@@ -227,7 +227,40 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       if (!isLoggedIn) {
         pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
       }
-    } else if (step >= 5) {
+    } else if (step === 5) {
+      if (isLoggedIn) {
+        const email = localUser?.email || "";
+        setSub5("logged-confirm");
+        setAnswers((a) => ({ ...a, email: a.email || email }));
+        pushMsg({
+          role: "ai",
+          kind: "text",
+          text: t("pages.prescriptionRefill.chat.step5LoggedPrompt", { email }),
+        });
+      } else {
+        setSub5("guest-ask");
+        pushMsg({
+          role: "ai",
+          kind: "text",
+          text: t("pages.prescriptionRefill.chat.step5GuestPrompt"),
+        });
+      }
+    } else if (step === 6) {
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: t("pages.prescriptionRefill.chat.step6Prompt"),
+      });
+    } else if (step === 7) {
+      setSub7("ready");
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: hasSavedCard
+          ? t("pages.prescriptionRefill.chat.step7PromptSaved")
+          : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
+      });
+    } else if (step >= 8) {
       pushMsg({
         role: "ai",
         kind: "text",
