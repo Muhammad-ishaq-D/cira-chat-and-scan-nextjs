@@ -26,6 +26,7 @@ import {
 import drugsData from "@/data/drugs.json";
 
 import { getToken, getUser } from "@/lib/auth";
+import { getDeviceId } from "@/lib/freeCredits";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
 
@@ -161,7 +162,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   })();
 
   // Shared refill_id for the whole flow — every step endpoint references this.
-  const [refillId] = useState<string>(initialFromUrl.refillId);
+  const [refillId, setRefillId] = useState<string>(initialFromUrl.refillId);
+  const [creatingRefill, setCreatingRefill] = useState(false);
 
   const [step, setStep] = useState<number>(initialFromUrl.step);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -385,20 +387,49 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
-  const handleStep1Submit = (medications: string[]) => {
+  const handleStep1Submit = async (medications: string[]) => {
     const names = medications.map((m) => m.trim()).filter(Boolean);
-    if (names.length === 0) return;
+    if (names.length === 0 || creatingRefill) return;
     const joined = names.join(", ");
-    setAnswers((a) => ({
-      ...a,
-      consent: true,
-      submissionMode: "manual",
-      drug: { drug: joined, form: "—", strength: "—", dosage: "—" },
-    }));
-    pushMsg({ role: "user", kind: "text", text: joined });
-    // Skip step 2 (medication is already captured) → go straight to health check.
-    seededRef.current.add("step-2");
-    setTimeout(() => setStep(3), 200);
+    setCreatingRefill(true);
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/api/prescription/create-refill`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          cira_device_id: getDeviceId(),
+          user_id: localUser?.id || null,
+          is_guest: !isLoggedIn,
+          gdpr_consent: true,
+        }),
+      });
+      if (!res.ok) throw new Error(`Refill session failed (${res.status})`);
+      const data = (await res.json()) as { refill_id?: number | string };
+      if (!data.refill_id) throw new Error("Missing refill session");
+
+      setRefillId(String(data.refill_id));
+      setAnswers((a) => ({
+        ...a,
+        consent: true,
+        submissionMode: "manual",
+        drug: { drug: joined, form: "—", strength: "—", dosage: "—" },
+      }));
+      pushMsg({ role: "user", kind: "text", text: joined });
+      // Skip step 2 (medication is already captured) → go straight to health check.
+      seededRef.current.add("step-2");
+      setTimeout(() => setStep(3), 200);
+    } catch {
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: "I couldn't start your refill session. Please try again in a moment.",
+      });
+    } finally {
+      setCreatingRefill(false);
+    }
   };
 
 
