@@ -20,7 +20,10 @@ import {
   XCircle,
   Copy,
   Check,
+  X,
+  Search,
 } from "lucide-react";
+import drugsData from "@/data/drugs.json";
 
 import { getUser } from "@/lib/auth";
 import ciraLogo from "@/assets/cira-logo.svg";
@@ -300,16 +303,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
-  const handleStep1Submit = (medication: string) => {
-    const name = medication.trim();
-    if (!name) return;
+  const handleStep1Submit = (medications: string[]) => {
+    const names = medications.map((m) => m.trim()).filter(Boolean);
+    if (names.length === 0) return;
+    const joined = names.join(", ");
     setAnswers((a) => ({
       ...a,
       consent: true,
       submissionMode: "manual",
-      drug: { drug: name, form: "—", strength: "—", dosage: "—" },
+      drug: { drug: joined, form: "—", strength: "—", dosage: "—" },
     }));
-    pushMsg({ role: "user", kind: "text", text: name });
+    pushMsg({ role: "user", kind: "text", text: joined });
     // Skip step 2 (medication is already captured) → go straight to health check.
     seededRef.current.add("step-2");
     setTimeout(() => setStep(3), 200);
@@ -1095,16 +1099,66 @@ const NameInputBar = ({
 
 // ============= Step 1 =============
 
-const Step1Hero = ({ onSubmit }: { onSubmit: (medication: string) => void }) => {
+type DrugRow = {
+  id: number;
+  inn_name: string;
+  form: string;
+  available_strengths: string;
+  product_name: string;
+  therapeutic_use: string;
+};
+
+const DRUGS = drugsData as DrugRow[];
+
+const Step1Hero = ({ onSubmit }: { onSubmit: (medications: string[]) => void }) => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
-  const [medication, setMedication] = useState("");
-  const canSubmit = checked && medication.trim().length > 0;
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<DrugRow[]>([]);
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const suggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const ids = new Set(selected.map((s) => s.id));
+    const out: DrugRow[] = [];
+    for (const d of DRUGS) {
+      if (ids.has(d.id)) continue;
+      if (
+        d.product_name.toLowerCase().includes(q) ||
+        d.inn_name.toLowerCase().includes(q)
+      ) {
+        out.push(d);
+        if (out.length >= 8) break;
+      }
+    }
+    return out;
+  }, [query, selected]);
+
+  const addDrug = (d: DrugRow) => {
+    setSelected((s) => (s.find((x) => x.id === d.id) ? s : [...s, d]));
+    setQuery("");
+    setOpen(false);
+  };
+  const removeDrug = (id: number) =>
+    setSelected((s) => s.filter((x) => x.id !== id));
+
+  const canSubmit = checked && selected.length > 0;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onSubmit(medication);
+    onSubmit(selected.map((d) => d.product_name));
   };
+
   return (
     <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-8 text-center w-full">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
@@ -1136,20 +1190,85 @@ const Step1Hero = ({ onSubmit }: { onSubmit: (medication: string) => void }) => 
           )}
         </p>
 
-        {/* Medication input + CTA */}
+        {/* Medication multi-select + CTA */}
         <form onSubmit={handleSubmit} className="mt-8 w-full space-y-3">
-          <input
-            type="text"
-            value={medication}
-            onChange={(e) => setMedication(e.target.value)}
-            placeholder={t(
-              "pages.prescriptionRefill.chat.step1Placeholder",
-              "What medication do you need to refill?"
+          <div ref={wrapRef} className="relative w-full">
+            <div
+              className="w-full rounded-2xl bg-white border border-border/70 px-3 py-2 flex flex-wrap items-center gap-1.5 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/40 text-left"
+              style={{ minHeight: 56 }}
+              onClick={() => setOpen(true)}
+            >
+              <Search className="w-4 h-4 text-muted-foreground ml-1 shrink-0" />
+              {selected.map((d) => (
+                <span
+                  key={d.id}
+                  className="inline-flex items-center gap-1 bg-primary/10 text-primary rounded-full pl-2.5 pr-1 py-1 text-xs font-medium max-w-full"
+                >
+                  <span className="truncate max-w-[180px]">{d.product_name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeDrug(d.id);
+                    }}
+                    className="rounded-full hover:bg-primary/20 p-0.5"
+                    aria-label="Remove"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setOpen(true);
+                }}
+                onFocus={() => setOpen(true)}
+                placeholder={
+                  selected.length === 0
+                    ? t(
+                        "pages.prescriptionRefill.chat.step1Placeholder",
+                        "Search your medication(s)…"
+                      )
+                    : ""
+                }
+                autoFocus
+                className="flex-1 min-w-[140px] bg-transparent px-2 py-1 text-foreground placeholder:text-muted-foreground focus:outline-none"
+                style={{ fontSize: 16 }}
+              />
+            </div>
+
+            {open && suggestions.length > 0 && (
+              <div className="absolute z-20 mt-1.5 w-full bg-white border border-border/70 rounded-2xl shadow-lg overflow-hidden max-h-72 overflow-y-auto text-left">
+                {suggestions.map((d) => (
+                  <button
+                    type="button"
+                    key={d.id}
+                    onClick={() => addDrug(d)}
+                    className="w-full px-4 py-2.5 hover:bg-primary/5 flex flex-col items-start border-b border-border/40 last:border-b-0"
+                  >
+                    <span className="text-sm font-medium text-foreground truncate w-full">
+                      {d.product_name}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground truncate w-full">
+                      {d.inn_name} · {d.form}
+                      {d.available_strengths && d.available_strengths !== "N/A"
+                        ? ` · ${d.available_strengths}`
+                        : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
             )}
-            autoFocus
-            className="w-full rounded-2xl bg-white border border-border/70 px-5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 text-center"
-            style={{ minHeight: 56, fontSize: 16 }}
-          />
+            {open && query.trim() && suggestions.length === 0 && (
+              <div className="absolute z-20 mt-1.5 w-full bg-white border border-border/70 rounded-2xl shadow-lg px-4 py-3 text-sm text-muted-foreground text-left">
+                No matches found
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={!canSubmit}
