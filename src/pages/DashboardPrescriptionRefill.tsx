@@ -103,7 +103,7 @@ const DashboardPrescriptionRefill = () => {
 
           {showChat ? (
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
-              <PrescriptionRefillChat onExit={() => setShowChat(false)} />
+              <PrescriptionRefillChat onExit={handleExitChat} />
             </div>
           ) : (
             <>
@@ -143,40 +143,7 @@ const DashboardPrescriptionRefill = () => {
                 </div>
               </div>
 
-              {/* Refill History */}
-              <div className="border-t border-border pt-8">
-                <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4 text-center">
-                  {t("pages.prescriptionRefill.historyTitle")}
-                </h2>
-                {history.length === 0 ? (
-                  <div className="rounded-2xl border border-border/60 bg-card/50 p-8 text-center">
-                    <p className="text-sm text-muted-foreground">
-                      {t("pages.prescriptionRefill.historyEmpty")}
-                    </p>
-                  </div>
-                ) : (
-                  <ul className="space-y-2">
-                    {history.map((h) => (
-                      <li
-                        key={h.ref}
-                        className="rounded-2xl border border-border/60 bg-card/50 px-4 py-3 flex items-center justify-between gap-3"
-                      >
-                        <div className="min-w-0">
-                          <p className="font-mono text-sm font-semibold text-foreground tracking-wider">
-                            {h.ref}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {[h.drug, h.strength].filter(Boolean).join(" · ") || "—"}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground shrink-0">
-                          {new Date(h.date).toLocaleDateString(i18n.language)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              {isLoggedIn && <RefillHistoryList reloadKey={historyReloadKey} />}
             </>
           )}
         </div>
