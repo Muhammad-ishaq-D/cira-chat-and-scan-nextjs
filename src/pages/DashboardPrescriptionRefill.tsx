@@ -16,7 +16,7 @@ const DashboardPrescriptionRefill = () => {
   const initials =
     localUser?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
-  const [showForm, setShowForm] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const handleLogout = () => {
     logout();
