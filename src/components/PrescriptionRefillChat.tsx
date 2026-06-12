@@ -189,6 +189,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
   const hasSavedCard = !!savedCard;
 
+  // Step 8 state
+  const [refNumber, setRefNumber] = useState<string>("");
+  const [signupDismissed, setSignupDismissed] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
 
