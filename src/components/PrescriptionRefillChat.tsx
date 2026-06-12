@@ -264,12 +264,29 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           ? t("pages.prescriptionRefill.chat.step7PromptSaved")
           : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
       });
-    } else if (step >= 8) {
-      pushMsg({
-        role: "ai",
-        kind: "text",
-        text: t("pages.prescriptionRefill.chat.placeholderStep", { step }),
-      });
+    } else if (step === 8) {
+      const ref = generateRefNumber();
+      setRefNumber(ref);
+      const finalAnswers: RefillAnswers = { ...answers, paid: true };
+      // Persist to local refill history for logged-in users
+      if (isLoggedIn && typeof window !== "undefined") {
+        try {
+          const raw = window.localStorage.getItem("cira_refill_history");
+          const list = raw ? JSON.parse(raw) : [];
+          list.unshift({
+            ref,
+            date: new Date().toISOString(),
+            drug: finalAnswers.drug?.drug || "",
+            strength: finalAnswers.drug?.strength || "",
+            email: finalAnswers.email,
+            priceCents: REFILL_PRICE_CENTS,
+          });
+          window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+        } catch {
+          // ignore storage errors
+        }
+      }
+      onComplete?.(finalAnswers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
