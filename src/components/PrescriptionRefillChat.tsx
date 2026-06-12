@@ -672,7 +672,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
-        <Step1Hero onContinue={handleConsent} />
+        <Step1Hero onSubmit={handleStep1Submit} />
       ) : (
       <div
         ref={scrollRef}
