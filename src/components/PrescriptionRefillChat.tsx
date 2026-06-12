@@ -788,7 +788,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
         {step === 3 && sub3 === "flagged" && (
-          <Bubble role="ai" wide>
+          <Bubble role="ai">
             <FlaggedCard
               onBook={handleBookDoctor}
               onStartOver={handleStartOver}
