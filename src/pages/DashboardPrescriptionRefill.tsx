@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, LogOut, Pill, ScanFace, Sparkles, FileText } from "lucide-react";
@@ -7,40 +7,24 @@ import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import PrescriptionRefillChat from "@/components/PrescriptionRefillChat";
+import RefillHistoryList from "@/components/RefillHistoryList";
 import { getUser, logout } from "@/lib/auth";
 
-type RefillHistoryItem = {
-  ref: string;
-  date: string;
-  drug: string;
-  strength: string;
-  email: string;
-  priceCents: number;
-};
-
 const DashboardPrescriptionRefill = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const localUser = getUser();
+  const isLoggedIn = !!localUser;
   const initials =
     localUser?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
   const [showChat, setShowChat] = useState(false);
-  const [history, setHistory] = useState<RefillHistoryItem[]>([]);
+  const [historyReloadKey, setHistoryReloadKey] = useState(0);
 
-  const loadHistory = () => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem("cira_refill_history");
-      setHistory(raw ? JSON.parse(raw) : []);
-    } catch {
-      setHistory([]);
-    }
+  const handleExitChat = () => {
+    setShowChat(false);
+    setHistoryReloadKey((k) => k + 1);
   };
-
-  useEffect(() => {
-    loadHistory();
-  }, [showChat]);
 
   const handleLogout = () => {
     logout();
