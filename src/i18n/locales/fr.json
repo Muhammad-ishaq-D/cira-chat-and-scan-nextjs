@@ -435,7 +435,29 @@
       "price": "Renouvellement d'ordonnance — 5,00 $",
       "refund": "Pas satisfait ? Nous offrons un remboursement complet si votre pharmacie n'accepte pas cette ordonnance.",
       "historyTitle": "Votre historique de renouvellements",
-      "historyEmpty": "Vos renouvellements d'ordonnance apparaîtront ici"
+      "historyEmpty": "Vos renouvellements d'ordonnance apparaîtront ici",
+      "chat": {
+        "stepCounter": "Étape {{current}} sur {{total}}",
+        "continue": "Continuer",
+        "confirmSend": "Envoyer la demande",
+        "completed": "Merci — votre demande a été envoyée pour examen. Un médecin agréé vous répondra sous peu.",
+        "inputPlaceholder": "Tapez votre réponse…",
+        "step1Prompt": "Bonjour, je suis Cira. Préparons votre renouvellement. D'abord — quel est votre nom complet ?",
+        "step2Prompt": "Quel médicament souhaitez-vous renouveler ? Incluez le dosage si vous le connaissez (ex. Lisinopril 10mg).",
+        "step3Prompt": "Quel est le dosage et à quelle fréquence le prenez-vous ? (ex. 1 comprimé par jour)",
+        "step4Prompt": "Quand était votre dernier renouvellement ? Choisissez la date.",
+        "step5Prompt": "À quelle pharmacie devons-nous l'envoyer ? Nom et adresse.",
+        "step6Prompt": "Des allergies ou réactions récentes à signaler au médecin ? (Facultatif — tapez 'aucune' pour passer)",
+        "step7Prompt": "Autre chose à ajouter pour le médecin ? (Facultatif)",
+        "step8Prompt": "Veuillez vérifier votre demande avant de l'envoyer.",
+        "sumName": "Nom",
+        "sumMedication": "Médicament",
+        "sumDosage": "Dosage",
+        "sumLastRefill": "Dernier renouvellement",
+        "sumPharmacy": "Pharmacie",
+        "sumAllergies": "Allergies",
+        "sumNotes": "Notes"
+      }
     },
     "pricing": {
       "features": {
