@@ -428,7 +428,14 @@
       "submitRequest": "Enviar solicitud",
       "askCiraFirst": "Hablar con Cira",
       "requestSubmittedTitle": "Solicitud enviada",
-      "requestSubmittedDesc": "Un médico licenciado revisará tu solicitud en breve."
+      "requestSubmittedDesc": "Un médico licenciado revisará tu solicitud en breve.",
+      "startTitle": "Renovación de receta",
+      "startSubtitle": "Powered by CLINIQUE DE LA BRISEE",
+      "startCta": "Iniciar nueva renovación",
+      "price": "Renovación de receta — $5.00",
+      "refund": "¿No satisfecho? Ofrecemos un reembolso completo si tu farmacia no acepta esta receta.",
+      "historyTitle": "Historial de renovaciones",
+      "historyEmpty": "Tus renovaciones de recetas aparecerán aquí"
     },
     "pricing": {
       "features": {
