@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import drugsData from "@/data/drugs.json";
 
-import { getUser } from "@/lib/auth";
+import { getToken, getUser } from "@/lib/auth";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
 
