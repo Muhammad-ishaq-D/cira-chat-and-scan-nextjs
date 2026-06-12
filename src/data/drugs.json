@@ -1,0 +1,2290 @@
+[
+  {
+    "id": 1,
+    "inn_name": "MEFENAMIC ACID",
+    "form": "TABLET",
+    "available_strengths": "250MG",
+    "product_name": "MEFENAMIC ACID 250",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 2,
+    "inn_name": "ACTIFED",
+    "form": "ORAL SYRUP",
+    "available_strengths": "30MG / 5ML (PSEUDOEPHEDRINE HCL) + 1.25MG / 5ML (TRIPROLIDINE HCL) + 10MG / 5ML (CODEINE PHOSPHATE)",
+    "product_name": "ACTIFED CO SYRUP/DECOFED LINCTUS SYRUP (WITH CODEINE)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 3,
+    "inn_name": "ACTIFED",
+    "form": "ORAL SYRUP",
+    "available_strengths": "30MG / 5ML (PSEUDOEPHEDRINE HCL) + 1.25MG / 5ML (TRIPROLIDINE HCL)",
+    "product_name": "ACTIFED SYRUP/UNI-FEDRA SYRUP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 4,
+    "inn_name": "ACTIFED",
+    "form": "TABLET",
+    "available_strengths": "60MG (PSEUDOEPHEDRINE HCL) + 2.5MG (TRIPROLIDINE HCL)",
+    "product_name": "ACTIFED TAB/EUROFED TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 5,
+    "inn_name": "ACYCLOVIR",
+    "form": "TABLET",
+    "available_strengths": "400MG",
+    "product_name": "ACYCLOVIR 400MG",
+    "therapeutic_use": "Herpes virus infections"
+  },
+  {
+    "id": 6,
+    "inn_name": "ACYCLOVIR",
+    "form": "TABLET",
+    "available_strengths": "800MG",
+    "product_name": "ACYCLOVIR 800MG",
+    "therapeutic_use": "Herpes virus infections"
+  },
+  {
+    "id": 7,
+    "inn_name": "ACYCLOVIR",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "ACYCLOVIR",
+    "therapeutic_use": "Herpes virus infections"
+  },
+  {
+    "id": 8,
+    "inn_name": "ALLERCROM",
+    "form": "EYE DROPS",
+    "available_strengths": "2%",
+    "product_name": "ALLERCROM EYE DROPS 2%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 9,
+    "inn_name": "ALLERSAN",
+    "form": "TABLET",
+    "available_strengths": "0.25MG (BETAMETHASONE) + 2MG (DEXCHLORPHENIRAMINE MALEATE)",
+    "product_name": "ALLERSAN TABLETS (NEW FORMULA)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 10,
+    "inn_name": "ANALEVO",
+    "form": "TABLET",
+    "available_strengths": "60MG",
+    "product_name": "ANALEVO TABLETS 60MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 11,
+    "inn_name": "ANUCARE",
+    "form": "SUPPOSITORY",
+    "available_strengths": "300MG (ZINC OXIDE) + 50MG (BALSAM PERU) + 33MG (BENZYL BENZOATE)",
+    "product_name": "ANUCARE SUPP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 12,
+    "inn_name": "APO-ZOPICLONE",
+    "form": "TABLET",
+    "available_strengths": "7.5MG",
+    "product_name": "APO-ZOPICLONE TAB 7.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 13,
+    "inn_name": "IRBESARTAN",
+    "form": "TABLET",
+    "available_strengths": "150MG",
+    "product_name": "IRBESARTAN 150MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 14,
+    "inn_name": "IRBESARTAN",
+    "form": "TABLET",
+    "available_strengths": "300MG",
+    "product_name": "IRBESARTAN 300MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 15,
+    "inn_name": "AQUEOUS",
+    "form": "CREAM",
+    "available_strengths": "N/A",
+    "product_name": "AQUEOUS CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 16,
+    "inn_name": "ETORICOXIB",
+    "form": "TABLET",
+    "available_strengths": "120MG",
+    "product_name": "ETORICOXIB 120MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 17,
+    "inn_name": "ETORICOXIB",
+    "form": "TABLET",
+    "available_strengths": "90MG",
+    "product_name": "ETORICOXIB 90MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 18,
+    "inn_name": "HYDROXYZINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "HYDROXYZINE 10MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 19,
+    "inn_name": "HYDROXYZLINE HYDROCHLORIDE",
+    "form": "TABLET",
+    "available_strengths": "25MG",
+    "product_name": "HYDROXYZLINE HYDROCHLORIDE 25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 20,
+    "inn_name": "EZETIMIBE / ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG / 10MG",
+    "product_name": "EZETIMIBE/ATORVASTATIN 10/10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 21,
+    "inn_name": "EZETIMIBE / ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG / 20MG",
+    "product_name": "EZETIMIBE/ATORVASTATIN 10/20MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 22,
+    "inn_name": "AMOXICILLIN / CLAVULANATE",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "AMOXICILLIN/CLAVULANATE",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 23,
+    "inn_name": "AMOXICILLIN / CLAVULANATE",
+    "form": "TABLET",
+    "available_strengths": "375MG",
+    "product_name": "AMOXICILLIN/CLAVULANATE 375MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 24,
+    "inn_name": "AMOXICILLIN / CLAVULANATE",
+    "form": "TABLET",
+    "available_strengths": "312.5MG",
+    "product_name": "AMOXICILLIN/CLAVULANATE 312.5MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 25,
+    "inn_name": "AMOXICILLIN / CLAVULANATE",
+    "form": "TABLET",
+    "available_strengths": "156.25MG",
+    "product_name": "AMOXICILLIN/CLAVULANATE 156.25MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 26,
+    "inn_name": "FLUTICASONE FUROATE",
+    "form": "NASAL SPRAY",
+    "available_strengths": "27.5MCG",
+    "product_name": "FLUTICASONE FUROATE 27.5MCG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 27,
+    "inn_name": "OLMESARTAN / AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "20MG / 5MG",
+    "product_name": "OLMESARTAN/AMLODIPINE 20/5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 28,
+    "inn_name": "OLMESARTAN / AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "40MG / 5MG",
+    "product_name": "OLMESARTAN/AMLODIPINE 40/5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 29,
+    "inn_name": "BEANAMINE",
+    "form": "ORAL SOLUTION",
+    "available_strengths": "14MG / 5ML (DIPHENHYDRAMINE HCL) + 135MG / 5ML (AMMONIUM CHLORIDE)",
+    "product_name": "BEANAMINE EXPECTORANT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 30,
+    "inn_name": "BENDOL",
+    "form": "CAPSULE",
+    "available_strengths": "25MG",
+    "product_name": "BENDOL (DIPHENHYDRAMINE) CAP 25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 31,
+    "inn_name": "METOPROLOL",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "METOPROLOL 100MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 32,
+    "inn_name": "METOPROLOL",
+    "form": "TABLET",
+    "available_strengths": "25MG",
+    "product_name": "METOPROLOL 25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 33,
+    "inn_name": "METOPROLOL",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "METOPROLOL 50MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 34,
+    "inn_name": "BISACODYL",
+    "form": "SUPPOSITORY",
+    "available_strengths": "10MG",
+    "product_name": "BISACODYL 10mg/GOODTON SUPPOSITORY 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 35,
+    "inn_name": "BISACODYL",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "Bisacodyl 5mg/Dulax Tablet/Bisedyl Tablet",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 36,
+    "inn_name": "BISOLVON",
+    "form": "ORAL SYRUP",
+    "available_strengths": "4MG / 5ML",
+    "product_name": "Bisolvon 4mg/5ml Syrup/Eusolvon-Y Solution 4mg/5ml",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 37,
+    "inn_name": "BROMHEXINE",
+    "form": "TABLET",
+    "available_strengths": "8MG",
+    "product_name": "Bisolvon 8mg/Bromhexine 8mg/Asthmaxine tab 8mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 38,
+    "inn_name": "TICAGRELOR",
+    "form": "TABLET",
+    "available_strengths": "60MG",
+    "product_name": "TICAGRELOR 60MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 39,
+    "inn_name": "TICAGRELOR",
+    "form": "TABLET",
+    "available_strengths": "90MG",
+    "product_name": "TICAGRELOR 90MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 40,
+    "inn_name": "KORUS IBUPROFEN",
+    "form": "TABLET",
+    "available_strengths": "200MG",
+    "product_name": "KORUS IBUPROFEN 200MG",
+    "therapeutic_use": "Pain, inflammation, and fever relief"
+  },
+  {
+    "id": 41,
+    "inn_name": "BRUFEN",
+    "form": "TABLET",
+    "available_strengths": "400MG",
+    "product_name": "BRUFEN 400MG/IBUFROFEN 400MG/KORUS400MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 42,
+    "inn_name": "HYOSCINE BUTYLBROMIDE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "HYOSCINE BUTYLBROMIDE 5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 43,
+    "inn_name": "HYOSCINE BUTYLBROMIDE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "HYOSCINE BUTYLBROMIDE 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 44,
+    "inn_name": "AMLODIPINE / ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG / 10MG",
+    "product_name": "AMLODIPINE/ATORVASTATIN 10/10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 45,
+    "inn_name": "AMLODIPINE / ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "5MG / 10MG",
+    "product_name": "AMLODIPINE/ATORVASTATIN 5/10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 46,
+    "inn_name": "CALAMINE",
+    "form": "LOTION",
+    "available_strengths": "N/A",
+    "product_name": "Calamine Lotion",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 47,
+    "inn_name": "CELECOXIB",
+    "form": "CAPSULE",
+    "available_strengths": "200MG",
+    "product_name": "CELECOXIB 200MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 48,
+    "inn_name": "CHLORAMINE",
+    "form": "TABLET",
+    "available_strengths": "4MG",
+    "product_name": "CHLORAMINE (chlorpheniramine) TAB 4MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 49,
+    "inn_name": "CHLORAMPHENICOL",
+    "form": "EYE OINTMENT",
+    "available_strengths": "1%",
+    "product_name": "CHLORAMPHENICOL EYE OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 50,
+    "inn_name": "CHLORAMPHENICOL",
+    "form": "EYE DROPS",
+    "available_strengths": "0.5%",
+    "product_name": "CHLORAMPHENICOL EYE DROP 0.5%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 51,
+    "inn_name": "CHLORAMPHENICOL",
+    "form": "EYE OINTMENT",
+    "available_strengths": "1%",
+    "product_name": "CHLORAMPHENICOL EYE OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 52,
+    "inn_name": "CHRISTAMOL",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "CHRISTAMOL (PARACETAMOL) TAB 500MG",
+    "therapeutic_use": "Pain and fever relief"
+  },
+  {
+    "id": 53,
+    "inn_name": "CIPROFLOXACIN",
+    "form": "EYE DROPS",
+    "available_strengths": "0.3%",
+    "product_name": "CIPROFLOXACIN OPHTHALMIC SOLUTION",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 54,
+    "inn_name": "CIPROXIN",
+    "form": "TABLET",
+    "available_strengths": "250MG / 250MG",
+    "product_name": "CIPROXIN 250MG/CIPROFLXACIN 250MG/MEDOCIPRIN 250",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 55,
+    "inn_name": "CLOTRIMAZOLE",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "CLOTRIMAZOLE CREAM",
+    "therapeutic_use": "Fungal infections"
+  },
+  {
+    "id": 56,
+    "inn_name": "CLOTRIMAZOLE VAGINAL",
+    "form": "VAGINAL TABLET",
+    "available_strengths": "100MG",
+    "product_name": "CLOTRIMAZOLE VAGINAL 100MG",
+    "therapeutic_use": "Fungal infections"
+  },
+  {
+    "id": 57,
+    "inn_name": "IRBESARTAN",
+    "form": "TABLET",
+    "available_strengths": "150MG / 12.5MG",
+    "product_name": "IRBESARTAN 150/12.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 58,
+    "inn_name": "COCILANA DM",
+    "form": "ORAL SYRUP",
+    "available_strengths": "15MG / 5ML (DEXTROMETHORPHAN HBR)",
+    "product_name": "COCILANA DM/DEXTROCILLA SYRUP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 59,
+    "inn_name": "COCILLANA",
+    "form": "ORAL SYRUP",
+    "available_strengths": "COCILLANA EXTRACT + SENEGA + SQUILL",
+    "product_name": "COCILLANA (CHRISTO) SYRUP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 60,
+    "inn_name": "CODAEWON",
+    "form": "TABLET",
+    "available_strengths": "5MG (DIHYDROCODEINE BITARTRATE) + 50MG (GUAIFENESIN) + 17.5MG (DL-METHYLEPHEDRINE HCL) + 1.5MG (CHLORPHENIRAMINE MALEATE)",
+    "product_name": "CODAEWON TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 61,
+    "inn_name": "VALSARTAN / HYDROCHLOROTHIAZIDE",
+    "form": "TABLET",
+    "available_strengths": "160MG",
+    "product_name": "VALSARTAN/HYDROCHLOROTHIAZIDE 160MG",
+    "therapeutic_use": "High blood pressure and heart failure"
+  },
+  {
+    "id": 62,
+    "inn_name": "VALSARTAN / HYDROCHLOROTHIAZIDE",
+    "form": "TABLET",
+    "available_strengths": "80MG",
+    "product_name": "VALSARTAN/HYDROCHLOROTHIAZIDE 80MG",
+    "therapeutic_use": "High blood pressure and heart failure"
+  },
+  {
+    "id": 63,
+    "inn_name": "CODOLAX",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "CODOLAX TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 64,
+    "inn_name": "COLCHICINE",
+    "form": "TABLET",
+    "available_strengths": "0.5MG",
+    "product_name": "COLCHICINE TAB 0.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 65,
+    "inn_name": "COLIMIX",
+    "form": "TABLET",
+    "available_strengths": "DICYCLOMINE HCL 5MG + SIMETHICONE 50MG PER TABLET",
+    "product_name": "COLIMIX TAB/BERCLOMIN TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 66,
+    "inn_name": "BISOPROLOL",
+    "form": "TABLET",
+    "available_strengths": "2.5MG",
+    "product_name": "BISOPROLOL 2.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 67,
+    "inn_name": "BISOPROLOL",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "BISOPROLOL 5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 68,
+    "inn_name": "CLOPIDOGREL / ASPIRIN",
+    "form": "TABLET",
+    "available_strengths": "75MG / 100MG",
+    "product_name": "CLOPIDOGREL/ASPIRIN 75/100MG",
+    "therapeutic_use": "Prevention of blood clots"
+  },
+  {
+    "id": 69,
+    "inn_name": "LOSARTAN",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "LOSARTAN 100MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 70,
+    "inn_name": "LOSARTAN",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "LOSARTAN 50MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 71,
+    "inn_name": "CP-LORADINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "CP-LORADINE (LORATADINE) TAB 10MG",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 72,
+    "inn_name": "CP-PYRIDINE S.C.",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "CP-PYRIDINE TAB 100MG S.C.",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 73,
+    "inn_name": "ROSUVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "ROSUVASTATIN 10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 74,
+    "inn_name": "ROSUVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "ROSUVASTATIN 20MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 75,
+    "inn_name": "ROSUVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "ROSUVASTATIN 5MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 76,
+    "inn_name": "DAFLON",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "DAFLON 500MG/FLAVON TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 77,
+    "inn_name": "DEQUALINIUM CHLORIDE",
+    "form": "LOZENGE",
+    "available_strengths": "0.25MG",
+    "product_name": "DEQUALINIUM CHLORIDE (DEXXON) LOZENGES 0.25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 78,
+    "inn_name": "DHACTULOSE",
+    "form": "ORAL SYRUP",
+    "available_strengths": "3.35G / 5ML",
+    "product_name": "DHACTULOSE SYRUP 3.35G/5ML (teva)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 79,
+    "inn_name": "ADAPALENE",
+    "form": "GEL",
+    "available_strengths": "0.1%",
+    "product_name": "Differin Gel 0.1%/ADAPALENE 0.1%/ELLIA GEL 0.1%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 80,
+    "inn_name": "DIFFLAM-C",
+    "form": "SOLUTION",
+    "available_strengths": "22.5MG / 15ML (BENZYDAMINE HCL) + 18MG / 15ML (CHLORHEXIDINE GLUCONATE)",
+    "product_name": "Difflam-C Solution",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 81,
+    "inn_name": "DIMETHICONE CHEW",
+    "form": "TABLET",
+    "available_strengths": "40MG",
+    "product_name": "DIMETHICONE CHEW (CHRISTO) TAB 40MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 82,
+    "inn_name": "VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "160MG",
+    "product_name": "VALSARTAN 160MG",
+    "therapeutic_use": "High blood pressure and heart failure"
+  },
+  {
+    "id": 83,
+    "inn_name": "VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "80MG",
+    "product_name": "VALSARTAN 80MG",
+    "therapeutic_use": "High blood pressure and heart failure"
+  },
+  {
+    "id": 84,
+    "inn_name": "DM",
+    "form": "ORAL SYRUP",
+    "available_strengths": "15MG / 5ML",
+    "product_name": "DM 15MG/5ML SYRUP/DEXTROMETHORPHAN HYDROBROMIDE ELIXIR 15MG/5ML SYRUP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 85,
+    "inn_name": "DM",
+    "form": "TABLET",
+    "available_strengths": "15MG",
+    "product_name": "DM 15MG/DEXTROMETHORPHAN HYDROBROMIDE/DEXOPHEN TAB 15MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 86,
+    "inn_name": "DM",
+    "form": "TABLET",
+    "available_strengths": "30MG",
+    "product_name": "DM 30MG/DEXTROMETHORPHAN HYDROBROMIDE/MESUPHY TABLETS 30MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 87,
+    "inn_name": "DOXYCYCLINE",
+    "form": "CAPSULE",
+    "available_strengths": "100MG",
+    "product_name": "DOXYCYCLINE CAPSULE 100MG",
+    "therapeutic_use": "Bacterial infections and malaria prophylaxis"
+  },
+  {
+    "id": 88,
+    "inn_name": "APIXABAN",
+    "form": "TABLET",
+    "available_strengths": "2.5MG",
+    "product_name": "APIXABAN 2.5MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 89,
+    "inn_name": "APIXABAN",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "APIXABAN 5MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 90,
+    "inn_name": "EPHEDRINE",
+    "form": "NASAL DROPS",
+    "available_strengths": "1%",
+    "product_name": "EPHEDRINE NASAL DROPS 1%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 91,
+    "inn_name": "EURAX",
+    "form": "CREAM",
+    "available_strengths": "10% (CROTAMITON)",
+    "product_name": "EURAX CREAM/CROTAMITON CREAM/EUROTON CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 92,
+    "inn_name": "EUROCILANA",
+    "form": "ORAL SYRUP",
+    "available_strengths": "COCILLANA + CODEINE PHOSPHATE 3.33MG / 5ML",
+    "product_name": "EUROCILANA CO (COCILLANA+CODEINE) SYRUP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 93,
+    "inn_name": "EURORECTAL",
+    "form": "OINTMENT",
+    "available_strengths": "BETAMETHASONE VALERATE + LIGNOCAINE HCL + PHENYLEPHRINE HCL",
+    "product_name": "EURORECTAL OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 94,
+    "inn_name": "EUROVIT-B",
+    "form": "TABLET",
+    "available_strengths": "100MG (VIT B1) + 200MG (VIT B6) + 200MCG (VIT B12)",
+    "product_name": "Eurovit-B (Vitamin B1,B6 ,B12)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 95,
+    "inn_name": "AMLODIPINE / VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "10MG / 160MG",
+    "product_name": "AMLODIPINE/VALSARTAN 10/160MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 96,
+    "inn_name": "AMLODIPINE / VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "5MG / 160MG",
+    "product_name": "AMLODIPINE/VALSARTAN 5/160MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 97,
+    "inn_name": "AMLODIPINE / VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "5MG / 80MG",
+    "product_name": "AMLODIPINE/VALSARTAN 5/80MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 98,
+    "inn_name": "AMLODIPINE / VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "160MG / 12.5MG",
+    "product_name": "AMLODIPINE/VALSARTAN 160/12.5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 99,
+    "inn_name": "AMLODIPINE / VALSARTAN",
+    "form": "TABLET",
+    "available_strengths": "160MG / 12.5MG",
+    "product_name": "AMLODIPINE/VALSARTAN 160/12.5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 100,
+    "inn_name": "FAKTU",
+    "form": "SUPPOSITORY",
+    "available_strengths": "N/A",
+    "product_name": "FAKTU/SUFA SUPPOSITORIES",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 101,
+    "inn_name": "FAMOTIDINE PEPDENAL",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "FAMOTIDINE 20MG Pepdenal",
+    "therapeutic_use": "Acid reflux and ulcer disease"
+  },
+  {
+    "id": 102,
+    "inn_name": "FLAGYL",
+    "form": "TABLET",
+    "available_strengths": "200MG",
+    "product_name": "Flagyl Tablets/Vagicin Tablets 200mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 103,
+    "inn_name": "FLU-ZEP",
+    "form": "TABLET",
+    "available_strengths": "500MG (PARACETAMOL) + 12.5MG (PHENYLPROPANOLAMINE HCL) + 2MG (DEXCHLORPHENIRAMINE MALEATE) + 15MG (DEXTROMETHORPHAN HBR) + 50MG (GUAIFENESIN)",
+    "product_name": "FLU-ZEP TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 104,
+    "inn_name": "DAPAGLIFLOZIN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "DAPAGLIFLOZIN 10MG",
+    "therapeutic_use": "Type 2 diabetes and heart/kidney disease"
+  },
+  {
+    "id": 105,
+    "inn_name": "VILDAGLIPTIN",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "VILDAGLIPTIN 50MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 106,
+    "inn_name": "GARCOL",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "GARCOL (dimenhydrinate) TAB 50MG (GRAVOL EQUIV)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 107,
+    "inn_name": "GENTAMICIN",
+    "form": "EYE/EAR DROPS",
+    "available_strengths": "0.3%",
+    "product_name": "GENTAMICIN EYE/EAR DROPS 0.3%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 108,
+    "inn_name": "METFORMIN",
+    "form": "TABLET",
+    "available_strengths": "850MG",
+    "product_name": "METFORMIN 850MG",
+    "therapeutic_use": "Type 2 diabetes"
+  },
+  {
+    "id": 109,
+    "inn_name": "METFORMIN",
+    "form": "TABLET",
+    "available_strengths": "1000MG",
+    "product_name": "METFORMIN 1000MG",
+    "therapeutic_use": "Type 2 diabetes"
+  },
+  {
+    "id": 110,
+    "inn_name": "METFORMIN",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "METFORMIN 500MG",
+    "therapeutic_use": "Type 2 diabetes"
+  },
+  {
+    "id": 111,
+    "inn_name": "DIMENHYDRINATE",
+    "form": "SUPPOSITORY",
+    "available_strengths": "50MG",
+    "product_name": "DIMENHYDRINATE 50MG SUPPOSITORIES",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 112,
+    "inn_name": "DIMENHYDRINATE",
+    "form": "TABLET",
+    "available_strengths": "15MG",
+    "product_name": "DIMENHYDRINATE 15MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 113,
+    "inn_name": "HC",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "HC1%/HYDRODERMA CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 114,
+    "inn_name": "HEPACARE 400U",
+    "form": "CREAM",
+    "available_strengths": "400 UNITS/G (HEPARIN SODIUM)",
+    "product_name": "HEPACARE CREAM 400U/G",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 115,
+    "inn_name": "HOLOPON",
+    "form": "TABLET",
+    "available_strengths": "1MG",
+    "product_name": "Holopon 1mg/Scolopon Tab 1mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 116,
+    "inn_name": "HYPROMELLOSE",
+    "form": "EYE DROPS",
+    "available_strengths": "0.3%",
+    "product_name": "HYPROMELLOSE EYE DROPS 0.3%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 117,
+    "inn_name": "LOSARTAN / HYDROCHLOROTHIAZIDE",
+    "form": "TABLET",
+    "available_strengths": "50MG / 12.5MG",
+    "product_name": "LOSARTAN/HYDROCHLOROTHIAZIDE 50/12.5MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 118,
+    "inn_name": "LOSARTAN / HYDROCHLOROTHIAZIDE",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "LOSARTAN/HYDROCHLOROTHIAZIDE",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 119,
+    "inn_name": "IBUPROFEN",
+    "form": "ORAL SUSPENSION",
+    "available_strengths": "100MG / 5ML",
+    "product_name": "IBUPROFEN SUSP",
+    "therapeutic_use": "Pain, inflammation, and fever relief"
+  },
+  {
+    "id": 120,
+    "inn_name": "IMODONL",
+    "form": "CAPSULE",
+    "available_strengths": "2MG",
+    "product_name": "IMODONL (LOPERAMIDE) CAP 2MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 121,
+    "inn_name": "INDOMETHACIN",
+    "form": "CAPSULE",
+    "available_strengths": "25MG",
+    "product_name": "INDOMETHACIN CAP 25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 122,
+    "inn_name": "JANUMET",
+    "form": "TABLET",
+    "available_strengths": "50MG / 1000MG",
+    "product_name": "JANUMET XR TABLETS 50MG/1000MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 123,
+    "inn_name": "SITAGLIPTIN",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "SITAGLIPTIN 100MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 124,
+    "inn_name": "EMPAGLIFLOZIN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "EMPAGLIFLOZIN 10MG",
+    "therapeutic_use": "Type 2 diabetes and cardiovascular risk reduction"
+  },
+  {
+    "id": 125,
+    "inn_name": "EMPAGLIFLOZIN",
+    "form": "TABLET",
+    "available_strengths": "25MG",
+    "product_name": "EMPAGLIFLOZIN 25MG",
+    "therapeutic_use": "Type 2 diabetes and cardiovascular risk reduction"
+  },
+  {
+    "id": 126,
+    "inn_name": "KAOLIN & PECTIN",
+    "form": "MIXTURE",
+    "available_strengths": "N/A",
+    "product_name": "KAOLIN & PECTIN MIXTURE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 127,
+    "inn_name": "KETOPROFEN",
+    "form": "TRANSDERMAL PATCH",
+    "available_strengths": "30MG",
+    "product_name": "KETOPROFEN 30mg/KETOKURA PLASTER 30MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 128,
+    "inn_name": "CLARITHROMYCIN",
+    "form": "TABLET",
+    "available_strengths": "250MG",
+    "product_name": "CLARITHROMYCIN 250MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 129,
+    "inn_name": "INSULIN GLARGINE",
+    "form": "SOLUTION FOR INJECTION",
+    "available_strengths": "100 UNITS / ML",
+    "product_name": "INSULIN GLARGINE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 130,
+    "inn_name": "ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "ATORVASTATIN 10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 131,
+    "inn_name": "ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "ATORVASTATIN 20MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 132,
+    "inn_name": "ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "ATORVASTATIN 20MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 133,
+    "inn_name": "ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "40MG",
+    "product_name": "ATORVASTATIN 40MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 134,
+    "inn_name": "ATORVASTATIN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "ATORVASTATIN 10MG",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 135,
+    "inn_name": "LOMOTIL",
+    "form": "TABLET",
+    "available_strengths": "2.5MG (DIPHENOXYLATE HCL) + 0.025MG (ATROPINE SULFATE)",
+    "product_name": "LOMOTIL TAB/DIAMOTIL TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 136,
+    "inn_name": "OMEPRAZOLE",
+    "form": "CAPSULE",
+    "available_strengths": "20MG",
+    "product_name": "OMEPRAZOLE 20MG",
+    "therapeutic_use": "Acid reflux and ulcer disease"
+  },
+  {
+    "id": 137,
+    "inn_name": "LYSOZYME",
+    "form": "TABLET",
+    "available_strengths": "30MG",
+    "product_name": "LYSOZYME 30MG/EUROZYME TAB 30MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 138,
+    "inn_name": "LYSZYME",
+    "form": "TABLET",
+    "available_strengths": "60MG",
+    "product_name": "Lyszyme 60mg/Eurozyme 60mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 139,
+    "inn_name": "MAALOX",
+    "form": "TABLET",
+    "available_strengths": "200MG",
+    "product_name": "Maalox Plus 200mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 140,
+    "inn_name": "MECOBALAMIN",
+    "form": "TABLET",
+    "available_strengths": "500MCG",
+    "product_name": "MECOBALAMIN/METHYCOBAL TAB 500UG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 141,
+    "inn_name": "MERISLON",
+    "form": "TABLET",
+    "available_strengths": "6MG",
+    "product_name": "MERISLON TAB 6MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 142,
+    "inn_name": "TELMISARTAN",
+    "form": "TABLET",
+    "available_strengths": "40MG",
+    "product_name": "TELMISARTAN 40MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 143,
+    "inn_name": "TELMISARTAN",
+    "form": "TABLET",
+    "available_strengths": "80MG",
+    "product_name": "TELMISARTAN 80MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 144,
+    "inn_name": "TELMISARTAN",
+    "form": "TABLET",
+    "available_strengths": "40MG / 12.5MG",
+    "product_name": "TELMISARTAN 40/12.5MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 145,
+    "inn_name": "TELMISARTAN",
+    "form": "TABLET",
+    "available_strengths": "80MG / 12.5MG",
+    "product_name": "TELMISARTAN 80/12.5MG",
+    "therapeutic_use": "High blood pressure"
+  },
+  {
+    "id": 146,
+    "inn_name": "DOMPERIDONE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "DOMPERIDONE 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 147,
+    "inn_name": "MUCAIN",
+    "form": "TABLET",
+    "available_strengths": "ALUMINIUM HYDROXIDE + MAGNESIUM HYDROXIDE + OXETHAZAINE",
+    "product_name": "Mucain/Gastrocain Tablets",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 148,
+    "inn_name": "MUCAINE",
+    "form": "ORAL SUSPENSION",
+    "available_strengths": "ALUMINIUM HYDROXIDE + MAGNESIUM HYDROXIDE + OXETHAZAINE",
+    "product_name": "MUCAINE/GASTROCAINE SUSP",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 149,
+    "inn_name": "NEBIVOLOL",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "NEBIVOLOL 5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 150,
+    "inn_name": "NEOMYCIN",
+    "form": "CREAM",
+    "available_strengths": "0.5%",
+    "product_name": "NEOMYCIN CREAM 0.5%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 151,
+    "inn_name": "NICE-PHENDYL",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "NICE-PHENDYL TAB",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 152,
+    "inn_name": "NO MEDICATION",
+    "form": "N/A",
+    "available_strengths": "N/A",
+    "product_name": "NO MEDICATION",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 153,
+    "inn_name": "NORGESIC",
+    "form": "TABLET",
+    "available_strengths": "500MG / 35MG",
+    "product_name": "Norgesic 500mg/Orphenadrine35mg/Cosic 500mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 154,
+    "inn_name": "AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "AMLODIPINE 10MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 155,
+    "inn_name": "AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "AMLODIPINE 10MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 156,
+    "inn_name": "AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "AMLODIPINE 5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 157,
+    "inn_name": "AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "AMLODIPINE 5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 158,
+    "inn_name": "NUELIN",
+    "form": "ORAL SYRUP",
+    "available_strengths": "80MG / 15ML",
+    "product_name": "Nuelin Syrup 80mg/15ml",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 159,
+    "inn_name": "OLMESARTAN",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "OLMESARTAN 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 160,
+    "inn_name": "OLMESARTAN",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "OLMESARTAN 20MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 161,
+    "inn_name": "OLMESARTAN",
+    "form": "TABLET",
+    "available_strengths": "40MG",
+    "product_name": "OLMESARTAN 40MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 162,
+    "inn_name": "OLMESARTAN",
+    "form": "TABLET",
+    "available_strengths": "20MG / 12.5MG",
+    "product_name": "OLMESARTAN 20/12.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 163,
+    "inn_name": "ORAGESIC",
+    "form": "GEL",
+    "available_strengths": "10% (BENZOCAINE)",
+    "product_name": "ORAGESIC GEL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 164,
+    "inn_name": "ALOGLIPTIN / PIOGLITAZONE",
+    "form": "TABLET",
+    "available_strengths": "25MG",
+    "product_name": "ALOGLIPTIN/PIOGLITAZONE 25MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 165,
+    "inn_name": "PANRAZOL",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "PANRAZOL (PANTOPRAZOLE) TABLETS 20MG (teva)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 166,
+    "inn_name": "PARACETAMOL",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "PARACETAMOL",
+    "therapeutic_use": "Pain and fever relief"
+  },
+  {
+    "id": 167,
+    "inn_name": "PARACETAMOL",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "PARACETAMOL",
+    "therapeutic_use": "Pain and fever relief"
+  },
+  {
+    "id": 168,
+    "inn_name": "PARACETAMOL",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "PARACETAMOL",
+    "therapeutic_use": "Pain and fever relief"
+  },
+  {
+    "id": 169,
+    "inn_name": "PROMETHAZINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "PROMETHAZINE 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 170,
+    "inn_name": "CHLORPHENIRAMINE",
+    "form": "TABLET",
+    "available_strengths": "2MG",
+    "product_name": "CHLORPHENIRAMINE 2MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 171,
+    "inn_name": "CHLORPHENIRAMINE",
+    "form": "TABLET",
+    "available_strengths": "2MG",
+    "product_name": "CHLORPHENIRAMINE 2MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 172,
+    "inn_name": "CHLORPHENIRAMINE",
+    "form": "TABLET",
+    "available_strengths": "4MG",
+    "product_name": "CHLORPHENIRAMINE 4MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 173,
+    "inn_name": "CLOPIDOGREL",
+    "form": "TABLET",
+    "available_strengths": "75MG",
+    "product_name": "CLOPIDOGREL 75MG",
+    "therapeutic_use": "Prevention of blood clots"
+  },
+  {
+    "id": 174,
+    "inn_name": "CLOPIDOGREL",
+    "form": "TABLET",
+    "available_strengths": "75MG",
+    "product_name": "CLOPIDOGREL 75MG",
+    "therapeutic_use": "Prevention of blood clots"
+  },
+  {
+    "id": 175,
+    "inn_name": "MEFENAMIC ACID",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "MEFENAMIC ACID 500",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 176,
+    "inn_name": "DABIGATRAN",
+    "form": "CAPSULE",
+    "available_strengths": "110MG",
+    "product_name": "DABIGATRAN 110MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 177,
+    "inn_name": "DABIGATRAN",
+    "form": "CAPSULE",
+    "available_strengths": "150MG",
+    "product_name": "DABIGATRAN 150MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 178,
+    "inn_name": "PREDNISOLONE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "PREDNISOLONE 5MG",
+    "therapeutic_use": "Inflammation and allergic conditions"
+  },
+  {
+    "id": 179,
+    "inn_name": "PROPRANOLOL",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "Propranolol 10mg/Pralol 10mg Tab",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 180,
+    "inn_name": "PSEUDO",
+    "form": "TABLET",
+    "available_strengths": "60MG",
+    "product_name": "PSEUDO/SUDORINE TAB 60mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 181,
+    "inn_name": "RABETRA",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "RABETRA ENTERIC COATED TABLETS 20MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 182,
+    "inn_name": "ROSUVASTATIN CALCIUM",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "Rosuvastatin calcium/Neusator",
+    "therapeutic_use": "High cholesterol"
+  },
+  {
+    "id": 183,
+    "inn_name": "METRONIDAZOLE",
+    "form": "VAGINAL GEL",
+    "available_strengths": "0.75%",
+    "product_name": "METRONIDAZOLE 0.75%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 184,
+    "inn_name": "SAMJIN ASPIRIN",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "SAMJIN ASPIRIN EC 100MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 185,
+    "inn_name": "LIRAGLUTIDE",
+    "form": "SOLUTION FOR INJECTION",
+    "available_strengths": "18MG",
+    "product_name": "LIRAGLUTIDE 18MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 186,
+    "inn_name": "SEDYLIN COUGH",
+    "form": "ORAL SYRUP",
+    "available_strengths": "9MG / 5ML (CODEINE PHOSPHATE) + 3.6MG / 5ML (PROMETHAZINE HCL) + 7.2MG / 5ML (EPHEDRINE HCL)",
+    "product_name": "SEDYLIN COUGH SYRUP (YELLOW)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 187,
+    "inn_name": "SERRATIOPEPTIDASE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "SERRATIOPEPTIDASE(SERRIN 10) 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 188,
+    "inn_name": "SIMETHICONE",
+    "form": "TABLET",
+    "available_strengths": "80MG",
+    "product_name": "Simethicone 80mg/Sigas Tab 80mg",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 189,
+    "inn_name": "MONTELUKAST",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "MONTELUKAST TAB 10MG",
+    "therapeutic_use": "Asthma and allergic rhinitis"
+  },
+  {
+    "id": 190,
+    "inn_name": "THEOPHYLLINE",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "THEOPHYLLINE 100MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 191,
+    "inn_name": "THEOPHYLLINE",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "THEOPHYLLINE 50MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 192,
+    "inn_name": "SMECTA",
+    "form": "SACHET",
+    "available_strengths": "3G / SACHET (DIOSMECTITE)",
+    "product_name": "Smecta Sachets",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 193,
+    "inn_name": "ITRACONAZOLE",
+    "form": "CAPSULE",
+    "available_strengths": "100MG",
+    "product_name": "ITRACONAZOLE 100MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 194,
+    "inn_name": "PROCHLORPERAZINE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "PROCHLORPERAZINE 5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 195,
+    "inn_name": "SYNALAR",
+    "form": "CREAM",
+    "available_strengths": "0.025% (FLUOCINOLONE ACETONIDE)",
+    "product_name": "Synalar Cream/Flucortderm Cream",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 196,
+    "inn_name": "CIMETIDINE",
+    "form": "TABLET",
+    "available_strengths": "200MG",
+    "product_name": "CIMETIDINE 200MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 197,
+    "inn_name": "OSELTAMIVIR",
+    "form": "CAPSULE",
+    "available_strengths": "75MG",
+    "product_name": "OSELTAMIVIR 75MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 198,
+    "inn_name": "FEXOFENADINE",
+    "form": "TABLET",
+    "available_strengths": "180MG",
+    "product_name": "FEXOFENADINE 180MG",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 199,
+    "inn_name": "FEXOFENADINE",
+    "form": "ORAL SUSPENSION",
+    "available_strengths": "6MG",
+    "product_name": "FEXOFENADINE 6MG",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 200,
+    "inn_name": "TERBUTA",
+    "form": "TABLET",
+    "available_strengths": "2.5MG",
+    "product_name": "TERBUTA (TERBUTALINE) TAB 2.5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 201,
+    "inn_name": "THYMOL",
+    "form": "GARGLE",
+    "available_strengths": "N/A",
+    "product_name": "Thymol Compound Gargle",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 202,
+    "inn_name": "LINAGLIPTIN",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "LINAGLIPTIN 5MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 203,
+    "inn_name": "TRIDERM",
+    "form": "CREAM",
+    "available_strengths": "0.1% (BETAMETHASONE VALERATE) + 100000 IU/G (NYSTATIN) + 1% (NEOMYCIN SULFATE)",
+    "product_name": "TRIDERM CREAM/REGOCIN-F CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 204,
+    "inn_name": "TROPEX",
+    "form": "EAR DROPS",
+    "available_strengths": "5%",
+    "product_name": "TROPEX EAR DROPS 5%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 205,
+    "inn_name": "TELMISARTAN / AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "40MG / 5MG",
+    "product_name": "TELMISARTAN/AMLODIPINE 40/5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 206,
+    "inn_name": "TELMISARTAN / AMLODIPINE",
+    "form": "TABLET",
+    "available_strengths": "80MG / 5MG",
+    "product_name": "TELMISARTAN/AMLODIPINE 80/5MG",
+    "therapeutic_use": "High blood pressure and angina"
+  },
+  {
+    "id": 207,
+    "inn_name": "VANTIN",
+    "form": "TABLET",
+    "available_strengths": "4MG",
+    "product_name": "VANTIN (SALBUTAMOL) TAB 4MG (ventolin equiv)",
+    "therapeutic_use": "Relief of asthma/wheezing"
+  },
+  {
+    "id": 208,
+    "inn_name": "VASELINE",
+    "form": "OINTMENT",
+    "available_strengths": "N/A",
+    "product_name": "VASELINE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 209,
+    "inn_name": "VICK-AZITHRO",
+    "form": "TABLET",
+    "available_strengths": "250MG",
+    "product_name": "VICK-AZITHRO (AZITHROMYCIN) TABLET 250MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 210,
+    "inn_name": "VIT C",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "Vit C 100mg/Eurosee Tab (New Formula)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 211,
+    "inn_name": "DICLOFENAC",
+    "form": "TABLET",
+    "available_strengths": "25MG",
+    "product_name": "DICLOFENAC 25MG",
+    "therapeutic_use": "Pain and inflammation"
+  },
+  {
+    "id": 212,
+    "inn_name": "DICLOFENAC",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "DICLOFENAC 50MG",
+    "therapeutic_use": "Pain and inflammation"
+  },
+  {
+    "id": 213,
+    "inn_name": "DICLOFENAC",
+    "form": "TABLET",
+    "available_strengths": "50MG",
+    "product_name": "DICLOFENAC 50MG",
+    "therapeutic_use": "Pain and inflammation"
+  },
+  {
+    "id": 214,
+    "inn_name": "DICLOFENAC",
+    "form": "GEL",
+    "available_strengths": "1%",
+    "product_name": "DICLOFENAC 1%",
+    "therapeutic_use": "Pain and inflammation"
+  },
+  {
+    "id": 215,
+    "inn_name": "DICLOFENAC",
+    "form": "SUPPOSITORY",
+    "available_strengths": "12.5MG",
+    "product_name": "DICLOFENAC 12.5MG",
+    "therapeutic_use": "Pain and inflammation"
+  },
+  {
+    "id": 216,
+    "inn_name": "RIVAROXABAN",
+    "form": "TABLET",
+    "available_strengths": "15MG",
+    "product_name": "RIVAROXABAN 15MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 217,
+    "inn_name": "RIVAROXABAN",
+    "form": "TABLET",
+    "available_strengths": "20MG",
+    "product_name": "RIVAROXABAN 20MG",
+    "therapeutic_use": "Prevention and treatment of blood clots"
+  },
+  {
+    "id": 218,
+    "inn_name": "XYLID",
+    "form": "TABLET",
+    "available_strengths": "250MG",
+    "product_name": "XYLID (CEFUROXIME) TABLET 250MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 219,
+    "inn_name": "ZINC OXIDE",
+    "form": "CREAM",
+    "available_strengths": "15%",
+    "product_name": "ZINC OXIDE/ZINC CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 220,
+    "inn_name": "AZITHROMYCIN",
+    "form": "ORAL SUSPENSION",
+    "available_strengths": "200MG",
+    "product_name": "AZITHROMYCIN 200MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 221,
+    "inn_name": "CETIRIZINE HYDROCHLORIDE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "CETIRIZINE HYDROCHLORIDE",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 222,
+    "inn_name": "CETIRIZINE HYDROCHLORIDE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "CETIRIZINE HYDROCHLORIDE",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 223,
+    "inn_name": "ATOVAQUONE / PROGUANIL",
+    "form": "TABLET",
+    "available_strengths": "250MG / 100MG",
+    "product_name": "ATOVAQUONE/PROGUANIL (MALARONE) 250/100MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 224,
+    "inn_name": "DOXYCYCLINE \u2013 MALARIA PROPHYLAXIS",
+    "form": "TABLET",
+    "available_strengths": "100MG",
+    "product_name": "DOXYCYCLINE 100MG \u2013 MALARIA PROPHYLAXIS",
+    "therapeutic_use": "Bacterial infections and malaria prophylaxis"
+  },
+  {
+    "id": 225,
+    "inn_name": "AZITHROMYCIN",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "AZITHROMYCIN 500MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 226,
+    "inn_name": "CIPROFLOXACIN",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "CIPROFLOXACIN 500MG",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 227,
+    "inn_name": "ORAL REHYDRATION SALTS",
+    "form": "POWDER FOR ORAL SOLUTION",
+    "available_strengths": "N/A",
+    "product_name": "ORAL REHYDRATION SALTS (ORS) / DIORALYTE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 228,
+    "inn_name": "LOPERAMIDE",
+    "form": "CAPSULE",
+    "available_strengths": "2MG",
+    "product_name": "LOPERAMIDE 2MG / IMODIUM CAPSULES",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 229,
+    "inn_name": "METRONIDAZOLE",
+    "form": "TABLET",
+    "available_strengths": "400MG",
+    "product_name": "METRONIDAZOLE (FLAGYL) 400MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 230,
+    "inn_name": "TINIDAZOLE",
+    "form": "TABLET",
+    "available_strengths": "500MG",
+    "product_name": "TINIDAZOLE 500MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 231,
+    "inn_name": "PERMETHRIN",
+    "form": "CREAM",
+    "available_strengths": "5%",
+    "product_name": "PERMETHRIN 5% CREAM / SCABISAN CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 232,
+    "inn_name": "HYDROCORTISONE",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "HYDROCORTISONE 1% CREAM (BRANDED)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 233,
+    "inn_name": "BETAMETHASONE",
+    "form": "CREAM",
+    "available_strengths": "0.1%",
+    "product_name": "BETAMETHASONE 0.1% CREAM / DIPROSONE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 234,
+    "inn_name": "CETIRIZINE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "CETIRIZINE 10MG",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 235,
+    "inn_name": "FEXOFENADINE",
+    "form": "TABLET",
+    "available_strengths": "120MG",
+    "product_name": "FEXOFENADINE 120MG",
+    "therapeutic_use": "Allergy symptoms"
+  },
+  {
+    "id": 236,
+    "inn_name": "MONTELUKAST",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "MONTELUKAST 10MG",
+    "therapeutic_use": "Asthma and allergic rhinitis"
+  },
+  {
+    "id": 237,
+    "inn_name": "SALBUTAMOL",
+    "form": "INHALER",
+    "available_strengths": "100MCG",
+    "product_name": "SALBUTAMOL INHALER 100MCG (VENTOLIN)",
+    "therapeutic_use": "Relief of asthma/wheezing"
+  },
+  {
+    "id": 238,
+    "inn_name": "FLUTICASONE",
+    "form": "INHALER",
+    "available_strengths": "50MCG",
+    "product_name": "FLUTICASONE 50MCG INHALER (FLIXOTIDE)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 239,
+    "inn_name": "SALINE",
+    "form": "NASAL SPRAY",
+    "available_strengths": "0.9% (SODIUM CHLORIDE)",
+    "product_name": "NASAL SALINE SPRAY / STERIMAR",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 240,
+    "inn_name": "MOMETASONE FUROATE",
+    "form": "NASAL SPRAY",
+    "available_strengths": "50MCG / DOSE",
+    "product_name": "MOMETASONE FUROATE NASAL SPRAY (NASONEX)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 241,
+    "inn_name": "IVERMECTIN",
+    "form": "TABLET",
+    "available_strengths": "3MG",
+    "product_name": "IVERMECTIN 3MG TABLETS / STROMECTOL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 242,
+    "inn_name": "ALBENDAZOLE",
+    "form": "TABLET",
+    "available_strengths": "400MG",
+    "product_name": "ALBENDAZOLE 400MG / ZENTEL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 243,
+    "inn_name": "INSECT REPELLENT",
+    "form": "LOTION",
+    "available_strengths": "30% / 50%",
+    "product_name": "INSECT REPELLENT / DEET LOTION 30-50%",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 244,
+    "inn_name": "SUNSCREEN SPF 50+",
+    "form": "CREAM",
+    "available_strengths": "SPF 50+",
+    "product_name": "SUNSCREEN SPF 50+ / BROAD SPECTRUM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 245,
+    "inn_name": "RABIES POST-EXPOSURE",
+    "form": "IMMUNOGLOBULIN",
+    "available_strengths": "150 UNITS / ML",
+    "product_name": "RABIES POST-EXPOSURE IMMUNOGLOBULIN (IG)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 246,
+    "inn_name": "HEPATITIS A",
+    "form": "VACCINE",
+    "available_strengths": "1440 EL.U / 1ML (HEPATITIS A ANTIGEN)",
+    "product_name": "HEPATITIS A VACCINE (HAVRIX / VAQTA)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 247,
+    "inn_name": "TYPHOID",
+    "form": "VACCINE",
+    "available_strengths": "25MCG TYPHOID VI POLYSACCHARIDE / 0.5ML",
+    "product_name": "TYPHOID VACCINE (TYPHERIX / VIVOTIF)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 248,
+    "inn_name": "AMOXICILLIN",
+    "form": "TABLET",
+    "available_strengths": "N/A",
+    "product_name": "AMOXICILLIN",
+    "therapeutic_use": "Bacterial infections"
+  },
+  {
+    "id": 249,
+    "inn_name": "NORFLOXACIN",
+    "form": "TABLET",
+    "available_strengths": "400MG",
+    "product_name": "NORFLOXACIN 400MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 250,
+    "inn_name": "NITROFURANTOIN",
+    "form": "CAPSULE",
+    "available_strengths": "100MG",
+    "product_name": "NITROFURANTOIN 100MG (MACROBID)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 251,
+    "inn_name": "TRIMETHOPRIM",
+    "form": "TABLET",
+    "available_strengths": "200MG",
+    "product_name": "TRIMETHOPRIM 200MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 252,
+    "inn_name": "VITAMIN D3",
+    "form": "TABLET",
+    "available_strengths": "1000IU / 2000IU",
+    "product_name": "VITAMIN D3 1000-2000IU TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 253,
+    "inn_name": "MELATONIN",
+    "form": "TABLET",
+    "available_strengths": "2MG / 5MG / 2MG",
+    "product_name": "MELATONIN 2-5MG / CIRCADIN 2MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 254,
+    "inn_name": "ONDANSETRON",
+    "form": "TABLET",
+    "available_strengths": "4MG",
+    "product_name": "ONDANSETRON 4MG / ZOFRAN TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 255,
+    "inn_name": "DOMPERIDONE",
+    "form": "TABLET",
+    "available_strengths": "10MG",
+    "product_name": "DOMPERIDONE 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 256,
+    "inn_name": "ACETYLSALICYLIC ACID",
+    "form": "TABLET",
+    "available_strengths": "75MG",
+    "product_name": "ACETYLSALICYLIC ACID 75MG (LOW-DOSE ASPIRIN)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 257,
+    "inn_name": "ALLOPURINOL",
+    "form": "TABLET",
+    "available_strengths": "100MG / 300MG",
+    "product_name": "ALLOPURINOL 100/300MG TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 258,
+    "inn_name": "FEBUXOSTAT",
+    "form": "TABLET",
+    "available_strengths": "80MG",
+    "product_name": "FEBUXOSTAT 80MG / ADENURIC TABLETS",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 259,
+    "inn_name": "LIDOCAINE",
+    "form": "GEL",
+    "available_strengths": "2%",
+    "product_name": "LIDOCAINE 2% GEL / INSTILLAGEL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 260,
+    "inn_name": "TRAMADOL",
+    "form": "CAPSULE",
+    "available_strengths": "50MG",
+    "product_name": "TRAMADOL 50MG CAPSULES",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 261,
+    "inn_name": "ZINC",
+    "form": "LOZENGE",
+    "available_strengths": "10MG",
+    "product_name": "ZINC LOZENGES / ZINC ACETATE 10MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 262,
+    "inn_name": "N-ACETYLCYSTEINE",
+    "form": "SACHET",
+    "available_strengths": "600MG",
+    "product_name": "N-ACETYLCYSTEINE (NAC) 600MG SACHETS (FLUIMUCIL)",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 263,
+    "inn_name": "PREDNISOLONE",
+    "form": "TABLET",
+    "available_strengths": "5MG",
+    "product_name": "PREDNISOLONE 5MG EXTENDED",
+    "therapeutic_use": "Inflammation and allergic conditions"
+  },
+  {
+    "id": 264,
+    "inn_name": "ETORICOXIB",
+    "form": "TABLET",
+    "available_strengths": "60MG",
+    "product_name": "ETORICOXIB 60MG",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 265,
+    "inn_name": "MOMETASONE FUROATE",
+    "form": "CREAM",
+    "available_strengths": "0.1%",
+    "product_name": "MOMETASONE FUROATE 0.1% CREAM / ELOCON CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 266,
+    "inn_name": "CLOBETASOL PROPIONATE",
+    "form": "CREAM",
+    "available_strengths": "0.05%",
+    "product_name": "CLOBETASOL PROPIONATE 0.05% CREAM / DERMOVATE CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 267,
+    "inn_name": "TRIAMCINOLONE ACETONIDE",
+    "form": "CREAM",
+    "available_strengths": "0.1%",
+    "product_name": "TRIAMCINOLONE ACETONIDE 0.1% CREAM / KENALOG CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 268,
+    "inn_name": "KETOCONAZOLE",
+    "form": "CREAM",
+    "available_strengths": "2%",
+    "product_name": "KETOCONAZOLE 2% CREAM / NIZORAL CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 269,
+    "inn_name": "TERBINAFINE",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "TERBINAFINE 1% CREAM / LAMISIL CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 270,
+    "inn_name": "MICONAZOLE",
+    "form": "CREAM",
+    "available_strengths": "2%",
+    "product_name": "MICONAZOLE 2% CREAM / DAKTARIN CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 271,
+    "inn_name": "SELENIUM SULFIDE",
+    "form": "LOTION",
+    "available_strengths": "2.5%",
+    "product_name": "SELENIUM SULFIDE 2.5% LOTION / SELSUN LOTION",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 272,
+    "inn_name": "MUPIROCIN",
+    "form": "OINTMENT",
+    "available_strengths": "2%",
+    "product_name": "MUPIROCIN 2% OINTMENT / BACTROBAN OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 273,
+    "inn_name": "FUSIDIC ACID",
+    "form": "CREAM",
+    "available_strengths": "2%",
+    "product_name": "FUSIDIC ACID 2% CREAM / FUCIDIN CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 274,
+    "inn_name": "CLINDAMYCIN",
+    "form": "GEL",
+    "available_strengths": "1%",
+    "product_name": "CLINDAMYCIN 1% GEL / DALACIN-T GEL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 275,
+    "inn_name": "TRETINOIN",
+    "form": "CREAM",
+    "available_strengths": "0.025% / 0.05%",
+    "product_name": "TRETINOIN 0.025% / 0.05% CREAM / RETIN-A CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 276,
+    "inn_name": "BENZOYL PEROXIDE",
+    "form": "GEL",
+    "available_strengths": "5%",
+    "product_name": "BENZOYL PEROXIDE 5% GEL / PANOXYL GEL",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 277,
+    "inn_name": "UREA / EUCERIN UREA",
+    "form": "CREAM",
+    "available_strengths": "10%",
+    "product_name": "UREA 10% CREAM / EUCERIN UREA CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 278,
+    "inn_name": "EMULSIFYING / WHITE SOFT PARAFFIN",
+    "form": "OINTMENT",
+    "available_strengths": "N/A",
+    "product_name": "EMULSIFYING OINTMENT / WHITE SOFT PARAFFIN OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 279,
+    "inn_name": "BENZYL BENZOATE",
+    "form": "LOTION",
+    "available_strengths": "25%",
+    "product_name": "BENZYL BENZOATE 25% LOTION / ASCABIOL LOTION",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 280,
+    "inn_name": "SULFUR / PRECIPITATED SULFUR",
+    "form": "OINTMENT",
+    "available_strengths": "5% / 10%",
+    "product_name": "SULFUR OINTMENT 5-10% / PRECIPITATED SULFUR",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 281,
+    "inn_name": "SALICYLIC ACID 2- OR",
+    "form": "CREAM",
+    "available_strengths": "5%",
+    "product_name": "SALICYLIC ACID 2-5% CREAM OR LOTION / KERALYT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 282,
+    "inn_name": "COAL TAR",
+    "form": "SHAMPOO",
+    "available_strengths": "5%",
+    "product_name": "COAL TAR 5% SHAMPOO / POLYTAR SHAMPOO",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 283,
+    "inn_name": "TACROLIMUS",
+    "form": "OINTMENT",
+    "available_strengths": "0.03% / 0.1%",
+    "product_name": "TACROLIMUS 0.03% / 0.1% OINTMENT / PROTOPIC OINTMENT",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 284,
+    "inn_name": "PIMECROLIMUS",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "PIMECROLIMUS 1% CREAM / ELIDEL CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 285,
+    "inn_name": "SILVER SULFADIAZINE",
+    "form": "CREAM",
+    "available_strengths": "1%",
+    "product_name": "SILVER SULFADIAZINE 1% CREAM / FLAMAZINE CREAM",
+    "therapeutic_use": "General medication use \u2013 review required"
+  },
+  {
+    "id": 286,
+    "inn_name": "POVIDONE IODINE OR",
+    "form": "CREAM",
+    "available_strengths": "10%",
+    "product_name": "POVIDONE IODINE 10% SOLUTION OR CREAM / BETADINE",
+    "therapeutic_use": "General medication use \u2013 review required"
+  }
+]
