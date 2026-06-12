@@ -91,10 +91,10 @@ const PrescriptionRefill = () => {
                 }}
               >
                 <p className="text-foreground font-semibold leading-snug" style={{ fontSize: 16 }}>
-                  {t(
-                    "pages.prescriptionRefill.heroPitch",
-                    "Prescription refills, sent straight to your inbox. No waiting room. No hold music."
-                  )}
+                {t(
+                  "pages.prescriptionRefill.heroPitch",
+                  "Get your prescription renewed by a licensed doctor. Straight to your inbox in minutes."
+                )}
                 </p>
 
                 <button
