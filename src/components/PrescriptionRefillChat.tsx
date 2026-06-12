@@ -18,6 +18,8 @@ import {
   CreditCard,
   ShieldCheck,
   XCircle,
+  Copy,
+  Check,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { getUser } from "@/lib/auth";
