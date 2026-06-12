@@ -1071,30 +1071,34 @@ const NameInputBar = ({
 const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center text-center">
-        <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
-          <Lock className="w-5 h-5 text-primary" />
-        </div>
-        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
-          {t("pages.prescriptionRefill.chat.consentTitle")}
-        </h3>
-        <p className="mt-2 text-foreground/80" style={{ fontSize: 15 }}>
-          {t("pages.prescriptionRefill.chat.consentBody")}
-        </p>
-      </div>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-background/60 border border-border text-left text-foreground hover:bg-background transition-colors"
-        style={{ minHeight: 48, fontSize: 15 }}
-        aria-expanded={open}
-      >
-        <span className="font-medium">{t("pages.prescriptionRefill.chat.learnMore")}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+    <div className="space-y-3">
+      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+          className="mt-[3px] h-4 w-4 rounded border-border accent-primary shrink-0"
+        />
+        <span className="text-foreground/90 leading-snug" style={{ fontSize: 13.5 }}>
+          <Lock className="inline w-3.5 h-3.5 mr-1 -mt-0.5 text-primary" />
+          {t("pages.prescriptionRefill.chat.consentBody")}{" "}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setOpen((o) => !o);
+            }}
+            className="text-primary underline underline-offset-2 hover:opacity-80"
+          >
+            {t("pages.prescriptionRefill.chat.learnMore")}
+          </button>
+        </span>
+      </label>
+
       {open && (
-        <div className="space-y-3 px-1 animate-fade-in" style={{ fontSize: 14 }}>
+        <div className="space-y-2 rounded-lg bg-background/60 border border-border/60 p-3 animate-fade-in" style={{ fontSize: 12.5 }}>
           <DetailRow
             label={t("pages.prescriptionRefill.chat.consentCollectLabel")}
             value={t("pages.prescriptionRefill.chat.consentCollectValue")}
@@ -1112,12 +1116,14 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
           </Link>
         </div>
       )}
+
       <button
         onClick={onAgree}
-        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
-        style={{ minHeight: 52, fontSize: 16 }}
+        disabled={!checked}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ minHeight: 40, fontSize: 14 }}
       >
-        {t("pages.prescriptionRefill.chat.consentAgree")}
+        {t("pages.prescriptionRefill.chat.continue")}
       </button>
     </div>
   );
