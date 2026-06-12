@@ -11,7 +11,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="description"
-    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+    content="Cira is your AI nurse — chat about symptoms and scan your vitals in 30 seconds with your phone camera. Clinical-grade insights, anytime.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -24,33 +25,86 @@
          so a page-level prefetch would download the 10MB WASM twice (once for
          the page cache, once through the SW). Nginx already serves the file
          with immutable cache + gzip, so the SW fetch is fast on repeat visits. -->
-  <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) with GDPR-compliant Consent Mode v2 default denied -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
+    // Default everything to denied until the user makes a choice (GDPR).
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      functionality_storage: 'denied',
+      personalization_storage: 'denied',
+      security_storage: 'granted',
+      wait_for_update: 500
+    });
     gtag('js', new Date());
-    gtag('config', 'G-KQ560MCJ9Y');
+    gtag('config', 'G-KQ560MCJ9Y', { anonymize_ip: true });
   </script>
-  <title>Cira — Tell me what&#39;s wrong. I&#39;ll find out.</title>
+  <title>Cira — AI Nurse: Chat & 30-Second Vitals Face Scan</title>
 
 
   <meta property="og:type" content="website" />
-  <meta property="og:image"
-    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
+  <meta property="og:image" content="https://askainurse.com/og-image.jpg" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@Lovable" />
-  <meta name="twitter:image"
-    content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png">
-  <meta property="og:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
-  <meta name="twitter:title" content="Cira — Tell me what&#39;s wrong. I&#39;ll find out.">
+  <meta name="twitter:site" content="@askainurse" />
+  <meta name="twitter:image" content="https://askainurse.com/og-image.jpg" />
+  <meta property="og:title" content="Cira — AI Nurse: Chat & 30-Second Vitals Face Scan">
+  <meta name="twitter:title" content="Cira — AI Nurse: Chat & 30-Second Vitals Face Scan">
   <meta property="og:description"
-    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
+    content="Cira is your AI nurse — chat about symptoms and scan your vitals in 30 seconds with your phone camera. Clinical-grade insights, anytime.">
   <meta name="twitter:description"
-    content="Tell me what&#39;s wrong. I&#39;ll find out. Cira is your AI nurse — ask questions, scan vitals, connect with doctors.">
-  <script type="module" crossorigin src="/assets/index-CNHwAOLn.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BEPVmTu0.css">
+    content="Cira is your AI nurse — chat about symptoms and scan your vitals in 30 seconds with your phone camera. Clinical-grade insights, anytime.">
+
+    <meta name="google-site-verification" content="uFUbmyhd8Fzd3DqLXCuc5sHF_W13ElXUyApt2cyxDZI" />
+    <meta name="google-site-verification" content="YOntjFUZuBix336zvWv3rYOQQFrjujvvfS95qh4gJyc" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Cira",
+      "alternateName": "askainurse",
+      "url": "https://askainurse.com/",
+      "logo": "https://askainurse.com/favicon.svg",
+      "sameAs": ["https://twitter.com/askainurse"],
+      "description": "Cira is an AI nurse — chat about symptoms and scan your vitals in 30 seconds with your phone camera."
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Cira — AI Nurse",
+      "url": "https://askainurse.com/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://askainurse.com/blog?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    [
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"AI Nurse Chat","url":"https://askainurse.com/free-chat","description":"Chat with Cira, your AI nurse — describe symptoms and get clinical-grade guidance."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Symptom Checker","url":"https://askainurse.com/symptom-checker","description":"Check symptoms with an AI nurse trained on clinical guidelines."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"How It Works","url":"https://askainurse.com/how-it-works","description":"See how Cira combines AI chat with a 30-second vitals face scan."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Technology","url":"https://askainurse.com/technology","description":"The rPPG face-scan technology behind Cira's 30-second vitals check."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"What Cira Helps With","url":"https://askainurse.com/what-cira-helps-with","description":"Conditions and questions Cira's AI nurse can help you understand."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Real Doctors","url":"https://askainurse.com/real-doctors","description":"Connect with licensed doctors after your AI consultation."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Pricing","url":"https://askainurse.com/pricing","description":"Cira pricing — free plan plus paid tiers for unlimited chat and scans."},
+      {"@context":"https://schema.org","@type":"SiteNavigationElement","name":"Our Story","url":"https://askainurse.com/our-story","description":"Why Cira exists — the founder story behind the AI nurse."}
+    ]
+    </script>
+
+  <script type="module" crossorigin src="/assets/index-Dpuyd0TE.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CNRwEN3U.css">
 </head>
 
 <body>
