@@ -51,7 +51,7 @@ const DashboardRefund = () => {
   const navItems = [
     { icon: Home, id: "home", tKey: "dashboard.nav.home", path: "/dashboard" },
     { icon: Sparkles, id: "chat", tKey: "dashboard.nav.askCira", path: "/chat" },
-    { icon: Pill, id: "rx", tKey: "dashboard.nav.prescriptionRefill", path: "/dashboard/prescription-refill" },
+    { icon: Pill, id: "rx", tKey: "dashboard.nav.prescriptionRefill", path: "/prescription-refill" },
     { icon: ScanFace, id: "scan", tKey: "dashboard.nav.scan", path: "/vitals-scan" },
     { icon: FileText, id: "reports", tKey: "dashboard.nav.reports", path: "/reports" },
   ];
@@ -116,7 +116,7 @@ const DashboardRefund = () => {
       <div className="flex-1 overflow-y-auto relative">
         <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-24 md:pb-8">
           <button
-            onClick={() => navigate("/dashboard/prescription-refill")}
+            onClick={() => navigate("/prescription-refill")}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" /> {t("pages.refund.backToRefills")}
@@ -159,7 +159,7 @@ const DashboardRefund = () => {
           <RefundRequestForm
             refill={refill}
             invalid={history.length === 0}
-            backHref="/dashboard/prescription-refill"
+            backHref="/prescription-refill"
           />
         </div>
       </div>

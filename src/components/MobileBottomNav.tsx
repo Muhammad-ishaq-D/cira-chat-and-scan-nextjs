@@ -8,7 +8,7 @@ import { isAuthenticated } from "@/lib/auth";
 const navItems = [
   { icon: Home, tKey: "dashboard.nav.home", id: "home", path: "/dashboard" },
   { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat", path: "/chat" },
-  { icon: Pill, tKey: "dashboard.nav.prescriptionRefill", id: "rx", path: "/dashboard/prescription-refill" },
+  { icon: Pill, tKey: "dashboard.nav.prescriptionRefill", id: "rx", path: "/prescription-refill" },
   { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan", path: "/vitals-scan" },
   { icon: FileText, tKey: "dashboard.nav.reports", id: "reports", path: "/reports" },
 ];
@@ -16,7 +16,7 @@ const navItems = [
 const routeToId: Record<string, string> = {
   "/dashboard": "home",
   "/chat": "chat",
-  "/dashboard/prescription-refill": "rx",
+  "/prescription-refill": "rx",
   "/vitals-scan": "scan",
   "/reports": "reports",
   "/profile": "profile",

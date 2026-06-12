@@ -254,7 +254,7 @@ const Dashboard = () => {
                 onClick={() => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
-                  if (item.id === "rx") navigate("/dashboard/prescription-refill");
+                  if (item.id === "rx") navigate("/prescription-refill");
                   if (item.id === "scan") {
                     const scans = profile?.credits?.face_scans;
                     if (scans !== "Unlimited" && typeof scans === "number" && scans <= 0) {

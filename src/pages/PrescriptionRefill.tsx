@@ -46,20 +46,13 @@ const PrescriptionRefill = () => {
             </button>
 
             <div className="flex items-center gap-2">
-              {loggedIn ? (
+              {!loggedIn && (
                 <button
-                  onClick={() => navigate("/dashboard/prescription-refill")}
-                  className="px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+                  onClick={() => navigate("/login")}
+                  className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
                 >
-                  {t("pages.prescriptionRefill.openInDashboard")}
+                  {t("nav.login")}
                 </button>
-              ) : (
-              <button
-                onClick={() => navigate("/login")}
-                className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
-              >
-                {t("nav.login")}
-              </button>
               )}
             </div>
           </nav>
