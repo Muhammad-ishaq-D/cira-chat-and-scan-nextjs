@@ -21,7 +21,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import ciraLogo from "@/assets/cira-logo.svg";
+
 import { getUser } from "@/lib/auth";
 
 export type DrugDetails = {
