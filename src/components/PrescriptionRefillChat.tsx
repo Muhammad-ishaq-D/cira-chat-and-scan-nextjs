@@ -177,6 +177,18 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [sub4, setSub4] = useState<Sub4>(isLoggedIn ? "summary" : "g-name");
   const [patientDraft, setPatientDraft] = useState<PatientInfo>(answers.patient);
 
+  // Step 5 sub-state
+  type Sub5 = "logged-confirm" | "logged-different" | "guest-ask" | "guest-confirm";
+  const [sub5, setSub5] = useState<Sub5>(isLoggedIn ? "logged-confirm" : "guest-ask");
+  const [emailDraft, setEmailDraft] = useState("");
+
+  // Step 7 sub-state
+  type Sub7 = "ready" | "processing" | "failed";
+  const [sub7, setSub7] = useState<Sub7>("ready");
+  // Mocked saved card flag — wire to real payment vault later.
+  const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
+  const hasSavedCard = !!savedCard;
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
 
@@ -187,7 +199,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, step, sub2, sub3, sub4]);
+  }, [messages, step, sub2, sub3, sub4, sub5, sub7]);
 
   // Seed AI prompts for each step + sub-state transitions
   useEffect(() => {
