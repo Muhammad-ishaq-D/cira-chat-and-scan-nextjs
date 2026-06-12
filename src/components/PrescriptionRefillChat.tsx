@@ -916,6 +916,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
       </div>
+      )}
+
 
       {/* Bottom input bar */}
       {step === 2 && sub2 === "manual-input" && (
