@@ -616,33 +616,35 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   return (
     <div className="flex flex-col w-full" style={{ minHeight: "min(720px, 100dvh)" }}>
-      {/* Progress bar */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/60 px-3 sm:px-5 pt-3 pb-2">
-        <div className="flex items-center gap-2 mb-2">
-          <button
-            onClick={handleBack}
-            aria-label={t("common.back")}
-            className="flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            style={{ minHeight: 48, minWidth: 48 }}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1">
-            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progressPct}%` }}
-              />
+      {/* Progress bar — hidden on final step */}
+      {step < 8 && (
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/60 px-3 sm:px-5 pt-3 pb-2">
+          <div className="flex items-center gap-2 mb-2">
+            <button
+              onClick={handleBack}
+              aria-label={t("common.back")}
+              className="flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              style={{ minHeight: 48, minWidth: 48 }}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="flex-1">
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                {t("pages.prescriptionRefill.chat.stepCounter", {
+                  current: step,
+                  total: TOTAL_STEPS,
+                })}
+              </p>
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground font-medium">
-              {t("pages.prescriptionRefill.chat.stepCounter", {
-                current: step,
-                total: TOTAL_STEPS,
-              })}
-            </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Chat scroll area */}
       <div
