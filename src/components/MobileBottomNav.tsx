@@ -16,7 +16,7 @@ const navItems = [
 const routeToId: Record<string, string> = {
   "/dashboard": "home",
   "/chat": "chat",
-  "/dashboard/prescription-refill": "rx",
+  "/prescription-refill": "rx",
   "/vitals-scan": "scan",
   "/reports": "reports",
   "/profile": "profile",
