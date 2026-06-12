@@ -846,29 +846,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         {/* Step 3 is handled by the isolated HealthScreeningChat above */}
 
 
-        {/* Step 4 — logged-in */}
-        {step === 4 && isLoggedIn && sub4 === "summary" && (
-          <Bubble role="ai" wide>
-            <ProfileSummaryCard
-              info={patientDraft}
-              onUse={handleUseProfile}
-              onEdit={() => setSub4("edit")}
-            />
-          </Bubble>
-        )}
-        {step === 4 && isLoggedIn && sub4 === "edit" && (
-          <Bubble role="ai" wide>
-            <ProfileEditCard
-              draft={patientDraft}
-              setDraft={setPatientDraft}
-              onCancel={() => setSub4("summary")}
-              onSave={handleSaveProfileEdit}
-            />
-          </Bubble>
-        )}
-
-        {/* Step 4 — guest */}
-        {step === 4 && !isLoggedIn && sub4 === "g-sex" && (
+        {/* Step 4 — typed-from-scratch flow (everyone, guest and logged-in) */}
+        {step === 4 && sub4 === "g-sex" && (
           <Bubble role="ai" wide>
             <div className="grid grid-cols-2 gap-3">
               <BigChoice
@@ -882,12 +861,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             </div>
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-dob" && (
+        {step === 4 && sub4 === "g-dob" && (
           <Bubble role="ai" wide>
             <DobPicker onSubmit={handleGDob} />
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-weight" && (
+        {step === 4 && sub4 === "g-weight" && (
           <Bubble role="ai" wide>
             <NumberWithUnit
               defaultUnit={patientDraft.weightUnit}
@@ -897,7 +876,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-height" && (
+        {step === 4 && sub4 === "g-height" && (
           <Bubble role="ai" wide>
             <NumberWithUnit
               defaultUnit={patientDraft.heightUnit}
