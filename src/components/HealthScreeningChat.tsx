@@ -24,6 +24,45 @@ type RefillChatResponse = {
   consult_clearance_token?: string;
 };
 
+type ScreeningQuestion = {
+  key: "healthChanges" | "allergies" | "otherMeds";
+  textKey: string;
+};
+
+const SCREENING_QUESTIONS: ScreeningQuestion[] = [
+  { key: "healthChanges", textKey: "pages.prescriptionRefill.chat.q1" },
+  { key: "allergies", textKey: "pages.prescriptionRefill.chat.q2" },
+  { key: "otherMeds", textKey: "pages.prescriptionRefill.chat.q3" },
+];
+
+const flagKeywords = [
+  "pregnan",
+  "chest pain",
+  "faint",
+  "blood pressure",
+  "diabetes",
+  "stroke",
+  "anaphyl",
+  "swelling",
+  "heart",
+  "kidney",
+  "liver",
+  "shortness of breath",
+  "rash",
+];
+
+const isAffirmative = (text: string) => /\b(yes|yeah|yep|new|changed|reaction|allerg|taking|started|currently|supplement)\b/i.test(text);
+const isNegative = (text: string) => /\b(no|none|nope|not|never|n\/a|na)\b/i.test(text);
+
+const shouldFlagLocalResponse = (question: ScreeningQuestion, answer: string) => {
+  const normalized = answer.toLowerCase();
+  if (flagKeywords.some((k) => normalized.includes(k))) return true;
+  if (question.key === "healthChanges" || question.key === "allergies") {
+    return isAffirmative(answer) && !isNegative(answer);
+  }
+  return false;
+};
+
 type Props = {
   /** Shared refill_id from the parent flow. Used so all step endpoints reference the same record. */
   refillId: string;
@@ -51,11 +90,71 @@ const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
   const [phase, setPhase] = useState<"chatting" | "cleared" | "flagged" | "error">("chatting");
   const [flagReason, setFlagReason] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [fallbackMode, setFallbackMode] = useState(false);
+  const [fallbackQuestionIndex, setFallbackQuestionIndex] = useState(0);
+  const [fallbackFlagged, setFallbackFlagged] = useState(false);
 
   const startedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const startFallbackScreening = async () => {
+    setFallbackMode(true);
+    setFallbackQuestionIndex(0);
+    setFallbackFlagged(false);
+    setPhase("chatting");
+    setError("");
+    await new Promise((r) => setTimeout(r, 350));
+    setMessages((prev) => [
+      ...prev,
+      { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[0].textKey) },
+    ]);
+  };
+
+  const sendFallback = async (message: string) => {
+    setSending(true);
+    setTyping(true);
+    setError("");
+    await new Promise((r) => setTimeout(r, 450));
+
+    const currentQuestion = SCREENING_QUESTIONS[fallbackQuestionIndex];
+    const flagged = fallbackFlagged || shouldFlagLocalResponse(currentQuestion, message);
+    const nextIndex = fallbackQuestionIndex + 1;
+
+    if (nextIndex < SCREENING_QUESTIONS.length) {
+      setFallbackFlagged(flagged);
+      setFallbackQuestionIndex(nextIndex);
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[nextIndex].textKey) },
+      ]);
+      setSending(false);
+      setTyping(false);
+      return;
+    }
+
+    if (flagged) {
+      setPhase("flagged");
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningRecommendation") },
+      ]);
+    } else {
+      setPhase("cleared");
+      setMessages((prev) => [
+        ...prev,
+        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningCleared") },
+      ]);
+      setTimeout(() => onCleared(`local-${refillId}-${Date.now()}`), 900);
+    }
+    setSending(false);
+    setTyping(false);
+  };
+
   const send = async (message: string, isHidden = false) => {
+    if (fallbackMode) {
+      await sendFallback(message);
+      return;
+    }
     setSending(true);
     setTyping(true);
     setError("");
@@ -69,7 +168,13 @@ const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
         headers,
         body: JSON.stringify({ refill_id: refillId, message }),
       });
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      if (!res.ok) {
+        if (res.status >= 500) {
+          await startFallbackScreening();
+          return;
+        }
+        throw new Error(`Request failed (${res.status})`);
+      }
       const data = (await res.json()) as RefillChatResponse;
 
       // Simulate small typing pause so the indicator is visible even on fast responses
