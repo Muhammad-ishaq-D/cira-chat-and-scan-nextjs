@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { getUser } from "@/lib/auth";
+import ciraLogo from "@/assets/cira-logo.svg";
 
 export type DrugDetails = {
   drug: string;
