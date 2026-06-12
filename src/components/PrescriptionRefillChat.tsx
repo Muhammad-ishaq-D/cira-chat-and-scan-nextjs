@@ -615,35 +615,50 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setStep((s) => s - 1);
   };
 
-  const progressPct = (step / TOTAL_STEPS) * 100;
+  // Group the 8 internal steps into 4 user-visible stages for the header.
+  const stageInfo = (() => {
+    if (step <= 2) return { index: 1, label: t("pages.prescriptionRefill.chat.stageFind", "Find a Prescription") };
+    if (step === 3) return { index: 2, label: t("pages.prescriptionRefill.chat.stageHealth", "Quick Health Check") };
+    if (step <= 5) return { index: 3, label: t("pages.prescriptionRefill.chat.stageDetails", "Your Details") };
+    return { index: 4, label: t("pages.prescriptionRefill.chat.stageReview", "Review & Confirm") };
+  })();
+  const progressPct = (stageInfo.index / 4) * 100;
 
   return (
-    <div className="flex flex-col w-full" style={{ minHeight: "min(720px, 100dvh)" }}>
-      {/* Top bar with back + slim progress */}
+    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "min(720px, 100dvh)" }}>
+      {/* Top bar: back left, centered title + stage count, slim progress bar bottom */}
       {step < 8 && (
-        <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-md px-3 sm:px-4 pt-2 pb-2">
-          <div className="flex items-center gap-3">
+        <div className="sticky top-0 z-10 bg-[#f7f6f0]/95 backdrop-blur-md">
+          <div className="relative px-3 sm:px-4 pt-3 pb-3">
             <button
               onClick={handleBack}
               aria-label={t("common.back")}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/80 transition-colors"
+              className="absolute left-3 top-2.5 w-9 h-9 flex items-center justify-center rounded-lg text-foreground/70 hover:bg-black/5 transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="flex-1 h-[3px] rounded-full bg-muted/70 overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progressPct}%` }}
-              />
+            <div className="text-center">
+              <div className="font-semibold text-foreground" style={{ fontSize: 16 }}>
+                {stageInfo.label}
+              </div>
+              <div className="text-muted-foreground mt-0.5 tabular-nums" style={{ fontSize: 12 }}>
+                {stageInfo.index} {t("pages.prescriptionRefill.chat.of", "of")} 4
+              </div>
             </div>
-            <span className="text-[11px] text-muted-foreground font-medium tabular-nums shrink-0">
-              {step}/{TOTAL_STEPS}
-            </span>
+          </div>
+          <div className="h-[3px] bg-black/5 overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${progressPct}%` }}
+            />
           </div>
         </div>
       )}
 
-      {/* Chat scroll area */}
+      {/* Step 1 — dedicated hero form (not chat) */}
+      {step === 1 ? (
+        <Step1Hero onContinue={handleConsent} />
+      ) : (
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-2.5"
@@ -655,12 +670,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         ))}
 
-        {/* Step 1 */}
-        {step === 1 && !answers.consent && (
-          <Bubble role="ai" wide>
-            <ConsentCard onAgree={handleConsent} />
-          </Bubble>
-        )}
 
         {/* Step 2 */}
         {step === 2 && sub2 === "choose" && (
