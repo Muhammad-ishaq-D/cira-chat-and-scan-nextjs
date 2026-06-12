@@ -12,6 +12,12 @@ import {
   RotateCcw,
   AlertTriangle,
   Stethoscope,
+  Pill,
+  User as UserIcon,
+  Mail,
+  CreditCard,
+  ShieldCheck,
+  XCircle,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { getUser } from "@/lib/auth";
