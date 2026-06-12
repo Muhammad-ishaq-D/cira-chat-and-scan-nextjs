@@ -535,7 +535,19 @@
         "securedByStripe": "Gesichert durch Stripe",
         "paymentFailed": "Deine Zahlung konnte nicht verarbeitet werden. Bitte prüfe deine Kartendaten und versuche es erneut.",
         "tryAgain": "Erneut versuchen",
-        "paid": "Bezahlt {{price}}"
+        "paid": "Bezahlt {{price}}",
+        "successTitle": "Alles erledigt!",
+        "successBody": "Dein Rezept wird vorbereitet und trifft innerhalb von 5 Minuten in deinem Posteingang ein.",
+        "successSpamNote": "Schau im Spam-Ordner nach, falls es nicht im Posteingang erscheint.",
+        "referenceNumber": "Referenznummer",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "refundNote": "Falls deine Apotheke dieses Rezept nicht akzeptiert, kannst du innerhalb von 7 Tagen mit deiner Referenznummer eine vollständige Rückerstattung anfordern.",
+        "addedToHistory": "Deine Erneuerung wurde zu deinem Verlauf hinzugefügt.",
+        "signupPrompt": "Möchtest du deinen Rezeptverlauf nachverfolgen?",
+        "createAccount": "Kostenloses Konto erstellen",
+        "maybeLater": "Vielleicht später",
+        "done": "Fertig"
       }
     },
     "pricing": {
