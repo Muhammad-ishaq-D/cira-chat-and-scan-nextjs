@@ -984,22 +984,17 @@ const Bubble = ({
   wide?: boolean;
 }) => (
   <div
-    className={`flex items-end gap-2 animate-fade-in ${
+    className={`flex animate-fade-in ${
       role === "user" ? "justify-end" : "justify-start"
     }`}
   >
-    {role === "ai" && (
-      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-        <img src={ciraLogo} alt="Cira" width={18} height={18} />
-      </div>
-    )}
     <div
-      className={`${wide ? "max-w-[92%] w-full" : "max-w-[85%]"} rounded-2xl px-4 py-3 leading-relaxed ${
+      className={`${wide ? "max-w-[95%] md:max-w-[80%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-3.5 py-2.5 leading-relaxed ${
         role === "user"
-          ? "bg-primary text-primary-foreground rounded-br-sm"
-          : "bg-muted text-foreground rounded-bl-sm"
+          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
+          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
       }`}
-      style={{ fontSize: 16 }}
+      style={{ fontSize: 14.5 }}
     >
       {children}
     </div>
