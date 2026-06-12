@@ -678,6 +678,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
         <Step1Hero onSubmit={handleStep1Submit} />
+      ) : step === 3 ? (
+        /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
+        <HealthScreeningChat
+          onCleared={(token) => {
+            setConsultClearanceToken(token);
+            setStep(4);
+          }}
+          onStartOver={handleStartOver}
+        />
       ) : (
       <div
         ref={scrollRef}
