@@ -813,6 +813,65 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
+
+        {/* Step 5 — Email */}
+        {step === 5 && isLoggedIn && sub5 === "logged-confirm" && (
+          <Bubble role="ai" wide>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={handleUseDifferentEmail}
+                className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.useDifferentEmail")}
+              </button>
+              <button
+                onClick={handleConfirmLoggedEmail}
+                className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.sendHere")}
+              </button>
+            </div>
+          </Bubble>
+        )}
+        {step === 5 && sub5 === "guest-confirm" && (
+          <Bubble role="ai" wide>
+            <EmailConfirmCard
+              email={answers.email}
+              onYes={handleEmailConfirmYes}
+              onEdit={handleEmailConfirmEdit}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 6 — Review */}
+        {step === 6 && (
+          <Bubble role="ai" wide>
+            <ReviewSummaryCard
+              answers={answers}
+              priceDisplay={REFILL_PRICE_DISPLAY}
+              prescriberName={PRESCRIBER_NAME}
+              prescriberClinic={PRESCRIBER_CLINIC}
+              onConfirm={handleConfirmAndPay}
+              onEdit={handleEditFromSummary}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 7 — Payment */}
+        {step === 7 && (
+          <Bubble role="ai" wide>
+            <PaymentCard
+              priceDisplay={REFILL_PRICE_DISPLAY}
+              email={answers.email}
+              savedCard={savedCard}
+              status={sub7}
+              onPay={handlePay}
+              onRetry={handleRetryPayment}
+            />
+          </Bubble>
+        )}
       </div>
 
       {/* Bottom input bar */}
@@ -848,7 +907,18 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         />
       )}
 
-      {step >= 5 && (
+      {step === 5 && (sub5 === "guest-ask" || sub5 === "logged-different") && (
+        <BottomInputBar
+          value={emailDraft}
+          setValue={setEmailDraft}
+          onSubmit={() => handleEmailSubmit(emailDraft)}
+          placeholder={t("pages.prescriptionRefill.chat.emailPlaceholder")}
+          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
+          type="email"
+        />
+      )}
+
+      {step >= 8 && (
         <div className="border-t border-border bg-background px-3 sm:px-5 py-4 text-center text-sm text-muted-foreground">
           {t("pages.prescriptionRefill.chat.placeholderHint")}
         </div>
@@ -856,6 +926,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     </div>
   );
 };
+
+function isValidEmail(e: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+}
+
+function maskEmail(e: string) {
+  if (!e || !e.includes("@")) return e;
+  const [local, domain] = e.split("@");
+  if (local.length <= 2) return `${local[0] || ""}*@${domain}`;
+  return `${local[0]}${"*".repeat(Math.max(1, local.length - 2))}${local[local.length - 1]}@${domain}`;
+}
 
 function formatDobDisplay(dob: string) {
   // dob: yyyy-mm-dd → dd/mm/yyyy
