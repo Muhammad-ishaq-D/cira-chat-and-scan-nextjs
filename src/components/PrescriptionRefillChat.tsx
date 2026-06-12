@@ -214,7 +214,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     seededRef.current.add(key);
 
     if (step === 1) {
-      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step1Intro") });
+      // Step 1 renders a dedicated hero screen — no chat intro message.
     } else if (step === 2) {
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step2Prompt") });
     } else if (step === 3) {
