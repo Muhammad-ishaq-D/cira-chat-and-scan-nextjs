@@ -435,7 +435,29 @@
       "price": "Renovación de receta — $5.00",
       "refund": "¿No satisfecho? Ofrecemos un reembolso completo si tu farmacia no acepta esta receta.",
       "historyTitle": "Historial de renovaciones",
-      "historyEmpty": "Tus renovaciones de recetas aparecerán aquí"
+      "historyEmpty": "Tus renovaciones de recetas aparecerán aquí",
+      "chat": {
+        "stepCounter": "Paso {{current}} de {{total}}",
+        "continue": "Continuar",
+        "confirmSend": "Enviar solicitud",
+        "completed": "Gracias — tu solicitud de renovación se ha enviado para revisión. Un médico autorizado te responderá en breve.",
+        "inputPlaceholder": "Escribe tu respuesta…",
+        "step1Prompt": "Hola, soy Cira. Vamos a preparar tu renovación. Primero, ¿cuál es tu nombre legal completo?",
+        "step2Prompt": "¿Qué medicamento necesitas renovar? Incluye la concentración si la conoces (p. ej. Lisinopril 10mg).",
+        "step3Prompt": "¿Cuál es la dosis y con qué frecuencia la tomas? (p. ej. 1 comprimido al día)",
+        "step4Prompt": "¿Cuándo fue tu última renovación? Elige la fecha.",
+        "step5Prompt": "¿A qué farmacia debemos enviarla? Incluye el nombre y la dirección.",
+        "step6Prompt": "¿Alguna alergia o reacción reciente que el médico deba saber? (Opcional — escribe 'ninguna' para omitir)",
+        "step7Prompt": "¿Algo más que quieras añadir para el médico? (Opcional)",
+        "step8Prompt": "Por favor revisa tu solicitud antes de enviarla.",
+        "sumName": "Nombre",
+        "sumMedication": "Medicamento",
+        "sumDosage": "Dosis",
+        "sumLastRefill": "Última renovación",
+        "sumPharmacy": "Farmacia",
+        "sumAllergies": "Alergias",
+        "sumNotes": "Notas"
+      }
     },
     "pricing": {
       "features": {

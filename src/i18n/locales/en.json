@@ -435,7 +435,29 @@
       "price": "Prescription refill — $5.00",
       "refund": "Not satisfied? We offer a full refund if your pharmacy does not accept this prescription.",
       "historyTitle": "Your Refill History",
-      "historyEmpty": "Your prescription refills will appear here"
+      "historyEmpty": "Your prescription refills will appear here",
+      "chat": {
+        "stepCounter": "Step {{current}} of {{total}}",
+        "continue": "Continue",
+        "confirmSend": "Send refill request",
+        "completed": "Thanks — your refill request has been sent for review. A licensed doctor will get back to you shortly.",
+        "inputPlaceholder": "Type your answer…",
+        "step1Prompt": "Hi, I'm Cira. Let's prepare your refill. First — what's your full legal name?",
+        "step2Prompt": "Which medication do you need refilled? Include the strength if you know it (e.g. Lisinopril 10mg).",
+        "step3Prompt": "What's the dosage and how often do you take it? (e.g. 1 tablet daily)",
+        "step4Prompt": "When was your last refill? Pick the date.",
+        "step5Prompt": "Which pharmacy should we send it to? Include the name and address.",
+        "step6Prompt": "Any allergies or recent reactions the doctor should know about? (Optional — type 'none' to skip)",
+        "step7Prompt": "Anything else you'd like to add for the doctor? (Optional)",
+        "step8Prompt": "Please review your refill request before sending.",
+        "sumName": "Name",
+        "sumMedication": "Medication",
+        "sumDosage": "Dosage",
+        "sumLastRefill": "Last refill",
+        "sumPharmacy": "Pharmacy",
+        "sumAllergies": "Allergies",
+        "sumNotes": "Notes"
+      }
     },
     "pricing": {
       "features": {

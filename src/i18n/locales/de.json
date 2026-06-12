@@ -435,7 +435,29 @@
       "price": "Rezept-Erneuerung — $5,00",
       "refund": "Nicht zufrieden? Wir erstatten den vollen Betrag zurück, wenn deine Apotheke dieses Rezept nicht annimmt.",
       "historyTitle": "Dein Erneuerungsverlauf",
-      "historyEmpty": "Deine Rezept-Erneuerungen erscheinen hier"
+      "historyEmpty": "Deine Rezept-Erneuerungen erscheinen hier",
+      "chat": {
+        "stepCounter": "Schritt {{current}} von {{total}}",
+        "continue": "Weiter",
+        "confirmSend": "Anfrage senden",
+        "completed": "Danke — deine Anfrage wurde zur Prüfung gesendet. Ein lizenzierter Arzt meldet sich in Kürze bei dir.",
+        "inputPlaceholder": "Antwort eingeben…",
+        "step1Prompt": "Hi, ich bin Cira. Lass uns dein Rezept vorbereiten. Zuerst: Wie lautet dein vollständiger Name?",
+        "step2Prompt": "Welches Medikament soll erneuert werden? Bitte mit Stärke, falls bekannt (z. B. Lisinopril 10mg).",
+        "step3Prompt": "Wie ist die Dosierung und wie oft nimmst du es ein? (z. B. 1 Tablette täglich)",
+        "step4Prompt": "Wann war deine letzte Erneuerung? Datum auswählen.",
+        "step5Prompt": "An welche Apotheke sollen wir es senden? Bitte Name und Adresse.",
+        "step6Prompt": "Allergien oder Reaktionen, die der Arzt wissen sollte? (Optional — 'keine' eingeben zum Überspringen)",
+        "step7Prompt": "Möchtest du dem Arzt noch etwas mitteilen? (Optional)",
+        "step8Prompt": "Bitte überprüfe deine Anfrage vor dem Absenden.",
+        "sumName": "Name",
+        "sumMedication": "Medikament",
+        "sumDosage": "Dosierung",
+        "sumLastRefill": "Letzte Erneuerung",
+        "sumPharmacy": "Apotheke",
+        "sumAllergies": "Allergien",
+        "sumNotes": "Notizen"
+      }
     },
     "pricing": {
       "features": {
