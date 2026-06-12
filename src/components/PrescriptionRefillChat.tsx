@@ -985,17 +985,19 @@ const BottomInputBar = ({
   onSubmit,
   placeholder,
   buttonLabel,
+  type = "text",
 }: {
   value: string;
   setValue: (v: string) => void;
   onSubmit: () => void;
   placeholder: string;
   buttonLabel: string;
+  type?: string;
 }) => (
   <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
     <div className="flex gap-2">
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
