@@ -67,6 +67,14 @@ const REFILL_PRICE_DISPLAY = "$5.00";
 const PRESCRIBER_NAME = "Dr. Didier Decamps";
 const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
+const API_BASE = (import.meta as unknown as { env: { VITE_API_URL?: string } }).env
+  .VITE_API_URL || "https://askainurse.com";
+
+const newRefillId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  return `refill_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+};
+
 const TOTAL_STEPS = 8;
 
 type ChatMessage = {
