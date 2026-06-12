@@ -31,6 +31,8 @@ import SymptomChecker from "./pages/SymptomChecker.tsx";
 import Pricing from "./pages/Pricing.tsx";
 import RealDoctors from "./pages/RealDoctors.tsx";
 import Terms from "./pages/Terms.tsx";
+import PrescriptionRefill from "./pages/PrescriptionRefill.tsx";
+import DashboardPrescriptionRefill from "./pages/DashboardPrescriptionRefill.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminLayout from "./admin/AdminLayout.tsx";
 import AdminOverview from "./admin/AdminOverview.tsx";
@@ -105,6 +107,8 @@ const App = () => {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/real-doctors" element={<RealDoctors />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/prescription-refill" element={<PrescriptionRefill />} />
+          <Route path="/dashboard/prescription-refill" element={<ProtectedRoute><DashboardPrescriptionRefill /></ProtectedRoute>} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Protected user routes */}
