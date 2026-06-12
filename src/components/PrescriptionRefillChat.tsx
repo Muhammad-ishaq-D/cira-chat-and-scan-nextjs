@@ -2209,15 +2209,66 @@ const PaymentCard = ({
 
 // ============= Step 8 =============
 
-function generateRefNumber() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out = "";
-  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return `RX-${out}`;
-}
+const PaymentPendingCard = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-3 text-center py-2">
+      <div className="flex justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+      <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
+        {t("pages.prescriptionRefill.chat.paymentPendingTitle", "Confirming your payment…")}
+      </h3>
+      <p className="text-foreground/80" style={{ fontSize: 14 }}>
+        {t(
+          "pages.prescriptionRefill.chat.paymentPendingBody",
+          "Hang tight — this usually takes a few seconds.",
+        )}
+      </p>
+    </div>
+  );
+};
+
+const PaymentCanceledCard = ({
+  onTryAgain,
+  failed,
+}: {
+  onTryAgain: () => void;
+  failed?: boolean;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col items-center text-center">
+        <div className="w-14 h-14 rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
+          <XCircle className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
+        </div>
+        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+          {failed
+            ? t("pages.prescriptionRefill.chat.paymentFailedTitle", "Payment failed")
+            : t("pages.prescriptionRefill.chat.paymentCanceledTitle", "Payment not completed")}
+        </h3>
+        <p className="mt-2 text-foreground/80" style={{ fontSize: 14 }}>
+          {t(
+            "pages.prescriptionRefill.chat.paymentCanceledBody",
+            "No charge was made. You can try again whenever you're ready.",
+          )}
+        </p>
+      </div>
+      <button
+        onClick={onTryAgain}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+        style={{ minHeight: 48, fontSize: 15 }}
+      >
+        {t("pages.prescriptionRefill.chat.tryAgain", "Try again")}
+      </button>
+    </div>
+  );
+};
 
 const SuccessCard = ({
   refNumber,
+  emailStatus,
   isLoggedIn,
   signupDismissed,
   onCreateAccount,
@@ -2225,6 +2276,7 @@ const SuccessCard = ({
   onDone,
 }: {
   refNumber: string;
+  emailStatus: "pending" | "sent" | "failed";
   isLoggedIn: boolean;
   signupDismissed: boolean;
   onCreateAccount: () => void;
