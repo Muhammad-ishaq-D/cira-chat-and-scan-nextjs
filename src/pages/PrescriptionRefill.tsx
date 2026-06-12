@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ShieldCheck, Stethoscope, ArrowRight } from "lucide-react";
@@ -12,6 +12,15 @@ const PrescriptionRefill = () => {
   const { t } = useTranslation();
   const loggedIn = isAuthenticated();
   const [showChat, setShowChat] = useState(false);
+
+  // Auto-open chat when Stripe redirects back with a status param.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("status") === "success" || params.get("status") === "cancel") {
+      setShowChat(true);
+    }
+  }, []);
 
   return (
     <>

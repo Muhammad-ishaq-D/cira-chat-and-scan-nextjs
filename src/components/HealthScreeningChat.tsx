@@ -25,6 +25,8 @@ type RefillChatResponse = {
 };
 
 type Props = {
+  /** Shared refill_id from the parent flow. Used so all step endpoints reference the same record. */
+  refillId: string;
   /** Called when the AI screening clears the user. Receives the clearance token (may be empty). */
   onCleared: (token: string) => void;
   /** Called when the user chooses to restart the refill flow after being flagged. */
@@ -39,12 +41,8 @@ const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
  * Owns its own state and message history. Not connected to the main Cira chat
  * store. Used only inside Step 3 of the refill flow.
  */
-const HealthScreeningChat = ({ onCleared, onStartOver }: Props) => {
+const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
   const { t } = useTranslation();
-  const [refillId] = useState<string>(() => {
-    if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-    return `refill_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-  });
 
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");

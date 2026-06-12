@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import drugsData from "@/data/drugs.json";
 
-import { getUser } from "@/lib/auth";
+import { getToken, getUser } from "@/lib/auth";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
 
@@ -66,6 +66,14 @@ const REFILL_PRICE_CENTS = 500;
 const REFILL_PRICE_DISPLAY = "$5.00";
 const PRESCRIBER_NAME = "Dr. Didier Decamps";
 const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
+
+const API_BASE = (import.meta as unknown as { env: { VITE_API_URL?: string } }).env
+  .VITE_API_URL || "https://askainurse.com";
+
+const newRefillId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  return `refill_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+};
 
 const TOTAL_STEPS = 8;
 
@@ -140,7 +148,22 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const localUser = typeof window !== "undefined" ? getUser() : null;
   const isLoggedIn = !!localUser;
 
-  const [step, setStep] = useState(1);
+  // Parse Stripe redirect params so we can jump straight to the result screen.
+  const initialFromUrl = (() => {
+    if (typeof window === "undefined") return { step: 1 as number, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const rid = params.get("refill_id") || "";
+    if ((status === "success" || status === "cancel") && rid) {
+      return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
+    }
+    return { step: 1, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
+  })();
+
+  // Shared refill_id for the whole flow — every step endpoint references this.
+  const [refillId] = useState<string>(initialFromUrl.refillId);
+
+  const [step, setStep] = useState<number>(initialFromUrl.step);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [answers, setAnswers] = useState<RefillAnswers>(emptyAnswers);
 
@@ -173,17 +196,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   // Token returned by the AI screening backend when the consult is cleared.
   const [, setConsultClearanceToken] = useState<string>("");
 
-  // Step 4 sub-state
+  // Step 4 sub-state — everyone (guest and logged-in) types from scratch every time.
   type Sub4 =
-    | "summary" // logged-in default
-    | "edit" // logged-in editing
     | "g-name"
     | "g-dob"
     | "g-sex"
     | "g-weight"
     | "g-height"
     | "done";
-  const [sub4, setSub4] = useState<Sub4>(isLoggedIn ? "summary" : "g-name");
+  const [sub4, setSub4] = useState<Sub4>("g-name");
   const [patientDraft, setPatientDraft] = useState<PatientInfo>(answers.patient);
 
   // Step 5 sub-state
@@ -194,9 +215,13 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   // Step 7 sub-state
   type Sub7 = "ready" | "processing" | "failed";
   const [sub7, setSub7] = useState<Sub7>("ready");
-  // Mocked saved card flag — wire to real payment vault later.
-  const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
-  const hasSavedCard = !!savedCard;
+
+  // Step 8 sub-state — outcome from Stripe + polling.
+  type Sub8 = "pending" | "paid" | "canceled" | "failed";
+  const [sub8, setSub8] = useState<Sub8>(
+    initialFromUrl.outcome === "cancel" ? "canceled" : "pending"
+  );
+  const [emailStatus, setEmailStatus] = useState<"pending" | "sent" | "failed">("pending");
 
   // Step 8 state
   const [refNumber, setRefNumber] = useState<string>("");
@@ -207,6 +232,18 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const pushMsg = (m: Omit<ChatMessage, "id">) =>
     setMessages((prev) => [...prev, { ...m, id: `${Date.now()}-${Math.random()}` }]);
+
+
+  // Clean Stripe redirect params from the URL once consumed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.search) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("status") || params.has("refill_id")) {
+      const url = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, "", url);
+    }
+  }, []);
 
   // Auto-scroll
   useEffect(() => {
@@ -228,18 +265,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       // Step 3 is rendered by the isolated <HealthScreeningChat /> component.
       // No prompts are seeded into the main chat history here.
     } else if (step === 4) {
-      setSub4(isLoggedIn ? "summary" : "g-name");
-      setPatientDraft(answers.patient);
+      // Everyone (guest and logged-in) types from scratch every time. No prefill card.
+      setSub4("g-name");
+      setPatientDraft(emptyAnswers().patient);
       pushMsg({
         role: "ai",
         kind: "text",
-        text: isLoggedIn
-          ? t("pages.prescriptionRefill.chat.step4PromptLogged")
-          : t("pages.prescriptionRefill.chat.step4PromptGuest"),
+        text: t("pages.prescriptionRefill.chat.step4PromptGuest"),
       });
-      if (!isLoggedIn) {
-        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
-      }
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
     } else if (step === 5) {
       if (isLoggedIn) {
         const email = localUser?.email || "";
@@ -269,36 +303,81 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       pushMsg({
         role: "ai",
         kind: "text",
-        text: hasSavedCard
-          ? t("pages.prescriptionRefill.chat.step7PromptSaved")
-          : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
+        text: t("pages.prescriptionRefill.chat.step7PromptCheckout"),
       });
     } else if (step === 8) {
-      const ref = generateRefNumber();
-      setRefNumber(ref);
-      const finalAnswers: RefillAnswers = { ...answers, paid: true };
-      // Persist to local refill history for logged-in users
-      if (isLoggedIn && typeof window !== "undefined") {
-        try {
-          const raw = window.localStorage.getItem("cira_refill_history");
-          const list = raw ? JSON.parse(raw) : [];
-          list.unshift({
-            ref,
-            date: new Date().toISOString(),
-            drug: finalAnswers.drug?.drug || "",
-            strength: finalAnswers.drug?.strength || "",
-            email: finalAnswers.email,
-            priceCents: REFILL_PRICE_CENTS,
-          });
-          window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
-        } catch {
-          // ignore storage errors
-        }
-      }
-      onComplete?.(finalAnswers);
+      // Step 8 result screen — the reference code is generated server-side by
+      // the Stripe payment webhook and returned through the polling endpoint.
+      // We never generate it client-side.
+      onComplete?.({ ...answers, paid: sub8 === "paid" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
+
+  // --- Step 8: poll backend for payment + email status until resolved ---
+  useEffect(() => {
+    if (step !== 8) return;
+    if (sub8 === "canceled" || sub8 === "paid" || sub8 === "failed") return;
+    if (!refillId) return;
+    let cancelled = false;
+    let attempts = 0;
+    const tick = async () => {
+      attempts += 1;
+      try {
+        const res = await fetch(`${API_BASE}/api/prescription/status/${encodeURIComponent(refillId)}`);
+        if (res.ok) {
+          const data = (await res.json()) as {
+            payment_status?: "pending" | "paid" | "failed";
+            email_status?: "pending" | "sent" | "failed";
+            reference_code?: string | null;
+          };
+          if (!cancelled) {
+            if (data.reference_code) setRefNumber(data.reference_code);
+            if (data.email_status) setEmailStatus(data.email_status);
+            if (data.payment_status === "paid") {
+              setSub8("paid");
+              setAnswers((a) => ({ ...a, paid: true }));
+              // Persist to local refill history for logged-in users
+              if (isLoggedIn && typeof window !== "undefined" && data.reference_code) {
+                try {
+                  const raw = window.localStorage.getItem("cira_refill_history");
+                  const list = raw ? JSON.parse(raw) : [];
+                  list.unshift({
+                    ref: data.reference_code,
+                    date: new Date().toISOString(),
+                    drug: answers.drug?.drug || "",
+                    strength: answers.drug?.strength || "",
+                    email: answers.email,
+                    priceCents: REFILL_PRICE_CENTS,
+                  });
+                  window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+                } catch {
+                  // ignore storage errors
+                }
+              }
+              return;
+            }
+            if (data.payment_status === "failed") {
+              setSub8("failed");
+              return;
+            }
+          }
+        }
+      } catch {
+        // network blip — keep polling
+      }
+      // Give up after ~2 minutes of polling
+      if (!cancelled && attempts < 60) {
+        setTimeout(tick, 2000);
+      }
+    };
+    tick();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, sub8, refillId]);
+
 
   // --- Step 1 ---
   const handleConsent = () => {
@@ -482,7 +561,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setAnswers(emptyAnswers());
     setSub2("choose");
     setSub3("q1");
-    setSub4(isLoggedIn ? "summary" : "g-name");
+    setSub4("g-name");
     setManualValue("");
     setDetailDraft("");
     seededRef.current = new Set();
@@ -491,16 +570,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const handleBookDoctor = () => navigate("/real-doctors");
 
-  // --- Step 4 ---
-  const handleUseProfile = () => {
-    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.useTheseDetails") });
-    setAnswers((a) => ({ ...a, patient: patientDraft }));
-    setTimeout(() => setStep(5), 250);
-  };
-  const handleSaveProfileEdit = () => {
-    setAnswers((a) => ({ ...a, patient: patientDraft }));
-    setSub4("summary");
-  };
+  // --- Step 4 (everyone uses the guest typing flow — no prefill card) ---
+
 
   const handleGName = (v: string) => {
     const val = v.trim();
@@ -596,28 +667,33 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     seededRef.current.delete(`step-4`);
     seededRef.current.delete(`step-5`);
     seededRef.current.delete(`step-6`);
-    setSub4(isLoggedIn ? "edit" : "g-name");
+    setSub4("g-name");
     setStep(4);
   };
 
-  // --- Step 7 ---
+  // --- Step 7 — create Stripe Checkout session and redirect ---
   const handlePay = async () => {
     setSub7("processing");
-    // TODO: replace with real Stripe call.
-    await new Promise((r) => setTimeout(r, 1600));
-    const ok = Math.random() > 0.15;
-    if (!ok) {
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/api/prescription/create-checkout-session`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ refill_id: refillId }),
+      });
+      if (!res.ok) throw new Error(`Checkout session failed (${res.status})`);
+      const data = (await res.json()) as { checkout_url?: string };
+      if (!data.checkout_url) throw new Error("Missing checkout_url");
+      // Hand off to Stripe-hosted checkout. Stripe will redirect back to
+      // /prescription-refill?status=success|cancel&refill_id=... which the
+      // component reads on mount and jumps straight to step 8.
+      window.location.href = data.checkout_url;
+    } catch {
       setSub7("failed");
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });
-      return;
     }
-    setAnswers((a) => ({ ...a, paid: true }));
-    pushMsg({
-      role: "user",
-      kind: "text",
-      text: t("pages.prescriptionRefill.chat.paid", { price: REFILL_PRICE_DISPLAY }),
-    });
-    setTimeout(() => setStep(8), 300);
   };
   const handleRetryPayment = () => {
     setSub7("ready");
@@ -631,11 +707,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
     if (step === 2) setSub2("choose");
     if (step === 3) setSub3("q1");
-    if (step === 4) setSub4(isLoggedIn ? "summary" : "g-name");
+    if (step === 4) setSub4("g-name");
     if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
     if (step === 7) setSub7("ready");
     setStep((s) => s - 1);
   };
+
 
   // Group the 8 internal steps into 4 user-visible stages for the header.
   const stageInfo = (() => {
@@ -683,6 +760,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       ) : step === 3 ? (
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
+          refillId={refillId}
           onCleared={(token) => {
             setConsultClearanceToken(token);
             setStep(4);
@@ -779,29 +857,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         {/* Step 3 is handled by the isolated HealthScreeningChat above */}
 
 
-        {/* Step 4 — logged-in */}
-        {step === 4 && isLoggedIn && sub4 === "summary" && (
-          <Bubble role="ai" wide>
-            <ProfileSummaryCard
-              info={patientDraft}
-              onUse={handleUseProfile}
-              onEdit={() => setSub4("edit")}
-            />
-          </Bubble>
-        )}
-        {step === 4 && isLoggedIn && sub4 === "edit" && (
-          <Bubble role="ai" wide>
-            <ProfileEditCard
-              draft={patientDraft}
-              setDraft={setPatientDraft}
-              onCancel={() => setSub4("summary")}
-              onSave={handleSaveProfileEdit}
-            />
-          </Bubble>
-        )}
-
-        {/* Step 4 — guest */}
-        {step === 4 && !isLoggedIn && sub4 === "g-sex" && (
+        {/* Step 4 — typed-from-scratch flow (everyone, guest and logged-in) */}
+        {step === 4 && sub4 === "g-sex" && (
           <Bubble role="ai" wide>
             <div className="grid grid-cols-2 gap-3">
               <BigChoice
@@ -815,12 +872,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             </div>
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-dob" && (
+        {step === 4 && sub4 === "g-dob" && (
           <Bubble role="ai" wide>
             <DobPicker onSubmit={handleGDob} />
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-weight" && (
+        {step === 4 && sub4 === "g-weight" && (
           <Bubble role="ai" wide>
             <NumberWithUnit
               defaultUnit={patientDraft.weightUnit}
@@ -830,7 +887,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
-        {step === 4 && !isLoggedIn && sub4 === "g-height" && (
+        {step === 4 && sub4 === "g-height" && (
           <Bubble role="ai" wide>
             <NumberWithUnit
               defaultUnit={patientDraft.heightUnit}
@@ -886,13 +943,13 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 7 — Payment */}
+        {/* Step 7 — Payment (hands off to Stripe Checkout) */}
         {step === 7 && (
           <Bubble role="ai" wide>
             <PaymentCard
               priceDisplay={REFILL_PRICE_DISPLAY}
               email={answers.email}
-              savedCard={savedCard}
+              savedCard={null}
               status={sub7}
               onPay={handlePay}
               onRetry={handleRetryPayment}
@@ -900,11 +957,27 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 8 — Success */}
-        {step === 8 && (
+        {/* Step 8 — Result (driven by polling /api/prescription/status/:refill_id) */}
+        {step === 8 && sub8 === "pending" && (
+          <Bubble role="ai" wide>
+            <PaymentPendingCard />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "canceled" && (
+          <Bubble role="ai" wide>
+            <PaymentCanceledCard onTryAgain={onExit} />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "failed" && (
+          <Bubble role="ai" wide>
+            <PaymentCanceledCard onTryAgain={onExit} failed />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "paid" && (
           <Bubble role="ai" wide>
             <SuccessCard
               refNumber={refNumber}
+              emailStatus={emailStatus}
               isLoggedIn={isLoggedIn}
               signupDismissed={signupDismissed}
               onCreateAccount={() => navigate("/signup")}
@@ -2147,15 +2220,66 @@ const PaymentCard = ({
 
 // ============= Step 8 =============
 
-function generateRefNumber() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out = "";
-  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return `RX-${out}`;
-}
+const PaymentPendingCard = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-3 text-center py-2">
+      <div className="flex justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+      <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
+        {t("pages.prescriptionRefill.chat.paymentPendingTitle", "Confirming your payment…")}
+      </h3>
+      <p className="text-foreground/80" style={{ fontSize: 14 }}>
+        {t(
+          "pages.prescriptionRefill.chat.paymentPendingBody",
+          "Hang tight — this usually takes a few seconds.",
+        )}
+      </p>
+    </div>
+  );
+};
+
+const PaymentCanceledCard = ({
+  onTryAgain,
+  failed,
+}: {
+  onTryAgain: () => void;
+  failed?: boolean;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col items-center text-center">
+        <div className="w-14 h-14 rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
+          <XCircle className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
+        </div>
+        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+          {failed
+            ? t("pages.prescriptionRefill.chat.paymentFailedTitle", "Payment failed")
+            : t("pages.prescriptionRefill.chat.paymentCanceledTitle", "Payment not completed")}
+        </h3>
+        <p className="mt-2 text-foreground/80" style={{ fontSize: 14 }}>
+          {t(
+            "pages.prescriptionRefill.chat.paymentCanceledBody",
+            "No charge was made. You can try again whenever you're ready.",
+          )}
+        </p>
+      </div>
+      <button
+        onClick={onTryAgain}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+        style={{ minHeight: 48, fontSize: 15 }}
+      >
+        {t("pages.prescriptionRefill.chat.tryAgain", "Try again")}
+      </button>
+    </div>
+  );
+};
 
 const SuccessCard = ({
   refNumber,
+  emailStatus,
   isLoggedIn,
   signupDismissed,
   onCreateAccount,
@@ -2163,6 +2287,7 @@ const SuccessCard = ({
   onDone,
 }: {
   refNumber: string;
+  emailStatus: "pending" | "sent" | "failed";
   isLoggedIn: boolean;
   signupDismissed: boolean;
   onCreateAccount: () => void;
@@ -2227,9 +2352,18 @@ const SuccessCard = ({
         </button>
       </div>
 
+      <p className="text-xs text-muted-foreground text-center" style={{ fontSize: 12 }}>
+        {emailStatus === "sent"
+          ? t("pages.prescriptionRefill.chat.emailSent", "Email sent — check your inbox.")
+          : emailStatus === "failed"
+          ? t("pages.prescriptionRefill.chat.emailFailed", "We couldn't send the email — support will reach out.")
+          : t("pages.prescriptionRefill.chat.emailSending", "Sending your prescription by email…")}
+      </p>
+
       <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
         {t("pages.prescriptionRefill.chat.refundNote")}
       </p>
+
 
       {isLoggedIn ? (
         <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-3 text-center">
