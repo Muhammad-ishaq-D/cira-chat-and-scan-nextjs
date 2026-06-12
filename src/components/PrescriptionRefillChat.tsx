@@ -749,6 +749,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       ) : step === 3 ? (
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
+          refillId={refillId}
           onCleared={(token) => {
             setConsultClearanceToken(token);
             setStep(4);
