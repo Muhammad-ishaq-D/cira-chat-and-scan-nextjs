@@ -1132,7 +1132,7 @@ const Step1Hero = ({ onSubmit }: { onSubmit: (medication: string) => void }) => 
         >
           {t(
             "pages.prescriptionRefill.chat.step1Sub",
-            "We cover 190+ common medications, reviewed by licensed pharmacists and approved by partner clinicians."
+            "We cover common medications, reviewed by licensed pharmacists and approved by partner clinicians."
           )}
         </p>
 
