@@ -18,6 +18,8 @@ import {
   CreditCard,
   ShieldCheck,
   XCircle,
+  Copy,
+  Check,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { getUser } from "@/lib/auth";
@@ -189,6 +191,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
   const hasSavedCard = !!savedCard;
 
+  // Step 8 state
+  const [refNumber, setRefNumber] = useState<string>("");
+  const [signupDismissed, setSignupDismissed] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
 
@@ -260,12 +266,29 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           ? t("pages.prescriptionRefill.chat.step7PromptSaved")
           : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
       });
-    } else if (step >= 8) {
-      pushMsg({
-        role: "ai",
-        kind: "text",
-        text: t("pages.prescriptionRefill.chat.placeholderStep", { step }),
-      });
+    } else if (step === 8) {
+      const ref = generateRefNumber();
+      setRefNumber(ref);
+      const finalAnswers: RefillAnswers = { ...answers, paid: true };
+      // Persist to local refill history for logged-in users
+      if (isLoggedIn && typeof window !== "undefined") {
+        try {
+          const raw = window.localStorage.getItem("cira_refill_history");
+          const list = raw ? JSON.parse(raw) : [];
+          list.unshift({
+            ref,
+            date: new Date().toISOString(),
+            drug: finalAnswers.drug?.drug || "",
+            strength: finalAnswers.drug?.strength || "",
+            email: finalAnswers.email,
+            priceCents: REFILL_PRICE_CENTS,
+          });
+          window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+        } catch {
+          // ignore storage errors
+        }
+      }
+      onComplete?.(finalAnswers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
@@ -595,33 +618,35 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   return (
     <div className="flex flex-col w-full" style={{ minHeight: "min(720px, 100dvh)" }}>
-      {/* Progress bar */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/60 px-3 sm:px-5 pt-3 pb-2">
-        <div className="flex items-center gap-2 mb-2">
-          <button
-            onClick={handleBack}
-            aria-label={t("common.back")}
-            className="flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            style={{ minHeight: 48, minWidth: 48 }}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1">
-            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progressPct}%` }}
-              />
+      {/* Progress bar — hidden on final step */}
+      {step < 8 && (
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/60 px-3 sm:px-5 pt-3 pb-2">
+          <div className="flex items-center gap-2 mb-2">
+            <button
+              onClick={handleBack}
+              aria-label={t("common.back")}
+              className="flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              style={{ minHeight: 48, minWidth: 48 }}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="flex-1">
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                {t("pages.prescriptionRefill.chat.stepCounter", {
+                  current: step,
+                  total: TOTAL_STEPS,
+                })}
+              </p>
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground font-medium">
-              {t("pages.prescriptionRefill.chat.stepCounter", {
-                current: step,
-                total: TOTAL_STEPS,
-              })}
-            </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Chat scroll area */}
       <div
@@ -872,6 +897,20 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
+
+        {/* Step 8 — Success */}
+        {step === 8 && (
+          <Bubble role="ai" wide>
+            <SuccessCard
+              refNumber={refNumber}
+              isLoggedIn={isLoggedIn}
+              signupDismissed={signupDismissed}
+              onCreateAccount={() => navigate("/signup")}
+              onDismissSignup={() => setSignupDismissed(true)}
+              onDone={onExit}
+            />
+          </Bubble>
+        )}
       </div>
 
       {/* Bottom input bar */}
@@ -916,12 +955,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           buttonLabel={t("pages.prescriptionRefill.chat.continue")}
           type="email"
         />
-      )}
-
-      {step >= 8 && (
-        <div className="border-t border-border bg-background px-3 sm:px-5 py-4 text-center text-sm text-muted-foreground">
-          {t("pages.prescriptionRefill.chat.placeholderHint")}
-        </div>
       )}
     </div>
   );
@@ -1907,6 +1940,138 @@ const PaymentCard = ({
       <p className="text-center text-muted-foreground flex items-center justify-center gap-1.5" style={{ fontSize: 12 }}>
         <Lock className="w-3 h-3" /> {t("pages.prescriptionRefill.chat.securedByStripe")}
       </p>
+    </div>
+  );
+};
+
+// ============= Step 8 =============
+
+function generateRefNumber() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return `RX-${out}`;
+}
+
+const SuccessCard = ({
+  refNumber,
+  isLoggedIn,
+  signupDismissed,
+  onCreateAccount,
+  onDismissSignup,
+  onDone,
+}: {
+  refNumber: string;
+  isLoggedIn: boolean;
+  signupDismissed: boolean;
+  onCreateAccount: () => void;
+  onDismissSignup: () => void;
+  onDone: () => void;
+}) => {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(refNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // ignore
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Animated check */}
+      <div className="flex flex-col items-center text-center">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mb-3 animate-scale-in">
+          <CheckCircle2 className="w-9 h-9 text-emerald-500" strokeWidth={2.5} />
+        </div>
+        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+          {t("pages.prescriptionRefill.chat.successTitle")}
+        </h3>
+        <p className="mt-2 text-foreground/80 leading-relaxed" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.successBody")}
+        </p>
+        <p className="mt-2 text-muted-foreground" style={{ fontSize: 13 }}>
+          {t("pages.prescriptionRefill.chat.successSpamNote")}
+        </p>
+      </div>
+
+      {/* Reference number card */}
+      <div className="rounded-2xl border border-border bg-background/60 p-4 text-center space-y-2">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+          {t("pages.prescriptionRefill.chat.referenceNumber")}
+        </p>
+        <p className="font-mono font-semibold text-foreground tracking-wider" style={{ fontSize: 22 }}>
+          {refNumber}
+        </p>
+        <button
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-2 text-foreground hover:bg-accent transition-colors"
+          style={{ minHeight: 40, fontSize: 14 }}
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4 text-emerald-500" />
+              {t("pages.prescriptionRefill.chat.copied")}
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              {t("pages.prescriptionRefill.chat.copy")}
+            </>
+          )}
+        </button>
+      </div>
+
+      <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
+        {t("pages.prescriptionRefill.chat.refundNote")}
+      </p>
+
+      {isLoggedIn ? (
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-3 text-center">
+          <p className="text-primary font-medium" style={{ fontSize: 14 }}>
+            {t("pages.prescriptionRefill.chat.addedToHistory")}
+          </p>
+        </div>
+      ) : (
+        !signupDismissed && (
+          <div className="rounded-2xl border border-border bg-background/60 p-4 space-y-3 animate-fade-in">
+            <p className="text-foreground font-medium text-center" style={{ fontSize: 15 }}>
+              {t("pages.prescriptionRefill.chat.signupPrompt")}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={onDismissSignup}
+                className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors order-2 sm:order-1"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.maybeLater")}
+              </button>
+              <button
+                onClick={() => {
+                  onDismissSignup();
+                  onCreateAccount();
+                }}
+                className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.createAccount")}
+              </button>
+            </div>
+          </div>
+        )
+      )}
+
+      <button
+        onClick={onDone}
+        className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+        style={{ minHeight: 48, fontSize: 15 }}
+      >
+        {t("pages.prescriptionRefill.chat.done")}
+      </button>
     </div>
   );
 };

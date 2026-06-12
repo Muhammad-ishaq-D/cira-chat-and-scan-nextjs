@@ -535,7 +535,19 @@
         "securedByStripe": "Protegido por Stripe",
         "paymentFailed": "No se pudo procesar tu pago. Verifica los datos de tu tarjeta e inténtalo de nuevo.",
         "tryAgain": "Intentar de nuevo",
-        "paid": "Pagado {{price}}"
+        "paid": "Pagado {{price}}",
+        "successTitle": "¡Todo listo!",
+        "successBody": "Tu receta se está preparando y llegará a tu bandeja de entrada en 5 minutos.",
+        "successSpamNote": "Revisa tu carpeta de spam si no la ves en tu bandeja de entrada.",
+        "referenceNumber": "Número de referencia",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "refundNote": "Si tu farmacia no acepta esta receta, puedes solicitar un reembolso completo dentro de 7 días con tu número de referencia.",
+        "addedToHistory": "Tu renovación se ha añadido a tu historial.",
+        "signupPrompt": "¿Quieres llevar un registro de tu historial de recetas?",
+        "createAccount": "Crear cuenta gratis",
+        "maybeLater": "Quizá más tarde",
+        "done": "Listo"
       }
     },
     "pricing": {

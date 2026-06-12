@@ -535,7 +535,19 @@
         "securedByStripe": "Secured by Stripe",
         "paymentFailed": "Your payment could not be processed. Please check your card details and try again.",
         "tryAgain": "Try Again",
-        "paid": "Paid {{price}}"
+        "paid": "Paid {{price}}",
+        "successTitle": "You are all set!",
+        "successBody": "Your prescription is being prepared and will arrive in your inbox within 5 minutes.",
+        "successSpamNote": "Check your spam folder if you do not see it in your inbox.",
+        "referenceNumber": "Reference Number",
+        "copy": "Copy",
+        "copied": "Copied",
+        "refundNote": "If your pharmacy does not accept this prescription, you may request a full refund within 7 days using your reference number.",
+        "addedToHistory": "Your refill has been added to your history.",
+        "signupPrompt": "Want to track your prescription history?",
+        "createAccount": "Create Free Account",
+        "maybeLater": "Maybe Later",
+        "done": "Done"
       }
     },
     "pricing": {

@@ -535,7 +535,19 @@
         "securedByStripe": "Sécurisé par Stripe",
         "paymentFailed": "Votre paiement n'a pas pu être traité. Veuillez vérifier vos coordonnées bancaires et réessayer.",
         "tryAgain": "Réessayer",
-        "paid": "Payé {{price}}"
+        "paid": "Payé {{price}}",
+        "successTitle": "Tout est prêt !",
+        "successBody": "Votre ordonnance est en cours de préparation et arrivera dans votre boîte de réception sous 5 minutes.",
+        "successSpamNote": "Vérifiez vos spams si vous ne la voyez pas dans votre boîte de réception.",
+        "referenceNumber": "Numéro de référence",
+        "copy": "Copier",
+        "copied": "Copié",
+        "refundNote": "Si votre pharmacie n'accepte pas cette ordonnance, vous pouvez demander un remboursement complet sous 7 jours en utilisant votre numéro de référence.",
+        "addedToHistory": "Votre renouvellement a été ajouté à votre historique.",
+        "signupPrompt": "Vous souhaitez suivre l'historique de vos ordonnances ?",
+        "createAccount": "Créer un compte gratuit",
+        "maybeLater": "Peut-être plus tard",
+        "done": "Terminé"
       }
     },
     "pricing": {
