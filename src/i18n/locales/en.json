@@ -400,6 +400,36 @@
   },
   "pages": {
     "back": "Back",
+    "prescriptionRefill": {
+      "eyebrow": "Prescription Refill",
+      "title": "Refill your prescription, the easy way.",
+      "subtitle": "Tell Cira what you need. We help you prepare a clean request and connect with a licensed doctor through our network.",
+      "ctaPrimary": "Start a refill request",
+      "ctaSecondary": "Chat with Cira first",
+      "openInDashboard": "Open in dashboard",
+      "howTitle": "How it works",
+      "step1Title": "Share the details",
+      "step1Body": "Name your medication, dosage and preferred pharmacy. Add any recent changes Cira should know about.",
+      "step2Title": "Doctor review",
+      "step2Body": "A licensed doctor in our network reviews your request, your history and any recent vitals.",
+      "step3Title": "Refill sent",
+      "step3Body": "If approved, your refill is sent to your pharmacy. You get a clear summary in your dashboard.",
+      "disclaimer": "Cira does not prescribe medication. Refills are reviewed and approved by licensed doctors in our partner network. In an emergency, call your local emergency services.",
+      "dashTitle": "Prescription Refill",
+      "dashSubtitle": "Request a refill — reviewed by a licensed doctor.",
+      "fieldMedication": "Medication name",
+      "placeholderMedication": "e.g. Lisinopril 10mg",
+      "fieldDosage": "Dosage & frequency",
+      "placeholderDosage": "e.g. 1 tablet daily",
+      "fieldPharmacy": "Preferred pharmacy",
+      "placeholderPharmacy": "Pharmacy name and address",
+      "fieldNotes": "Notes for the doctor (optional)",
+      "placeholderNotes": "Any side effects, recent changes, or questions",
+      "submitRequest": "Submit refill request",
+      "askCiraFirst": "Ask Cira first",
+      "requestSubmittedTitle": "Request submitted",
+      "requestSubmittedDesc": "A licensed doctor will review your refill request shortly."
+    },
     "pricing": {
       "features": {
         "free": [

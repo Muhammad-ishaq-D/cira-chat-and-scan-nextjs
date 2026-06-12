@@ -400,6 +400,36 @@
   },
   "pages": {
     "back": "Retour",
+    "prescriptionRefill": {
+      "eyebrow": "Renouvellement d'ordonnance",
+      "title": "Renouvelez votre ordonnance, simplement.",
+      "subtitle": "Dites à Cira ce dont vous avez besoin. Nous préparons une demande claire et vous mettons en relation avec un médecin licencié de notre réseau.",
+      "ctaPrimary": "Démarrer une demande",
+      "ctaSecondary": "Parler d'abord avec Cira",
+      "openInDashboard": "Ouvrir dans le tableau de bord",
+      "howTitle": "Comment ça marche",
+      "step1Title": "Partagez les détails",
+      "step1Body": "Indiquez le médicament, la posologie et votre pharmacie. Ajoutez les changements récents que Cira doit connaître.",
+      "step2Title": "Examen médical",
+      "step2Body": "Un médecin licencié examine votre demande, votre historique et vos signes vitaux récents.",
+      "step3Title": "Ordonnance envoyée",
+      "step3Body": "Si approuvée, l'ordonnance est envoyée à votre pharmacie. Vous recevez un résumé clair dans votre tableau de bord.",
+      "disclaimer": "Cira ne prescrit pas de médicaments. Les renouvellements sont examinés et approuvés par des médecins licenciés de notre réseau. En cas d'urgence, appelez les services d'urgence locaux.",
+      "dashTitle": "Renouvellement d'ordonnance",
+      "dashSubtitle": "Demandez un renouvellement — examiné par un médecin licencié.",
+      "fieldMedication": "Nom du médicament",
+      "placeholderMedication": "ex. Lisinopril 10mg",
+      "fieldDosage": "Posologie & fréquence",
+      "placeholderDosage": "ex. 1 comprimé par jour",
+      "fieldPharmacy": "Pharmacie préférée",
+      "placeholderPharmacy": "Nom et adresse de la pharmacie",
+      "fieldNotes": "Notes pour le médecin (facultatif)",
+      "placeholderNotes": "Effets secondaires, changements ou questions",
+      "submitRequest": "Envoyer la demande",
+      "askCiraFirst": "Parler avec Cira",
+      "requestSubmittedTitle": "Demande envoyée",
+      "requestSubmittedDesc": "Un médecin licencié examinera votre demande sous peu."
+    },
     "pricing": {
       "features": {
         "free": [
