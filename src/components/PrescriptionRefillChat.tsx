@@ -656,28 +656,33 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     seededRef.current.delete(`step-4`);
     seededRef.current.delete(`step-5`);
     seededRef.current.delete(`step-6`);
-    setSub4(isLoggedIn ? "edit" : "g-name");
+    setSub4("g-name");
     setStep(4);
   };
 
-  // --- Step 7 ---
+  // --- Step 7 — create Stripe Checkout session and redirect ---
   const handlePay = async () => {
     setSub7("processing");
-    // TODO: replace with real Stripe call.
-    await new Promise((r) => setTimeout(r, 1600));
-    const ok = Math.random() > 0.15;
-    if (!ok) {
+    try {
+      const token = isLoggedIn ? (localStorage.getItem("cira_token") || "") : "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/api/prescription/create-checkout-session`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ refill_id: refillId }),
+      });
+      if (!res.ok) throw new Error(`Checkout session failed (${res.status})`);
+      const data = (await res.json()) as { checkout_url?: string };
+      if (!data.checkout_url) throw new Error("Missing checkout_url");
+      // Hand off to Stripe-hosted checkout. Stripe will redirect back to
+      // /prescription-refill?status=success|cancel&refill_id=... which the
+      // component reads on mount and jumps straight to step 8.
+      window.location.href = data.checkout_url;
+    } catch {
       setSub7("failed");
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });
-      return;
     }
-    setAnswers((a) => ({ ...a, paid: true }));
-    pushMsg({
-      role: "user",
-      kind: "text",
-      text: t("pages.prescriptionRefill.chat.paid", { price: REFILL_PRICE_DISPLAY }),
-    });
-    setTimeout(() => setStep(8), 300);
   };
   const handleRetryPayment = () => {
     setSub7("ready");
@@ -691,11 +696,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
     if (step === 2) setSub2("choose");
     if (step === 3) setSub3("q1");
-    if (step === 4) setSub4(isLoggedIn ? "summary" : "g-name");
+    if (step === 4) setSub4("g-name");
     if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
     if (step === 7) setSub7("ready");
     setStep((s) => s - 1);
   };
+
 
   // Group the 8 internal steps into 4 user-visible stages for the header.
   const stageInfo = (() => {
