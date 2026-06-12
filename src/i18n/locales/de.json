@@ -27,6 +27,7 @@
     "whatCiraHelpsWith": "Wobei Cira hilft",
     "pricing": "Preise",
     "realDoctors": "Echte Ärzte",
+    "prescriptionRefill": "Rezept erneuern",
     "blog": "Blog",
     "contact": "Kontakt",
     "login": "Anmelden",
@@ -399,6 +400,36 @@
   },
   "pages": {
     "back": "Zurück",
+    "prescriptionRefill": {
+      "eyebrow": "Rezept erneuern",
+      "title": "Rezept erneuern — einfach gemacht.",
+      "subtitle": "Sag Cira, was du brauchst. Wir bereiten eine klare Anfrage vor und verbinden dich mit einem zugelassenen Arzt aus unserem Netzwerk.",
+      "ctaPrimary": "Anfrage starten",
+      "ctaSecondary": "Erst mit Cira sprechen",
+      "openInDashboard": "Im Dashboard öffnen",
+      "howTitle": "So funktioniert's",
+      "step1Title": "Details teilen",
+      "step1Body": "Nenne Medikament, Dosierung und bevorzugte Apotheke. Ergänze relevante Änderungen, die Cira kennen sollte.",
+      "step2Title": "Ärztliche Prüfung",
+      "step2Body": "Ein zugelassener Arzt prüft deine Anfrage, deine Historie und aktuelle Vitalwerte.",
+      "step3Title": "Rezept versendet",
+      "step3Body": "Bei Freigabe wird das Rezept an deine Apotheke geschickt. Du erhältst eine klare Zusammenfassung im Dashboard.",
+      "disclaimer": "Cira verschreibt keine Medikamente. Erneuerungen werden von zugelassenen Ärzten in unserem Netzwerk geprüft und freigegeben. Bei einem Notfall rufe den örtlichen Notdienst.",
+      "dashTitle": "Rezept erneuern",
+      "dashSubtitle": "Erneuerung anfragen — geprüft von einem zugelassenen Arzt.",
+      "fieldMedication": "Name des Medikaments",
+      "placeholderMedication": "z. B. Lisinopril 10mg",
+      "fieldDosage": "Dosierung & Häufigkeit",
+      "placeholderDosage": "z. B. 1 Tablette täglich",
+      "fieldPharmacy": "Bevorzugte Apotheke",
+      "placeholderPharmacy": "Name und Adresse der Apotheke",
+      "fieldNotes": "Hinweise an den Arzt (optional)",
+      "placeholderNotes": "Nebenwirkungen, Änderungen oder Fragen",
+      "submitRequest": "Anfrage senden",
+      "askCiraFirst": "Erst mit Cira sprechen",
+      "requestSubmittedTitle": "Anfrage gesendet",
+      "requestSubmittedDesc": "Ein zugelassener Arzt prüft deine Anfrage in Kürze."
+    },
     "pricing": {
       "features": {
         "free": [
@@ -765,6 +796,7 @@
     "nav": {
       "home": "Start",
       "askCira": "Frag Cira",
+      "prescriptionRefill": "Rezept",
       "scan": "Scan",
       "reports": "Berichte",
       "logout": "Abmelden"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound } from "lucide-react";
+import { Home, Clock, LogOut, Heart, Wind, Brain, Zap, Scale, TrendingUp, ShieldCheck, AlertTriangle, ScanFace, Activity, Sparkles, FileText, UserRound, Pill } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
@@ -12,6 +12,7 @@ import { getUser, logout } from "@/lib/auth";
 const navItems = [
   { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
+  { icon: Pill, label: "Refill", id: "rx", tKey: "dashboard.nav.prescriptionRefill" },
   { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
   { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
@@ -253,6 +254,7 @@ const Dashboard = () => {
                 onClick={() => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
+                  if (item.id === "rx") navigate("/dashboard/prescription-refill");
                   if (item.id === "scan") {
                     const scans = profile?.credits?.face_scans;
                     if (scans !== "Unlimited" && typeof scans === "number" && scans <= 0) {

@@ -27,6 +27,7 @@
     "whatCiraHelpsWith": "En qué ayuda Cira",
     "pricing": "Precios",
     "realDoctors": "Médicos reales",
+    "prescriptionRefill": "Renovación de receta",
     "blog": "Blog",
     "contact": "Contacto",
     "login": "Iniciar sesión",
@@ -399,6 +400,36 @@
   },
   "pages": {
     "back": "Atrás",
+    "prescriptionRefill": {
+      "eyebrow": "Renovación de receta",
+      "title": "Renueva tu receta de forma sencilla.",
+      "subtitle": "Cuéntale a Cira lo que necesitas. Te ayudamos a preparar una solicitud clara y a conectar con un médico licenciado de nuestra red.",
+      "ctaPrimary": "Iniciar solicitud",
+      "ctaSecondary": "Hablar antes con Cira",
+      "openInDashboard": "Abrir en el panel",
+      "howTitle": "Cómo funciona",
+      "step1Title": "Comparte los detalles",
+      "step1Body": "Indica el medicamento, la dosis y tu farmacia preferida. Añade cambios recientes que Cira deba conocer.",
+      "step2Title": "Revisión médica",
+      "step2Body": "Un médico licenciado revisa tu solicitud, tu historial y tus signos vitales recientes.",
+      "step3Title": "Receta enviada",
+      "step3Body": "Si se aprueba, la renovación se envía a tu farmacia. Verás un resumen claro en tu panel.",
+      "disclaimer": "Cira no receta medicamentos. Las renovaciones son revisadas y aprobadas por médicos licenciados de nuestra red. En caso de emergencia, llama a los servicios locales.",
+      "dashTitle": "Renovación de receta",
+      "dashSubtitle": "Solicita una renovación — revisada por un médico licenciado.",
+      "fieldMedication": "Nombre del medicamento",
+      "placeholderMedication": "p. ej. Lisinopril 10mg",
+      "fieldDosage": "Dosis y frecuencia",
+      "placeholderDosage": "p. ej. 1 comprimido al día",
+      "fieldPharmacy": "Farmacia preferida",
+      "placeholderPharmacy": "Nombre y dirección de la farmacia",
+      "fieldNotes": "Notas para el médico (opcional)",
+      "placeholderNotes": "Efectos secundarios, cambios recientes o preguntas",
+      "submitRequest": "Enviar solicitud",
+      "askCiraFirst": "Hablar con Cira",
+      "requestSubmittedTitle": "Solicitud enviada",
+      "requestSubmittedDesc": "Un médico licenciado revisará tu solicitud en breve."
+    },
     "pricing": {
       "features": {
         "free": [
@@ -765,6 +796,7 @@
     "nav": {
       "home": "Inicio",
       "askCira": "Preguntar a Cira",
+      "prescriptionRefill": "Receta",
       "scan": "Escaneo",
       "reports": "Informes",
       "logout": "Salir"

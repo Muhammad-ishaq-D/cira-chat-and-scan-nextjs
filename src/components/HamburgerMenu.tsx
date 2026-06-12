@@ -23,6 +23,7 @@ const sections: { titleKey: string; items: Item[] }[] = [
       { tKey: "nav.howItWorks", path: "/how-it-works" },
       { tKey: "nav.technology", path: "/technology" },
       { tKey: "nav.whatCiraHelpsWith", path: "/what-cira-helps-with" },
+      { tKey: "nav.prescriptionRefill", path: "/prescription-refill" },
       { tKey: "nav.pricing", path: "/pricing" },
       { tKey: "menu.faceVitalScan", path: "/vitals-scan" },
     ],
