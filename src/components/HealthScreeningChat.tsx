@@ -74,6 +74,23 @@ type Props = {
 
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
+// Typewriter effect — types text character by character (matches main Chat UX)
+const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) => {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    const chars = Array.from(text);
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setDisplayed(chars.slice(0, i).join(""));
+      if (i >= chars.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+  return <span className="whitespace-pre-line">{displayed}</span>;
+};
+
 /**
  * Isolated AI Health Screening chat for the Prescription Refill flow.
  *
