@@ -1,0 +1,305 @@
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, Loader2, Send, Stethoscope, RotateCcw } from "lucide-react";
+import { getToken, getUser } from "@/lib/auth";
+import { getDeviceId } from "@/lib/freeCredits";
+
+const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+const AIR_DOCTOR_URL = "https://airdoctor.biz/Cira";
+
+type Msg = {
+  id: string;
+  role: "ai" | "user";
+  text: string;
+};
+
+type ConsultResult = {
+  cleared: boolean;
+  flag_reason?: string;
+};
+
+type RefillChatResponse = {
+  reply: string;
+  consult_result?: ConsultResult;
+  consult_clearance_token?: string;
+};
+
+type Props = {
+  /** Called when the AI screening clears the user. Receives the clearance token (may be empty). */
+  onCleared: (token: string) => void;
+  /** Called when the user chooses to restart the refill flow after being flagged. */
+  onStartOver: () => void;
+};
+
+const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+/**
+ * Isolated AI Health Screening chat for the Prescription Refill flow.
+ *
+ * Owns its own state and message history. Not connected to the main Cira chat
+ * store. Used only inside Step 3 of the refill flow.
+ */
+const HealthScreeningChat = ({ onCleared, onStartOver }: Props) => {
+  const { t } = useTranslation();
+  const [refillId] = useState<string>(() => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+    return `refill_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  });
+
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [phase, setPhase] = useState<"chatting" | "cleared" | "flagged" | "error">("chatting");
+  const [flagReason, setFlagReason] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  const startedRef = useRef(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const send = async (message: string, isHidden = false) => {
+    setSending(true);
+    setTyping(true);
+    setError("");
+    try {
+      const token = getToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/api/prescription/refill-chat`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ refill_id: refillId, message }),
+      });
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const data = (await res.json()) as RefillChatResponse;
+
+      // Simulate small typing pause so the indicator is visible even on fast responses
+      await new Promise((r) => setTimeout(r, 350));
+
+      if (data.reply) {
+        setMessages((prev) => [...prev, { id: newId(), role: "ai", text: data.reply }]);
+      }
+
+      if (data.consult_result) {
+        if (data.consult_result.cleared) {
+          setPhase("cleared");
+          const token = data.consult_clearance_token || "";
+          setMessages((prev) => [
+            ...prev,
+            { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningCleared") },
+          ]);
+          setTimeout(() => onCleared(token), 1400);
+        } else {
+          setPhase("flagged");
+          const reason = data.consult_result.flag_reason?.trim();
+          if (reason && reason !== data.reply) {
+            setMessages((prev) => [...prev, { id: newId(), role: "ai", text: reason }]);
+          }
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: newId(),
+              role: "ai",
+              text: t("pages.prescriptionRefill.chat.screeningRecommendation"),
+            },
+          ]);
+        }
+      }
+    } catch (e: any) {
+      setError(e?.message || t("pages.prescriptionRefill.chat.screeningError"));
+      setPhase("error");
+    } finally {
+      setSending(false);
+      setTyping(false);
+    }
+  };
+
+  // Kick off conversation with hidden "start" message
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    void send("start", true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-scroll
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [messages, typing, phase]);
+
+  const handleSubmit = () => {
+    const text = input.trim();
+    if (!text || sending || phase !== "chatting") return;
+    setMessages((prev) => [...prev, { id: newId(), role: "user", text }]);
+    setInput("");
+    void send(text);
+  };
+
+  const handleBookDoctor = () => {
+    const user = getUser();
+    const deviceId = getDeviceId();
+    const trackingData = {
+      clicked_at: new Date().toISOString(),
+      page: typeof window !== "undefined" ? window.location.pathname : "",
+      source: "prescription_refill_screening",
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+      user_id: user?.id || null,
+      user_email: user?.email || null,
+      device_id: deviceId || null,
+    };
+    try {
+      fetch(`${API_BASE}/api/tracking/airdoctor-click`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(trackingData),
+      }).catch(() => {});
+    } catch {}
+    try {
+      const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+      clicks.push(trackingData);
+      localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+    } catch {}
+    window.open(AIR_DOCTOR_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const handleRetry = () => {
+    setError("");
+    setPhase("chatting");
+    void send(messages.length === 0 ? "start" : "continue");
+  };
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0 w-full">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto" style={{ minHeight: 0 }}>
+        {messages.map((m) => (
+          <Bubble key={m.id} role={m.role}>
+            {m.text}
+          </Bubble>
+        ))}
+
+        {typing && (
+          <Bubble role="ai">
+            <span className="inline-flex items-center gap-2">
+              <TypingDots />
+              <span className="text-foreground/60" style={{ fontSize: 13 }}>
+                {t("pages.prescriptionRefill.chat.screeningTyping")}
+              </span>
+            </span>
+          </Bubble>
+        )}
+
+        {phase === "error" && (
+          <Bubble role="ai" wide>
+            <div className="space-y-3">
+              <p style={{ fontSize: 14.5 }}>{error || t("pages.prescriptionRefill.chat.screeningError")}</p>
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90"
+              >
+                {t("pages.prescriptionRefill.chat.screeningRetry")}
+              </button>
+            </div>
+          </Bubble>
+        )}
+
+        {phase === "flagged" && (
+          <Bubble role="ai" wide>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h3 className="font-semibold text-foreground pt-1.5" style={{ fontSize: 16 }}>
+                  {t("pages.prescriptionRefill.chat.flaggedTitle")}
+                </h3>
+              </div>
+              <button
+                onClick={handleBookDoctor}
+                className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                style={{ minHeight: 52, fontSize: 16 }}
+              >
+                <Stethoscope className="w-5 h-5" />
+                {t("pages.prescriptionRefill.chat.bookDoctor")}
+              </button>
+              <button
+                onClick={onStartOver}
+                className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors flex items-center justify-center gap-2"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                <RotateCcw className="w-4 h-4" />
+                {t("pages.prescriptionRefill.chat.startOver")}
+              </button>
+            </div>
+          </Bubble>
+        )}
+      </div>
+
+      {phase === "chatting" && (
+        <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
+          <div className="flex gap-2 w-full max-w-3xl mx-auto">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
+              disabled={sending}
+              autoFocus
+              className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
+              style={{ fontSize: 16, minHeight: 48 }}
+            />
+            <button
+              onClick={handleSubmit}
+              disabled={!input.trim() || sending}
+              aria-label={t("common.send", "Send")}
+              className="w-12 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center justify-center"
+              style={{ minHeight: 48 }}
+            >
+              {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Bubble = ({
+  role,
+  children,
+  wide,
+}: {
+  role: "ai" | "user";
+  children: React.ReactNode;
+  wide?: boolean;
+}) => (
+  <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
+        role === "user"
+          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
+          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
+      }`}
+      style={{ fontSize: 14.5 }}
+    >
+      {children}
+    </div>
+  </div>
+);
+
+const TypingDots = () => (
+  <span className="inline-flex items-end gap-1 h-4">
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+  </span>
+);
+
+export default HealthScreeningChat;

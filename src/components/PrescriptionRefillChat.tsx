@@ -27,6 +27,7 @@ import drugsData from "@/data/drugs.json";
 
 import { getUser } from "@/lib/auth";
 import ciraLogo from "@/assets/cira-logo.svg";
+import HealthScreeningChat from "@/components/HealthScreeningChat";
 
 export type DrugDetails = {
   drug: string;
@@ -169,6 +170,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "cleared";
   const [sub3, setSub3] = useState<Sub3>("q1");
   const [detailDraft, setDetailDraft] = useState("");
+  // Token returned by the AI screening backend when the consult is cleared.
+  const [, setConsultClearanceToken] = useState<string>("");
 
   // Step 4 sub-state
   type Sub4 =
@@ -222,8 +225,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     } else if (step === 2) {
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step2Prompt") });
     } else if (step === 3) {
-      setSub3("q1");
-      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q1") });
+      // Step 3 is rendered by the isolated <HealthScreeningChat /> component.
+      // No prompts are seeded into the main chat history here.
     } else if (step === 4) {
       setSub4(isLoggedIn ? "summary" : "g-name");
       setPatientDraft(answers.patient);
@@ -677,6 +680,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
         <Step1Hero onSubmit={handleStep1Submit} />
+      ) : step === 3 ? (
+        /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
+        <HealthScreeningChat
+          onCleared={(token) => {
+            setConsultClearanceToken(token);
+            setStep(4);
+          }}
+          onStartOver={handleStartOver}
+        />
       ) : (
       <div
         ref={scrollRef}
@@ -764,41 +776,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 3 */}
-        {step === 3 && (sub3 === "q1" || sub3 === "q2" || sub3 === "q3") && (
-          <Bubble role="ai" wide>
-            <YesNoButtons
-              onYes={() =>
-                sub3 === "q1" ? handleQ1(true) : sub3 === "q2" ? handleQ2(true) : handleQ3(true)
-              }
-              onNo={() =>
-                sub3 === "q1" ? handleQ1(false) : sub3 === "q2" ? handleQ2(false) : handleQ3(false)
-              }
-              yesLabel={t("pages.prescriptionRefill.chat.yes")}
-              noLabel={t("pages.prescriptionRefill.chat.no")}
-            />
-          </Bubble>
-        )}
-        {step === 3 && sub3 === "reviewing" && (
-          <Bubble role="ai">
-            <div className="flex items-center gap-3 py-1">
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reviewing")}</span>
-            </div>
-          </Bubble>
-        )}
-        {step === 3 && sub3 === "flagged" && (
-          <Bubble role="ai">
-            <FlaggedCard
-              onBook={handleBookDoctor}
-              onStartOver={handleStartOver}
-              bookLabel={t("pages.prescriptionRefill.chat.bookDoctor")}
-              startOverLabel={t("pages.prescriptionRefill.chat.startOver")}
-              title={t("pages.prescriptionRefill.chat.flaggedTitle")}
-              body={t("pages.prescriptionRefill.chat.flaggedBody")}
-            />
-          </Bubble>
-        )}
+        {/* Step 3 is handled by the isolated HealthScreeningChat above */}
+
 
         {/* Step 4 — logged-in */}
         {step === 4 && isLoggedIn && sub4 === "summary" && (
@@ -949,19 +928,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         />
       )}
 
-      {step === 3 && (sub3 === "q1-detail" || sub3 === "q2-detail" || sub3 === "q3-detail") && (
-        <BottomInputBar
-          value={detailDraft}
-          setValue={setDetailDraft}
-          onSubmit={() => {
-            if (sub3 === "q1-detail") handleQ1Detail();
-            else if (sub3 === "q2-detail") handleQ2Detail();
-            else handleQ3Detail();
-          }}
-          placeholder={t("pages.prescriptionRefill.chat.detailPlaceholder")}
-          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
-        />
-      )}
+      {/* Step 3 bottom input bar is handled by HealthScreeningChat */}
+
 
       {step === 4 && !isLoggedIn && sub4 === "g-name" && (
         <NameInputBar
