@@ -6,6 +6,7 @@ import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import PrescriptionRefillChat from "@/components/PrescriptionRefillChat";
 import { getUser, logout } from "@/lib/auth";
 
 const DashboardPrescriptionRefill = () => {
