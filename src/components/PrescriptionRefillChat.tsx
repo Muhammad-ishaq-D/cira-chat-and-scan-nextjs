@@ -1035,7 +1035,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       {/* Step 3 bottom input bar is handled by HealthScreeningChat */}
 
 
-      {step === 4 && !isLoggedIn && sub4 === "g-name" && (
+      {step === 4 && sub4 === "g-name" && (
         <NameInputBar
           onSubmit={handleGName}
           placeholder={t("pages.prescriptionRefill.chat.namePlaceholder")}
