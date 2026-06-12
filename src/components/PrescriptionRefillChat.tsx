@@ -222,8 +222,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     } else if (step === 2) {
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step2Prompt") });
     } else if (step === 3) {
-      setSub3("q1");
-      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q1") });
+      // Step 3 is rendered by the isolated <HealthScreeningChat /> component.
+      // No prompts are seeded into the main chat history here.
     } else if (step === 4) {
       setSub4(isLoggedIn ? "summary" : "g-name");
       setPatientDraft(answers.patient);
