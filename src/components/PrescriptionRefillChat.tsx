@@ -2341,9 +2341,18 @@ const SuccessCard = ({
         </button>
       </div>
 
+      <p className="text-xs text-muted-foreground text-center" style={{ fontSize: 12 }}>
+        {emailStatus === "sent"
+          ? t("pages.prescriptionRefill.chat.emailSent", "Email sent — check your inbox.")
+          : emailStatus === "failed"
+          ? t("pages.prescriptionRefill.chat.emailFailed", "We couldn't send the email — support will reach out.")
+          : t("pages.prescriptionRefill.chat.emailSending", "Sending your prescription by email…")}
+      </p>
+
       <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
         {t("pages.prescriptionRefill.chat.refundNote")}
       </p>
+
 
       {isLoggedIn ? (
         <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-3 text-center">
