@@ -254,18 +254,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       // Step 3 is rendered by the isolated <HealthScreeningChat /> component.
       // No prompts are seeded into the main chat history here.
     } else if (step === 4) {
-      setSub4(isLoggedIn ? "summary" : "g-name");
-      setPatientDraft(answers.patient);
+      // Everyone (guest and logged-in) types from scratch every time. No prefill card.
+      setSub4("g-name");
+      setPatientDraft(emptyAnswers().patient);
       pushMsg({
         role: "ai",
         kind: "text",
-        text: isLoggedIn
-          ? t("pages.prescriptionRefill.chat.step4PromptLogged")
-          : t("pages.prescriptionRefill.chat.step4PromptGuest"),
+        text: t("pages.prescriptionRefill.chat.step4PromptGuest"),
       });
-      if (!isLoggedIn) {
-        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
-      }
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
     } else if (step === 5) {
       if (isLoggedIn) {
         const email = localUser?.email || "";
@@ -295,36 +292,81 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       pushMsg({
         role: "ai",
         kind: "text",
-        text: hasSavedCard
-          ? t("pages.prescriptionRefill.chat.step7PromptSaved")
-          : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
+        text: t("pages.prescriptionRefill.chat.step7PromptCheckout"),
       });
     } else if (step === 8) {
-      const ref = generateRefNumber();
-      setRefNumber(ref);
-      const finalAnswers: RefillAnswers = { ...answers, paid: true };
-      // Persist to local refill history for logged-in users
-      if (isLoggedIn && typeof window !== "undefined") {
-        try {
-          const raw = window.localStorage.getItem("cira_refill_history");
-          const list = raw ? JSON.parse(raw) : [];
-          list.unshift({
-            ref,
-            date: new Date().toISOString(),
-            drug: finalAnswers.drug?.drug || "",
-            strength: finalAnswers.drug?.strength || "",
-            email: finalAnswers.email,
-            priceCents: REFILL_PRICE_CENTS,
-          });
-          window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
-        } catch {
-          // ignore storage errors
-        }
-      }
-      onComplete?.(finalAnswers);
+      // Step 8 result screen — the reference code is generated server-side by
+      // the Stripe payment webhook and returned through the polling endpoint.
+      // We never generate it client-side.
+      onComplete?.({ ...answers, paid: sub8 === "paid" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
+
+  // --- Step 8: poll backend for payment + email status until resolved ---
+  useEffect(() => {
+    if (step !== 8) return;
+    if (sub8 === "canceled" || sub8 === "paid" || sub8 === "failed") return;
+    if (!refillId) return;
+    let cancelled = false;
+    let attempts = 0;
+    const tick = async () => {
+      attempts += 1;
+      try {
+        const res = await fetch(`${API_BASE}/api/prescription/status/${encodeURIComponent(refillId)}`);
+        if (res.ok) {
+          const data = (await res.json()) as {
+            payment_status?: "pending" | "paid" | "failed";
+            email_status?: "pending" | "sent" | "failed";
+            reference_code?: string | null;
+          };
+          if (!cancelled) {
+            if (data.reference_code) setRefNumber(data.reference_code);
+            if (data.email_status) setEmailStatus(data.email_status);
+            if (data.payment_status === "paid") {
+              setSub8("paid");
+              setAnswers((a) => ({ ...a, paid: true }));
+              // Persist to local refill history for logged-in users
+              if (isLoggedIn && typeof window !== "undefined" && data.reference_code) {
+                try {
+                  const raw = window.localStorage.getItem("cira_refill_history");
+                  const list = raw ? JSON.parse(raw) : [];
+                  list.unshift({
+                    ref: data.reference_code,
+                    date: new Date().toISOString(),
+                    drug: answers.drug?.drug || "",
+                    strength: answers.drug?.strength || "",
+                    email: answers.email,
+                    priceCents: REFILL_PRICE_CENTS,
+                  });
+                  window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+                } catch {
+                  // ignore storage errors
+                }
+              }
+              return;
+            }
+            if (data.payment_status === "failed") {
+              setSub8("failed");
+              return;
+            }
+          }
+        }
+      } catch {
+        // network blip — keep polling
+      }
+      // Give up after ~2 minutes of polling
+      if (!cancelled && attempts < 60) {
+        setTimeout(tick, 2000);
+      }
+    };
+    tick();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, sub8, refillId]);
+
 
   // --- Step 1 ---
   const handleConsent = () => {
