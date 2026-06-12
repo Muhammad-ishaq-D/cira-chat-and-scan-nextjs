@@ -1180,19 +1180,6 @@ const Step1Hero = ({ onSubmit }: { onSubmit: (medication: string) => void }) => 
           </span>
         </label>
       </div>
-
-      {/* Footer pricing */}
-      <div className="pt-10 text-center">
-        <p className="text-foreground font-semibold" style={{ fontSize: 14 }}>
-          {t("pages.prescriptionRefill.price")}
-        </p>
-        <p className="mt-1 text-muted-foreground" style={{ fontSize: 11.5 }}>
-          {t(
-            "pages.prescriptionRefill.chat.step1Footnote",
-            "No credit card required. Medication costs not included."
-          )}
-        </p>
-      </div>
     </div>
   );
 };
