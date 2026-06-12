@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Lock,
@@ -10,8 +10,11 @@ import {
   Loader2,
   CheckCircle2,
   RotateCcw,
+  AlertTriangle,
+  Stethoscope,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
+import { getUser } from "@/lib/auth";
 
 export type DrugDetails = {
   drug: string;
@@ -20,14 +23,28 @@ export type DrugDetails = {
   dosage: string;
 };
 
+export type ConsultAnswers = {
+  healthChanges: { changed: boolean; detail: string };
+  allergies: { had: boolean; detail: string };
+  otherMeds: { taking: boolean; detail: string };
+};
+
+export type PatientInfo = {
+  fullName: string;
+  dob: string; // yyyy-mm-dd
+  sex: "male" | "female" | "";
+  weight: string;
+  weightUnit: "kg" | "lbs";
+  height: string;
+  heightUnit: "cm" | "ftin";
+};
+
 export type RefillAnswers = {
   consent: boolean;
   drug: DrugDetails | null;
   submissionMode: "upload" | "manual" | null;
-  // remaining fields reserved for later steps (3-8)
-  fullName?: string;
-  pharmacy?: string;
-  notes?: string;
+  consult: ConsultAnswers;
+  patient: PatientInfo;
 };
 
 const TOTAL_STEPS = 8;
@@ -45,15 +62,65 @@ type Props = {
   onComplete?: (answers: RefillAnswers) => void;
 };
 
+const emptyAnswers = (): RefillAnswers => ({
+  consent: false,
+  drug: null,
+  submissionMode: null,
+  consult: {
+    healthChanges: { changed: false, detail: "" },
+    allergies: { had: false, detail: "" },
+    otherMeds: { taking: false, detail: "" },
+  },
+  patient: detectPatientDefaults(),
+});
+
+function detectPatientDefaults(): PatientInfo {
+  const locale = (typeof navigator !== "undefined" && navigator.language) || "en-US";
+  const usesImperial = /^(en-US|en-GB|en-CA|my)/i.test(locale);
+  const existing = typeof window !== "undefined" ? getUser() : null;
+  return {
+    fullName: existing?.name || "",
+    dob: "",
+    sex: "",
+    weight: "",
+    weightUnit: usesImperial ? "lbs" : "kg",
+    height: "",
+    heightUnit: usesImperial ? "ftin" : "cm",
+  };
+}
+
+// Flagging logic stub. Replace with backend call when available.
+function evaluateConsult(c: ConsultAnswers): boolean {
+  const flagKeywords = [
+    "pregnan",
+    "chest pain",
+    "faint",
+    "blood pressure",
+    "diabetes",
+    "stroke",
+    "anaphyl",
+    "swelling",
+    "heart",
+    "kidney",
+    "liver",
+  ];
+  const text = `${c.healthChanges.detail} ${c.allergies.detail} ${c.otherMeds.detail}`.toLowerCase();
+  if (flagKeywords.some((k) => text.includes(k))) return true;
+  // If user reported new allergies/reactions OR major health changes — flag for safety
+  if (c.allergies.had) return true;
+  if (c.healthChanges.changed && c.healthChanges.detail.trim().length > 0) return true;
+  return false;
+}
+
 const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const localUser = typeof window !== "undefined" ? getUser() : null;
+  const isLoggedIn = !!localUser;
+
   const [step, setStep] = useState(1);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [answers, setAnswers] = useState<RefillAnswers>({
-    consent: false,
-    drug: null,
-    submissionMode: null,
-  });
+  const [answers, setAnswers] = useState<RefillAnswers>(emptyAnswers);
 
   // Step 2 sub-state
   type Sub2 =
@@ -64,14 +131,40 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "low-confidence"
     | "edit";
   const [sub2, setSub2] = useState<Sub2>("choose");
-  const [lowConfidence, setLowConfidence] = useState(false);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Step 3 sub-state
+  type Sub3 =
+    | "q1"
+    | "q1-detail"
+    | "q2"
+    | "q2-detail"
+    | "q3"
+    | "q3-detail"
+    | "reviewing"
+    | "flagged"
+    | "cleared";
+  const [sub3, setSub3] = useState<Sub3>("q1");
+  const [detailDraft, setDetailDraft] = useState("");
+
+  // Step 4 sub-state
+  type Sub4 =
+    | "summary" // logged-in default
+    | "edit" // logged-in editing
+    | "g-name"
+    | "g-dob"
+    | "g-sex"
+    | "g-weight"
+    | "g-height"
+    | "done";
+  const [sub4, setSub4] = useState<Sub4>(isLoggedIn ? "summary" : "g-name");
+  const [patientDraft, setPatientDraft] = useState<PatientInfo>(answers.patient);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
 
-  // --- Helpers ---
   const pushMsg = (m: Omit<ChatMessage, "id">) =>
     setMessages((prev) => [...prev, { ...m, id: `${Date.now()}-${Math.random()}` }]);
 
@@ -79,9 +172,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, step, sub2]);
+  }, [messages, step, sub2, sub3, sub4]);
 
-  // Seed AI prompt for each step
+  // Seed AI prompts for each step + sub-state transitions
   useEffect(() => {
     const key = `step-${step}`;
     if (seededRef.current.has(key)) return;
@@ -91,7 +184,23 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step1Intro") });
     } else if (step === 2) {
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step2Prompt") });
-    } else if (step >= 3) {
+    } else if (step === 3) {
+      setSub3("q1");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q1") });
+    } else if (step === 4) {
+      setSub4(isLoggedIn ? "summary" : "g-name");
+      setPatientDraft(answers.patient);
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: isLoggedIn
+          ? t("pages.prescriptionRefill.chat.step4PromptLogged")
+          : t("pages.prescriptionRefill.chat.step4PromptGuest"),
+      });
+      if (!isLoggedIn) {
+        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
+      }
+    } else if (step >= 5) {
       pushMsg({
         role: "ai",
         kind: "text",
@@ -101,45 +210,33 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  // --- Step 1: consent ---
+  // --- Step 1 ---
   const handleConsent = () => {
     setAnswers((a) => ({ ...a, consent: true }));
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
 
-  // --- Step 2: submission ---
+  // --- Step 2 ---
   const handleChooseUpload = () => {
     setAnswers((a) => ({ ...a, submissionMode: "upload" }));
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.uploadPhoto") });
     fileRef.current?.click();
   };
-
   const handleChooseManual = () => {
     setAnswers((a) => ({ ...a, submissionMode: "manual" }));
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.typeManually") });
     setTimeout(() => {
-      pushMsg({
-        role: "ai",
-        kind: "text",
-        text: t("pages.prescriptionRefill.chat.manualPrompt"),
-      });
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.manualPrompt") });
       setSub2("manual-input");
     }, 250);
   };
-
   const handleFilePicked: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setSub2("upload-reading");
-    pushMsg({
-      role: "ai",
-      kind: "text",
-      text: t("pages.prescriptionRefill.chat.reading"),
-    });
-
-    // TODO: replace with real OCR call (e.g. Lovable AI vision endpoint).
-    // For now, simulate extraction + random low-confidence outcome.
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reading") });
+    // TODO: real OCR.
     setTimeout(() => {
       const mock: DrugDetails = {
         drug: "Lisinopril",
@@ -149,83 +246,208 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       };
       const isLow = Math.random() < 0.3;
       setAnswers((a) => ({ ...a, drug: mock }));
-      setLowConfidence(isLow);
       if (isLow) {
-        pushMsg({
-          role: "ai",
-          kind: "text",
-          text: t("pages.prescriptionRefill.chat.lowConfidence"),
-        });
+        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.lowConfidence") });
         setSub2("low-confidence");
       } else {
         setSub2("confirm");
       }
     }, 1800);
-
-    // reset input so same file can be re-selected
     e.target.value = "";
   };
-
   const handleManualSubmit = () => {
     const v = manualValue.trim();
     if (!v) return;
     pushMsg({ role: "user", kind: "text", text: v });
     setManualValue("");
-    const guess: DrugDetails = {
-      drug: v,
-      form: "—",
-      strength: "—",
-      dosage: "—",
-    };
-    setAnswers((a) => ({ ...a, drug: guess }));
+    setAnswers((a) => ({ ...a, drug: { drug: v, form: "—", strength: "—", dosage: "—" } }));
     setTimeout(() => setSub2("confirm"), 250);
   };
-
   const handleLooksGood = () => {
     if (!answers.drug) return;
     const d = answers.drug;
-    pushMsg({
-      role: "user",
-      kind: "text",
-      text: `${d.drug} · ${d.strength} · ${d.form}`,
-    });
+    pushMsg({ role: "user", kind: "text", text: `${d.drug} · ${d.strength} · ${d.form}` });
     setTimeout(() => setStep(3), 250);
   };
-
   const handleEdit = () => {
     setEditDraft(answers.drug);
     setSub2("edit");
   };
-
   const handleEditSave = () => {
     if (!editDraft) return;
     setAnswers((a) => ({ ...a, drug: editDraft }));
     setSub2("confirm");
   };
-
   const handleRetake = () => {
     setSub2("choose");
-    setLowConfidence(false);
     fileRef.current?.click();
     setAnswers((a) => ({ ...a, submissionMode: "upload" }));
   };
 
-  // --- Back navigation ---
+  // --- Step 3 ---
+  const yesNo = (yes: boolean) =>
+    yes ? t("pages.prescriptionRefill.chat.yes") : t("pages.prescriptionRefill.chat.no");
+
+  const runReview = (next: ConsultAnswers) => {
+    setSub3("reviewing");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reviewing") });
+    // TODO: replace with backend call.
+    setTimeout(() => {
+      const flagged = evaluateConsult(next);
+      if (flagged) {
+        setSub3("flagged");
+      } else {
+        setSub3("cleared");
+        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.consultCleared") });
+        setTimeout(() => setStep(4), 600);
+      }
+    }, 1400);
+  };
+
+  const handleQ1 = (yes: boolean) => {
+    pushMsg({ role: "user", kind: "text", text: yesNo(yes) });
+    if (yes) {
+      setSub3("q1-detail");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q1DetailPrompt") });
+    } else {
+      setAnswers((a) => ({ ...a, consult: { ...a.consult, healthChanges: { changed: false, detail: "" } } }));
+      setSub3("q2");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q2") });
+    }
+  };
+  const handleQ1Detail = () => {
+    const v = detailDraft.trim();
+    if (!v) return;
+    pushMsg({ role: "user", kind: "text", text: v });
+    setAnswers((a) => ({ ...a, consult: { ...a.consult, healthChanges: { changed: true, detail: v } } }));
+    setDetailDraft("");
+    setSub3("q2");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q2") });
+  };
+  const handleQ2 = (yes: boolean) => {
+    pushMsg({ role: "user", kind: "text", text: yesNo(yes) });
+    if (yes) {
+      setSub3("q2-detail");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q2DetailPrompt") });
+    } else {
+      setAnswers((a) => ({ ...a, consult: { ...a.consult, allergies: { had: false, detail: "" } } }));
+      setSub3("q3");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q3") });
+    }
+  };
+  const handleQ2Detail = () => {
+    const v = detailDraft.trim();
+    if (!v) return;
+    pushMsg({ role: "user", kind: "text", text: v });
+    setAnswers((a) => ({ ...a, consult: { ...a.consult, allergies: { had: true, detail: v } } }));
+    setDetailDraft("");
+    setSub3("q3");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q3") });
+  };
+  const handleQ3 = (yes: boolean) => {
+    pushMsg({ role: "user", kind: "text", text: yesNo(yes) });
+    if (yes) {
+      setSub3("q3-detail");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.q3DetailPrompt") });
+    } else {
+      const next: ConsultAnswers = {
+        ...answers.consult,
+        otherMeds: { taking: false, detail: "" },
+      };
+      setAnswers((a) => ({ ...a, consult: next }));
+      runReview(next);
+    }
+  };
+  const handleQ3Detail = () => {
+    const v = detailDraft.trim();
+    if (!v) return;
+    pushMsg({ role: "user", kind: "text", text: v });
+    const next: ConsultAnswers = {
+      ...answers.consult,
+      otherMeds: { taking: true, detail: v },
+    };
+    setAnswers((a) => ({ ...a, consult: next }));
+    setDetailDraft("");
+    runReview(next);
+  };
+
+  const handleStartOver = () => {
+    setMessages([]);
+    setAnswers(emptyAnswers());
+    setSub2("choose");
+    setSub3("q1");
+    setSub4(isLoggedIn ? "summary" : "g-name");
+    setManualValue("");
+    setDetailDraft("");
+    seededRef.current = new Set();
+    setStep(1);
+  };
+
+  const handleBookDoctor = () => navigate("/real-doctors");
+
+  // --- Step 4 ---
+  const handleUseProfile = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.useTheseDetails") });
+    setAnswers((a) => ({ ...a, patient: patientDraft }));
+    setTimeout(() => setStep(5), 250);
+  };
+  const handleSaveProfileEdit = () => {
+    setAnswers((a) => ({ ...a, patient: patientDraft }));
+    setSub4("summary");
+  };
+
+  const handleGName = (v: string) => {
+    const val = v.trim();
+    if (!val) return;
+    pushMsg({ role: "user", kind: "text", text: val });
+    setPatientDraft((p) => ({ ...p, fullName: val }));
+    setSub4("g-dob");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQDob") });
+  };
+  const handleGDob = (dob: string) => {
+    if (!dob) return;
+    pushMsg({ role: "user", kind: "text", text: formatDobDisplay(dob) });
+    setPatientDraft((p) => ({ ...p, dob }));
+    setSub4("g-sex");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQSex") });
+  };
+  const handleGSex = (sex: "male" | "female") => {
+    pushMsg({
+      role: "user",
+      kind: "text",
+      text: sex === "male" ? t("pages.prescriptionRefill.chat.male") : t("pages.prescriptionRefill.chat.female"),
+    });
+    setPatientDraft((p) => ({ ...p, sex }));
+    setSub4("g-weight");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQWeight") });
+  };
+  const handleGWeight = (val: string, unit: "kg" | "lbs") => {
+    const v = val.trim();
+    if (!v) return;
+    pushMsg({ role: "user", kind: "text", text: `${v} ${unit}` });
+    setPatientDraft((p) => ({ ...p, weight: v, weightUnit: unit }));
+    setSub4("g-height");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQHeight") });
+  };
+  const handleGHeight = (val: string, unit: "cm" | "ftin") => {
+    const v = val.trim();
+    if (!v) return;
+    pushMsg({ role: "user", kind: "text", text: `${v} ${unit === "cm" ? "cm" : "ft/in"}` });
+    const finalDraft: PatientInfo = { ...patientDraft, height: v, heightUnit: unit };
+    setPatientDraft(finalDraft);
+    setAnswers((a) => ({ ...a, patient: finalDraft }));
+    setSub4("done");
+    setTimeout(() => setStep(5), 350);
+  };
+
+  // --- Back ---
   const handleBack = () => {
-    if (step === 1) {
-      onExit();
-      return;
-    }
-    if (step === 2) {
-      // back from step 2 to step 1
-      seededRef.current.delete(`step-${step}`);
-      // remove messages added after step 1's first AI msg (keep first msg only? Simpler: drop trailing until count is 1)
-      setMessages((prev) => prev.slice(0, 1));
-      setSub2("choose");
-      setStep(1);
-      return;
-    }
+    if (step === 1) return onExit();
     seededRef.current.delete(`step-${step}`);
+    setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
+    if (step === 2) setSub2("choose");
+    if (step === 3) setSub3("q1");
+    if (step === 4) setSub4(isLoggedIn ? "summary" : "g-name");
     setStep((s) => s - 1);
   };
 
@@ -273,14 +495,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         ))}
 
-        {/* Step 1: consent card */}
+        {/* Step 1 */}
         {step === 1 && !answers.consent && (
           <Bubble role="ai" wide>
             <ConsentCard onAgree={handleConsent} />
           </Bubble>
         )}
 
-        {/* Step 2 UI */}
+        {/* Step 2 */}
         {step === 2 && sub2 === "choose" && (
           <Bubble role="ai" wide>
             <div className="grid grid-cols-2 gap-3">
@@ -305,18 +527,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
-
         {step === 2 && sub2 === "upload-reading" && (
           <Bubble role="ai">
             <div className="flex items-center gap-3 py-1">
               <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              <span style={{ fontSize: 16 }}>
-                {t("pages.prescriptionRefill.chat.reading")}
-              </span>
+              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reading")}</span>
             </div>
           </Bubble>
         )}
-
         {step === 2 && sub2 === "confirm" && answers.drug && (
           <Bubble role="ai" wide>
             <DrugConfirmCard
@@ -329,7 +547,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
-
         {step === 2 && sub2 === "low-confidence" && answers.drug && (
           <Bubble role="ai" wide>
             <DrugConfirmCard
@@ -339,11 +556,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
               onSecondary={handleRetake}
               onTertiary={() => {
                 setSub2("manual-input");
-                pushMsg({
-                  role: "ai",
-                  kind: "text",
-                  text: t("pages.prescriptionRefill.chat.manualPrompt"),
-                });
+                pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.manualPrompt") });
               }}
               primaryLabel={t("pages.prescriptionRefill.chat.confirm")}
               secondaryLabel={t("pages.prescriptionRefill.chat.retakePhoto")}
@@ -351,7 +564,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
-
         {step === 2 && sub2 === "edit" && editDraft && (
           <Bubble role="ai" wide>
             <EditDrugCard
@@ -363,38 +575,140 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
+
+        {/* Step 3 */}
+        {step === 3 && (sub3 === "q1" || sub3 === "q2" || sub3 === "q3") && (
+          <Bubble role="ai" wide>
+            <YesNoButtons
+              onYes={() =>
+                sub3 === "q1" ? handleQ1(true) : sub3 === "q2" ? handleQ2(true) : handleQ3(true)
+              }
+              onNo={() =>
+                sub3 === "q1" ? handleQ1(false) : sub3 === "q2" ? handleQ2(false) : handleQ3(false)
+              }
+              yesLabel={t("pages.prescriptionRefill.chat.yes")}
+              noLabel={t("pages.prescriptionRefill.chat.no")}
+            />
+          </Bubble>
+        )}
+        {step === 3 && sub3 === "reviewing" && (
+          <Bubble role="ai">
+            <div className="flex items-center gap-3 py-1">
+              <Loader2 className="w-5 h-5 animate-spin text-primary" />
+              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reviewing")}</span>
+            </div>
+          </Bubble>
+        )}
+        {step === 3 && sub3 === "flagged" && (
+          <Bubble role="ai" wide>
+            <FlaggedCard
+              onBook={handleBookDoctor}
+              onStartOver={handleStartOver}
+              bookLabel={t("pages.prescriptionRefill.chat.bookDoctor")}
+              startOverLabel={t("pages.prescriptionRefill.chat.startOver")}
+              title={t("pages.prescriptionRefill.chat.flaggedTitle")}
+              body={t("pages.prescriptionRefill.chat.flaggedBody")}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 4 — logged-in */}
+        {step === 4 && isLoggedIn && sub4 === "summary" && (
+          <Bubble role="ai" wide>
+            <ProfileSummaryCard
+              info={patientDraft}
+              onUse={handleUseProfile}
+              onEdit={() => setSub4("edit")}
+            />
+          </Bubble>
+        )}
+        {step === 4 && isLoggedIn && sub4 === "edit" && (
+          <Bubble role="ai" wide>
+            <ProfileEditCard
+              draft={patientDraft}
+              setDraft={setPatientDraft}
+              onCancel={() => setSub4("summary")}
+              onSave={handleSaveProfileEdit}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 4 — guest */}
+        {step === 4 && !isLoggedIn && sub4 === "g-sex" && (
+          <Bubble role="ai" wide>
+            <div className="grid grid-cols-2 gap-3">
+              <BigChoice
+                label={t("pages.prescriptionRefill.chat.male")}
+                onClick={() => handleGSex("male")}
+              />
+              <BigChoice
+                label={t("pages.prescriptionRefill.chat.female")}
+                onClick={() => handleGSex("female")}
+              />
+            </div>
+          </Bubble>
+        )}
+        {step === 4 && !isLoggedIn && sub4 === "g-dob" && (
+          <Bubble role="ai" wide>
+            <DobPicker onSubmit={handleGDob} />
+          </Bubble>
+        )}
+        {step === 4 && !isLoggedIn && sub4 === "g-weight" && (
+          <Bubble role="ai" wide>
+            <NumberWithUnit
+              defaultUnit={patientDraft.weightUnit}
+              units={["kg", "lbs"]}
+              onSubmit={(v, u) => handleGWeight(v, u as "kg" | "lbs")}
+              placeholder={t("pages.prescriptionRefill.chat.weightPlaceholder")}
+            />
+          </Bubble>
+        )}
+        {step === 4 && !isLoggedIn && sub4 === "g-height" && (
+          <Bubble role="ai" wide>
+            <NumberWithUnit
+              defaultUnit={patientDraft.heightUnit}
+              units={["cm", "ftin"]}
+              onSubmit={(v, u) => handleGHeight(v, u as "cm" | "ftin")}
+              placeholder={t("pages.prescriptionRefill.chat.heightPlaceholder")}
+            />
+          </Bubble>
+        )}
       </div>
 
-      {/* Bottom input bar (only for manual text input) */}
+      {/* Bottom input bar */}
       {step === 2 && sub2 === "manual-input" && (
-        <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={manualValue}
-              onChange={(e) => setManualValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleManualSubmit();
-              }}
-              placeholder={t("pages.prescriptionRefill.chat.manualPlaceholder")}
-              autoFocus
-              className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              style={{ fontSize: 16, minHeight: 48 }}
-            />
-            <button
-              onClick={handleManualSubmit}
-              disabled={!manualValue.trim()}
-              className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
-              style={{ minHeight: 48, fontSize: 16 }}
-            >
-              {t("pages.prescriptionRefill.chat.continue")}
-            </button>
-          </div>
-        </div>
+        <BottomInputBar
+          value={manualValue}
+          setValue={setManualValue}
+          onSubmit={handleManualSubmit}
+          placeholder={t("pages.prescriptionRefill.chat.manualPlaceholder")}
+          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
+        />
       )}
 
-      {/* Placeholder for later steps */}
-      {step >= 3 && (
+      {step === 3 && (sub3 === "q1-detail" || sub3 === "q2-detail" || sub3 === "q3-detail") && (
+        <BottomInputBar
+          value={detailDraft}
+          setValue={setDetailDraft}
+          onSubmit={() => {
+            if (sub3 === "q1-detail") handleQ1Detail();
+            else if (sub3 === "q2-detail") handleQ2Detail();
+            else handleQ3Detail();
+          }}
+          placeholder={t("pages.prescriptionRefill.chat.detailPlaceholder")}
+          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
+        />
+      )}
+
+      {step === 4 && !isLoggedIn && sub4 === "g-name" && (
+        <NameInputBar
+          onSubmit={handleGName}
+          placeholder={t("pages.prescriptionRefill.chat.namePlaceholder")}
+          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
+        />
+      )}
+
+      {step >= 5 && (
         <div className="border-t border-border bg-background px-3 sm:px-5 py-4 text-center text-sm text-muted-foreground">
           {t("pages.prescriptionRefill.chat.placeholderHint")}
         </div>
@@ -403,7 +717,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   );
 };
 
-// ============= Subcomponents =============
+function formatDobDisplay(dob: string) {
+  // dob: yyyy-mm-dd → dd/mm/yyyy
+  const [y, m, d] = dob.split("-");
+  if (!y || !m || !d) return dob;
+  return `${d}/${m}/${y}`;
+}
+
+// ============= Shared UI =============
 
 const Bubble = ({
   role,
@@ -437,6 +758,71 @@ const Bubble = ({
   </div>
 );
 
+const BottomInputBar = ({
+  value,
+  setValue,
+  onSubmit,
+  placeholder,
+  buttonLabel,
+}: {
+  value: string;
+  setValue: (v: string) => void;
+  onSubmit: () => void;
+  placeholder: string;
+  buttonLabel: string;
+}) => (
+  <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
+    <div className="flex gap-2">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSubmit();
+        }}
+        placeholder={placeholder}
+        autoFocus
+        className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+        style={{ fontSize: 16, minHeight: 48 }}
+      />
+      <button
+        onClick={onSubmit}
+        disabled={!value.trim()}
+        className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
+        style={{ minHeight: 48, fontSize: 16 }}
+      >
+        {buttonLabel}
+      </button>
+    </div>
+  </div>
+);
+
+const NameInputBar = ({
+  onSubmit,
+  placeholder,
+  buttonLabel,
+}: {
+  onSubmit: (v: string) => void;
+  placeholder: string;
+  buttonLabel: string;
+}) => {
+  const [v, setV] = useState("");
+  return (
+    <BottomInputBar
+      value={v}
+      setValue={setV}
+      onSubmit={() => {
+        onSubmit(v);
+        setV("");
+      }}
+      placeholder={placeholder}
+      buttonLabel={buttonLabel}
+    />
+  );
+};
+
+// ============= Step 1 =============
+
 const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -453,7 +839,6 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
           {t("pages.prescriptionRefill.chat.consentBody")}
         </p>
       </div>
-
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-background/60 border border-border text-left text-foreground hover:bg-background transition-colors"
@@ -461,11 +846,8 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
         aria-expanded={open}
       >
         <span className="font-medium">{t("pages.prescriptionRefill.chat.learnMore")}</span>
-        <ChevronDown
-          className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
-        />
+        <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
-
       {open && (
         <div className="space-y-3 px-1 animate-fade-in" style={{ fontSize: 14 }}>
           <DetailRow
@@ -480,15 +862,11 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
             label={t("pages.prescriptionRefill.chat.consentRetentionLabel")}
             value={t("pages.prescriptionRefill.chat.consentRetentionValue")}
           />
-          <Link
-            to="/privacy"
-            className="inline-block text-primary underline underline-offset-2 hover:opacity-80"
-          >
+          <Link to="/privacy" className="inline-block text-primary underline underline-offset-2 hover:opacity-80">
             {t("pages.prescriptionRefill.chat.readPolicy")}
           </Link>
         </div>
       )}
-
       <button
         onClick={onAgree}
         className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
@@ -502,12 +880,12 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
 
 const DetailRow = ({ label, value }: { label: string; value: string }) => (
   <div>
-    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-      {label}
-    </p>
+    <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
     <p className="text-foreground mt-0.5">{value}</p>
   </div>
 );
+
+// ============= Step 2 =============
 
 const SubmissionButton = ({
   icon,
@@ -596,12 +974,8 @@ const DrugConfirmCard = ({
 
 const Row = ({ label, value }: { label: string; value: string }) => (
   <div className="flex justify-between gap-3 px-3 py-2.5">
-    <span className="text-muted-foreground" style={{ fontSize: 14 }}>
-      {label}
-    </span>
-    <span className="text-foreground font-medium text-right" style={{ fontSize: 15 }}>
-      {value}
-    </span>
+    <span className="text-muted-foreground" style={{ fontSize: 14 }}>{label}</span>
+    <span className="text-foreground font-medium text-right" style={{ fontSize: 15 }}>{value}</span>
   </div>
 );
 
@@ -656,6 +1030,396 @@ const EditDrugCard = ({
           {t("pages.prescriptionRefill.chat.save")}
         </button>
       </div>
+    </div>
+  );
+};
+
+// ============= Step 3 =============
+
+const YesNoButtons = ({
+  onYes,
+  onNo,
+  yesLabel,
+  noLabel,
+}: {
+  onYes: () => void;
+  onNo: () => void;
+  yesLabel: string;
+  noLabel: string;
+}) => (
+  <div className="grid grid-cols-2 gap-3">
+    <button
+      onClick={onNo}
+      className="rounded-full border border-border bg-background text-foreground font-semibold hover:bg-accent transition-colors"
+      style={{ minHeight: 52, fontSize: 16 }}
+    >
+      {noLabel}
+    </button>
+    <button
+      onClick={onYes}
+      className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+      style={{ minHeight: 52, fontSize: 16 }}
+    >
+      {yesLabel}
+    </button>
+  </div>
+);
+
+const FlaggedCard = ({
+  onBook,
+  onStartOver,
+  bookLabel,
+  startOverLabel,
+  title,
+  body,
+}: {
+  onBook: () => void;
+  onStartOver: () => void;
+  bookLabel: string;
+  startOverLabel: string;
+  title: string;
+  body: string;
+}) => (
+  <div className="space-y-4">
+    <div className="flex items-start gap-3">
+      <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+        <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
+          {title}
+        </h3>
+        <p className="mt-1.5 text-foreground/85 leading-relaxed" style={{ fontSize: 15 }}>
+          {body}
+        </p>
+      </div>
+    </div>
+    <button
+      onClick={onBook}
+      className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+      style={{ minHeight: 52, fontSize: 16 }}
+    >
+      <Stethoscope className="w-5 h-5" />
+      {bookLabel}
+    </button>
+    <button
+      onClick={onStartOver}
+      className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+      style={{ minHeight: 48, fontSize: 15 }}
+    >
+      {startOverLabel}
+    </button>
+  </div>
+);
+
+// ============= Step 4 =============
+
+const ProfileSummaryCard = ({
+  info,
+  onUse,
+  onEdit,
+}: {
+  info: PatientInfo;
+  onUse: () => void;
+  onEdit: () => void;
+}) => {
+  const { t } = useTranslation();
+  const rows: Array<{ label: string; value: string }> = [
+    { label: t("pages.prescriptionRefill.chat.pName"), value: info.fullName || "—" },
+    { label: t("pages.prescriptionRefill.chat.pDob"), value: info.dob ? formatDobDisplay(info.dob) : "—" },
+    {
+      label: t("pages.prescriptionRefill.chat.pSex"),
+      value: info.sex
+        ? info.sex === "male"
+          ? t("pages.prescriptionRefill.chat.male")
+          : t("pages.prescriptionRefill.chat.female")
+        : "—",
+    },
+    {
+      label: t("pages.prescriptionRefill.chat.pWeight"),
+      value: info.weight ? `${info.weight} ${info.weightUnit}` : "—",
+    },
+    {
+      label: t("pages.prescriptionRefill.chat.pHeight"),
+      value: info.height ? `${info.height} ${info.heightUnit === "cm" ? "cm" : "ft/in"}` : "—",
+    },
+  ];
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
+        {rows.map((r) => (
+          <Row key={r.label} label={r.label} value={r.value} />
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={onEdit}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.edit")}
+        </button>
+        <button
+          onClick={onUse}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.useTheseDetails")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const ProfileEditCard = ({
+  draft,
+  setDraft,
+  onSave,
+  onCancel,
+}: {
+  draft: PatientInfo;
+  setDraft: (d: PatientInfo) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-3">
+      <FieldLabel>{t("pages.prescriptionRefill.chat.pName")}</FieldLabel>
+      <TextField value={draft.fullName} onChange={(v) => setDraft({ ...draft, fullName: v })} />
+
+      <FieldLabel>{t("pages.prescriptionRefill.chat.pDob")}</FieldLabel>
+      <TextField
+        type="date"
+        value={draft.dob}
+        onChange={(v) => setDraft({ ...draft, dob: v })}
+      />
+
+      <FieldLabel>{t("pages.prescriptionRefill.chat.pSex")}</FieldLabel>
+      <div className="grid grid-cols-2 gap-2">
+        {(["male", "female"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setDraft({ ...draft, sex: s })}
+            className={`rounded-full border font-medium transition-all ${
+              draft.sex === s
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background border-border text-foreground hover:bg-accent"
+            }`}
+            style={{ minHeight: 48, fontSize: 15 }}
+          >
+            {s === "male"
+              ? t("pages.prescriptionRefill.chat.male")
+              : t("pages.prescriptionRefill.chat.female")}
+          </button>
+        ))}
+      </div>
+
+      <FieldLabel>{t("pages.prescriptionRefill.chat.pWeight")}</FieldLabel>
+      <UnitRow
+        value={draft.weight}
+        unit={draft.weightUnit}
+        units={["kg", "lbs"]}
+        onChange={(v, u) => setDraft({ ...draft, weight: v, weightUnit: u as "kg" | "lbs" })}
+      />
+
+      <FieldLabel>{t("pages.prescriptionRefill.chat.pHeight")}</FieldLabel>
+      <UnitRow
+        value={draft.height}
+        unit={draft.heightUnit}
+        units={["cm", "ftin"]}
+        onChange={(v, u) => setDraft({ ...draft, height: v, heightUnit: u as "cm" | "ftin" })}
+      />
+
+      <div className="grid grid-cols-2 gap-2 pt-2">
+        <button
+          onClick={onCancel}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.cancel")}
+        </button>
+        <button
+          onClick={onSave}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.save")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const FieldLabel = ({ children }: { children: React.ReactNode }) => (
+  <label className="block text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+    {children}
+  </label>
+);
+
+const TextField = ({
+  value,
+  onChange,
+  type = "text",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) => (
+  <input
+    type={type}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+    style={{ fontSize: 16, minHeight: 48 }}
+  />
+);
+
+const UnitRow = ({
+  value,
+  unit,
+  units,
+  onChange,
+}: {
+  value: string;
+  unit: string;
+  units: string[];
+  onChange: (val: string, unit: string) => void;
+}) => (
+  <div className="flex gap-2">
+    <input
+      type="number"
+      inputMode="decimal"
+      value={value}
+      onChange={(e) => onChange(e.target.value, unit)}
+      className="flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+      style={{ fontSize: 16, minHeight: 48 }}
+    />
+    <div className="flex rounded-full border border-border bg-background overflow-hidden">
+      {units.map((u) => (
+        <button
+          key={u}
+          onClick={() => onChange(value, u)}
+          className={`px-4 font-medium transition-colors ${
+            unit === u ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"
+          }`}
+          style={{ minHeight: 48, fontSize: 14 }}
+        >
+          {u === "ftin" ? "ft/in" : u}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const BigChoice = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="rounded-2xl bg-background border border-border text-foreground hover:bg-accent hover:border-primary/40 transition-all font-medium"
+    style={{ minHeight: 64, fontSize: 16 }}
+  >
+    {label}
+  </button>
+);
+
+const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
+  const { t } = useTranslation();
+  const [d, setD] = useState("");
+  const [m, setM] = useState("");
+  const [y, setY] = useState("");
+  const valid = useMemo(() => {
+    const dn = +d, mn = +m, yn = +y;
+    if (!dn || !mn || !yn) return false;
+    if (mn < 1 || mn > 12) return false;
+    if (dn < 1 || dn > 31) return false;
+    if (yn < 1900 || yn > new Date().getFullYear()) return false;
+    return true;
+  }, [d, m, y]);
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-3 gap-2">
+        <input
+          type="number"
+          inputMode="numeric"
+          placeholder={t("pages.prescriptionRefill.chat.dd")}
+          value={d}
+          onChange={(e) => setD(e.target.value.slice(0, 2))}
+          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          style={{ fontSize: 16, minHeight: 52 }}
+        />
+        <input
+          type="number"
+          inputMode="numeric"
+          placeholder={t("pages.prescriptionRefill.chat.mm")}
+          value={m}
+          onChange={(e) => setM(e.target.value.slice(0, 2))}
+          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          style={{ fontSize: 16, minHeight: 52 }}
+        />
+        <input
+          type="number"
+          inputMode="numeric"
+          placeholder={t("pages.prescriptionRefill.chat.yyyy")}
+          value={y}
+          onChange={(e) => setY(e.target.value.slice(0, 4))}
+          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          style={{ fontSize: 16, minHeight: 52 }}
+        />
+      </div>
+      <button
+        onClick={() => {
+          if (!valid) return;
+          const iso = `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+          onSubmit(iso);
+        }}
+        disabled={!valid}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
+        style={{ minHeight: 48, fontSize: 16 }}
+      >
+        {t("pages.prescriptionRefill.chat.continue")}
+      </button>
+    </div>
+  );
+};
+
+const NumberWithUnit = ({
+  defaultUnit,
+  units,
+  onSubmit,
+  placeholder,
+}: {
+  defaultUnit: string;
+  units: string[];
+  onSubmit: (value: string, unit: string) => void;
+  placeholder: string;
+}) => {
+  const { t } = useTranslation();
+  const [val, setVal] = useState("");
+  const [unit, setUnit] = useState(defaultUnit);
+  return (
+    <div className="space-y-3">
+      <UnitRow
+        value={val}
+        unit={unit}
+        units={units}
+        onChange={(v, u) => {
+          setVal(v);
+          setUnit(u);
+        }}
+      />
+      <input
+        type="hidden"
+        value={placeholder}
+        readOnly
+      />
+      <button
+        onClick={() => onSubmit(val, unit)}
+        disabled={!val.trim()}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
+        style={{ minHeight: 48, fontSize: 16 }}
+      >
+        {t("pages.prescriptionRefill.chat.continue")}
+      </button>
     </div>
   );
 };
