@@ -21,7 +21,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import ciraLogo from "@/assets/cira-logo.svg";
+
 import { getUser } from "@/lib/auth";
 
 export type DrugDetails = {
@@ -618,32 +618,26 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   return (
     <div className="flex flex-col w-full" style={{ minHeight: "min(720px, 100dvh)" }}>
-      {/* Progress bar — hidden on final step */}
+      {/* Top bar with back + slim progress */}
       {step < 8 && (
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/60 px-3 sm:px-5 pt-3 pb-2">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-md px-3 sm:px-4 pt-2 pb-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={handleBack}
               aria-label={t("common.back")}
-              className="flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              style={{ minHeight: 48, minWidth: 48 }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/80 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
-            <div className="flex-1">
-              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-muted-foreground font-medium">
-                {t("pages.prescriptionRefill.chat.stepCounter", {
-                  current: step,
-                  total: TOTAL_STEPS,
-                })}
-              </p>
+            <div className="flex-1 h-[3px] rounded-full bg-muted/70 overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progressPct}%` }}
+              />
             </div>
+            <span className="text-[11px] text-muted-foreground font-medium tabular-nums shrink-0">
+              {step}/{TOTAL_STEPS}
+            </span>
           </div>
         </div>
       )}
@@ -651,7 +645,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       {/* Chat scroll area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3 sm:px-5 py-5 space-y-3"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-2.5"
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (
@@ -990,22 +984,17 @@ const Bubble = ({
   wide?: boolean;
 }) => (
   <div
-    className={`flex items-end gap-2 animate-fade-in ${
+    className={`flex animate-fade-in ${
       role === "user" ? "justify-end" : "justify-start"
     }`}
   >
-    {role === "ai" && (
-      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-        <img src={ciraLogo} alt="Cira" width={18} height={18} />
-      </div>
-    )}
     <div
-      className={`${wide ? "max-w-[92%] w-full" : "max-w-[85%]"} rounded-2xl px-4 py-3 leading-relaxed ${
+      className={`${wide ? "max-w-[95%] md:max-w-[80%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-3.5 py-2.5 leading-relaxed ${
         role === "user"
-          ? "bg-primary text-primary-foreground rounded-br-sm"
-          : "bg-muted text-foreground rounded-bl-sm"
+          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
+          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
       }`}
-      style={{ fontSize: 16 }}
+      style={{ fontSize: 14.5 }}
     >
       {children}
     </div>
@@ -1082,30 +1071,34 @@ const NameInputBar = ({
 const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center text-center">
-        <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
-          <Lock className="w-5 h-5 text-primary" />
-        </div>
-        <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
-          {t("pages.prescriptionRefill.chat.consentTitle")}
-        </h3>
-        <p className="mt-2 text-foreground/80" style={{ fontSize: 15 }}>
-          {t("pages.prescriptionRefill.chat.consentBody")}
-        </p>
-      </div>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-background/60 border border-border text-left text-foreground hover:bg-background transition-colors"
-        style={{ minHeight: 48, fontSize: 15 }}
-        aria-expanded={open}
-      >
-        <span className="font-medium">{t("pages.prescriptionRefill.chat.learnMore")}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+    <div className="space-y-3">
+      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+          className="mt-[3px] h-4 w-4 rounded border-border accent-primary shrink-0"
+        />
+        <span className="text-foreground/90 leading-snug" style={{ fontSize: 13.5 }}>
+          <Lock className="inline w-3.5 h-3.5 mr-1 -mt-0.5 text-primary" />
+          {t("pages.prescriptionRefill.chat.consentBody")}{" "}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setOpen((o) => !o);
+            }}
+            className="text-primary underline underline-offset-2 hover:opacity-80"
+          >
+            {t("pages.prescriptionRefill.chat.learnMore")}
+          </button>
+        </span>
+      </label>
+
       {open && (
-        <div className="space-y-3 px-1 animate-fade-in" style={{ fontSize: 14 }}>
+        <div className="space-y-2 rounded-lg bg-background/60 border border-border/60 p-3 animate-fade-in" style={{ fontSize: 12.5 }}>
           <DetailRow
             label={t("pages.prescriptionRefill.chat.consentCollectLabel")}
             value={t("pages.prescriptionRefill.chat.consentCollectValue")}
@@ -1123,12 +1116,14 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
           </Link>
         </div>
       )}
+
       <button
         onClick={onAgree}
-        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
-        style={{ minHeight: 52, fontSize: 16 }}
+        disabled={!checked}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ minHeight: 40, fontSize: 14 }}
       >
-        {t("pages.prescriptionRefill.chat.consentAgree")}
+        {t("pages.prescriptionRefill.chat.continue")}
       </button>
     </div>
   );
