@@ -640,7 +640,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const progressPct = (stageInfo.index / 4) * 100;
 
   return (
-    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "min(720px, 100dvh)" }}>
+    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "100dvh" }}>
       {/* Top bar: back left, centered title + stage count, slim progress bar bottom */}
       {step < 8 && (
         <div className="sticky top-0 z-10 bg-[#f7f6f0]/95 backdrop-blur-md">
