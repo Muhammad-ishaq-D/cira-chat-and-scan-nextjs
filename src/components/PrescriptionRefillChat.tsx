@@ -932,13 +932,13 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 7 — Payment */}
+        {/* Step 7 — Payment (hands off to Stripe Checkout) */}
         {step === 7 && (
           <Bubble role="ai" wide>
             <PaymentCard
               priceDisplay={REFILL_PRICE_DISPLAY}
               email={answers.email}
-              savedCard={savedCard}
+              savedCard={null}
               status={sub7}
               onPay={handlePay}
               onRetry={handleRetryPayment}
@@ -946,11 +946,27 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 8 — Success */}
-        {step === 8 && (
+        {/* Step 8 — Result (driven by polling /api/prescription/status/:refill_id) */}
+        {step === 8 && sub8 === "pending" && (
+          <Bubble role="ai" wide>
+            <PaymentPendingCard />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "canceled" && (
+          <Bubble role="ai" wide>
+            <PaymentCanceledCard onTryAgain={onExit} />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "failed" && (
+          <Bubble role="ai" wide>
+            <PaymentCanceledCard onTryAgain={onExit} failed />
+          </Bubble>
+        )}
+        {step === 8 && sub8 === "paid" && (
           <Bubble role="ai" wide>
             <SuccessCard
               refNumber={refNumber}
+              emailStatus={emailStatus}
               isLoggedIn={isLoggedIn}
               signupDismissed={signupDismissed}
               onCreateAccount={() => navigate("/signup")}
