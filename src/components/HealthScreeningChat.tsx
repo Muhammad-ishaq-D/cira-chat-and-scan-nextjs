@@ -24,6 +24,45 @@ type RefillChatResponse = {
   consult_clearance_token?: string;
 };
 
+type ScreeningQuestion = {
+  key: "healthChanges" | "allergies" | "otherMeds";
+  textKey: string;
+};
+
+const SCREENING_QUESTIONS: ScreeningQuestion[] = [
+  { key: "healthChanges", textKey: "pages.prescriptionRefill.chat.q1" },
+  { key: "allergies", textKey: "pages.prescriptionRefill.chat.q2" },
+  { key: "otherMeds", textKey: "pages.prescriptionRefill.chat.q3" },
+];
+
+const flagKeywords = [
+  "pregnan",
+  "chest pain",
+  "faint",
+  "blood pressure",
+  "diabetes",
+  "stroke",
+  "anaphyl",
+  "swelling",
+  "heart",
+  "kidney",
+  "liver",
+  "shortness of breath",
+  "rash",
+];
+
+const isAffirmative = (text: string) => /\b(yes|yeah|yep|new|changed|reaction|allerg|taking|started|currently|supplement)\b/i.test(text);
+const isNegative = (text: string) => /\b(no|none|nope|not|never|n\/a|na)\b/i.test(text);
+
+const shouldFlagLocalResponse = (question: ScreeningQuestion, answer: string) => {
+  const normalized = answer.toLowerCase();
+  if (flagKeywords.some((k) => normalized.includes(k))) return true;
+  if (question.key === "healthChanges" || question.key === "allergies") {
+    return isAffirmative(answer) && !isNegative(answer);
+  }
+  return false;
+};
+
 type Props = {
   /** Shared refill_id from the parent flow. Used so all step endpoints reference the same record. */
   refillId: string;
