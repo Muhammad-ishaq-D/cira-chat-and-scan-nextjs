@@ -300,6 +300,21 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
+  const handleStep1Submit = (medication: string) => {
+    const name = medication.trim();
+    if (!name) return;
+    setAnswers((a) => ({
+      ...a,
+      consent: true,
+      submissionMode: "manual",
+      drug: { drug: name, form: "—", strength: "—", dosage: "—" },
+    }));
+    pushMsg({ role: "user", kind: "text", text: name });
+    // Skip step 2 (medication is already captured) → go straight to health check.
+    seededRef.current.add("step-2");
+    setTimeout(() => setStep(3), 200);
+  };
+
 
   // --- Step 2 ---
   const handleChooseUpload = () => {
