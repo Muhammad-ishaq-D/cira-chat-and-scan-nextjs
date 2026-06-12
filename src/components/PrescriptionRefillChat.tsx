@@ -170,6 +170,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "cleared";
   const [sub3, setSub3] = useState<Sub3>("q1");
   const [detailDraft, setDetailDraft] = useState("");
+  // Token returned by the AI screening backend when the consult is cleared.
+  const [, setConsultClearanceToken] = useState<string>("");
 
   // Step 4 sub-state
   type Sub4 =
