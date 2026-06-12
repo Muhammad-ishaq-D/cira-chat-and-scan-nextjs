@@ -85,6 +85,8 @@ const emptyAnswers = (): RefillAnswers => ({
     otherMeds: { taking: false, detail: "" },
   },
   patient: detectPatientDefaults(),
+  email: "",
+  paid: false,
 });
 
 function detectPatientDefaults(): PatientInfo {
