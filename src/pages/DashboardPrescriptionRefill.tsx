@@ -93,58 +93,61 @@ const DashboardPrescriptionRefill = () => {
       <div className="flex-1 overflow-y-auto relative">
         <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-8 sm:py-12 pb-24 md:pb-8">
 
-          {/* Start page layout */}
-          <div className="text-center mb-10">
-            {/* Pill icon */}
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-6">
-              <Pill className="w-7 h-7 text-primary" />
+          {showChat ? (
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+              <PrescriptionRefillChat onExit={() => setShowChat(false)} />
             </div>
+          ) : (
+            <>
+              {/* Start page layout */}
+              <div className="text-center mb-10">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-6">
+                  <Pill className="w-7 h-7 text-primary" />
+                </div>
 
-            {/* Title */}
-            <h1
-              className="font-heading text-3xl md:text-4xl leading-[1.1] text-foreground mb-3"
-              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-            >
-              {t("pages.prescriptionRefill.startTitle")}
-            </h1>
+                <h1
+                  className="font-heading text-3xl md:text-4xl leading-[1.1] text-foreground mb-3"
+                  style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+                >
+                  {t("pages.prescriptionRefill.startTitle")}
+                </h1>
 
-            {/* Subtitle / Powered by badge */}
-            <div className="flex items-center justify-center gap-2 mb-8">
-              <span className="inline-block text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-muted px-3 py-1 rounded-full border border-border">
-                {t("pages.prescriptionRefill.startSubtitle")}
-              </span>
-            </div>
+                <div className="flex items-center justify-center gap-2 mb-8">
+                  <span className="inline-block text-[10px] uppercase tracking-[0.15em] text-muted-foreground bg-muted px-3 py-1 rounded-full border border-border">
+                    {t("pages.prescriptionRefill.startSubtitle")}
+                  </span>
+                </div>
 
-            {/* Main CTA */}
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-full sm:w-auto px-10 py-4 rounded-full bg-primary text-primary-foreground text-lg font-semibold hover:opacity-90 transition-opacity shadow-sm"
-            >
-              {t("pages.prescriptionRefill.startCta")}
-            </button>
+                <button
+                  onClick={() => setShowChat(true)}
+                  className="w-full sm:w-auto px-10 py-4 rounded-full bg-primary text-primary-foreground text-lg font-semibold hover:opacity-90 transition-opacity shadow-sm"
+                >
+                  {t("pages.prescriptionRefill.startCta")}
+                </button>
 
-            {/* Trust text */}
-            <div className="mt-6 space-y-1">
-              <p className="text-sm font-medium text-foreground">
-                {t("pages.prescriptionRefill.price")}
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-                {t("pages.prescriptionRefill.refund")}
-              </p>
-            </div>
-          </div>
+                <div className="mt-6 space-y-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {t("pages.prescriptionRefill.price")}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                    {t("pages.prescriptionRefill.refund")}
+                  </p>
+                </div>
+              </div>
 
-          {/* Refill History (dashboard only) */}
-          <div className="border-t border-border pt-8">
-            <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4 text-center">
-              {t("pages.prescriptionRefill.historyTitle")}
-            </h2>
-            <div className="rounded-2xl border border-border/60 bg-card/50 p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                {t("pages.prescriptionRefill.historyEmpty")}
-              </p>
-            </div>
-          </div>
+              {/* Refill History */}
+              <div className="border-t border-border pt-8">
+                <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4 text-center">
+                  {t("pages.prescriptionRefill.historyTitle")}
+                </h2>
+                <div className="rounded-2xl border border-border/60 bg-card/50 p-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {t("pages.prescriptionRefill.historyEmpty")}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <MobileBottomNav />
