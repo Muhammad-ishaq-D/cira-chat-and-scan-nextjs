@@ -22,12 +22,8 @@ const PrescriptionRefill = () => {
       />
 
       {showChat ? (
-        <div className="min-h-screen bg-background">
-          <section className="max-w-xl mx-auto px-0 sm:px-6 py-0 sm:py-6">
-            <div className="rounded-none sm:rounded-2xl sm:border sm:border-border sm:bg-card overflow-hidden">
-              <PrescriptionRefillChat onExit={() => setShowChat(false)} />
-            </div>
-          </section>
+        <div className="min-h-screen bg-[#f7f6f0]">
+          <PrescriptionRefillChat onExit={() => setShowChat(false)} />
         </div>
       ) : (
         <div className="relative min-h-screen overflow-hidden bg-[#f7f6f0]">

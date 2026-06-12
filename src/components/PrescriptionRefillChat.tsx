@@ -300,6 +300,21 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
+  const handleStep1Submit = (medication: string) => {
+    const name = medication.trim();
+    if (!name) return;
+    setAnswers((a) => ({
+      ...a,
+      consent: true,
+      submissionMode: "manual",
+      drug: { drug: name, form: "—", strength: "—", dosage: "—" },
+    }));
+    pushMsg({ role: "user", kind: "text", text: name });
+    // Skip step 2 (medication is already captured) → go straight to health check.
+    seededRef.current.add("step-2");
+    setTimeout(() => setStep(3), 200);
+  };
+
 
   // --- Step 2 ---
   const handleChooseUpload = () => {
@@ -625,7 +640,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const progressPct = (stageInfo.index / 4) * 100;
 
   return (
-    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "min(720px, 100dvh)" }}>
+    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "100dvh" }}>
       {/* Top bar: back left, centered title + stage count, slim progress bar bottom */}
       {step < 8 && (
         <div className="sticky top-0 z-10 bg-[#f7f6f0]/95 backdrop-blur-md">
@@ -657,7 +672,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
-        <Step1Hero onContinue={handleConsent} />
+        <Step1Hero onSubmit={handleStep1Submit} />
       ) : (
       <div
         ref={scrollRef}
@@ -1080,71 +1095,94 @@ const NameInputBar = ({
 
 // ============= Step 1 =============
 
-const Step1Hero = ({ onContinue }: { onContinue: () => void }) => {
+const Step1Hero = ({ onSubmit }: { onSubmit: (medication: string) => void }) => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
+  const [medication, setMedication] = useState("");
+  const canSubmit = checked && medication.trim().length > 0;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    onSubmit(medication);
+  };
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 sm:py-14 text-center">
-      {/* Cira logo mark */}
-      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
-        <img src={ciraLogo} alt="Cira" width={40} height={40} />
+    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-8 text-center w-full">
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
+        {/* Cira logo mark */}
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
+          <img src={ciraLogo} alt="Cira" width={40} height={40} />
+        </div>
+
+        {/* Headline */}
+        <h1
+          className="font-heading text-foreground leading-[1.05] tracking-tight"
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: "clamp(2rem, 5.5vw, 3rem)",
+            fontWeight: 500,
+          }}
+        >
+          {t("pages.prescriptionRefill.chat.step1Headline", "Refill your prescription in minutes")}
+        </h1>
+
+        {/* Subtitle */}
+        <p
+          className="mt-5 text-foreground/70 max-w-md leading-relaxed"
+          style={{ fontSize: 15 }}
+        >
+          {t(
+            "pages.prescriptionRefill.chat.step1Sub",
+            "We cover 190+ common medications, reviewed by licensed pharmacists and approved by partner clinicians."
+          )}
+        </p>
+
+        {/* Medication input + CTA */}
+        <form onSubmit={handleSubmit} className="mt-8 w-full space-y-3">
+          <input
+            type="text"
+            value={medication}
+            onChange={(e) => setMedication(e.target.value)}
+            placeholder={t(
+              "pages.prescriptionRefill.chat.step1Placeholder",
+              "What medication do you need to refill?"
+            )}
+            autoFocus
+            className="w-full rounded-2xl bg-white border border-border/70 px-5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 text-center"
+            style={{ minHeight: 56, fontSize: 16 }}
+          />
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+            style={{ minHeight: 56, fontSize: 16 }}
+          >
+            {t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
+          </button>
+        </form>
+
+        {/* Tiny consent tickbox */}
+        <label className="mt-4 flex items-start gap-2 max-w-md cursor-pointer select-none text-left">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+            className="mt-[3px] h-3.5 w-3.5 rounded border-border accent-primary shrink-0"
+          />
+          <span className="text-foreground/65 leading-snug" style={{ fontSize: 11.5 }}>
+            <Lock className="inline w-3 h-3 mr-1 -mt-0.5 text-primary/80" />
+            {t("pages.prescriptionRefill.chat.consentBody")}{" "}
+            <Link
+              to="/privacy"
+              className="text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              {t("pages.prescriptionRefill.chat.learnMore")}
+            </Link>
+          </span>
+        </label>
       </div>
 
-      {/* Headline */}
-      <h1
-        className="font-heading text-foreground leading-[1.05] tracking-tight max-w-xl"
-        style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: "clamp(1.9rem, 5.5vw, 2.75rem)",
-          fontWeight: 500,
-        }}
-      >
-        {t("pages.prescriptionRefill.chat.step1Headline", "Refill your prescription in minutes")}
-      </h1>
-
-      {/* Subtitle */}
-      <p
-        className="mt-5 text-foreground/70 max-w-md leading-relaxed"
-        style={{ fontSize: 15 }}
-      >
-        {t(
-          "pages.prescriptionRefill.chat.step1Sub",
-          "We cover 190+ common medications, reviewed by licensed pharmacists and approved by partner clinicians."
-        )}
-      </p>
-
-      {/* CTA */}
-      <button
-        onClick={onContinue}
-        disabled={!checked}
-        className="mt-10 w-full max-w-md rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ minHeight: 52, fontSize: 16 }}
-      >
-        {t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
-      </button>
-
-      {/* Tiny consent tickbox */}
-      <label className="mt-4 flex items-start gap-2 max-w-md cursor-pointer select-none text-left">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => setChecked(e.target.checked)}
-          className="mt-[3px] h-3.5 w-3.5 rounded border-border accent-primary shrink-0"
-        />
-        <span className="text-foreground/65 leading-snug" style={{ fontSize: 11.5 }}>
-          <Lock className="inline w-3 h-3 mr-1 -mt-0.5 text-primary/80" />
-          {t("pages.prescriptionRefill.chat.consentBody")}{" "}
-          <Link
-            to="/privacy"
-            className="text-primary underline underline-offset-2 hover:opacity-80"
-          >
-            {t("pages.prescriptionRefill.chat.learnMore")}
-          </Link>
-        </span>
-      </label>
-
       {/* Footer pricing */}
-      <div className="mt-auto pt-10">
+      <div className="pt-10 text-center">
         <p className="text-foreground font-semibold" style={{ fontSize: 14 }}>
           {t("pages.prescriptionRefill.price")}
         </p>
@@ -1158,6 +1196,7 @@ const Step1Hero = ({ onContinue }: { onContinue: () => void }) => {
     </div>
   );
 };
+
 
 
 
