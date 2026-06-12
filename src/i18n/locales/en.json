@@ -436,6 +436,19 @@
       "refund": "Not satisfied? We offer a full refund if your pharmacy does not accept this prescription.",
       "historyTitle": "Your Refill History",
       "historyEmpty": "Your prescription refills will appear here",
+      "history": {
+        "title": "Your Refill History",
+        "emptyLine1": "No prescription refills yet.",
+        "emptyLine2": "Start your first refill above.",
+        "loadMore": "Load More",
+        "error": "Unable to load your history. Please refresh.",
+        "status": {
+          "sent": "Sent",
+          "failed": "Failed",
+          "refundRequested": "Refund Requested",
+          "refunded": "Refunded"
+        }
+      },
       "chat": {
         "stepCounter": "Step {{current}} of {{total}}",
         "continue": "Continue",
