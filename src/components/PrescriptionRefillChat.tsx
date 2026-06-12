@@ -895,6 +895,20 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
+
+        {/* Step 8 — Success */}
+        {step === 8 && (
+          <Bubble role="ai" wide>
+            <SuccessCard
+              refNumber={refNumber}
+              isLoggedIn={isLoggedIn}
+              signupDismissed={signupDismissed}
+              onCreateAccount={() => navigate("/signup")}
+              onDismissSignup={() => setSignupDismissed(true)}
+              onDone={onExit}
+            />
+          </Bubble>
+        )}
       </div>
 
       {/* Bottom input bar */}
@@ -939,12 +953,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           buttonLabel={t("pages.prescriptionRefill.chat.continue")}
           type="email"
         />
-      )}
-
-      {step >= 8 && (
-        <div className="border-t border-border bg-background px-3 sm:px-5 py-4 text-center text-sm text-muted-foreground">
-          {t("pages.prescriptionRefill.chat.placeholderHint")}
-        </div>
       )}
     </div>
   );
