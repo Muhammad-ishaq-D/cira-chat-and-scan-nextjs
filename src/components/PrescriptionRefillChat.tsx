@@ -550,7 +550,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setAnswers(emptyAnswers());
     setSub2("choose");
     setSub3("q1");
-    setSub4(isLoggedIn ? "summary" : "g-name");
+    setSub4("g-name");
     setManualValue("");
     setDetailDraft("");
     seededRef.current = new Set();
@@ -559,16 +559,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const handleBookDoctor = () => navigate("/real-doctors");
 
-  // --- Step 4 ---
-  const handleUseProfile = () => {
-    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.useTheseDetails") });
-    setAnswers((a) => ({ ...a, patient: patientDraft }));
-    setTimeout(() => setStep(5), 250);
-  };
-  const handleSaveProfileEdit = () => {
-    setAnswers((a) => ({ ...a, patient: patientDraft }));
-    setSub4("summary");
-  };
+  // --- Step 4 (everyone uses the guest typing flow — no prefill card) ---
+
 
   const handleGName = (v: string) => {
     const val = v.trim();
