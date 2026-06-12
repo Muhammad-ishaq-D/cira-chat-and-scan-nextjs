@@ -12,6 +12,12 @@ import {
   RotateCcw,
   AlertTriangle,
   Stethoscope,
+  Pill,
+  User as UserIcon,
+  Mail,
+  CreditCard,
+  ShieldCheck,
+  XCircle,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { getUser } from "@/lib/auth";
@@ -45,7 +51,14 @@ export type RefillAnswers = {
   submissionMode: "upload" | "manual" | null;
   consult: ConsultAnswers;
   patient: PatientInfo;
+  email: string;
+  paid: boolean;
 };
+
+const REFILL_PRICE_CENTS = 500;
+const REFILL_PRICE_DISPLAY = "$5.00";
+const PRESCRIBER_NAME = "Dr. Didier Decamps";
+const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
 const TOTAL_STEPS = 8;
 
@@ -72,6 +85,8 @@ const emptyAnswers = (): RefillAnswers => ({
     otherMeds: { taking: false, detail: "" },
   },
   patient: detectPatientDefaults(),
+  email: "",
+  paid: false,
 });
 
 function detectPatientDefaults(): PatientInfo {
@@ -162,6 +177,18 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [sub4, setSub4] = useState<Sub4>(isLoggedIn ? "summary" : "g-name");
   const [patientDraft, setPatientDraft] = useState<PatientInfo>(answers.patient);
 
+  // Step 5 sub-state
+  type Sub5 = "logged-confirm" | "logged-different" | "guest-ask" | "guest-confirm";
+  const [sub5, setSub5] = useState<Sub5>(isLoggedIn ? "logged-confirm" : "guest-ask");
+  const [emailDraft, setEmailDraft] = useState("");
+
+  // Step 7 sub-state
+  type Sub7 = "ready" | "processing" | "failed";
+  const [sub7, setSub7] = useState<Sub7>("ready");
+  // Mocked saved card flag — wire to real payment vault later.
+  const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
+  const hasSavedCard = !!savedCard;
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
 
@@ -172,7 +199,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, step, sub2, sub3, sub4]);
+  }, [messages, step, sub2, sub3, sub4, sub5, sub7]);
 
   // Seed AI prompts for each step + sub-state transitions
   useEffect(() => {
@@ -200,7 +227,40 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       if (!isLoggedIn) {
         pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.gQName") });
       }
-    } else if (step >= 5) {
+    } else if (step === 5) {
+      if (isLoggedIn) {
+        const email = localUser?.email || "";
+        setSub5("logged-confirm");
+        setAnswers((a) => ({ ...a, email: a.email || email }));
+        pushMsg({
+          role: "ai",
+          kind: "text",
+          text: t("pages.prescriptionRefill.chat.step5LoggedPrompt", { email }),
+        });
+      } else {
+        setSub5("guest-ask");
+        pushMsg({
+          role: "ai",
+          kind: "text",
+          text: t("pages.prescriptionRefill.chat.step5GuestPrompt"),
+        });
+      }
+    } else if (step === 6) {
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: t("pages.prescriptionRefill.chat.step6Prompt"),
+      });
+    } else if (step === 7) {
+      setSub7("ready");
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: hasSavedCard
+          ? t("pages.prescriptionRefill.chat.step7PromptSaved")
+          : t("pages.prescriptionRefill.chat.step7PromptCheckout"),
+      });
+    } else if (step >= 8) {
       pushMsg({
         role: "ai",
         kind: "text",
@@ -440,14 +500,94 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setTimeout(() => setStep(5), 350);
   };
 
+  // --- Step 5 ---
+  const handleConfirmLoggedEmail = () => {
+    const email = answers.email || localUser?.email || "";
+    setAnswers((a) => ({ ...a, email }));
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.sendHere") });
+    setTimeout(() => setStep(6), 250);
+  };
+  const handleUseDifferentEmail = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.useDifferentEmail") });
+    setSub5("logged-different");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step5GuestPrompt") });
+  };
+  const handleEmailSubmit = (email: string) => {
+    const v = email.trim();
+    if (!isValidEmail(v)) return;
+    pushMsg({ role: "user", kind: "text", text: v });
+    setAnswers((a) => ({ ...a, email: v }));
+    setEmailDraft("");
+    setSub5("guest-confirm");
+    pushMsg({
+      role: "ai",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.step5ConfirmPrompt"),
+    });
+  };
+  const handleEmailConfirmYes = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.emailConfirmYes") });
+    setTimeout(() => setStep(6), 250);
+  };
+  const handleEmailConfirmEdit = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.edit") });
+    setSub5(isLoggedIn ? "logged-different" : "guest-ask");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step5GuestPrompt") });
+  };
+
+  // --- Step 6 ---
+  const handleConfirmAndPay = () => {
+    pushMsg({
+      role: "user",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.confirmAndPay", { price: REFILL_PRICE_DISPLAY }),
+    });
+    setTimeout(() => setStep(7), 250);
+  };
+  const handleEditFromSummary = () => {
+    // Back to step 4 to edit patient details
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.editDetails") });
+    seededRef.current.delete(`step-4`);
+    seededRef.current.delete(`step-5`);
+    seededRef.current.delete(`step-6`);
+    setSub4(isLoggedIn ? "edit" : "g-name");
+    setStep(4);
+  };
+
+  // --- Step 7 ---
+  const handlePay = async () => {
+    setSub7("processing");
+    // TODO: replace with real Stripe call.
+    await new Promise((r) => setTimeout(r, 1600));
+    const ok = Math.random() > 0.15;
+    if (!ok) {
+      setSub7("failed");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });
+      return;
+    }
+    setAnswers((a) => ({ ...a, paid: true }));
+    pushMsg({
+      role: "user",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.paid", { price: REFILL_PRICE_DISPLAY }),
+    });
+    setTimeout(() => setStep(8), 300);
+  };
+  const handleRetryPayment = () => {
+    setSub7("ready");
+  };
+
   // --- Back ---
   const handleBack = () => {
     if (step === 1) return onExit();
+    if (step === 7 && sub7 === "processing") return; // block during payment
     seededRef.current.delete(`step-${step}`);
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
     if (step === 2) setSub2("choose");
     if (step === 3) setSub3("q1");
     if (step === 4) setSub4(isLoggedIn ? "summary" : "g-name");
+    if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
+    if (step === 7) setSub7("ready");
     setStep((s) => s - 1);
   };
 
@@ -673,6 +813,65 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             />
           </Bubble>
         )}
+
+        {/* Step 5 — Email */}
+        {step === 5 && isLoggedIn && sub5 === "logged-confirm" && (
+          <Bubble role="ai" wide>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={handleUseDifferentEmail}
+                className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.useDifferentEmail")}
+              </button>
+              <button
+                onClick={handleConfirmLoggedEmail}
+                className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.sendHere")}
+              </button>
+            </div>
+          </Bubble>
+        )}
+        {step === 5 && sub5 === "guest-confirm" && (
+          <Bubble role="ai" wide>
+            <EmailConfirmCard
+              email={answers.email}
+              onYes={handleEmailConfirmYes}
+              onEdit={handleEmailConfirmEdit}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 6 — Review */}
+        {step === 6 && (
+          <Bubble role="ai" wide>
+            <ReviewSummaryCard
+              answers={answers}
+              priceDisplay={REFILL_PRICE_DISPLAY}
+              prescriberName={PRESCRIBER_NAME}
+              prescriberClinic={PRESCRIBER_CLINIC}
+              onConfirm={handleConfirmAndPay}
+              onEdit={handleEditFromSummary}
+            />
+          </Bubble>
+        )}
+
+        {/* Step 7 — Payment */}
+        {step === 7 && (
+          <Bubble role="ai" wide>
+            <PaymentCard
+              priceDisplay={REFILL_PRICE_DISPLAY}
+              email={answers.email}
+              savedCard={savedCard}
+              status={sub7}
+              onPay={handlePay}
+              onRetry={handleRetryPayment}
+            />
+          </Bubble>
+        )}
       </div>
 
       {/* Bottom input bar */}
@@ -708,7 +907,18 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         />
       )}
 
-      {step >= 5 && (
+      {step === 5 && (sub5 === "guest-ask" || sub5 === "logged-different") && (
+        <BottomInputBar
+          value={emailDraft}
+          setValue={setEmailDraft}
+          onSubmit={() => handleEmailSubmit(emailDraft)}
+          placeholder={t("pages.prescriptionRefill.chat.emailPlaceholder")}
+          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
+          type="email"
+        />
+      )}
+
+      {step >= 8 && (
         <div className="border-t border-border bg-background px-3 sm:px-5 py-4 text-center text-sm text-muted-foreground">
           {t("pages.prescriptionRefill.chat.placeholderHint")}
         </div>
@@ -716,6 +926,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     </div>
   );
 };
+
+function isValidEmail(e: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+}
+
+function maskEmail(e: string) {
+  if (!e || !e.includes("@")) return e;
+  const [local, domain] = e.split("@");
+  if (local.length <= 2) return `${local[0] || ""}*@${domain}`;
+  return `${local[0]}${"*".repeat(Math.max(1, local.length - 2))}${local[local.length - 1]}@${domain}`;
+}
 
 function formatDobDisplay(dob: string) {
   // dob: yyyy-mm-dd → dd/mm/yyyy
@@ -764,17 +985,19 @@ const BottomInputBar = ({
   onSubmit,
   placeholder,
   buttonLabel,
+  type = "text",
 }: {
   value: string;
   setValue: (v: string) => void;
   onSubmit: () => void;
   placeholder: string;
   buttonLabel: string;
+  type?: string;
 }) => (
   <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
     <div className="flex gap-2">
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
@@ -1420,6 +1643,270 @@ const NumberWithUnit = ({
       >
         {t("pages.prescriptionRefill.chat.continue")}
       </button>
+    </div>
+  );
+};
+
+// ============= Step 5 =============
+
+const EmailConfirmCard = ({
+  email,
+  onYes,
+  onEdit,
+}: {
+  email: string;
+  onYes: () => void;
+  onEdit: () => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 rounded-xl bg-background/60 border border-border px-3 py-3">
+        <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+          <Mail className="w-4 h-4 text-primary" />
+        </div>
+        <span className="text-foreground font-medium truncate" style={{ fontSize: 15 }}>
+          {email}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={onEdit}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.edit")}
+        </button>
+        <button
+          onClick={onYes}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.emailConfirmYes")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============= Step 6 =============
+
+const ReviewSummaryCard = ({
+  answers,
+  priceDisplay,
+  prescriberName,
+  prescriberClinic,
+  onConfirm,
+  onEdit,
+}: {
+  answers: RefillAnswers;
+  priceDisplay: string;
+  prescriberName: string;
+  prescriberClinic: string;
+  onConfirm: () => void;
+  onEdit: () => void;
+}) => {
+  const { t } = useTranslation();
+  const drug = answers.drug;
+  const p = answers.patient;
+  const sexLabel = p.sex
+    ? p.sex === "male"
+      ? t("pages.prescriptionRefill.chat.male")
+      : t("pages.prescriptionRefill.chat.female")
+    : "—";
+  const drugLine = drug
+    ? [drug.drug, drug.strength, drug.form].filter(Boolean).join(" · ")
+    : "—";
+  const patientLine = [
+    p.fullName || "—",
+    p.dob ? formatDobDisplay(p.dob) : "—",
+    sexLabel,
+    p.weight ? `${p.weight} ${p.weightUnit}` : "—",
+    p.height ? `${p.height} ${p.heightUnit === "cm" ? "cm" : "ft/in"}` : "—",
+  ].join(" · ");
+
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
+        <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        <SummaryRow icon={<UserIcon className="w-4 h-4" />} title={p.fullName || "—"} subtitle={patientLine} />
+        <SummaryRow icon={<Mail className="w-4 h-4" />} title={maskEmail(answers.email) || "—"} subtitle={t("pages.prescriptionRefill.chat.deliveryEmail")} />
+        <SummaryRow
+          icon={<ShieldCheck className="w-4 h-4" />}
+          title={prescriberName}
+          subtitle={prescriberClinic}
+        />
+        <SummaryRow
+          icon={<CreditCard className="w-4 h-4" />}
+          title={t("pages.prescriptionRefill.chat.totalLine", { price: priceDisplay })}
+          subtitle={t("pages.prescriptionRefill.chat.oneTime")}
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <button
+          onClick={onEdit}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors order-2 sm:order-1"
+          style={{ minHeight: 52, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.editDetails")}
+        </button>
+        <button
+          onClick={onConfirm}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
+          style={{ minHeight: 52, fontSize: 16 }}
+        >
+          {t("pages.prescriptionRefill.chat.confirmAndPay", { price: priceDisplay })}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const SummaryRow = ({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+}) => (
+  <div className="flex items-start gap-3 px-3 py-3">
+    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <p className="text-foreground font-medium leading-snug" style={{ fontSize: 15 }}>{title}</p>
+      {subtitle && (
+        <p className="text-muted-foreground mt-0.5 leading-snug" style={{ fontSize: 13 }}>{subtitle}</p>
+      )}
+    </div>
+  </div>
+);
+
+// ============= Step 7 =============
+
+const PaymentCard = ({
+  priceDisplay,
+  email,
+  savedCard,
+  status,
+  onPay,
+  onRetry,
+}: {
+  priceDisplay: string;
+  email: string;
+  savedCard: { brand: string; last4: string } | null;
+  status: "ready" | "processing" | "failed";
+  onPay: () => void;
+  onRetry: () => void;
+}) => {
+  const { t } = useTranslation();
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const canPay = savedCard ? true : cardNumber.replace(/\s/g, "").length >= 12 && expiry.length >= 4 && cvc.length >= 3;
+
+  if (status === "failed") {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-destructive/15 flex items-center justify-center shrink-0">
+            <XCircle className="w-5 h-5 text-destructive" />
+          </div>
+          <p className="text-foreground leading-relaxed" style={{ fontSize: 15 }}>
+            {t("pages.prescriptionRefill.chat.paymentFailed")}
+          </p>
+        </div>
+        <button
+          onClick={onRetry}
+          className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 52, fontSize: 16 }}
+        >
+          {t("pages.prescriptionRefill.chat.tryAgain")}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between rounded-xl bg-background/60 border border-border px-3 py-3">
+        <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 13 }}>
+          <Mail className="w-4 h-4" />
+          <span className="truncate">{email}</span>
+        </div>
+        <span className="text-foreground font-semibold" style={{ fontSize: 15 }}>{priceDisplay}</span>
+      </div>
+
+      {savedCard ? (
+        <div className="rounded-xl border border-border bg-background/60 px-3 py-3 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-foreground font-medium" style={{ fontSize: 15 }}>
+            {t("pages.prescriptionRefill.chat.payWithCard", {
+              brand: savedCard.brand,
+              last4: savedCard.last4,
+            })}
+          </span>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={cardNumber}
+            onChange={(e) => setCardNumber(e.target.value.replace(/[^\d ]/g, "").slice(0, 19))}
+            placeholder={t("pages.prescriptionRefill.chat.cardNumber")}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            style={{ fontSize: 16, minHeight: 48 }}
+            disabled={status === "processing"}
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={expiry}
+              onChange={(e) => setExpiry(e.target.value.replace(/[^\d/]/g, "").slice(0, 5))}
+              placeholder={t("pages.prescriptionRefill.chat.expiry")}
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              style={{ fontSize: 16, minHeight: 48 }}
+              disabled={status === "processing"}
+            />
+            <input
+              type="text"
+              inputMode="numeric"
+              value={cvc}
+              onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder={t("pages.prescriptionRefill.chat.cvc")}
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              style={{ fontSize: 16, minHeight: 48 }}
+              disabled={status === "processing"}
+            />
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={onPay}
+        disabled={!canPay || status === "processing"}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+        style={{ minHeight: 52, fontSize: 16 }}
+      >
+        {status === "processing" ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            {t("pages.prescriptionRefill.chat.processing")}
+          </>
+        ) : (
+          t("pages.prescriptionRefill.chat.confirmPayment", { price: priceDisplay })
+        )}
+      </button>
+
+      <p className="text-center text-muted-foreground flex items-center justify-center gap-1.5" style={{ fontSize: 12 }}>
+        <Lock className="w-3 h-3" /> {t("pages.prescriptionRefill.chat.securedByStripe")}
+      </p>
     </div>
   );
 };
