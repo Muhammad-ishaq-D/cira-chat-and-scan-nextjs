@@ -27,6 +27,7 @@ import drugsData from "@/data/drugs.json";
 
 import { getUser } from "@/lib/auth";
 import ciraLogo from "@/assets/cira-logo.svg";
+import HealthScreeningChat from "@/components/HealthScreeningChat";
 
 export type DrugDetails = {
   drug: string;
