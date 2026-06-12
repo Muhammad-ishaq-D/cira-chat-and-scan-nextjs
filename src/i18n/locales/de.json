@@ -428,7 +428,14 @@
       "submitRequest": "Anfrage senden",
       "askCiraFirst": "Erst mit Cira sprechen",
       "requestSubmittedTitle": "Anfrage gesendet",
-      "requestSubmittedDesc": "Ein zugelassener Arzt prüft deine Anfrage in Kürze."
+      "requestSubmittedDesc": "Ein zugelassener Arzt prüft deine Anfrage in Kürze.",
+      "startTitle": "Rezept erneuern",
+      "startSubtitle": "Powered by CLINIQUE DE LA BRISEE",
+      "startCta": "Neue Erneuerung starten",
+      "price": "Rezept-Erneuerung — $5,00",
+      "refund": "Nicht zufrieden? Wir erstatten den vollen Betrag zurück, wenn deine Apotheke dieses Rezept nicht annimmt.",
+      "historyTitle": "Dein Erneuerungsverlauf",
+      "historyEmpty": "Deine Rezept-Erneuerungen erscheinen hier"
     },
     "pricing": {
       "features": {
