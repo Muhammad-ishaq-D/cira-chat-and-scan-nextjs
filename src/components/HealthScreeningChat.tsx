@@ -66,6 +66,8 @@ const shouldFlagLocalResponse = (question: ScreeningQuestion, answer: string) =>
 type Props = {
   /** Shared refill_id from the parent flow. Used so all step endpoints reference the same record. */
   refillId: string;
+  /** Medication names selected in the parent refill flow, passed directly to the AI chat as a fallback context. */
+  medicationSummary?: string;
   /** Called when the AI screening clears the user. Receives the clearance token (may be empty). */
   onCleared: (token: string) => void;
   /** Called when the user chooses to restart the refill flow after being flagged. */
@@ -97,7 +99,7 @@ const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) 
  * Owns its own state and message history. Not connected to the main Cira chat
  * store. Used only inside Step 3 of the refill flow.
  */
-const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
+const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onStartOver }: Props) => {
   const { t } = useTranslation();
 
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -180,10 +182,18 @@ const HealthScreeningChat = ({ refillId, onCleared, onStartOver }: Props) => {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
+      const outboundMessage = isHidden && medicationSummary.trim()
+        ? `start\n\nSelected medication(s): ${medicationSummary.trim()}`
+        : message;
+
       const res = await fetch(`${API_BASE}/api/prescription/refill-chat`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ refill_id: refillId, message }),
+        body: JSON.stringify({
+          refill_id: refillId,
+          message: outboundMessage,
+          medications: medicationSummary.trim() || undefined,
+        }),
       });
       if (!res.ok) {
         if (res.status >= 500) {
