@@ -109,7 +109,6 @@ const App = () => {
           <Route path="/real-doctors" element={<RealDoctors />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/prescription-refill" element={<PrescriptionRefill />} />
-          <Route path="/dashboard/prescription-refill" element={<ProtectedRoute><DashboardPrescriptionRefill /></ProtectedRoute>} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/dashboard/prescription-refill/refund" element={<ProtectedRoute><DashboardRefund /></ProtectedRoute>} />
           <Route path="/blog" element={<Blog />} />
