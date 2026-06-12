@@ -159,7 +159,7 @@ const DashboardRefund = () => {
           <RefundRequestForm
             refill={refill}
             invalid={history.length === 0}
-            backHref="/dashboard/prescription-refill"
+            backHref="/prescription-refill"
           />
         </div>
       </div>
