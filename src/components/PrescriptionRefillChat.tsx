@@ -787,7 +787,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
-        <Step1Hero onSubmit={handleStep1Submit} />
+        <Step1Hero onSubmit={handleStep1Submit} submitting={creatingRefill} />
       ) : step === 3 ? (
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
@@ -1182,7 +1182,13 @@ type DrugRow = {
 
 const DRUGS = drugsData as DrugRow[];
 
-const Step1Hero = ({ onSubmit }: { onSubmit: (medications: string[]) => void }) => {
+const Step1Hero = ({
+  onSubmit,
+  submitting,
+}: {
+  onSubmit: (medications: string[]) => void;
+  submitting: boolean;
+}) => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
   const [query, setQuery] = useState("");
@@ -1224,7 +1230,7 @@ const Step1Hero = ({ onSubmit }: { onSubmit: (medications: string[]) => void }) 
   const removeDrug = (id: number) =>
     setSelected((s) => s.filter((x) => x.id !== id));
 
-  const canSubmit = checked && selected.length > 0;
+  const canSubmit = checked && selected.length > 0 && !submitting;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
@@ -1347,7 +1353,7 @@ const Step1Hero = ({ onSubmit }: { onSubmit: (medications: string[]) => void }) 
             className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
             style={{ minHeight: 56, fontSize: 16 }}
           >
-            {t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
+            {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
           </button>
         </form>
 
