@@ -116,7 +116,7 @@ const DashboardRefund = () => {
       <div className="flex-1 overflow-y-auto relative">
         <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-24 md:pb-8">
           <button
-            onClick={() => navigate("/dashboard/prescription-refill")}
+            onClick={() => navigate("/prescription-refill")}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" /> {t("pages.refund.backToRefills")}
