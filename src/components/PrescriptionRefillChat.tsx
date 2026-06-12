@@ -500,14 +500,94 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setTimeout(() => setStep(5), 350);
   };
 
+  // --- Step 5 ---
+  const handleConfirmLoggedEmail = () => {
+    const email = answers.email || localUser?.email || "";
+    setAnswers((a) => ({ ...a, email }));
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.sendHere") });
+    setTimeout(() => setStep(6), 250);
+  };
+  const handleUseDifferentEmail = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.useDifferentEmail") });
+    setSub5("logged-different");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step5GuestPrompt") });
+  };
+  const handleEmailSubmit = (email: string) => {
+    const v = email.trim();
+    if (!isValidEmail(v)) return;
+    pushMsg({ role: "user", kind: "text", text: v });
+    setAnswers((a) => ({ ...a, email: v }));
+    setEmailDraft("");
+    setSub5("guest-confirm");
+    pushMsg({
+      role: "ai",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.step5ConfirmPrompt"),
+    });
+  };
+  const handleEmailConfirmYes = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.emailConfirmYes") });
+    setTimeout(() => setStep(6), 250);
+  };
+  const handleEmailConfirmEdit = () => {
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.edit") });
+    setSub5(isLoggedIn ? "logged-different" : "guest-ask");
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step5GuestPrompt") });
+  };
+
+  // --- Step 6 ---
+  const handleConfirmAndPay = () => {
+    pushMsg({
+      role: "user",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.confirmAndPay", { price: REFILL_PRICE_DISPLAY }),
+    });
+    setTimeout(() => setStep(7), 250);
+  };
+  const handleEditFromSummary = () => {
+    // Back to step 4 to edit patient details
+    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.editDetails") });
+    seededRef.current.delete(`step-4`);
+    seededRef.current.delete(`step-5`);
+    seededRef.current.delete(`step-6`);
+    setSub4(isLoggedIn ? "edit" : "g-name");
+    setStep(4);
+  };
+
+  // --- Step 7 ---
+  const handlePay = async () => {
+    setSub7("processing");
+    // TODO: replace with real Stripe call.
+    await new Promise((r) => setTimeout(r, 1600));
+    const ok = Math.random() > 0.15;
+    if (!ok) {
+      setSub7("failed");
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });
+      return;
+    }
+    setAnswers((a) => ({ ...a, paid: true }));
+    pushMsg({
+      role: "user",
+      kind: "text",
+      text: t("pages.prescriptionRefill.chat.paid", { price: REFILL_PRICE_DISPLAY }),
+    });
+    setTimeout(() => setStep(8), 300);
+  };
+  const handleRetryPayment = () => {
+    setSub7("ready");
+  };
+
   // --- Back ---
   const handleBack = () => {
     if (step === 1) return onExit();
+    if (step === 7 && sub7 === "processing") return; // block during payment
     seededRef.current.delete(`step-${step}`);
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
     if (step === 2) setSub2("choose");
     if (step === 3) setSub3("q1");
     if (step === 4) setSub4(isLoggedIn ? "summary" : "g-name");
+    if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
+    if (step === 7) setSub7("ready");
     setStep((s) => s - 1);
   };
 
