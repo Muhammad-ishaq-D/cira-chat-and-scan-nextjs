@@ -436,6 +436,19 @@
       "refund": "Nicht zufrieden? Wir erstatten den vollen Betrag zurück, wenn deine Apotheke dieses Rezept nicht annimmt.",
       "historyTitle": "Dein Erneuerungsverlauf",
       "historyEmpty": "Deine Rezept-Erneuerungen erscheinen hier",
+      "history": {
+        "title": "Dein Erneuerungsverlauf",
+        "emptyLine1": "Noch keine Rezept-Erneuerungen.",
+        "emptyLine2": "Starte deine erste Erneuerung oben.",
+        "loadMore": "Mehr laden",
+        "error": "Verlauf konnte nicht geladen werden. Bitte aktualisieren.",
+        "status": {
+          "sent": "Gesendet",
+          "failed": "Fehlgeschlagen",
+          "refundRequested": "Erstattung angefordert",
+          "refunded": "Erstattet"
+        }
+      },
       "chat": {
         "stepCounter": "Schritt {{current}} von {{total}}",
         "continue": "Weiter",

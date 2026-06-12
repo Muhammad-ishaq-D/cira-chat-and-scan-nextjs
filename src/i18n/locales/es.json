@@ -436,6 +436,19 @@
       "refund": "¿No satisfecho? Ofrecemos un reembolso completo si tu farmacia no acepta esta receta.",
       "historyTitle": "Historial de renovaciones",
       "historyEmpty": "Tus renovaciones de recetas aparecerán aquí",
+      "history": {
+        "title": "Historial de renovaciones",
+        "emptyLine1": "Aún no hay renovaciones de recetas.",
+        "emptyLine2": "Comienza tu primera renovación arriba.",
+        "loadMore": "Cargar más",
+        "error": "No se pudo cargar tu historial. Por favor, actualiza.",
+        "status": {
+          "sent": "Enviado",
+          "failed": "Fallido",
+          "refundRequested": "Reembolso solicitado",
+          "refunded": "Reembolsado"
+        }
+      },
       "chat": {
         "stepCounter": "Paso {{current}} de {{total}}",
         "continue": "Continuar",

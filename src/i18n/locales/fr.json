@@ -436,6 +436,19 @@
       "refund": "Pas satisfait ? Nous offrons un remboursement complet si votre pharmacie n'accepte pas cette ordonnance.",
       "historyTitle": "Votre historique de renouvellements",
       "historyEmpty": "Vos renouvellements d'ordonnance apparaîtront ici",
+      "history": {
+        "title": "Votre historique de renouvellements",
+        "emptyLine1": "Aucun renouvellement d'ordonnance pour le moment.",
+        "emptyLine2": "Commencez votre premier renouvellement ci-dessus.",
+        "loadMore": "Charger plus",
+        "error": "Impossible de charger votre historique. Veuillez actualiser.",
+        "status": {
+          "sent": "Envoyé",
+          "failed": "Échec",
+          "refundRequested": "Remboursement demandé",
+          "refunded": "Remboursé"
+        }
+      },
       "chat": {
         "stepCounter": "Étape {{current}} sur {{total}}",
         "continue": "Continuer",
