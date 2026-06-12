@@ -645,7 +645,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       {/* Chat scroll area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3 sm:px-5 py-5 space-y-3"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-2.5"
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (
