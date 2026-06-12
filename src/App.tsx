@@ -32,7 +32,6 @@ import Pricing from "./pages/Pricing.tsx";
 import RealDoctors from "./pages/RealDoctors.tsx";
 import Terms from "./pages/Terms.tsx";
 import PrescriptionRefill from "./pages/PrescriptionRefill.tsx";
-import DashboardPrescriptionRefill from "./pages/DashboardPrescriptionRefill.tsx";
 import Refund from "./pages/Refund.tsx";
 import DashboardRefund from "./pages/DashboardRefund.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
