@@ -928,19 +928,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         />
       )}
 
-      {step === 3 && (sub3 === "q1-detail" || sub3 === "q2-detail" || sub3 === "q3-detail") && (
-        <BottomInputBar
-          value={detailDraft}
-          setValue={setDetailDraft}
-          onSubmit={() => {
-            if (sub3 === "q1-detail") handleQ1Detail();
-            else if (sub3 === "q2-detail") handleQ2Detail();
-            else handleQ3Detail();
-          }}
-          placeholder={t("pages.prescriptionRefill.chat.detailPlaceholder")}
-          buttonLabel={t("pages.prescriptionRefill.chat.continue")}
-        />
-      )}
+      {/* Step 3 bottom input bar is handled by HealthScreeningChat */}
+
 
       {step === 4 && !isLoggedIn && sub4 === "g-name" && (
         <NameInputBar
