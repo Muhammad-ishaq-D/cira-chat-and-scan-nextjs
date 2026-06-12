@@ -1536,17 +1536,17 @@ const YesNoButtons = ({
   yesLabel: string;
   noLabel: string;
 }) => (
-  <div className="grid grid-cols-2 gap-3">
+  <div className="grid grid-cols-2 gap-3 w-full min-w-[260px] sm:min-w-[320px]">
     <button
       onClick={onNo}
-      className="rounded-full border border-border bg-background text-foreground font-semibold hover:bg-accent transition-colors"
+      className="rounded-full border border-border bg-background text-foreground font-semibold hover:bg-accent transition-colors px-6"
       style={{ minHeight: 52, fontSize: 16 }}
     >
       {noLabel}
     </button>
     <button
       onClick={onYes}
-      className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+      className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity px-6"
       style={{ minHeight: 52, fontSize: 16 }}
     >
       {yesLabel}
