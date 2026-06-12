@@ -27,6 +27,7 @@
     "whatCiraHelpsWith": "Ce que Cira fait",
     "pricing": "Tarifs",
     "realDoctors": "Vrais médecins",
+    "prescriptionRefill": "Renouvellement d'ordonnance",
     "blog": "Blog",
     "contact": "Contact",
     "login": "Connexion",
@@ -765,6 +766,7 @@
     "nav": {
       "home": "Accueil",
       "askCira": "Demander à Cira",
+      "prescriptionRefill": "Ordonnance",
       "scan": "Scan",
       "reports": "Rapports",
       "logout": "Déconnexion"

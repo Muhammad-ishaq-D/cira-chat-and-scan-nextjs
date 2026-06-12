@@ -27,6 +27,7 @@
     "whatCiraHelpsWith": "Wobei Cira hilft",
     "pricing": "Preise",
     "realDoctors": "Echte Ärzte",
+    "prescriptionRefill": "Rezept erneuern",
     "blog": "Blog",
     "contact": "Kontakt",
     "login": "Anmelden",
@@ -765,6 +766,7 @@
     "nav": {
       "home": "Start",
       "askCira": "Frag Cira",
+      "prescriptionRefill": "Rezept",
       "scan": "Scan",
       "reports": "Berichte",
       "logout": "Abmelden"

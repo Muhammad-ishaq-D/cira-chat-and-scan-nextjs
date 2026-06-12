@@ -27,6 +27,7 @@
     "whatCiraHelpsWith": "What Cira helps with",
     "pricing": "Pricing",
     "realDoctors": "Real doctors",
+    "prescriptionRefill": "Prescription Refill",
     "blog": "Blog",
     "contact": "Contact",
     "login": "Log in",
@@ -765,6 +766,7 @@
     "nav": {
       "home": "Home",
       "askCira": "Ask Cira",
+      "prescriptionRefill": "Refill",
       "scan": "Scan",
       "reports": "Reports",
       "logout": "Logout"
