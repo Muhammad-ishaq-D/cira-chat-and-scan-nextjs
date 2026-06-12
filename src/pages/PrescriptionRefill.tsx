@@ -1,14 +1,17 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Pill } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
+import PrescriptionRefillChat from "@/components/PrescriptionRefillChat";
 import { isAuthenticated } from "@/lib/auth";
 
 const PrescriptionRefill = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const loggedIn = isAuthenticated();
+  const [showChat, setShowChat] = useState(false);
 
   return (
     <>
