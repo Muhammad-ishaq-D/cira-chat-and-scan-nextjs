@@ -1080,6 +1080,87 @@ const NameInputBar = ({
 
 // ============= Step 1 =============
 
+const Step1Hero = ({ onContinue }: { onContinue: () => void }) => {
+  const { t } = useTranslation();
+  const [checked, setChecked] = useState(false);
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 sm:py-14 text-center">
+      {/* Cira logo mark */}
+      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
+        <img src={ciraLogo} alt="Cira" width={40} height={40} />
+      </div>
+
+      {/* Headline */}
+      <h1
+        className="font-heading text-foreground leading-[1.05] tracking-tight max-w-xl"
+        style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: "clamp(1.9rem, 5.5vw, 2.75rem)",
+          fontWeight: 500,
+        }}
+      >
+        {t("pages.prescriptionRefill.chat.step1Headline", "Refill your prescription in minutes")}
+      </h1>
+
+      {/* Subtitle */}
+      <p
+        className="mt-5 text-foreground/70 max-w-md leading-relaxed"
+        style={{ fontSize: 15 }}
+      >
+        {t(
+          "pages.prescriptionRefill.chat.step1Sub",
+          "We cover 190+ common medications, reviewed by licensed pharmacists and approved by partner clinicians."
+        )}
+      </p>
+
+      {/* CTA */}
+      <button
+        onClick={onContinue}
+        disabled={!checked}
+        className="mt-10 w-full max-w-md rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ minHeight: 52, fontSize: 16 }}
+      >
+        {t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
+      </button>
+
+      {/* Tiny consent tickbox */}
+      <label className="mt-4 flex items-start gap-2 max-w-md cursor-pointer select-none text-left">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+          className="mt-[3px] h-3.5 w-3.5 rounded border-border accent-primary shrink-0"
+        />
+        <span className="text-foreground/65 leading-snug" style={{ fontSize: 11.5 }}>
+          <Lock className="inline w-3 h-3 mr-1 -mt-0.5 text-primary/80" />
+          {t("pages.prescriptionRefill.chat.consentBody")}{" "}
+          <Link
+            to="/privacy"
+            className="text-primary underline underline-offset-2 hover:opacity-80"
+          >
+            {t("pages.prescriptionRefill.chat.learnMore")}
+          </Link>
+        </span>
+      </label>
+
+      {/* Footer pricing */}
+      <div className="mt-auto pt-10">
+        <p className="text-foreground font-semibold" style={{ fontSize: 14 }}>
+          {t("pages.prescriptionRefill.price")}
+        </p>
+        <p className="mt-1 text-muted-foreground" style={{ fontSize: 11.5 }}>
+          {t(
+            "pages.prescriptionRefill.chat.step1Footnote",
+            "No credit card required. Medication costs not included."
+          )}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+
+
 const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
