@@ -148,7 +148,22 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const localUser = typeof window !== "undefined" ? getUser() : null;
   const isLoggedIn = !!localUser;
 
-  const [step, setStep] = useState(1);
+  // Parse Stripe redirect params so we can jump straight to the result screen.
+  const initialFromUrl = (() => {
+    if (typeof window === "undefined") return { step: 1 as number, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const rid = params.get("refill_id") || "";
+    if ((status === "success" || status === "cancel") && rid) {
+      return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
+    }
+    return { step: 1, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
+  })();
+
+  // Shared refill_id for the whole flow — every step endpoint references this.
+  const [refillId] = useState<string>(initialFromUrl.refillId);
+
+  const [step, setStep] = useState<number>(initialFromUrl.step);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [answers, setAnswers] = useState<RefillAnswers>(emptyAnswers);
 
@@ -181,17 +196,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   // Token returned by the AI screening backend when the consult is cleared.
   const [, setConsultClearanceToken] = useState<string>("");
 
-  // Step 4 sub-state
+  // Step 4 sub-state — everyone (guest and logged-in) types from scratch every time.
   type Sub4 =
-    | "summary" // logged-in default
-    | "edit" // logged-in editing
     | "g-name"
     | "g-dob"
     | "g-sex"
     | "g-weight"
     | "g-height"
     | "done";
-  const [sub4, setSub4] = useState<Sub4>(isLoggedIn ? "summary" : "g-name");
+  const [sub4, setSub4] = useState<Sub4>("g-name");
   const [patientDraft, setPatientDraft] = useState<PatientInfo>(answers.patient);
 
   // Step 5 sub-state
@@ -202,9 +215,13 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   // Step 7 sub-state
   type Sub7 = "ready" | "processing" | "failed";
   const [sub7, setSub7] = useState<Sub7>("ready");
-  // Mocked saved card flag — wire to real payment vault later.
-  const savedCard = isLoggedIn ? ((localUser as unknown as { savedCard?: { brand: string; last4: string } })?.savedCard ?? null) : null;
-  const hasSavedCard = !!savedCard;
+
+  // Step 8 sub-state — outcome from Stripe + polling.
+  type Sub8 = "pending" | "paid" | "canceled" | "failed";
+  const [sub8, setSub8] = useState<Sub8>(
+    initialFromUrl.outcome === "cancel" ? "canceled" : "pending"
+  );
+  const [emailStatus, setEmailStatus] = useState<"pending" | "sent" | "failed">("pending");
 
   // Step 8 state
   const [refNumber, setRefNumber] = useState<string>("");
@@ -215,6 +232,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const pushMsg = (m: Omit<ChatMessage, "id">) =>
     setMessages((prev) => [...prev, { ...m, id: `${Date.now()}-${Math.random()}` }]);
+
 
   // Auto-scroll
   useEffect(() => {
