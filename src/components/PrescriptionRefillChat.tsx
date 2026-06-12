@@ -410,7 +410,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       const data = (await res.json()) as { refill_id?: number | string };
       if (!data.refill_id) throw new Error("Missing refill session");
 
-      setRefillId(String(data.refill_id));
+      const newRid = String(data.refill_id);
+      setRefillId(newRid);
       setAnswers((a) => ({
         ...a,
         consent: true,
@@ -418,6 +419,28 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         drug: { drug: joined, form: "—", strength: "—", dosage: "—" },
       }));
       pushMsg({ role: "user", kind: "text", text: joined });
+
+      // Persist medications so the screening chat has full context.
+      try {
+        await fetch(
+          `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              medications: names.map((n) => ({
+                drug: n,
+                form: "",
+                strength: "",
+                dosage: "",
+              })),
+            }),
+          }
+        );
+      } catch {
+        // non-blocking — screening chat will still proceed
+      }
+
       // Skip step 2 (medication is already captured) → go straight to health check.
       seededRef.current.add("step-2");
       setTimeout(() => setStep(3), 200);
