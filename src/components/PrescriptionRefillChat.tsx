@@ -1647,4 +1647,268 @@ const NumberWithUnit = ({
   );
 };
 
+// ============= Step 5 =============
+
+const EmailConfirmCard = ({
+  email,
+  onYes,
+  onEdit,
+}: {
+  email: string;
+  onYes: () => void;
+  onEdit: () => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 rounded-xl bg-background/60 border border-border px-3 py-3">
+        <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+          <Mail className="w-4 h-4 text-primary" />
+        </div>
+        <span className="text-foreground font-medium truncate" style={{ fontSize: 15 }}>
+          {email}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={onEdit}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.edit")}
+        </button>
+        <button
+          onClick={onYes}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 48, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.emailConfirmYes")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============= Step 6 =============
+
+const ReviewSummaryCard = ({
+  answers,
+  priceDisplay,
+  prescriberName,
+  prescriberClinic,
+  onConfirm,
+  onEdit,
+}: {
+  answers: RefillAnswers;
+  priceDisplay: string;
+  prescriberName: string;
+  prescriberClinic: string;
+  onConfirm: () => void;
+  onEdit: () => void;
+}) => {
+  const { t } = useTranslation();
+  const drug = answers.drug;
+  const p = answers.patient;
+  const sexLabel = p.sex
+    ? p.sex === "male"
+      ? t("pages.prescriptionRefill.chat.male")
+      : t("pages.prescriptionRefill.chat.female")
+    : "—";
+  const drugLine = drug
+    ? [drug.drug, drug.strength, drug.form].filter(Boolean).join(" · ")
+    : "—";
+  const patientLine = [
+    p.fullName || "—",
+    p.dob ? formatDobDisplay(p.dob) : "—",
+    sexLabel,
+    p.weight ? `${p.weight} ${p.weightUnit}` : "—",
+    p.height ? `${p.height} ${p.heightUnit === "cm" ? "cm" : "ft/in"}` : "—",
+  ].join(" · ");
+
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
+        <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        <SummaryRow icon={<UserIcon className="w-4 h-4" />} title={p.fullName || "—"} subtitle={patientLine} />
+        <SummaryRow icon={<Mail className="w-4 h-4" />} title={maskEmail(answers.email) || "—"} subtitle={t("pages.prescriptionRefill.chat.deliveryEmail")} />
+        <SummaryRow
+          icon={<ShieldCheck className="w-4 h-4" />}
+          title={prescriberName}
+          subtitle={prescriberClinic}
+        />
+        <SummaryRow
+          icon={<CreditCard className="w-4 h-4" />}
+          title={t("pages.prescriptionRefill.chat.totalLine", { price: priceDisplay })}
+          subtitle={t("pages.prescriptionRefill.chat.oneTime")}
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <button
+          onClick={onEdit}
+          className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors order-2 sm:order-1"
+          style={{ minHeight: 52, fontSize: 15 }}
+        >
+          {t("pages.prescriptionRefill.chat.editDetails")}
+        </button>
+        <button
+          onClick={onConfirm}
+          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
+          style={{ minHeight: 52, fontSize: 16 }}
+        >
+          {t("pages.prescriptionRefill.chat.confirmAndPay", { price: priceDisplay })}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const SummaryRow = ({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+}) => (
+  <div className="flex items-start gap-3 px-3 py-3">
+    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <p className="text-foreground font-medium leading-snug" style={{ fontSize: 15 }}>{title}</p>
+      {subtitle && (
+        <p className="text-muted-foreground mt-0.5 leading-snug" style={{ fontSize: 13 }}>{subtitle}</p>
+      )}
+    </div>
+  </div>
+);
+
+// ============= Step 7 =============
+
+const PaymentCard = ({
+  priceDisplay,
+  email,
+  savedCard,
+  status,
+  onPay,
+  onRetry,
+}: {
+  priceDisplay: string;
+  email: string;
+  savedCard: { brand: string; last4: string } | null;
+  status: "ready" | "processing" | "failed";
+  onPay: () => void;
+  onRetry: () => void;
+}) => {
+  const { t } = useTranslation();
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const canPay = savedCard ? true : cardNumber.replace(/\s/g, "").length >= 12 && expiry.length >= 4 && cvc.length >= 3;
+
+  if (status === "failed") {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-destructive/15 flex items-center justify-center shrink-0">
+            <XCircle className="w-5 h-5 text-destructive" />
+          </div>
+          <p className="text-foreground leading-relaxed" style={{ fontSize: 15 }}>
+            {t("pages.prescriptionRefill.chat.paymentFailed")}
+          </p>
+        </div>
+        <button
+          onClick={onRetry}
+          className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 52, fontSize: 16 }}
+        >
+          {t("pages.prescriptionRefill.chat.tryAgain")}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between rounded-xl bg-background/60 border border-border px-3 py-3">
+        <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 13 }}>
+          <Mail className="w-4 h-4" />
+          <span className="truncate">{email}</span>
+        </div>
+        <span className="text-foreground font-semibold" style={{ fontSize: 15 }}>{priceDisplay}</span>
+      </div>
+
+      {savedCard ? (
+        <div className="rounded-xl border border-border bg-background/60 px-3 py-3 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-foreground font-medium" style={{ fontSize: 15 }}>
+            {t("pages.prescriptionRefill.chat.payWithCard", {
+              brand: savedCard.brand,
+              last4: savedCard.last4,
+            })}
+          </span>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={cardNumber}
+            onChange={(e) => setCardNumber(e.target.value.replace(/[^\d ]/g, "").slice(0, 19))}
+            placeholder={t("pages.prescriptionRefill.chat.cardNumber")}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            style={{ fontSize: 16, minHeight: 48 }}
+            disabled={status === "processing"}
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={expiry}
+              onChange={(e) => setExpiry(e.target.value.replace(/[^\d/]/g, "").slice(0, 5))}
+              placeholder={t("pages.prescriptionRefill.chat.expiry")}
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              style={{ fontSize: 16, minHeight: 48 }}
+              disabled={status === "processing"}
+            />
+            <input
+              type="text"
+              inputMode="numeric"
+              value={cvc}
+              onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder={t("pages.prescriptionRefill.chat.cvc")}
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              style={{ fontSize: 16, minHeight: 48 }}
+              disabled={status === "processing"}
+            />
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={onPay}
+        disabled={!canPay || status === "processing"}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+        style={{ minHeight: 52, fontSize: 16 }}
+      >
+        {status === "processing" ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            {t("pages.prescriptionRefill.chat.processing")}
+          </>
+        ) : (
+          t("pages.prescriptionRefill.chat.confirmPayment", { price: priceDisplay })
+        )}
+      </button>
+
+      <p className="text-center text-muted-foreground flex items-center justify-center gap-1.5" style={{ fontSize: 12 }}>
+        <Lock className="w-3 h-3" /> {t("pages.prescriptionRefill.chat.securedByStripe")}
+      </p>
+    </div>
+  );
+};
+
 export default PrescriptionRefillChat;
