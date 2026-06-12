@@ -80,14 +80,4 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <url>
-    <loc>https://askainurse.com/blog/how-ai-is-making-health-insurance-easier-for-expats</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://askainurse.com/blog/why-comparing-health-insurance-before-renewal-can-save-you-money</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
 </urlset>
