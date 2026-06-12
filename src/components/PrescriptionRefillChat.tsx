@@ -387,8 +387,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.consentAgree") });
     setTimeout(() => setStep(2), 250);
   };
-  const handleStep1Submit = async (medications: string[]) => {
-    const names = medications.map((m) => m.trim()).filter(Boolean);
+  const handleStep1Submit = async (medications: DrugRow[]) => {
+    const selectedDrugs = medications.filter((m) => m.product_name?.trim() || m.inn_name?.trim());
+    const names = selectedDrugs.map((m) => m.product_name.trim()).filter(Boolean);
     if (names.length === 0 || creatingRefill) return;
     const joined = names.join(", ");
     setCreatingRefill(true);
@@ -422,23 +423,25 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
       // Persist medications so the screening chat has full context.
       try {
-        await fetch(
+        const medsRes = await fetch(
           `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
           {
             method: "POST",
             headers,
             body: JSON.stringify({
-              medications: names.map((n) => ({
-                drug: n,
-                form: "",
-                strength: "",
-                dosage: "",
+              medications: selectedDrugs.map((d) => ({
+                drug_name_inn: d.inn_name || d.product_name,
+                form: d.form || "Not specified",
+                strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "Not specified",
+                dosage_instructions: "As previously prescribed",
+                quantity: 1,
               })),
             }),
           }
         );
+        if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
       } catch {
-        // non-blocking — screening chat will still proceed
+        // Non-blocking — screening chat also receives medication context directly.
       }
 
       // Skip step 2 (medication is already captured) → go straight to health check.
@@ -815,6 +818,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
           refillId={refillId}
+          medicationSummary={answers.drug?.drug || ""}
           onCleared={(token) => {
             setConsultClearanceToken(token);
             setStep(4);
@@ -1209,7 +1213,7 @@ const Step1Hero = ({
   onSubmit,
   submitting,
 }: {
-  onSubmit: (medications: string[]) => void;
+  onSubmit: (medications: DrugRow[]) => void;
   submitting: boolean;
 }) => {
   const { t } = useTranslation();
@@ -1257,7 +1261,7 @@ const Step1Hero = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onSubmit(selected.map((d) => d.product_name));
+    onSubmit(selected);
   };
 
   return (
