@@ -664,7 +664,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const handlePay = async () => {
     setSub7("processing");
     try {
-      const token = isLoggedIn ? (localStorage.getItem("cira_token") || "") : "";
+      const token = getToken() || "";
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
       const res = await fetch(`${API_BASE}/api/prescription/create-checkout-session`, {
