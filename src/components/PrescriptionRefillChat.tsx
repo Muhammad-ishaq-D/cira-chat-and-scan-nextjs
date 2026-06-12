@@ -776,41 +776,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
-        {/* Step 3 */}
-        {step === 3 && (sub3 === "q1" || sub3 === "q2" || sub3 === "q3") && (
-          <Bubble role="ai" wide>
-            <YesNoButtons
-              onYes={() =>
-                sub3 === "q1" ? handleQ1(true) : sub3 === "q2" ? handleQ2(true) : handleQ3(true)
-              }
-              onNo={() =>
-                sub3 === "q1" ? handleQ1(false) : sub3 === "q2" ? handleQ2(false) : handleQ3(false)
-              }
-              yesLabel={t("pages.prescriptionRefill.chat.yes")}
-              noLabel={t("pages.prescriptionRefill.chat.no")}
-            />
-          </Bubble>
-        )}
-        {step === 3 && sub3 === "reviewing" && (
-          <Bubble role="ai">
-            <div className="flex items-center gap-3 py-1">
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reviewing")}</span>
-            </div>
-          </Bubble>
-        )}
-        {step === 3 && sub3 === "flagged" && (
-          <Bubble role="ai">
-            <FlaggedCard
-              onBook={handleBookDoctor}
-              onStartOver={handleStartOver}
-              bookLabel={t("pages.prescriptionRefill.chat.bookDoctor")}
-              startOverLabel={t("pages.prescriptionRefill.chat.startOver")}
-              title={t("pages.prescriptionRefill.chat.flaggedTitle")}
-              body={t("pages.prescriptionRefill.chat.flaggedBody")}
-            />
-          </Bubble>
-        )}
+        {/* Step 3 is handled by the isolated HealthScreeningChat above */}
+
 
         {/* Step 4 — logged-in */}
         {step === 4 && isLoggedIn && sub4 === "summary" && (
