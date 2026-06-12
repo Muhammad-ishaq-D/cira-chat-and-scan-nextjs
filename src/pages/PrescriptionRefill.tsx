@@ -58,20 +58,12 @@ const PrescriptionRefill = () => {
                   {t("pages.prescriptionRefill.openInDashboard")}
                 </button>
               ) : (
-                <>
-                  <button
-                    onClick={() => navigate("/login")}
-                    className="px-4 py-2 rounded-full bg-card border border-border text-sm font-medium text-foreground hover:bg-accent transition-colors"
-                  >
-                    {t("nav.login")}
-                  </button>
-                  <button
-                    onClick={() => navigate("/signup")}
-                    className="px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    {t("nav.signup", "Sign up")}
-                  </button>
-                </>
+              <button
+                onClick={() => navigate("/login")}
+                className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 hover:scale-105 transition-all duration-200"
+              >
+                {t("nav.login")}
+              </button>
               )}
             </div>
           </nav>
