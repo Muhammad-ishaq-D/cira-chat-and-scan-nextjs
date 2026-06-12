@@ -234,6 +234,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setMessages((prev) => [...prev, { ...m, id: `${Date.now()}-${Math.random()}` }]);
 
 
+  // Clean Stripe redirect params from the URL once consumed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.search) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("status") || params.has("refill_id")) {
+      const url = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, "", url);
+    }
+  }, []);
+
   // Auto-scroll
   useEffect(() => {
     const el = scrollRef.current;
