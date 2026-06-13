@@ -1380,6 +1380,7 @@
       "activity": "Activity",
       "analytics": "Analytics",
       "billing": "Billing",
+      "refunds": "Refunds",
       "blogs": "Blogs",
       "settings": "Settings",
       "logout": "Logout",

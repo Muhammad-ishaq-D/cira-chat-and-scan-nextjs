@@ -403,4 +403,26 @@ export const adminApi = {
     }
     return res.status === 204 ? {} : res.json().catch(() => ({}));
   },
+
+  // Prescription Refunds
+  getRefunds: () => adminGet<RefundRequest[]>("/api/admin/prescription-refunds"),
+  decideRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
+    adminPost(`/api/admin/prescription-refunds/${id}/decide`, { decision, admin_note }),
 };
+
+export interface RefundMedication {
+  drug_name_inn: string;
+  drug_strength: string;
+  drug_form: string;
+}
+
+export interface RefundRequest {
+  id: number;
+  reference_code: string;
+  medications: RefundMedication[];
+  amount_charged: number;
+  refund_reason: string;
+  refund_proof_file_path: string | null;
+  refund_requested_at: string;
+  delivery_email_masked: string;
+}

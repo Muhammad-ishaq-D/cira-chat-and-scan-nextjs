@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { AlertTriangle, CheckCircle2, Upload, X, FileText, Image as ImageIcon } from "lucide-react";
@@ -10,7 +10,12 @@ export type RefillRecord = {
   strength: string;
   email: string;
   priceCents: number;
+  token?: string; // refund_token from backend (present on email-link flow)
 };
+
+const API_BASE =
+  (import.meta as unknown as { env: { VITE_API_URL?: string } }).env.VITE_API_URL ||
+  "https://askainurse.com";
 
 const REFUND_WINDOW_DAYS = 7;
 const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
@@ -32,6 +37,7 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
   const [fileError, setFileError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -111,29 +117,29 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit || !refill) return;
+    if (!canSubmit || !refill || !file) return;
     setSubmitting(true);
-    // TODO: replace with real backend call.
+    setSubmitError(null);
     try {
-      if (typeof window !== "undefined") {
-        const raw = window.localStorage.getItem("cira_refund_requests");
-        const list = raw ? JSON.parse(raw) : [];
-        list.unshift({
-          ref: refill.ref,
-          submittedAt: new Date().toISOString(),
-          reason: reason.trim(),
-          fileName: file?.name || "",
-          fileSize: file?.size || 0,
-          fileType: file?.type || "",
-        });
-        window.localStorage.setItem("cira_refund_requests", JSON.stringify(list.slice(0, 50)));
+      const formData = new FormData();
+      // Use the refund_token from the email link if present, otherwise fall back to ref code.
+      formData.append("token", refill.token || refill.ref);
+      formData.append("reason", reason.trim());
+      formData.append("proof_file", file);
+      const res = await fetch(`${API_BASE}/api/prescription/refund/submit`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error || "Submission failed");
       }
-    } catch {
-      // ignore storage errors
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Submission failed. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    await new Promise((r) => setTimeout(r, 700));
-    setSubmitting(false);
-    setSubmitted(true);
   };
 
   const locale = i18n.language;
@@ -289,6 +295,13 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
             {t("pages.refund.uploadHelper")}
           </p>
         </div>
+
+        {submitError && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+            <p className="text-destructive leading-snug" style={{ fontSize: 14 }}>{submitError}</p>
+          </div>
+        )}
 
         <button
           type="submit"

@@ -1,20 +1,15 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, RefreshCw } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
 import RefundRequestForm, { type RefillRecord } from "@/components/RefundRequestForm";
 
-function loadHistory(): RefillRecord[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem("cira_refill_history");
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
+const API_BASE =
+  (import.meta as unknown as { env: { VITE_API_URL?: string } }).env.VITE_API_URL ||
+  "https://askainurse.com";
 
 const Refund = () => {
   const navigate = useNavigate();
@@ -22,10 +17,42 @@ const Refund = () => {
   const [params] = useSearchParams();
   const token = (params.get("token") || "").trim();
 
-  const refill = useMemo<RefillRecord | null>(() => {
-    if (!token) return null;
-    const list = loadHistory();
-    return list.find((r) => r.ref.toLowerCase() === token.toLowerCase()) || null;
+  const [loading, setLoading] = useState(!!token);
+  const [refill, setRefill] = useState<RefillRecord | null>(null);
+  const [invalid, setInvalid] = useState(!token);
+
+  useEffect(() => {
+    if (!token) {
+      setInvalid(true);
+      return;
+    }
+    setLoading(true);
+    fetch(`${API_BASE}/api/prescription/refund/validate-token?token=${encodeURIComponent(token)}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          setInvalid(true);
+          return;
+        }
+        const data = await res.json() as {
+          reference_code?: string;
+          medications?: Array<{ drug_name_inn?: string; drug_strength?: string }>;
+          issued_date?: string;
+          amount?: number;
+          days_remaining?: number;
+        };
+        const firstMed = data.medications?.[0] ?? {};
+        setRefill({
+          ref: data.reference_code || "",
+          date: data.issued_date || new Date().toISOString(),
+          drug: firstMed.drug_name_inn || "",
+          strength: firstMed.drug_strength || "",
+          email: "",
+          priceCents: data.amount ?? 0,
+          token,
+        });
+      })
+      .catch(() => setInvalid(true))
+      .finally(() => setLoading(false));
   }, [token]);
 
   return (
@@ -63,7 +90,13 @@ const Refund = () => {
             </p>
           </header>
 
-          <RefundRequestForm refill={refill} invalid={!token || !refill} />
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-7 h-7 animate-spin text-primary" />
+            </div>
+          ) : (
+            <RefundRequestForm refill={refill} invalid={invalid} />
+          )}
         </main>
       </div>
     </>

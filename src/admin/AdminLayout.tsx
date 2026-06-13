@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import i18n from "@/i18n";
-import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText, Activity } from "lucide-react";
+import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText, Activity, RotateCcw } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { icon: Activity, key: "activity", id: "activity", path: "/admin/activity" },
   { icon: TrendingUp, key: "analytics", id: "analytics", path: "/admin/analytics" },
   { icon: CreditCard, key: "billing", id: "billing", path: "/admin/billing" },
+  { icon: RotateCcw, key: "refunds", id: "refunds", path: "/admin/refunds" },
   { icon: FileText, key: "blogs", id: "blogs", path: "/admin/blogs" },
   { icon: Settings, key: "settings", id: "settings", path: "/admin/settings" },
 ];
