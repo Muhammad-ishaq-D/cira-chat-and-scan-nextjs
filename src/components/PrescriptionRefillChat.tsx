@@ -439,28 +439,24 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       }));
       pushMsg({ role: "user", kind: "text", text: joined });
 
-      // Persist medications so the screening chat has full context.
-      try {
-        const medsRes = await fetch(
-          `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
-          {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              medications: selectedDrugs.map((d) => ({
-                drug_name_inn: d.inn_name || d.product_name,
-                form: d.form || "Not specified",
-                strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "Not specified",
-                dosage_instructions: "As previously prescribed",
-                quantity: 1,
-              })),
-            }),
-          }
-        );
-        if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
-      } catch {
-        // Non-blocking — screening chat also receives medication context directly.
-      }
+      // Persist medications to DB — required for prescriptions and refund records.
+      const medsRes = await fetch(
+        `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            medications: selectedDrugs.map((d) => ({
+              drug_name_inn: d.product_name || d.inn_name,
+              form: d.form || "Not specified",
+              strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "Not specified",
+              dosage_instructions: "As previously prescribed",
+              quantity: 1,
+            })),
+          }),
+        }
+      );
+      if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
 
       // Skip step 2 (medication is already captured) → go straight to health check.
       seededRef.current.add("step-2");
@@ -563,12 +559,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       const token = getToken() || "";
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
-      await fetch(`${API_BASE}/api/prescription/refill/${encodeURIComponent(refillId)}/medications`, {
+      const medsRes = await fetch(`${API_BASE}/api/prescription/refill/${encodeURIComponent(refillId)}/medications`, {
         method: "POST",
         headers,
         body: JSON.stringify({
           medications: available.map((r) => ({
-            drug_name_inn: r.match?.inn_name || r.name,
+            drug_name_inn: r.match?.product_name || r.match?.inn_name || r.name,
             form: r.match?.form || "Not specified",
             strength:
               r.match?.available_strengths && r.match.available_strengths !== "N/A"
@@ -579,8 +575,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           })),
         }),
       });
-    } catch {
-      // Non-blocking
+      if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
+    } catch (err) {
+      pushMsg({ role: "ai", kind: "text", text: "I couldn't save your medications. Please try again." });
+      return;
     }
     setTimeout(() => setStep(3), 250);
   };

@@ -47,7 +47,7 @@ const Refund = () => {
           drug: firstMed.drug_name_inn || "",
           strength: firstMed.drug_strength || "",
           email: "",
-          priceCents: data.amount ?? 0,
+          priceCents: Math.round((data.amount ?? 0) * 100),
           token,
         });
       })
