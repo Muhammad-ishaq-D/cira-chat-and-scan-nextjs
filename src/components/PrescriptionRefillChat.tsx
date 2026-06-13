@@ -151,13 +151,16 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const isLoggedIn = !!localUser;
 
   // Parse Stripe redirect params so we can jump straight to the result screen.
+  // refill_id is read from localStorage (saved before Stripe redirect) because
+  // Stripe only injects {CHECKOUT_SESSION_ID} into the return URL — not client_reference_id.
   const initialFromUrl = (() => {
     if (typeof window === "undefined") return { step: 1 as number, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
-    const rid = params.get("refill_id") || "";
-    if ((status === "success" || status === "cancel") && rid) {
-      return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
+    if (status === "success" || status === "cancel") {
+      const rid = localStorage.getItem("cira_pending_refill_id") || "";
+      if (status === "success") localStorage.removeItem("cira_pending_refill_id");
+      if (rid) return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
     }
     return { step: 1, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
   })();
@@ -753,14 +756,27 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.step5GuestPrompt") });
   };
 
-  // --- Step 6 ---
-  const handleConfirmAndPay = () => {
+  // --- Step 6 — redirect straight to Stripe, no intermediate card form ---
+  const handleConfirmAndPay = async () => {
     pushMsg({
       role: "user",
       kind: "text",
       text: t("pages.prescriptionRefill.chat.confirmAndPay", { price: REFILL_PRICE_DISPLAY }),
     });
-    setTimeout(() => setStep(7), 250);
+    try {
+      const paymentLink = STRIPE_PAYMENT_LINKS.prescription_refill;
+      if (!paymentLink || paymentLink.includes("REPLACE_WITH_REAL_LINK")) {
+        throw new Error("Payment link not configured");
+      }
+      const params = new URLSearchParams();
+      if (answers.email) params.set("prefilled_email", answers.email);
+      if (refillId) params.set("client_reference_id", String(refillId));
+      localStorage.setItem("cira_pending_refill_id", String(refillId));
+      const qs = params.toString();
+      window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
+    } catch {
+      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });
+    }
   };
   const handleEditFromSummary = () => {
     // Back to step 4 to edit patient details
@@ -783,6 +799,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       const params = new URLSearchParams();
       if (answers.email) params.set("prefilled_email", answers.email);
       if (refillId) params.set("client_reference_id", String(refillId));
+      // Store refill_id before leaving — Stripe return URL can't carry client_reference_id back.
+      localStorage.setItem("cira_pending_refill_id", String(refillId));
       const qs = params.toString();
       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
     } catch {
