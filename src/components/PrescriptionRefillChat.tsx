@@ -150,7 +150,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const localUser = typeof window !== "undefined" ? getUser() : null;
   const isLoggedIn = !!localUser;
 
-  // Parse Stripe redirect params so we can jump straight to the result screen.
+ 
   // refill_id is read from localStorage (saved before Stripe redirect) because
   // Stripe only injects {CHECKOUT_SESSION_ID} into the return URL — not client_reference_id.
   const initialFromUrl = (() => {
