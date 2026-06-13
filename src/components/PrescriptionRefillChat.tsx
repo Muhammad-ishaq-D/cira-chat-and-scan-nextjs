@@ -173,16 +173,21 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [answers, setAnswers] = useState<RefillAnswers>(emptyAnswers);
 
+  // Mode selection (before any step)
+  const [mode, setMode] = useState<null | "upload" | "manual">(null);
+
   // Step 2 sub-state
   type Sub2 =
     | "upload-pending"
     | "choose"
     | "upload-reading"
+    | "availability-check"
     | "manual-input"
     | "confirm"
     | "low-confidence"
     | "edit";
   const [sub2, setSub2] = useState<Sub2>("upload-pending");
+  const [ocrResults, setOcrResults] = useState<Array<{ name: string; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -510,23 +515,34 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setSub2("upload-reading");
-    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reading") });
-    // TODO: real OCR.
+    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reading", "Scanning your prescription…") });
+    // TODO: replace with real OCR API call.
     setTimeout(() => {
-      const mock: DrugDetails = {
-        drug: "Lisinopril",
-        form: t("pages.prescriptionRefill.chat.formTablet"),
-        strength: "10 mg",
-        dosage: t("pages.prescriptionRefill.chat.dosageDaily"),
-      };
-      const isLow = Math.random() < 0.3;
-      setAnswers((a) => ({ ...a, drug: mock }));
-      if (isLow) {
-        pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.lowConfidence") });
-        setSub2("low-confidence");
-      } else {
-        setSub2("confirm");
+      const mockOcrNames = ["Lisinopril", "Metformin", "Xanax XR"]; // placeholder OCR output
+      const results = mockOcrNames.map((name) => {
+        const q = name.toLowerCase();
+        const match =
+          DRUGS.find(
+            (d) =>
+              d.product_name.toLowerCase().includes(q) ||
+              d.inn_name.toLowerCase().includes(q) ||
+              q.includes(d.product_name.toLowerCase()) ||
+              q.includes(d.inn_name.toLowerCase())
+          ) || null;
+        return { name, available: !!match, match };
+      });
+      setOcrResults(results);
+      const available = results.filter((r) => r.available);
+      if (available.length > 0) {
+        const names = available.map((r) => r.name).join(", ");
+        setAnswers((a) => ({ ...a, drug: { drug: names, form: "—", strength: "—", dosage: "—" } }));
       }
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: t("pages.prescriptionRefill.chat.ocrDone", "Here's what I found in your prescription:"),
+      });
+      setSub2("availability-check");
     }, 1800);
     e.target.value = "";
   };
@@ -538,6 +554,37 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setAnswers((a) => ({ ...a, drug: { drug: v, form: "—", strength: "—", dosage: "—" } }));
     setTimeout(() => setSub2("confirm"), 250);
   };
+  const handleProceedWithAvailable = async () => {
+    const available = ocrResults.filter((r) => r.available);
+    if (available.length === 0) return;
+    const names = available.map((r) => r.name).join(", ");
+    pushMsg({ role: "user", kind: "text", text: `Continue with: ${names}` });
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      await fetch(`${API_BASE}/api/prescription/refill/${encodeURIComponent(refillId)}/medications`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          medications: available.map((r) => ({
+            drug_name_inn: r.match?.inn_name || r.name,
+            form: r.match?.form || "Not specified",
+            strength:
+              r.match?.available_strengths && r.match.available_strengths !== "N/A"
+                ? r.match.available_strengths
+                : "Not specified",
+            dosage_instructions: "As previously prescribed",
+            quantity: 1,
+          })),
+        }),
+      });
+    } catch {
+      // Non-blocking
+    }
+    setTimeout(() => setStep(3), 250);
+  };
+
   const handleLooksGood = () => {
     if (!answers.drug) return;
     const d = answers.drug;
@@ -649,7 +696,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const handleStartOver = () => {
     setMessages([]);
     setAnswers(emptyAnswers());
-    setSub2("choose");
+    setMode(null);
+    setSub2("upload-pending");
+    setOcrResults([]);
     setSub3("q1");
     setSub4("g-name");
     setManualValue("");
@@ -843,29 +892,45 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   // --- Back ---
   const handleBack = () => {
-    if (step === 1) return onExit();
+    if (step === 1) {
+      if (mode !== null) {
+        setMode(null); // go back to mode selection screen
+        return;
+      }
+      return onExit();
+    }
     if (step === 7 && sub7 === "processing") return; // block during payment
     seededRef.current.delete(`step-${step}`);
 
+    if (step === 2) {
+      // Go back to mode selection regardless of upload/manual state.
+      setMessages([]);
+      setSub2("upload-pending");
+      setOcrResults([]);
+      setMode(null);
+      setStep(1);
+      return;
+    }
+
     if (step === 3) {
       if (answers.submissionMode === "manual") {
-        // Manual path skipped step 2 entirely — go back to step 1.
+        // Manual path skipped step 2 — go back to mode selection.
         seededRef.current.delete("step-2");
         setMessages([]);
         setSub2("upload-pending");
+        setMode(null);
         setStep(1);
       } else {
-        // Upload path had a step-2 confirm card — show it again.
+        // Upload path — go back to availability-check card.
         setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
         setSub3("q1");
-        setSub2(answers.drug ? "confirm" : "upload-pending");
+        setSub2(ocrResults.length > 0 ? "availability-check" : "upload-pending");
         setStep(2);
       }
       return;
     }
 
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
-    if (step === 2) setSub2("upload-pending");
     if (step === 4) setSub4("g-name");
     if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
     if (step === 7) setSub7("ready");
@@ -913,9 +978,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         </div>
       )}
 
-      {/* Step 1 — dedicated hero form (not chat) */}
+      {/* Step 1 — mode selection or manual drug search */}
       {step === 1 ? (
-        <Step1Hero onSubmit={handleStep1Submit} onUpload={handleStep1Upload} submitting={creatingRefill} />
+        mode === null ? (
+          <ModeSelectionScreen
+            onChooseManual={() => setMode("manual")}
+            onChooseUpload={handleStep1Upload}
+            submitting={creatingRefill}
+          />
+        ) : (
+          <Step1Hero onSubmit={handleStep1Submit} submitting={creatingRefill} />
+        )
       ) : step === 3 ? (
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
@@ -974,8 +1047,16 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           <Bubble role="ai">
             <div className="flex items-center gap-3 py-1">
               <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reading")}</span>
+              <span style={{ fontSize: 16 }}>{t("pages.prescriptionRefill.chat.reading", "Scanning your prescription…")}</span>
             </div>
+          </Bubble>
+        )}
+        {step === 2 && sub2 === "availability-check" && ocrResults.length > 0 && (
+          <Bubble role="ai" wide>
+            <MedicationAvailabilityCard
+              results={ocrResults}
+              onProceed={handleProceedWithAvailable}
+            />
           </Bubble>
         )}
         {step === 2 && sub2 === "confirm" && answers.drug && (
@@ -1303,6 +1384,80 @@ const NameInputBar = ({
   );
 };
 
+// ============= Mode Selection =============
+
+const ModeSelectionScreen = ({
+  onChooseManual,
+  onChooseUpload,
+  submitting,
+}: {
+  onChooseManual: () => void;
+  onChooseUpload: () => void;
+  submitting: boolean;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-8 text-center w-full">
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
+          <img src={ciraLogo} alt="Cira" width={40} height={40} />
+        </div>
+
+        <h1
+          className="font-heading text-foreground leading-[1.05] tracking-tight"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.8rem, 5vw, 2.6rem)", fontWeight: 500 }}
+        >
+          {t("pages.prescriptionRefill.chat.modeTitle", "How would you like to start?")}
+        </h1>
+
+        <p className="mt-4 text-foreground/70 max-w-sm leading-relaxed" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.modeSub", "Upload a photo of your prescription or search your medications manually.")}
+        </p>
+
+        <div className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Upload option */}
+          <button
+            onClick={onChooseUpload}
+            disabled={submitting}
+            className="flex flex-col items-center gap-3 rounded-2xl bg-white border border-border px-5 py-7 text-left hover:border-primary/50 hover:bg-primary/5 transition-all disabled:opacity-50 shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              {submitting ? <Loader2 className="w-6 h-6 text-primary animate-spin" /> : <Camera className="w-6 h-6 text-primary" />}
+            </div>
+            <div>
+              <p className="font-semibold text-foreground text-center" style={{ fontSize: 16 }}>
+                {t("pages.prescriptionRefill.chat.uploadPhoto", "Upload Prescription")}
+              </p>
+              <p className="mt-1 text-muted-foreground text-center leading-snug" style={{ fontSize: 13 }}>
+                {t("pages.prescriptionRefill.chat.uploadPhotoDesc", "Take or upload a photo — we'll scan and check your medications")}
+              </p>
+            </div>
+          </button>
+
+          {/* Manual option */}
+          <button
+            onClick={onChooseManual}
+            disabled={submitting}
+            className="flex flex-col items-center gap-3 rounded-2xl bg-white border border-border px-5 py-7 text-left hover:border-primary/50 hover:bg-primary/5 transition-all disabled:opacity-50 shadow-sm"
+          >
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Pencil className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-foreground text-center" style={{ fontSize: 16 }}>
+                {t("pages.prescriptionRefill.chat.typeManually", "Search Manually")}
+              </p>
+              <p className="mt-1 text-muted-foreground text-center leading-snug" style={{ fontSize: 13 }}>
+                {t("pages.prescriptionRefill.chat.manualDesc", "Search and select your medications from our database")}
+              </p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ============= Step 1 =============
 
 type DrugRow = {
@@ -1318,11 +1473,9 @@ const DRUGS = drugsData as DrugRow[];
 
 const Step1Hero = ({
   onSubmit,
-  onUpload,
   submitting,
 }: {
   onSubmit: (medications: DrugRow[]) => void;
-  onUpload: () => void;
   submitting: boolean;
 }) => {
   const { t } = useTranslation();
@@ -1330,7 +1483,6 @@ const Step1Hero = ({
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<DrugRow[]>([]);
   const [open, setOpen] = useState(false);
-  const [showChoice, setShowChoice] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1371,7 +1523,7 @@ const Step1Hero = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    setShowChoice(true);
+    onSubmit(selected);
   };
 
   return (
@@ -1484,58 +1636,14 @@ const Step1Hero = ({
             )}
           </div>
 
-          {showChoice ? (
-            <div className="space-y-3">
-              <p className="text-foreground/70 text-center" style={{ fontSize: 14 }}>
-                {t("pages.prescriptionRefill.chat.chooseMode", "How would you like to provide your prescription?")}
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={() => onUpload()}
-                  className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-background border border-border px-3 py-5 text-foreground hover:bg-accent hover:border-primary/40 transition-all disabled:opacity-50"
-                  style={{ minHeight: 96, fontSize: 15 }}
-                >
-                  <span className="text-primary"><Camera className="w-6 h-6" /></span>
-                  <span className="font-medium text-center leading-tight">
-                    {t("pages.prescriptionRefill.chat.uploadPhoto", "Upload prescription")}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={() => onSubmit(selected)}
-                  className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-background border border-border px-3 py-5 text-foreground hover:bg-accent hover:border-primary/40 transition-all disabled:opacity-50"
-                  style={{ minHeight: 96, fontSize: 15 }}
-                >
-                  <span className="text-primary">
-                    {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Pencil className="w-6 h-6" />}
-                  </span>
-                  <span className="font-medium text-center leading-tight">
-                    {t("pages.prescriptionRefill.chat.typeManually", "Continue manually")}
-                  </span>
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowChoice(false)}
-                className="w-full text-muted-foreground hover:text-foreground transition-colors text-sm"
-                style={{ minHeight: 36 }}
-              >
-                ← {t("common.back", "Back")}
-              </button>
-            </div>
-          ) : (
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
-              style={{ minHeight: 56, fontSize: 16 }}
-            >
-              {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
-            </button>
-          )}
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+            style={{ minHeight: 56, fontSize: 16 }}
+          >
+            {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
+          </button>
         </form>
 
         {/* Tiny consent tickbox */}
@@ -1634,6 +1742,61 @@ const DetailRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 // ============= Step 2 =============
+
+const MedicationAvailabilityCard = ({
+  results,
+  onProceed,
+}: {
+  results: Array<{ name: string; available: boolean; match: DrugRow | null }>;
+  onProceed: () => void;
+}) => {
+  const { t } = useTranslation();
+  const availableCount = results.filter((r) => r.available).length;
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
+        {results.map((r, i) => (
+          <div key={i} className="flex items-center gap-3 px-3 py-3">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                r.available ? "bg-emerald-500/15" : "bg-red-500/15"
+              }`}
+            >
+              {r.available ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-500" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-foreground truncate" style={{ fontSize: 15 }}>
+                {r.name}
+              </p>
+              <p className="text-muted-foreground" style={{ fontSize: 12 }}>
+                {r.available
+                  ? t("pages.prescriptionRefill.chat.drugAvailable", "Available for refill")
+                  : t("pages.prescriptionRefill.chat.drugUnavailable", "Not available in our system")}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {availableCount > 0 ? (
+        <button
+          onClick={onProceed}
+          className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          style={{ minHeight: 52, fontSize: 16 }}
+        >
+          {t("pages.prescriptionRefill.chat.continueWithAvailable", "Continue with {{count}} medication(s)", { count: availableCount }).replace("{{count}}", String(availableCount))}
+        </button>
+      ) : (
+        <p className="text-center text-muted-foreground py-2" style={{ fontSize: 14 }}>
+          {t("pages.prescriptionRefill.chat.noAvailable", "None of the detected medications are available for refill.")}
+        </p>
+      )}
+    </div>
+  );
+};
 
 const DrugConfirmCard = ({
   drug,
