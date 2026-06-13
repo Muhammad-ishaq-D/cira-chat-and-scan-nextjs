@@ -175,13 +175,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   // Step 2 sub-state
   type Sub2 =
+    | "upload-pending"
     | "choose"
     | "upload-reading"
     | "manual-input"
     | "confirm"
     | "low-confidence"
     | "edit";
-  const [sub2, setSub2] = useState<Sub2>("choose");
+  const [sub2, setSub2] = useState<Sub2>("upload-pending");
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -256,6 +257,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, step, sub2, sub3, sub4, sub5, sub7]);
+
+  // Auto-open the camera/file picker when the upload path lands on step 2.
+  useEffect(() => {
+    if (step === 2 && sub2 === "upload-pending") {
+      const timer = setTimeout(() => fileRef.current?.click(), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [step, sub2]);
 
   // Seed AI prompts for each step + sub-state transitions
   useEffect(() => {
@@ -462,21 +471,41 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     }
   };
 
+  // Upload path: create a bare refill session (no medications yet — OCR will provide them).
+  const handleStep1Upload = async () => {
+    if (creatingRefill) return;
+    setCreatingRefill(true);
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/api/prescription/create-refill`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          cira_device_id: getDeviceId(),
+          user_id: localUser?.id || null,
+          is_guest: !isLoggedIn,
+          gdpr_consent: true,
+        }),
+      });
+      if (!res.ok) throw new Error(`Refill session failed (${res.status})`);
+      const data = (await res.json()) as { refill_id?: number | string };
+      if (!data.refill_id) throw new Error("Missing refill session");
+      const newRid = String(data.refill_id);
+      setRefillId(newRid);
+      setAnswers((a) => ({ ...a, consent: true, submissionMode: "upload" }));
+      seededRef.current.add("step-2");
+      setSub2("upload-pending");
+      setStep(2);
+    } catch {
+      // Could surface a toast here if needed
+    } finally {
+      setCreatingRefill(false);
+    }
+  };
 
   // --- Step 2 ---
-  const handleChooseUpload = () => {
-    setAnswers((a) => ({ ...a, submissionMode: "upload" }));
-    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.uploadPhoto") });
-    fileRef.current?.click();
-  };
-  const handleChooseManual = () => {
-    setAnswers((a) => ({ ...a, submissionMode: "manual" }));
-    pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.typeManually") });
-    setTimeout(() => {
-      pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.manualPrompt") });
-      setSub2("manual-input");
-    }, 250);
-  };
   const handleFilePicked: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -525,7 +554,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setSub2("confirm");
   };
   const handleRetake = () => {
-    setSub2("choose");
+    setSub2("upload-pending");
     fileRef.current?.click();
     setAnswers((a) => ({ ...a, submissionMode: "upload" }));
   };
@@ -817,9 +846,26 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     if (step === 1) return onExit();
     if (step === 7 && sub7 === "processing") return; // block during payment
     seededRef.current.delete(`step-${step}`);
+
+    if (step === 3) {
+      if (answers.submissionMode === "manual") {
+        // Manual path skipped step 2 entirely — go back to step 1.
+        seededRef.current.delete("step-2");
+        setMessages([]);
+        setSub2("upload-pending");
+        setStep(1);
+      } else {
+        // Upload path had a step-2 confirm card — show it again.
+        setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
+        setSub3("q1");
+        setSub2(answers.drug ? "confirm" : "upload-pending");
+        setStep(2);
+      }
+      return;
+    }
+
     setMessages((prev) => prev.slice(0, Math.max(0, prev.length - 2)));
-    if (step === 2) setSub2("choose");
-    if (step === 3) setSub3("q1");
+    if (step === 2) setSub2("upload-pending");
     if (step === 4) setSub4("g-name");
     if (step === 5) setSub5(isLoggedIn ? "logged-confirm" : "guest-ask");
     if (step === 7) setSub7("ready");
@@ -869,7 +915,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
       {/* Step 1 — dedicated hero form (not chat) */}
       {step === 1 ? (
-        <Step1Hero onSubmit={handleStep1Submit} submitting={creatingRefill} />
+        <Step1Hero onSubmit={handleStep1Submit} onUpload={handleStep1Upload} submitting={creatingRefill} />
       ) : step === 3 ? (
         /* Step 3 — fully isolated AI Health Screening chat. Owns its own state. */
         <HealthScreeningChat
@@ -894,29 +940,34 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         ))}
 
 
-        {/* Step 2 */}
-        {step === 2 && sub2 === "choose" && (
+        {/* Step 2 — hidden file input always present so fileRef works in all sub-states */}
+        {step === 2 && (
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleFilePicked}
+          />
+        )}
+        {step === 2 && sub2 === "upload-pending" && (
           <Bubble role="ai" wide>
-            <div className="grid grid-cols-2 gap-3">
-              <SubmissionButton
-                icon={<Camera className="w-6 h-6" />}
-                label={t("pages.prescriptionRefill.chat.uploadPhoto")}
-                onClick={handleChooseUpload}
-              />
-              <SubmissionButton
-                icon={<Pencil className="w-6 h-6" />}
-                label={t("pages.prescriptionRefill.chat.typeManually")}
-                onClick={handleChooseManual}
-              />
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 py-1">
+                <Camera className="w-5 h-5 text-primary" />
+                <span style={{ fontSize: 15 }}>
+                  {t("pages.prescriptionRefill.chat.openingCamera", "Opening camera to scan your prescription…")}
+                </span>
+              </div>
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+                style={{ minHeight: 48, fontSize: 15 }}
+              >
+                {t("pages.prescriptionRefill.chat.openCamera", "Open Camera")}
+              </button>
             </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handleFilePicked}
-            />
           </Bubble>
         )}
         {step === 2 && sub2 === "upload-reading" && (
@@ -1267,9 +1318,11 @@ const DRUGS = drugsData as DrugRow[];
 
 const Step1Hero = ({
   onSubmit,
+  onUpload,
   submitting,
 }: {
   onSubmit: (medications: DrugRow[]) => void;
+  onUpload: () => void;
   submitting: boolean;
 }) => {
   const { t } = useTranslation();
@@ -1277,6 +1330,7 @@ const Step1Hero = ({
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<DrugRow[]>([]);
   const [open, setOpen] = useState(false);
+  const [showChoice, setShowChoice] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1317,7 +1371,7 @@ const Step1Hero = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onSubmit(selected);
+    setShowChoice(true);
   };
 
   return (
@@ -1430,14 +1484,58 @@ const Step1Hero = ({
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
-            style={{ minHeight: 56, fontSize: 16 }}
-          >
-            {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
-          </button>
+          {showChoice ? (
+            <div className="space-y-3">
+              <p className="text-foreground/70 text-center" style={{ fontSize: 14 }}>
+                {t("pages.prescriptionRefill.chat.chooseMode", "How would you like to provide your prescription?")}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => onUpload()}
+                  className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-background border border-border px-3 py-5 text-foreground hover:bg-accent hover:border-primary/40 transition-all disabled:opacity-50"
+                  style={{ minHeight: 96, fontSize: 15 }}
+                >
+                  <span className="text-primary"><Camera className="w-6 h-6" /></span>
+                  <span className="font-medium text-center leading-tight">
+                    {t("pages.prescriptionRefill.chat.uploadPhoto", "Upload prescription")}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => onSubmit(selected)}
+                  className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-background border border-border px-3 py-5 text-foreground hover:bg-accent hover:border-primary/40 transition-all disabled:opacity-50"
+                  style={{ minHeight: 96, fontSize: 15 }}
+                >
+                  <span className="text-primary">
+                    {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Pencil className="w-6 h-6" />}
+                  </span>
+                  <span className="font-medium text-center leading-tight">
+                    {t("pages.prescriptionRefill.chat.typeManually", "Continue manually")}
+                  </span>
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowChoice(false)}
+                className="w-full text-muted-foreground hover:text-foreground transition-colors text-sm"
+                style={{ minHeight: 36 }}
+              >
+                ← {t("common.back", "Back")}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="w-full rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+              style={{ minHeight: 56, fontSize: 16 }}
+            >
+              {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.startCta", "Check Eligibility")}
+            </button>
+          )}
         </form>
 
         {/* Tiny consent tickbox */}
@@ -1536,25 +1634,6 @@ const DetailRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 // ============= Step 2 =============
-
-const SubmissionButton = ({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-background border border-border px-3 py-5 text-foreground hover:bg-accent hover:border-primary/40 transition-all"
-    style={{ minHeight: 96, fontSize: 16 }}
-  >
-    <span className="text-primary">{icon}</span>
-    <span className="font-medium text-center leading-tight">{label}</span>
-  </button>
-);
 
 const DrugConfirmCard = ({
   drug,
