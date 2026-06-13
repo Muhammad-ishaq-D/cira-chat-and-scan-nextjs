@@ -26,6 +26,7 @@ import {
 import drugsData from "@/data/drugs.json";
 
 import { getToken, getUser } from "@/lib/auth";
+import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 import { getDeviceId } from "@/lib/freeCredits";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
@@ -627,6 +628,46 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const handleBookDoctor = () => navigate("/real-doctors");
 
+  // Persist patient info to backend so generate-and-send has it after payment.
+  const persistPatientInfo = async (draft: PatientInfo) => {
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      await fetch(`${API_BASE}/api/prescription/refill/${encodeURIComponent(refillId)}/patient-info`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          full_name: draft.fullName,
+          dob: draft.dob,
+          sex: draft.sex === "male" ? "Male" : "Female",
+          weight_value: parseFloat(draft.weight),
+          weight_unit: draft.weightUnit,
+          height_value: parseFloat(draft.height),
+          height_unit: draft.heightUnit === "ftin" ? "ft_in" : "cm",
+        }),
+      });
+    } catch {
+      // Non-blocking — flow continues; backend will be missing data if this fails
+    }
+  };
+
+  // Persist delivery email to backend so generate-and-send knows where to send the PDF.
+  const persistDeliveryEmail = async (email: string) => {
+    try {
+      const token = getToken() || "";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      await fetch(`${API_BASE}/api/prescription/refill/${encodeURIComponent(refillId)}/email`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ email }),
+      });
+    } catch {
+      // Non-blocking
+    }
+  };
+
   // --- Step 4 (everyone uses the guest typing flow — no prefill card) ---
 
 
@@ -671,6 +712,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setPatientDraft(finalDraft);
     setAnswers((a) => ({ ...a, patient: finalDraft }));
     setSub4("done");
+    persistPatientInfo(finalDraft);
     setTimeout(() => setStep(5), 350);
   };
 
@@ -679,6 +721,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     const email = answers.email || localUser?.email || "";
     setAnswers((a) => ({ ...a, email }));
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.sendHere") });
+    persistDeliveryEmail(email);
     setTimeout(() => setStep(6), 250);
   };
   const handleUseDifferentEmail = () => {
@@ -701,6 +744,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   };
   const handleEmailConfirmYes = () => {
     pushMsg({ role: "user", kind: "text", text: t("pages.prescriptionRefill.chat.emailConfirmYes") });
+    persistDeliveryEmail(answers.email);
     setTimeout(() => setStep(6), 250);
   };
   const handleEmailConfirmEdit = () => {
@@ -728,25 +772,19 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setStep(4);
   };
 
-  // --- Step 7 — create Stripe Checkout session and redirect ---
+  // --- Step 7 — redirect to Stripe Payment Link ---
   const handlePay = async () => {
     setSub7("processing");
     try {
-      const token = getToken() || "";
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      const res = await fetch(`${API_BASE}/api/prescription/create-checkout-session`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ refill_id: refillId }),
-      });
-      if (!res.ok) throw new Error(`Checkout session failed (${res.status})`);
-      const data = (await res.json()) as { checkout_url?: string };
-      if (!data.checkout_url) throw new Error("Missing checkout_url");
-      // Hand off to Stripe-hosted checkout. Stripe will redirect back to
-      // /prescription-refill?status=success|cancel&refill_id=... which the
-      // component reads on mount and jumps straight to step 8.
-      window.location.href = data.checkout_url;
+      const paymentLink = STRIPE_PAYMENT_LINKS.prescription_refill;
+      if (!paymentLink || paymentLink.includes("REPLACE_WITH_REAL_LINK")) {
+        throw new Error("Payment link not configured");
+      }
+      const params = new URLSearchParams();
+      if (answers.email) params.set("prefilled_email", answers.email);
+      if (refillId) params.set("client_reference_id", String(refillId));
+      const qs = params.toString();
+      window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
     } catch {
       setSub7("failed");
       pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.paymentFailed") });

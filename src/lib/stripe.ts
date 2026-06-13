@@ -3,6 +3,9 @@
 export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
   pro: "https://buy.stripe.com/4gM28scZF5YFbYufHE9Zm00",
   enterprise: "https://buy.stripe.com/eVq8wQcZF1IpbYubro9Zm01",
+  // Prescription refill — $5.00 one-time payment.
+  // prescription_refill: "https://buy.stripe.com/6oUfZi5xd5YF7IefHE9Zm02",
+  prescription_refill: "https://buy.stripe.com/test_6oU7sM9NtbiZ8Mi8fc9Zm04",
 };
 
 export const PENDING_PLAN_STORAGE_KEY = "cira_pending_plan";
