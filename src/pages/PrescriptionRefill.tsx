@@ -31,7 +31,7 @@ const PrescriptionRefill = () => {
       />
 
       {showChat ? (
-        <div className="min-h-screen bg-[#f7f6f0]">
+        <div className="h-[100dvh] bg-[#f7f6f0] overflow-hidden">
           <PrescriptionRefillChat onExit={() => setShowChat(false)} />
         </div>
       ) : (

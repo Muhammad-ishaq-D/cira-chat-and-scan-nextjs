@@ -1035,7 +1035,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const progressPct = (stageInfo.index / 4) * 100;
 
   return (
-    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ minHeight: "100dvh" }}>
+    <div className="flex flex-col w-full bg-[#f7f6f0]" style={{ height: "100dvh" }}>
       {/* Top bar: back left, centered title + stage count, slim progress bar bottom */}
       {step < 8 && (
         <div className="sticky top-0 z-10 bg-[#f7f6f0]/95 backdrop-blur-md">
@@ -1095,7 +1095,13 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       >
         {messages.map((m) => (
           <Bubble key={m.id} role={m.role}>
-            {m.kind === "text" ? <span>{m.text}</span> : m.node}
+            {m.kind === "text" ? (
+              m.role === "ai" ? (
+                <TypewriterText text={m.text} formatted={true} />
+              ) : (
+                <span className="whitespace-pre-line">{m.text}</span>
+              )
+            ) : m.node}
           </Bubble>
         ))}
 
@@ -1406,6 +1412,48 @@ const Bubble = ({
   </div>
 );
 
+const renderFormattedText = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={i} className="bg-muted px-1 py-0.5 rounded text-[13px]">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+};
+
+const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+  const [displayed, setDisplayed] = useState("");
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    setDisplayed("");
+    indexRef.current = 0;
+    const chars = Array.from(text);
+    const interval = window.setInterval(() => {
+      indexRef.current += 4;
+      setDisplayed(chars.slice(0, indexRef.current).join(""));
+      if (indexRef.current >= chars.length) {
+        window.clearInterval(interval);
+        onComplete?.();
+      }
+    }, speed);
+    return () => window.clearInterval(interval);
+  }, [text, speed, onComplete]);
+
+  return (
+    <span className="whitespace-pre-line">
+      {formatted ? renderFormattedText(displayed) : displayed}
+    </span>
+  );
+};
+
 const BottomInputBar = ({
   value,
   setValue,
@@ -1433,29 +1481,35 @@ const BottomInputBar = ({
   return (
     <div className="relative shrink-0 bg-[#f7f6f0] border-t border-border/40" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
       <div className="max-w-2xl mx-auto px-3 py-2 sm:px-5 sm:py-3">
-        <div className="bg-white rounded-full flex items-center border border-border/50 p-1.5 shadow-sm">
+        <form 
+          className="bg-white rounded-full flex items-center border border-border/50 p-1.5 shadow-sm"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (value.trim()) {
+              onSubmit();
+              setTimeout(() => inputRef.current?.focus(), 10);
+            }
+          }}
+        >
           <input
             ref={inputRef}
             type={type}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") onSubmit();
-            }}
             placeholder={placeholder}
             autoFocus
             className="flex-1 px-4 py-2 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none font-body"
             style={{ fontSize: 15, minHeight: 44 }}
           />
           <button
-            onClick={onSubmit}
+            type="submit"
             disabled={!value.trim()}
             className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
             style={{ minHeight: 44, fontSize: 15 }}
           >
             {buttonLabel}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
