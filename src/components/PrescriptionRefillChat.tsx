@@ -1552,7 +1552,7 @@ const ModeSelectionScreen = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-8 text-center w-full">
+    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-12 text-center w-full overflow-y-auto scrollbar-hide">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
           <img src={ciraLogo} alt="Cira" width={40} height={40} />
@@ -1682,7 +1682,7 @@ const Step1Hero = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-8 text-center w-full">
+    <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-16 text-center w-full overflow-y-auto scrollbar-hide">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
         {/* Cira logo mark */}
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
