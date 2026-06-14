@@ -259,8 +259,15 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   // Auto-scroll
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    if (scrollRef.current) {
+      const el = scrollRef.current;
+      const doScroll = () => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      doScroll();
+      // Repeat to catch late renders / dynamic heights
+      const t1 = setTimeout(doScroll, 150);
+      const t2 = setTimeout(doScroll, 400);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
   }, [messages, step, sub2, sub3, sub4, sub5, sub7]);
 
   // Auto-open the camera/file picker when the upload path lands on step 2.
@@ -1083,7 +1090,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       ) : (
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto"
+        className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 w-full max-w-2xl mx-auto"
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (
@@ -1387,10 +1394,10 @@ const Bubble = ({
     }`}
   >
     <div
-      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
+      className={`${wide ? "max-w-[95%] md:max-w-[90%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-4 py-3 leading-relaxed ${
         role === "user"
-          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
-          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
+          ? "bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md"
+          : "bg-white border border-border/50 shadow-sm text-foreground rounded-[20px] rounded-tl-md"
       }`}
       style={{ fontSize: 14.5 }}
     >
@@ -1413,32 +1420,46 @@ const BottomInputBar = ({
   placeholder: string;
   buttonLabel: string;
   type?: string;
-}) => (
-  <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
-    <div className="flex gap-2">
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") onSubmit();
-        }}
-        placeholder={placeholder}
-        autoFocus
-        className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-        style={{ fontSize: 16, minHeight: 48 }}
-      />
-      <button
-        onClick={onSubmit}
-        disabled={!value.trim()}
-        className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
-        style={{ minHeight: 48, fontSize: 16 }}
-      >
-        {buttonLabel}
-      </button>
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Retain focus when component re-renders or clears
+    if (value === "") {
+      inputRef.current?.focus();
+    }
+  }, [value]);
+
+  return (
+    <div className="relative shrink-0 bg-[#f7f6f0] border-t border-border/40" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+      <div className="max-w-2xl mx-auto px-3 py-2 sm:px-5 sm:py-3">
+        <div className="bg-white rounded-full flex items-center border border-border/50 p-1.5 shadow-sm">
+          <input
+            ref={inputRef}
+            type={type}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSubmit();
+            }}
+            placeholder={placeholder}
+            autoFocus
+            className="flex-1 px-4 py-2 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none font-body"
+            style={{ fontSize: 15, minHeight: 44 }}
+          />
+          <button
+            onClick={onSubmit}
+            disabled={!value.trim()}
+            className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
+            style={{ minHeight: 44, fontSize: 15 }}
+          >
+            {buttonLabel}
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const NameInputBar = ({
   onSubmit,
@@ -2232,54 +2253,80 @@ const ProfileEditCard = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="space-y-3">
-      <FieldLabel>{t("pages.prescriptionRefill.chat.pName")}</FieldLabel>
-      <TextField value={draft.fullName} onChange={(v) => setDraft({ ...draft, fullName: v })} />
-
-      <FieldLabel>{t("pages.prescriptionRefill.chat.pDob")}</FieldLabel>
-      <TextField
-        type="date"
-        value={draft.dob}
-        onChange={(v) => setDraft({ ...draft, dob: v })}
-      />
-
-      <FieldLabel>{t("pages.prescriptionRefill.chat.pSex")}</FieldLabel>
-      <div className="grid grid-cols-2 gap-2">
-        {(["male", "female"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setDraft({ ...draft, sex: s })}
-            className={`rounded-full border font-medium transition-all ${
-              draft.sex === s
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background border-border text-foreground hover:bg-accent"
-            }`}
-            style={{ minHeight: 48, fontSize: 15 }}
-          >
-            {s === "male"
-              ? t("pages.prescriptionRefill.chat.male")
-              : t("pages.prescriptionRefill.chat.female")}
-          </button>
-        ))}
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 border-b border-border/50 pb-2 mb-2">
+        <UserIcon className="w-5 h-5 text-primary" />
+        <span className="font-semibold text-foreground text-[15px]">Patient Details</span>
+      </div>
+      
+      <div>
+        <FieldLabel>Full Legal Name</FieldLabel>
+        <div className="relative">
+          <input
+            type="text"
+            value={draft.fullName}
+            onChange={(e) => setDraft({ ...draft, fullName: e.target.value })}
+            placeholder="e.g. John Doe"
+            className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all shadow-sm"
+            style={{ fontSize: 15 }}
+          />
+        </div>
       </div>
 
-      <FieldLabel>{t("pages.prescriptionRefill.chat.pWeight")}</FieldLabel>
-      <UnitRow
-        value={draft.weight}
-        unit={draft.weightUnit}
-        units={["kg", "lbs"]}
-        onChange={(v, u) => setDraft({ ...draft, weight: v, weightUnit: u as "kg" | "lbs" })}
-      />
+      <div>
+        <FieldLabel>Date of Birth</FieldLabel>
+        <input
+          type="date"
+          value={draft.dob}
+          onChange={(e) => setDraft({ ...draft, dob: e.target.value })}
+          className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all shadow-sm"
+          style={{ fontSize: 15 }}
+        />
+      </div>
 
-      <FieldLabel>{t("pages.prescriptionRefill.chat.pHeight")}</FieldLabel>
-      <UnitRow
-        value={draft.height}
-        unit={draft.heightUnit}
-        units={["cm", "ftin"]}
-        onChange={(v, u) => setDraft({ ...draft, height: v, heightUnit: u as "cm" | "ftin" })}
-      />
+      <div>
+        <FieldLabel>{t("pages.prescriptionRefill.chat.pSex")}</FieldLabel>
+        <div className="flex rounded-xl border border-border bg-card/50 p-1 shadow-sm">
+          {(["male", "female"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setDraft({ ...draft, sex: s })}
+              className={`flex-1 rounded-lg py-2 text-[14px] font-medium transition-all ${
+                draft.sex === s
+                  ? "bg-white text-foreground shadow-sm ring-1 ring-border"
+                  : "text-muted-foreground hover:bg-black/5"
+              }`}
+            >
+              {s === "male"
+                ? t("pages.prescriptionRefill.chat.male")
+                : t("pages.prescriptionRefill.chat.female")}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div className="grid grid-cols-2 gap-2 pt-2">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <FieldLabel>{t("pages.prescriptionRefill.chat.pWeight")}</FieldLabel>
+          <UnitRow
+            value={draft.weight}
+            unit={draft.weightUnit}
+            units={["kg", "lbs"]}
+            onChange={(v, u) => setDraft({ ...draft, weight: v, weightUnit: u as "kg" | "lbs" })}
+          />
+        </div>
+        <div>
+          <FieldLabel>{t("pages.prescriptionRefill.chat.pHeight")}</FieldLabel>
+          <UnitRow
+            value={draft.height}
+            unit={draft.heightUnit}
+            units={["cm", "ftin"]}
+            onChange={(v, u) => setDraft({ ...draft, height: v, heightUnit: u as "cm" | "ftin" })}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 pt-3">
         <button
           onClick={onCancel}
           className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors"
@@ -2334,24 +2381,25 @@ const UnitRow = ({
   units: string[];
   onChange: (val: string, unit: string) => void;
 }) => (
-  <div className="flex gap-2">
+  <div className="flex flex-col gap-2">
     <input
       type="number"
       inputMode="decimal"
       value={value}
       onChange={(e) => onChange(e.target.value, unit)}
-      className="flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-      style={{ fontSize: 16, minHeight: 48 }}
+      className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
+      style={{ fontSize: 15 }}
     />
-    <div className="flex rounded-full border border-border bg-background overflow-hidden">
+    <div className="flex rounded-xl border border-border bg-card/50 p-1 shadow-sm w-full">
       {units.map((u) => (
         <button
           key={u}
           onClick={() => onChange(value, u)}
-          className={`px-4 font-medium transition-colors ${
-            unit === u ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"
+          className={`flex-1 rounded-lg py-1.5 text-[13px] font-medium transition-all ${
+            unit === u
+              ? "bg-white text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:bg-black/5"
           }`}
-          style={{ minHeight: 48, fontSize: 14 }}
         >
           {u === "ftin" ? "ft/in" : u}
         </button>
@@ -2383,35 +2431,54 @@ const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
     if (yn < 1900 || yn > new Date().getFullYear()) return false;
     return true;
   }, [d, m, y]);
+
+  // Focus management
+  const mRef = useRef<HTMLInputElement>(null);
+  const yRef = useRef<HTMLInputElement>(null);
+
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-3 gap-2">
+    <div className="space-y-4">
+      <div className="text-center mb-1">
+        <span className="font-semibold text-foreground text-[15px]">Date of Birth</span>
+      </div>
+      <div className="flex gap-2">
         <input
           type="number"
           inputMode="numeric"
-          placeholder={t("pages.prescriptionRefill.chat.dd")}
+          placeholder="DD"
           value={d}
-          onChange={(e) => setD(e.target.value.slice(0, 2))}
-          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-          style={{ fontSize: 16, minHeight: 52 }}
+          onChange={(e) => {
+            const val = e.target.value.slice(0, 2);
+            setD(val);
+            if (val.length === 2) mRef.current?.focus();
+          }}
+          autoFocus
+          className="w-1/3 rounded-xl border border-border bg-card/50 px-3 py-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
+          style={{ fontSize: 16 }}
         />
         <input
+          ref={mRef}
           type="number"
           inputMode="numeric"
-          placeholder={t("pages.prescriptionRefill.chat.mm")}
+          placeholder="MM"
           value={m}
-          onChange={(e) => setM(e.target.value.slice(0, 2))}
-          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-          style={{ fontSize: 16, minHeight: 52 }}
+          onChange={(e) => {
+            const val = e.target.value.slice(0, 2);
+            setM(val);
+            if (val.length === 2) yRef.current?.focus();
+          }}
+          className="w-1/3 rounded-xl border border-border bg-card/50 px-3 py-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
+          style={{ fontSize: 16 }}
         />
         <input
+          ref={yRef}
           type="number"
           inputMode="numeric"
-          placeholder={t("pages.prescriptionRefill.chat.yyyy")}
+          placeholder="YYYY"
           value={y}
           onChange={(e) => setY(e.target.value.slice(0, 4))}
-          className="rounded-xl border border-border bg-background px-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-          style={{ fontSize: 16, minHeight: 52 }}
+          className="w-1/3 rounded-xl border border-border bg-card/50 px-3 py-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
+          style={{ fontSize: 16 }}
         />
       </div>
       <button
