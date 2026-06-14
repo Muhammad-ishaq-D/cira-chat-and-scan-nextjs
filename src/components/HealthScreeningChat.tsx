@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, Loader2, Send, Stethoscope, RotateCcw } from "lucide-react";
 import { getToken, getUser } from "@/lib/auth";
@@ -76,11 +76,9 @@ type Props = {
 
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-// Typewriter effect — types text character by character, calls onComplete when done
-const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
+// Typewriter effect — types text character by character (matches main Chat UX)
+const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) => {
   const [displayed, setDisplayed] = useState("");
-  const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
   useEffect(() => {
     setDisplayed("");
     const chars = Array.from(text);
@@ -88,10 +86,7 @@ const TypewriterText = ({ text, speed = 18, onComplete }: { text: string; speed?
     const interval = setInterval(() => {
       i += 1;
       setDisplayed(chars.slice(0, i).join(""));
-      if (i >= chars.length) {
-        clearInterval(interval);
-        onCompleteRef.current?.();
-      }
+      if (i >= chars.length) clearInterval(interval);
     }, speed);
     return () => clearInterval(interval);
   }, [text, speed]);
@@ -120,17 +115,6 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
 
   const startedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  // Sequential reveal: only show messages up to this index (0-based)
-  const [revealedCount, setRevealedCount] = useState(0);
-  const revealedCountRef = useRef(0);
-
-  const revealNext = useCallback(() => {
-    setRevealedCount((c) => {
-      const next = c + 1;
-      revealedCountRef.current = next;
-      return next;
-    });
-  }, []);
 
   const startFallbackScreening = async () => {
     setFallbackMode(true);
@@ -274,23 +258,7 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, typing, phase, revealedCount]);
-
-  // When new messages arrive that haven't been revealed yet, start revealing them
-  useEffect(() => {
-    if (messages.length > revealedCountRef.current) {
-      // Only trigger reveal for the next unrevealed message if nothing is animating
-      // (revealedCount === messages.length means all revealed, we want to reveal from current)
-      if (revealedCountRef.current < messages.length) {
-        // If revealedCount is 0 and messages exist, reveal first one
-        if (revealedCountRef.current === 0) {
-          revealNext();
-        }
-        // Otherwise revealNext() is called by TypewriterText onComplete
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length]);
+  }, [messages, typing, phase]);
 
   const handleSubmit = () => {
     const text = input.trim();
@@ -340,30 +308,11 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
   return (
     <div className="flex flex-col flex-1 min-h-0 w-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto" style={{ minHeight: 0 }}>
-        {messages.slice(0, revealedCount).map((m, idx) => {
-          const isAnimating = m.role === "ai" && idx === revealedCount - 1;
-          return (
-            <Bubble key={m.id} role={m.role}>
-              {m.role === "ai" ? (
-                isAnimating ? (
-                  <TypewriterText
-                    text={m.text}
-                    onComplete={() => {
-                      // Reveal next message after a short pause
-                      setTimeout(() => {
-                        if (revealedCountRef.current < messages.length) {
-                          revealNext();
-                        }
-                      }, 180);
-                    }}
-                  />
-                ) : (
-                  <span className="whitespace-pre-line">{m.text}</span>
-                )
-              ) : m.text}
-            </Bubble>
-          );
-        })}
+        {messages.map((m) => (
+          <Bubble key={m.id} role={m.role}>
+            {m.role === "ai" ? <TypewriterText text={m.text} /> : m.text}
+          </Bubble>
+        ))}
 
         {typing && (
           <Bubble role="ai">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -241,19 +241,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const seededRef = useRef<Set<string>>(new Set());
-  // Sequential reveal: only show messages up to this index
-  const [revealedCount, setRevealedCount] = useState(0);
-  const revealedCountRef = useRef(0);
-  const messagesRef = useRef(messages);
-  messagesRef.current = messages;
-
-  const revealNext = useCallback(() => {
-    setRevealedCount((c) => {
-      const next = c + 1;
-      revealedCountRef.current = next;
-      return next;
-    });
-  }, []);
 
   const pushMsg = (m: Omit<ChatMessage, "id">) =>
     setMessages((prev) => [...prev, { ...m, id: `${Date.now()}-${Math.random()}` }]);
@@ -276,28 +263,12 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       const el = scrollRef.current;
       const doScroll = () => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
       doScroll();
+      // Repeat to catch late renders / dynamic heights
       const t1 = setTimeout(doScroll, 150);
       const t2 = setTimeout(doScroll, 400);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
-  }, [messages, step, sub2, sub3, sub4, sub5, sub7, revealedCount]);
-
-  // When new messages arrive, reveal the first unrevealed one
-  // (subsequent ones are revealed by TypewriterText onComplete chaining)
-  useEffect(() => {
-    if (messages.length > revealedCountRef.current) {
-      if (revealedCountRef.current === 0) {
-        revealNext();
-      } else if (revealedCountRef.current < messages.length) {
-        // This handles user messages (non-AI) — reveal them instantly
-        const nextMsg = messages[revealedCountRef.current];
-        if (nextMsg && nextMsg.role === "user") {
-          revealNext();
-        }
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages.length]);
+  }, [messages, step, sub2, sub3, sub4, sub5, sub7]);
 
   // Auto-open the camera/file picker when the upload path lands on step 2.
   useEffect(() => {
@@ -1122,44 +1093,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-4 w-full max-w-2xl mx-auto"
         style={{ minHeight: 0 }}
       >
-        {messages.slice(0, revealedCount).map((m, idx) => {
-          const isAnimating = m.role === "ai" && m.kind === "text" && idx === revealedCount - 1;
-          // User messages: appear instantly, then immediately chain to reveal the next message
-          const isLastRevealed = idx === revealedCount - 1;
-          return (
-            <Bubble key={m.id} role={m.role}>
-              {m.kind === "text" ? (
-                m.role === "ai" ? (
-                  isAnimating ? (
-                    <TypewriterText
-                      text={m.text}
-                      formatted={true}
-                      onComplete={() => {
-                        setTimeout(() => {
-                          if (revealedCountRef.current < messagesRef.current.length) {
-                            revealNext();
-                          }
-                        }, 180);
-                      }}
-                    />
-                  ) : (
-                    <span className="whitespace-pre-line">{m.text}</span>
-                  )
-                ) : (
-                  // User message — instantly visible, chain next reveal
-                  <span
-                    className="whitespace-pre-line"
-                    ref={isLastRevealed ? (el) => {
-                      if (el && revealedCountRef.current < messagesRef.current.length) {
-                        setTimeout(() => revealNext(), 80);
-                      }
-                    } : undefined}
-                  >{m.text}</span>
-                )
-              ) : m.node}
-            </Bubble>
-          );
-        })}
+        {messages.map((m) => (
+          <Bubble key={m.id} role={m.role}>
+            {m.kind === "text" ? (
+              m.role === "ai" ? (
+                <TypewriterText text={m.text} formatted={true} />
+              ) : (
+                <span className="whitespace-pre-line">{m.text}</span>
+              )
+            ) : m.node}
+          </Bubble>
+        ))}
 
 
         {/* Step 2 — hidden file input always present so fileRef works in all sub-states */}
