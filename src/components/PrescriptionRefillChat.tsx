@@ -507,15 +507,40 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   };
 
   // --- Step 2 ---
-  const handleFilePicked: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleFilePicked: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    e.target.value = ""; // reset input immediately so re-upload works
+
     setSub2("upload-reading");
     pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reading", "Scanning your prescription…") });
-    // TODO: replace with real OCR API call.
-    setTimeout(() => {
-      const mockOcrNames = ["Lisinopril", "Metformin", "Xanax XR"]; // placeholder OCR output
-      const results = mockOcrNames.map((name) => {
+
+    try {
+      // Build multipart/form-data payload with the image
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const token = getToken() || "";
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/api/prescription/ocr-image`, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      const data = (await res.json()) as { medications?: string[]; error?: string };
+
+      // Graceful degradation: if the endpoint returned an error but also medications (empty), still handle it
+      const extractedNames: string[] = Array.isArray(data.medications) ? data.medications : [];
+
+      if (!res.ok && extractedNames.length === 0) {
+        throw new Error(data.error || `Server error (${res.status})`);
+      }
+
+      // Match each extracted name against our local drugs database
+      const results = extractedNames.map((name) => {
         const q = name.toLowerCase();
         const match =
           DRUGS.find(
@@ -527,21 +552,78 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           ) || null;
         return { name, available: !!match, match };
       });
+
+      if (extractedNames.length === 0) {
+        // No medications found in image — show error and let user retry or type manually
+        pushMsg({
+          role: "ai",
+          kind: "text",
+          text: t(
+            "pages.prescriptionRefill.chat.ocrNoMeds",
+            "I couldn't find any medication names in the image. Please try a clearer photo or enter your medication manually."
+          ),
+        });
+        setSub2("upload-pending");
+        return;
+      }
+
       setOcrResults(results);
+
+      // Pre-fill answers.drug with available medications
       const available = results.filter((r) => r.available);
       if (available.length > 0) {
         const names = available.map((r) => r.name).join(", ");
         setAnswers((a) => ({ ...a, drug: { drug: names, form: "—", strength: "—", dosage: "—" } }));
       }
+
       pushMsg({
         role: "ai",
         kind: "text",
         text: t("pages.prescriptionRefill.chat.ocrDone", "Here's what I found in your prescription:"),
       });
       setSub2("availability-check");
-    }, 1800);
-    e.target.value = "";
+    } catch (err) {
+      console.error("[OCR] Failed to scan prescription:", err);
+      pushMsg({
+        role: "ai",
+        kind: "node",
+        node: (
+          <div className="space-y-2">
+            <p style={{ fontSize: 14 }}>
+              {t(
+                "pages.prescriptionRefill.chat.ocrError",
+                "I had trouble reading that image. Please try again with a clearer photo, or enter your medication manually."
+              )}
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => {
+                  setSub2("upload-pending");
+                  fileRef.current?.click();
+                }}
+                className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors px-4"
+                style={{ minHeight: 40, fontSize: 14 }}
+              >
+                {t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
+              </button>
+              <button
+                onClick={() => {
+                  setSub2("manual-input");
+                  pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.manualPrompt", "Please type the name of your medication.") });
+                }}
+                className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity px-4"
+                style={{ minHeight: 40, fontSize: 14 }}
+              >
+                {t("pages.prescriptionRefill.chat.enterManually", "Enter Manually")}
+              </button>
+            </div>
+          </div>
+        ),
+      });
+      setSub2("manual-input");
+    }
   };
+
   const handleManualSubmit = () => {
     const v = manualValue.trim();
     if (!v) return;
@@ -1750,51 +1832,127 @@ const MedicationAvailabilityCard = ({
 }) => {
   const { t } = useTranslation();
   const availableCount = results.filter((r) => r.available).length;
+  const unavailableCount = results.length - availableCount;
+
   return (
     <div className="space-y-3">
-      <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
+      {/* Header summary */}
+      <div className="flex items-center justify-between px-1">
+        <p className="font-semibold text-foreground" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.ocrResultsTitle", "Prescription Scan Results")}
+        </p>
+        <div className="flex items-center gap-2 text-xs font-medium">
+          {availableCount > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/12 text-emerald-600 border border-emerald-500/20">
+              <CheckCircle2 className="w-3 h-3" />
+              {availableCount} {t("pages.prescriptionRefill.chat.available", "available")}
+            </span>
+          )}
+          {unavailableCount > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
+              <XCircle className="w-3 h-3" />
+              {unavailableCount} {t("pages.prescriptionRefill.chat.unavailable", "unavailable")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Medication list */}
+      <div className="rounded-xl border border-border overflow-hidden divide-y divide-border">
         {results.map((r, i) => (
-          <div key={i} className="flex items-center gap-3 px-3 py-3">
+          <div
+            key={i}
+            className={`flex items-center gap-3 px-4 py-3 transition-colors ${
+              r.available ? "bg-emerald-500/5 hover:bg-emerald-500/8" : "bg-red-500/[0.03] hover:bg-red-500/[0.06]"
+            }`}
+          >
+            {/* Status icon */}
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                r.available ? "bg-emerald-500/15" : "bg-red-500/15"
+              className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
+                r.available
+                  ? "bg-emerald-500/15 ring-1 ring-emerald-500/25"
+                  : "bg-red-500/12 ring-1 ring-red-500/20"
               }`}
             >
               {r.available ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <CheckCircle2 className="w-[18px] h-[18px] text-emerald-500" />
               ) : (
-                <XCircle className="w-4 h-4 text-red-500" />
+                <XCircle className="w-[18px] h-[18px] text-red-500" />
               )}
             </div>
+
+            {/* Drug info */}
             <div className="min-w-0 flex-1">
-              <p className="font-medium text-foreground truncate" style={{ fontSize: 15 }}>
+              <p
+                className={`font-semibold truncate ${r.available ? "text-foreground" : "text-foreground/70"}`}
+                style={{ fontSize: 15 }}
+              >
                 {r.name}
               </p>
-              <p className="text-muted-foreground" style={{ fontSize: 12 }}>
-                {r.available
-                  ? t("pages.prescriptionRefill.chat.drugAvailable", "Available for refill")
-                  : t("pages.prescriptionRefill.chat.drugUnavailable", "Not available in our system")}
-              </p>
+              {r.available && r.match ? (
+                <p className="text-emerald-600 font-medium" style={{ fontSize: 12 }}>
+                  ✓ {t("pages.prescriptionRefill.chat.drugAvailable", "Available for refill")}
+                  {r.match.form && r.match.form !== "N/A" ? ` · ${r.match.form}` : ""}
+                  {r.match.available_strengths && r.match.available_strengths !== "N/A"
+                    ? ` · ${r.match.available_strengths}`
+                    : ""}
+                </p>
+              ) : (
+                <p className="text-red-400" style={{ fontSize: 12 }}>
+                  ✗ {t("pages.prescriptionRefill.chat.drugUnavailable", "Not available in our system")}
+                </p>
+              )}
+            </div>
+
+            {/* Right badge */}
+            <div
+              className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                r.available
+                  ? "bg-emerald-500/15 text-emerald-600"
+                  : "bg-red-500/10 text-red-500"
+              }`}
+            >
+              {r.available
+                ? t("pages.prescriptionRefill.chat.inStock", "In Stock")
+                : t("pages.prescriptionRefill.chat.notAvail", "N/A")}
             </div>
           </div>
         ))}
       </div>
+
+      {/* CTA */}
       {availableCount > 0 ? (
         <button
           onClick={onProceed}
-          className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+          className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-sm"
           style={{ minHeight: 52, fontSize: 16 }}
         >
-          {t("pages.prescriptionRefill.chat.continueWithAvailable", "Continue with {{count}} medication(s)", { count: availableCount }).replace("{{count}}", String(availableCount))}
+          {t(
+            "pages.prescriptionRefill.chat.continueWithAvailable",
+            "Continue with {{count}} medication(s)",
+            { count: availableCount }
+          ).replace("{{count}}", String(availableCount))}
         </button>
       ) : (
-        <p className="text-center text-muted-foreground py-2" style={{ fontSize: 14 }}>
-          {t("pages.prescriptionRefill.chat.noAvailable", "None of the detected medications are available for refill.")}
-        </p>
+        <div className="rounded-xl bg-amber-500/8 border border-amber-500/20 px-4 py-3 text-center">
+          <p className="text-amber-700 font-medium" style={{ fontSize: 14 }}>
+            {t(
+              "pages.prescriptionRefill.chat.noAvailable",
+              "None of the detected medications are available for refill."
+            )}
+          </p>
+          <p className="text-muted-foreground mt-1" style={{ fontSize: 13 }}>
+            {t(
+              "pages.prescriptionRefill.chat.noAvailableHint",
+              "Please contact our team or try searching manually."
+            )}
+          </p>
+        </div>
       )}
     </div>
   );
 };
+
 
 const DrugConfirmCard = ({
   drug,
