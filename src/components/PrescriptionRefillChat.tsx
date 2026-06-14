@@ -1090,7 +1090,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       ) : (
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 w-full max-w-2xl mx-auto"
+        className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-4 w-full max-w-2xl mx-auto"
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (

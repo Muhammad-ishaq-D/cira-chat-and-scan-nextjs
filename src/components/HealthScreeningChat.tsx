@@ -307,7 +307,7 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
 
   return (
     <div className="flex flex-col flex-1 min-h-0 w-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto" style={{ minHeight: 0 }}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto" style={{ minHeight: 0 }}>
         {messages.map((m) => (
           <Bubble key={m.id} role={m.role}>
             {m.role === "ai" ? <TypewriterText text={m.text} /> : m.text}
