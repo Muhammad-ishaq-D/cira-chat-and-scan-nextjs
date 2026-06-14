@@ -57,7 +57,7 @@ const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { te
     // Array.from splits by Unicode code point so emojis (multi-unit chars) stay intact
     const chars = Array.from(text);
     const interval = setInterval(() => {
-      indexRef.current += 1;
+      indexRef.current += 4;
       setDisplayed(chars.slice(0, indexRef.current).join(""));
       if (indexRef.current >= chars.length) {
         clearInterval(interval);
@@ -117,8 +117,8 @@ const LiveTypewriterText = ({
         const targetChars = Array.from(target);
         const prevChars = Array.from(prev);
         if (prevChars.length >= targetChars.length) return prev;
-        // Advance one full code point (handles emojis, flags, etc.)
-        return targetChars.slice(0, prevChars.length + 1).join("");
+        // Advance multiple code points for faster rendering
+        return targetChars.slice(0, prevChars.length + 4).join("");
       });
     }, speed);
 

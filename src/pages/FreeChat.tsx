@@ -85,7 +85,7 @@ const LiveTypewriterText = ({
         const targetChars = Array.from(target);
         const prevChars = Array.from(prev);
         if (prevChars.length >= targetChars.length) return prev;
-        return targetChars.slice(0, prevChars.length + 1).join("");
+        return targetChars.slice(0, prevChars.length + 4).join("");
       });
     }, speed);
     return () => window.clearInterval(interval);
