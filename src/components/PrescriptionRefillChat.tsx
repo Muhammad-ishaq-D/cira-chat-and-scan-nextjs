@@ -2608,6 +2608,12 @@ const NumberWithUnit = ({
           setUnit(u);
         }}
         inputRef={inputRef}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            submit();
+          }
+        }}
       />
       <input
         type="hidden"
