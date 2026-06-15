@@ -22,7 +22,6 @@ import {
   Check,
   X,
   Search,
-  Send,
 } from "lucide-react";
 import drugsData from "@/data/drugs.json";
 
@@ -1394,37 +1393,24 @@ const Bubble = ({
   role: "ai" | "user";
   children: React.ReactNode;
   wide?: boolean;
-}) => {
-  const isUser = role === "user";
-  return (
+}) => (
+  <div
+    className={`flex animate-fade-in ${
+      role === "user" ? "justify-end" : "justify-start"
+    }`}
+  >
     <div
-      className={`flex animate-fade-in ${isUser ? "justify-end" : "justify-start"} gap-2.5`}
+      className={`${wide ? "max-w-[95%] md:max-w-[90%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-4 py-3 leading-relaxed ${
+        role === "user"
+          ? "bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md"
+          : "bg-white border border-border/50 shadow-sm text-foreground rounded-[20px] rounded-tl-md"
+      }`}
+      style={{ fontSize: 14.5 }}
     >
-      {!isUser && (
-        <div
-          className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center shadow-sm mt-0.5"
-          aria-hidden
-        >
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>C</span>
-        </div>
-      )}
-      <div
-        className={`${
-          wide ? "max-w-[92%] md:max-w-[85%] w-full" : "max-w-[85%] md:max-w-[72%]"
-        } leading-relaxed transition-colors ${
-          isUser
-            ? "bg-primary text-primary-foreground rounded-[18px] rounded-tr-md px-4 py-2.5 shadow-sm"
-            : wide
-              ? "bg-white border border-border/50 shadow-sm text-foreground rounded-[18px] rounded-tl-md px-4 py-3"
-              : "text-foreground px-1 py-1.5"
-        }`}
-        style={{ fontSize: 15, lineHeight: 1.55 }}
-      >
-        {children}
-      </div>
+      {children}
     </div>
-  );
-};
+  </div>
+);
 
 const renderFormattedText = (text: string) => {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
@@ -1442,43 +1428,28 @@ const renderFormattedText = (text: string) => {
   });
 };
 
-const TypewriterText = ({ text, speed = 12, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
+  const indexRef = useRef(0);
 
   useEffect(() => {
     setDisplayed("");
-    setDone(false);
+    indexRef.current = 0;
     const chars = Array.from(text);
-    let raf = 0;
-    let last = performance.now();
-    let i = 0;
-    const charsPerMs = 1 / Math.max(1, speed); // ~1 char per `speed` ms
-    const tick = (now: number) => {
-      const dt = now - last;
-      last = now;
-      i = Math.min(chars.length, i + Math.max(1, Math.floor(dt * charsPerMs)));
-      setDisplayed(chars.slice(0, i).join(""));
-      if (i < chars.length) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        setDone(true);
+    const interval = window.setInterval(() => {
+      indexRef.current += 4;
+      setDisplayed(chars.slice(0, indexRef.current).join(""));
+      if (indexRef.current >= chars.length) {
+        window.clearInterval(interval);
         onComplete?.();
       }
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    }, speed);
+    return () => window.clearInterval(interval);
   }, [text, speed, onComplete]);
 
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
-      {!done && (
-        <span
-          className="inline-block w-[2px] h-[1.05em] align-[-2px] ml-0.5 bg-foreground/60 animate-pulse"
-          aria-hidden
-        />
-      )}
     </span>
   );
 };
@@ -1508,13 +1479,10 @@ const BottomInputBar = ({
   }, [value]);
 
   return (
-    <div
-      className="relative shrink-0 bg-gradient-to-t from-[#f7f6f0] via-[#f7f6f0] to-[#f7f6f0]/80 backdrop-blur border-t border-border/40"
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
-    >
-      <div className="max-w-2xl mx-auto px-3 pt-3 sm:px-5">
-        <form
-          className="group bg-white rounded-full flex items-center border border-border/60 pl-1.5 pr-1.5 py-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] focus-within:border-primary/50 focus-within:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.25)] transition-all"
+    <div className="relative shrink-0 bg-[#f7f6f0] border-t border-border/40" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+      <div className="max-w-2xl mx-auto px-3 py-2 sm:px-5 sm:py-3">
+        <form 
+          className="bg-white rounded-full flex items-center border border-border/50 p-1.5 shadow-sm"
           onSubmit={(e) => {
             e.preventDefault();
             if (value.trim()) {
@@ -1530,23 +1498,18 @@ const BottomInputBar = ({
             onChange={(e) => setValue(e.target.value)}
             placeholder={placeholder}
             autoFocus
-            aria-label={placeholder}
             className="flex-1 px-4 py-2 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none font-body"
-            style={{ fontSize: 16, minHeight: 44 }}
+            style={{ fontSize: 15, minHeight: 44 }}
           />
           <button
             type="submit"
             disabled={!value.trim()}
-            aria-label={buttonLabel}
-            title={buttonLabel}
-            className="w-11 h-11 rounded-full bg-primary text-primary-foreground hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+            className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
+            style={{ minHeight: 44, fontSize: 15 }}
           >
-            <Send className="w-4 h-4" />
+            {buttonLabel}
           </button>
         </form>
-        <p className="text-center text-[11px] text-muted-foreground/60 mt-2 mb-0">
-          Press Enter to send
-        </p>
       </div>
     </div>
   );

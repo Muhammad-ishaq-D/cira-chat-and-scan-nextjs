@@ -76,40 +76,21 @@ type Props = {
 
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-// Typewriter effect — types text smoothly via rAF with a blinking caret
-const TypewriterText = ({ text, speed = 14 }: { text: string; speed?: number }) => {
+// Typewriter effect — types text character by character (matches main Chat UX)
+const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) => {
   const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
   useEffect(() => {
     setDisplayed("");
-    setDone(false);
     const chars = Array.from(text);
-    let raf = 0;
-    let last = performance.now();
     let i = 0;
-    const cpm = 1 / Math.max(1, speed);
-    const tick = (now: number) => {
-      const dt = now - last;
-      last = now;
-      i = Math.min(chars.length, i + Math.max(1, Math.floor(dt * cpm)));
+    const interval = setInterval(() => {
+      i += 1;
       setDisplayed(chars.slice(0, i).join(""));
-      if (i < chars.length) raf = requestAnimationFrame(tick);
-      else setDone(true);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+      if (i >= chars.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
   }, [text, speed]);
-  return (
-    <span className="whitespace-pre-line">
-      {displayed}
-      {!done && (
-        <span
-          className="inline-block w-[2px] h-[1.05em] align-[-2px] ml-0.5 bg-foreground/60 animate-pulse"
-          aria-hidden
-        />
-      )}
-    </span>
-  );
+  return <span className="whitespace-pre-line">{displayed}</span>;
 };
 
 /**
@@ -337,11 +318,8 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
           <Bubble role="ai">
             <span className="inline-flex items-center gap-2">
               <TypingDots />
-              <span
-                className="bg-gradient-to-r from-foreground/40 via-foreground/80 to-foreground/40 bg-clip-text text-transparent animate-shimmer"
-                style={{ fontSize: 13, backgroundSize: "200% 100%" }}
-              >
-                {t("pages.prescriptionRefill.chat.screeningTyping", "Thinking…")}
+              <span className="text-foreground/60" style={{ fontSize: 13 }}>
+                {t("pages.prescriptionRefill.chat.screeningTyping")}
               </span>
             </span>
           </Bubble>
@@ -394,42 +372,33 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
       </div>
 
       {phase === "chatting" && (
-        <div
-          className="border-t border-border/60 bg-gradient-to-t from-background via-background to-background/80 backdrop-blur px-3 sm:px-5 pt-3"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
-        >
-          <div className="w-full max-w-3xl mx-auto">
-            <div className="group flex items-center gap-1.5 bg-card rounded-full border border-border/60 pl-1.5 pr-1.5 py-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] focus-within:border-primary/50 focus-within:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.25)] transition-all">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
-                }}
-                placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
-                disabled={sending}
-                autoFocus
-                aria-label={t("common.send", "Send")}
-                className="flex-1 bg-transparent px-4 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none disabled:opacity-60"
-                style={{ fontSize: 16, minHeight: 44 }}
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={!input.trim() || sending}
-                aria-label={t("common.send", "Send")}
-                title={t("common.send", "Send")}
-                className="w-11 h-11 rounded-full bg-primary text-primary-foreground hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
-              >
-                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-center text-[11px] text-muted-foreground/60 mt-2">
-              Press Enter to send
-            </p>
+        <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
+          <div className="flex gap-2 w-full max-w-3xl mx-auto">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
+              disabled={sending}
+              autoFocus
+              className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
+              style={{ fontSize: 16, minHeight: 48 }}
+            />
+            <button
+              onClick={handleSubmit}
+              disabled={!input.trim() || sending}
+              aria-label={t("common.send", "Send")}
+              className="w-12 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center justify-center"
+              style={{ minHeight: 48 }}
+            >
+              {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       )}
@@ -445,33 +414,20 @@ const Bubble = ({
   role: "ai" | "user";
   children: React.ReactNode;
   wide?: boolean;
-}) => {
-  const isUser = role === "user";
-  return (
-    <div className={`flex animate-fade-in gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
-      {!isUser && (
-        <div
-          className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center shadow-sm mt-0.5"
-          aria-hidden
-        >
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>C</span>
-        </div>
-      )}
-      <div
-        className={`${wide ? "max-w-[92%] md:max-w-[85%] w-full" : "max-w-[85%] md:max-w-[72%]"} leading-relaxed ${
-          isUser
-            ? "bg-primary text-primary-foreground rounded-[18px] rounded-tr-md px-4 py-2.5 shadow-sm"
-            : wide
-              ? "bg-white border border-border/50 shadow-sm text-foreground rounded-[18px] rounded-tl-md px-4 py-3"
-              : "text-foreground px-1 py-1.5"
-        }`}
-        style={{ fontSize: 15, lineHeight: 1.55 }}
-      >
-        {children}
-      </div>
+}) => (
+  <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
+        role === "user"
+          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
+          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
+      }`}
+      style={{ fontSize: 14.5 }}
+    >
+      {children}
     </div>
-  );
-};
+  </div>
+);
 
 const TypingDots = () => (
   <span className="inline-flex items-end gap-1 h-4">
