@@ -998,39 +998,41 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-1">
-                  <input
-                    type="email"
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
-                  />
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button
-                      onClick={() => setPhase("summary")}
-                      className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
-                      style={{ minHeight: 48, fontSize: 14 }}
-                    >
-                      {t("common.back")}
-                    </button>
-                    <button
-                      onClick={() => handleEmailSubmit(emailInput)}
-                      disabled={checkoutStatus === "processing"}
-                      className="rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                      style={{ minHeight: 48, fontSize: 14 }}
-                    >
-                      {checkoutStatus === "processing" ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        "Continue"
-                      )}
-                    </button>
+                {typingComplete && (
+                  <div className="space-y-3 pt-1">
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
+                    />
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button
+                        onClick={() => setPhase("summary")}
+                        className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                        style={{ minHeight: 48, fontSize: 14 }}
+                      >
+                        {t("common.back")}
+                      </button>
+                      <button
+                        onClick={() => handleEmailSubmit(emailInput)}
+                        disabled={checkoutStatus === "processing"}
+                        className="rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                        style={{ minHeight: 48, fontSize: 14 }}
+                      >
+                        {checkoutStatus === "processing" ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          "Continue"
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
