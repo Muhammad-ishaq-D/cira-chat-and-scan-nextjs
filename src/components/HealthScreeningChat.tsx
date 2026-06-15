@@ -332,7 +332,7 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
                 <div className="text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
                   <p className="text-[14px] md:text-[15px] leading-7">
                     {m.animate ? (
-                      <TypewriterText text={m.text} />
+                      <TypewriterText text={m.text} onDone={() => clearAnimate(m.id)} />
                     ) : (
                       <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
                     )}
