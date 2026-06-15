@@ -615,7 +615,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
                 className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors px-4"
                 style={{ minHeight: 40, fontSize: 14 }}
               >
-                {t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
+                {lastCaptureMethod === "upload"
+                  ? t("pages.prescriptionRefill.chat.reuploadPhoto", "Re-upload Photo")
+                  : t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
               </button>
               <button
                 onClick={() => {
