@@ -798,8 +798,9 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           {chatLog.map((msg, i) => {
             const ciraIndices = chatLog.map((m, idx) => m.role === "cira" ? idx : -1).filter(idx => idx !== -1);
             const lastCiraIndex = ciraIndices.length > 0 ? ciraIndices[ciraIndices.length - 1] : -1;
+            const isLastCira = i === lastCiraIndex;
             return msg.role === "cira"
-              ? <CiraBubble key={i} text={msg.text} onTypingComplete={i === lastCiraIndex ? () => setTypingComplete(true) : undefined} />
+              ? <CiraBubble key={i} text={msg.text} thinking={isLastCira && !typingComplete} onTypingComplete={isLastCira ? () => setTypingComplete(true) : undefined} />
               : <UserBubble key={i} text={msg.text} />;
           })}
 
