@@ -15,9 +15,11 @@ import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
 import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
+import ReferralLetterChat from "@/components/ReferralLetterChat";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import type { VitalScanData } from "@/lib/referralApi";
 
 // Render basic markdown: **bold**, *italic*, `code`
 const renderFormattedText = (text: string) => {
@@ -134,7 +136,7 @@ const LiveTypewriterText = ({
 
 
 
-type ChatMode = "none" | "assessment" | "vitals" | "chat";
+type ChatMode = "none" | "assessment" | "vitals" | "chat" | "referral";
 
 const chatModes = [
   {
@@ -265,6 +267,8 @@ const Chat = () => {
       scan_desc: "30-second scan captures real vitals from your face",
       book: "🏥 Book a Doctor",
       book_desc: "Connect with a licensed doctor near you",
+      referral: "📄 Referral Letter",
+      referral_desc: "AI-drafted GP-to-specialist referral in minutes",
       just_chat_msg: "💬 I just want to chat",
       assessment_msg: "🩺 I'd like a health assessment",
       placeholder: "Ask Cira anything...",
@@ -280,6 +284,8 @@ const Chat = () => {
       scan_desc: "Un scan de 30 secondes capture vos signes vitaux",
       book: "🏥 Prendre RDV",
       book_desc: "Connectez-vous avec un médecin près de chez vous",
+      referral: "📄 Lettre de Référence",
+      referral_desc: "Lettre de référence médecin-spécialiste rédigée par IA",
       just_chat_msg: "💬 Je veux juste discuter",
       assessment_msg: "🩺 Je voudrais une évaluation de santé",
       placeholder: "Demandez n'importe quoi à Cira...",
@@ -295,6 +301,8 @@ const Chat = () => {
       scan_desc: "El escaneo de 30 segundos captura tus signos vitales",
       book: "🏥 Reservar médico",
       book_desc: "Conéctate con un médico licenciado cerca de ti",
+      referral: "📄 Carta de Derivación",
+      referral_desc: "Carta de derivación médico-especialista redactada por IA",
       just_chat_msg: "💬 Solo quiero chatear",
       assessment_msg: "🩺 Me gustaría una evaluación de salud",
       placeholder: "Pregúntale a Cira cualquier cosa...",
@@ -310,6 +318,8 @@ const Chat = () => {
       scan_desc: "Ein 30-sekündiger Scan erfasst Ihre Vitalwerte",
       book: "🏥 Arzt buchen",
       book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
+      referral: "📄 Überweisungsbrief",
+      referral_desc: "KI-erstellter Überweisungsbrief in Minuten",
       just_chat_msg: "💬 Ich möchte nur chatten",
       assessment_msg: "🩺 Ich hätte gerne eine Gesundheitsbewertung",
       placeholder: "Fragen Sie Cira alles...",
@@ -1202,6 +1212,15 @@ const Chat = () => {
       return;
     }
 
+    // Referral Letter mode — renders inline component, no Claude call
+    if (mode === "referral") {
+      syncChatMode("referral");
+      setShowModeSelection(false);
+      setMessages([]);
+      setConversationHistory([]);
+      return;
+    }
+
     syncChatMode(mode);
     setShowModeSelection(false);
 
@@ -1233,6 +1252,7 @@ const Chat = () => {
       assessment: t.assessment_msg,
       chat: "",
       vitals: "",
+      referral: "",
       none: "",
     };
 
@@ -1441,7 +1461,34 @@ const Chat = () => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
-        {/* Hamburger button outside navbar */}
+        {/* ── Referral Letter mode — full-area takeover ── */}
+        {chatMode === "referral" && (
+          <ReferralLetterChat
+            onExit={() => {
+              syncChatMode("none");
+              setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]);
+              setConversationHistory([]);
+              prepPayloadSentRef.current = false;
+            }}
+            sessionVitals={(() => {
+              try {
+                const v = secureStorage.get("scan_vitals", true);
+                if (!v || !Array.isArray(v)) return null;
+                const hr = v.find((x: any) => x.label === "Heart Rate");
+                const bp = v.find((x: any) => x.label === "Blood Pressure");
+                const spo2 = v.find((x: any) => x.label === "SpO2" || x.label === "Oxygen Saturation");
+                return {
+                  heartRate: hr ? Number(hr.value) : undefined,
+                  bloodPressure: bp ? String(bp.value) : undefined,
+                  spo2: spo2 ? Number(spo2.value) : undefined,
+                };
+              } catch { return null; }
+            })()}
+          />
+        )}
+
+        {/* Hamburger button outside navbar — hidden in referral mode */}
+        {chatMode !== "referral" && (
         <button
           onClick={() => setShowHistory(!showHistory)}
           className="absolute top-4 left-4 z-20 w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm"
@@ -1449,7 +1496,8 @@ const Chat = () => {
         >
           <Menu size={18} strokeWidth={1.5} />
         </button>
-        <div
+        )}
+        {chatMode !== "referral" && <div
           ref={scrollRef}
           className="flex-1 min-h-0 overflow-y-auto pb-4 md:pb-0"
           style={{ WebkitOverflowScrolling: "touch" }}
@@ -1563,6 +1611,16 @@ const Chat = () => {
                           >
                             <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
                             <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
+                          </button>
+                          {/* Referral Letter mode */}
+                          <button
+                            onClick={() => selectMode("referral")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-indigo-300/50 bg-gradient-to-r from-indigo-500/8 to-purple-500/8 text-left hover:from-indigo-500/15 hover:to-purple-500/15 transition-all active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                              <FileText size={13} className="text-indigo-500" /> {t.referral || "📄 Referral Letter"}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">{t.referral_desc || "AI-drafted GP-to-specialist referral in minutes"}</span>
                           </button>
                           <button
                             onClick={() => {
@@ -1702,6 +1760,18 @@ const Chat = () => {
                       );
                     })}
 
+                    {/* Referral Letter */}
+                    <button
+                      onClick={() => selectMode("referral")}
+                      className="group w-full bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200/60 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center mb-1.5">
+                        <FileText size={13} className="text-indigo-500" />
+                      </div>
+                      <p className="text-[10px] font-semibold text-foreground mb-0.5" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t.referral || "📄 Referral Letter"}</p>
+                      <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2">{t.referral_desc || "AI-drafted GP-to-specialist referral"}</p>
+                    </button>
+
                     {/* Just chat */}
                     <button
                       onClick={() => selectMode("chat")}
@@ -1730,10 +1800,10 @@ const Chat = () => {
               )}
             </div>
           </div>
-        </div>
+        </div>}
 
-        {/* Bottom input — Gemini-style clean pill */}
-        <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+        {/* Bottom input — Gemini-style clean pill — hidden in referral mode */}
+        {chatMode !== "referral" && <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
             <div className="bg-secondary/60 rounded-full flex items-center border border-border/30 px-2">
               {/* Language Selector Dropdown inside input */}
@@ -1812,7 +1882,7 @@ const Chat = () => {
           <div className="text-center px-3 pb-1">
             <p className="text-[9px] text-muted-foreground/60">{t.disclaimer || tr("components.chatHistory.disclaimer")}</p>
           </div>
-        </div>
+        </div>}
       </div>
       <ConsentBanner />
 

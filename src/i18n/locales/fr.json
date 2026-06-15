@@ -1804,5 +1804,94 @@
       "text": "Anonyme, gratuit, disponible 24h/24. Obtenez une étape suivante claire en quelques minutes.",
       "button": "Démarrer la vérification gratuite"
     }
+  },
+  "referral": {
+    "title": "Lettre de Référence",
+    "subtitle": "Clinique de la Brisée · Propulsé par l'IA",
+    "intro": "Je vais vous aider à créer une lettre de référence professionnelle pour un spécialiste.\n\nJe vais vous poser quelques questions sur le spécialiste dont vous avez besoin, vos symptômes et vos antécédents médicaux. Cela prend environ 3 à 4 minutes.",
+    "summaryIntro": "Voici un résumé de tout ce que vous m'avez dit. Veuillez vérifier chaque champ — vous pouvez modifier n'importe quelle réponse avant de générer.",
+    "summaryTitle": "Résumé de la référence",
+    "editPrompt": "Bien sûr ! Permettez-moi de vous reposer la question.",
+    "editSaved": "Compris — réponse mise à jour.",
+    "generating": "Génération de votre lettre de référence…",
+    "generatingDesc": "Claude analyse vos réponses et construit la lettre.",
+    "doneTitle": "Lettre de référence prête !",
+    "doneSubtitle": "Votre PDF a été généré et devrait se télécharger automatiquement.",
+    "vitalsConfirm": "J'ai ajouté vos résultats de scan (FC : {{hr}} bpm, TA : {{bp}}, SpO₂ : {{spo2}} %) à la référence.",
+    "vitalsIncluded": "Les signes vitaux du scan (FC, TA, SpO₂) seront inclus.",
+    "aiNotice": "Le diagnostic provisoire et les résultats de l'examen seront générés par l'IA à partir de vos réponses. Vérifiez la lettre avant de l'envoyer.",
+    "aiDisclosure": "Les champs marqués comme assistés par l'IA ont été générés par intelligence artificielle et doivent être vérifiés par le médecin référent avant utilisation. Cela ne remplace pas un avis médical professionnel.",
+    "notProvided": "Non fourni",
+    "errorGenerate": "Échec de la génération de la référence",
+    "refNumber": "N° de référence",
+    "issuedOn": "Émis le",
+    "provisionalDiagnosis": "Diagnostic provisoire",
+    "inputPlaceholder": "Tapez votre réponse…",
+    "modeCard": {
+      "title": "📄 Lettre de Référence",
+      "desc": "Générez une lettre de référence formelle médecin-spécialiste à partir de votre historique de chat et vos signes vitaux.",
+      "badge": "~4 min · Rédigée par IA"
+    },
+    "btn": {
+      "letsGo": "Commençons",
+      "skip": "Passer",
+      "none": "Aucun / Passer",
+      "generate": "Générer la lettre de référence",
+      "downloadPDF": "Télécharger le PDF",
+      "findDoctor": "Trouver un médecin",
+      "back": "Retour"
+    },
+    "q": {
+      "patientName": "Quel est votre nom complet ?",
+      "patientDOB": "Quelle est votre date de naissance ? (JJ/MM/AAAA)",
+      "patientSex": "Quel est votre sexe ?",
+      "patientContact": "Quel est votre numéro de téléphone ou adresse e-mail ?",
+      "specialistSpecialty": "De quel type de spécialiste avez-vous besoin ?",
+      "specialistClinic": "Avez-vous un médecin ou une clinique spécifique en tête, ou devons-nous laisser ouvert ?",
+      "urgency": "Quelle est l'urgence ?",
+      "reasonForReferral": "En une ou deux phrases, quelle est la principale raison pour laquelle vous avez besoin de voir un spécialiste ?",
+      "historyOfComplaint": "Quand ces symptômes ont-ils commencé, et s'améliorent-ils, s'aggravent-ils ou restent-ils stables ?",
+      "triedTreatments": "Avez-vous déjà essayé des traitements ou des médicaments pour cela ? Ont-ils aidé ?",
+      "pastMedicalHistory": "Avez-vous des pathologies existantes, des antécédents chirurgicaux ou des antécédents familiaux pertinents à mentionner ?",
+      "currentMedications": "Prenez-vous actuellement des médicaments ? Si oui, indiquez le nom, la dose et la fréquence.",
+      "allergies": "Avez-vous des allergies médicamenteuses connues ou des mauvaises réactions aux médicaments ?",
+      "investigationsDone": "Avez-vous eu des analyses de sang, des examens d'imagerie ou des ECG récents liés à cela ? Quels étaient les résultats ?",
+      "specificRequest": "Qu'aimeriez-vous que le spécialiste fasse ?",
+      "enclosures": "Y a-t-il des documents à mentionner comme annexes, comme des résultats d'analyses ou des rapports d'imagerie ?"
+    },
+    "sex": {
+      "male": "Homme",
+      "female": "Femme",
+      "other": "Autre / Préfère ne pas dire"
+    },
+    "urgency": {
+      "routine": "Routine",
+      "urgent": "Urgent",
+      "twoWeekWait": "Attente de deux semaines"
+    },
+    "request": {
+      "assess": "Évaluer",
+      "diagnose": "Diagnostiquer",
+      "treat": "Traiter",
+      "secondOpinion": "Deuxième avis"
+    },
+    "summary": {
+      "patientName": "Nom complet",
+      "patientDOB": "Date de naissance",
+      "patientSex": "Sexe",
+      "patientContact": "Contact",
+      "specialistSpecialty": "Type de spécialiste",
+      "specialistClinic": "Clinique / Médecin",
+      "urgency": "Urgence",
+      "reasonForReferral": "Raison de la référence",
+      "historyOfComplaint": "Historique de la plainte",
+      "triedTreatments": "Traitements essayés",
+      "pastMedicalHistory": "Antécédents médicaux",
+      "currentMedications": "Médicaments actuels",
+      "allergies": "Allergies",
+      "investigationsDone": "Examens effectués",
+      "specificRequest": "Demande spécifique",
+      "enclosures": "Pièces jointes"
+    }
   }
 }

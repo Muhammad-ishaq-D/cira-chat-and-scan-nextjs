@@ -1804,5 +1804,94 @@
       "text": "Anónimo, gratis, disponible 24/7. Obtén un próximo paso claro en minutos.",
       "button": "Iniciar verificación gratuita"
     }
+  },
+  "referral": {
+    "title": "Carta de Derivación",
+    "subtitle": "Clinique de la Brisée · Impulsado por IA",
+    "intro": "Te ayudaré a crear una carta de derivación profesional a un especialista.\n\nTe haré algunas preguntas sobre el especialista que necesitas, tus síntomas y tu historial médico. Todo el proceso dura unos 3–4 minutos.",
+    "summaryIntro": "Aquí hay un resumen de todo lo que me has dicho. Por favor revisa cada campo — puedes editar cualquier respuesta antes de generar.",
+    "summaryTitle": "Resumen de Derivación",
+    "editPrompt": "¡Claro! Déjame preguntarte eso de nuevo.",
+    "editSaved": "Entendido — respuesta actualizada.",
+    "generating": "Generando tu carta de derivación…",
+    "generatingDesc": "Claude está analizando tus respuestas y construyendo la carta.",
+    "doneTitle": "¡Carta de Derivación Lista!",
+    "doneSubtitle": "Tu PDF ha sido generado y debería descargarse automáticamente.",
+    "vitalsConfirm": "He añadido tus resultados del escaneo (FC: {{hr}} lpm, PA: {{bp}}, SpO₂: {{spo2}} %) a la derivación.",
+    "vitalsIncluded": "Los signos vitales del escaneo (FC, PA, SpO₂) serán incluidos.",
+    "aiNotice": "El diagnóstico provisional y los hallazgos de la exploración serán generados por IA a partir de tus respuestas. Revisa la carta antes de enviarla.",
+    "aiDisclosure": "Los campos marcados como asistidos por IA fueron generados por inteligencia artificial y deben ser revisados por el médico remitente antes de su uso. Esto no sustituye el consejo médico profesional.",
+    "notProvided": "No proporcionado",
+    "errorGenerate": "Error al generar la derivación",
+    "refNumber": "N.º de referencia",
+    "issuedOn": "Emitido el",
+    "provisionalDiagnosis": "Diagnóstico provisional",
+    "inputPlaceholder": "Escribe tu respuesta…",
+    "modeCard": {
+      "title": "📄 Carta de Derivación",
+      "desc": "Genera una carta de derivación formal de médico a especialista usando tu historial de chat y signos vitales.",
+      "badge": "~4 min · Redactada por IA"
+    },
+    "btn": {
+      "letsGo": "Empecemos",
+      "skip": "Omitir",
+      "none": "Ninguno / Omitir",
+      "generate": "Generar Carta de Derivación",
+      "downloadPDF": "Descargar PDF",
+      "findDoctor": "Encontrar un Médico",
+      "back": "Volver"
+    },
+    "q": {
+      "patientName": "¿Cuál es tu nombre completo?",
+      "patientDOB": "¿Cuál es tu fecha de nacimiento? (DD/MM/AAAA)",
+      "patientSex": "¿Cuál es tu sexo?",
+      "patientContact": "¿Cuál es tu número de teléfono o dirección de correo electrónico?",
+      "specialistSpecialty": "¿Qué tipo de especialista necesitas ver?",
+      "specialistClinic": "¿Tienes algún médico o clínica específica en mente, o debemos dejarlo abierto?",
+      "urgency": "¿Cuán urgente es esto?",
+      "reasonForReferral": "En una o dos oraciones, ¿cuál es la razón principal por la que necesitas ver a un especialista?",
+      "historyOfComplaint": "¿Cuándo comenzaron estos síntomas y han estado mejorando, empeorando o manteniéndose igual?",
+      "triedTreatments": "¿Ya has probado algún tratamiento o medicamento para esto? ¿Te ayudaron?",
+      "pastMedicalHistory": "¿Tienes alguna condición existente, cirugías pasadas o historial familiar relevante que debamos mencionar?",
+      "currentMedications": "¿Estás tomando actualmente algún medicamento? En caso afirmativo, indica el nombre, la dosis y la frecuencia.",
+      "allergies": "¿Conoces alguna alergia a medicamentos o reacciones adversas a medicamentos?",
+      "investigationsDone": "¿Has tenido algún análisis de sangre, escaneo o ECG reciente relacionado con esto? ¿Cuáles fueron los resultados?",
+      "specificRequest": "¿Qué te gustaría que hiciera el especialista?",
+      "enclosures": "¿Hay algún documento para mencionar como adjuntos, como resultados de análisis o informes de imagen?"
+    },
+    "sex": {
+      "male": "Masculino",
+      "female": "Femenino",
+      "other": "Otro / Prefiero no decir"
+    },
+    "urgency": {
+      "routine": "Rutinario",
+      "urgent": "Urgente",
+      "twoWeekWait": "Espera de dos semanas"
+    },
+    "request": {
+      "assess": "Evaluar",
+      "diagnose": "Diagnosticar",
+      "treat": "Tratar",
+      "secondOpinion": "Segunda opinión"
+    },
+    "summary": {
+      "patientName": "Nombre completo",
+      "patientDOB": "Fecha de nacimiento",
+      "patientSex": "Sexo",
+      "patientContact": "Contacto",
+      "specialistSpecialty": "Tipo de especialista",
+      "specialistClinic": "Clínica / Médico",
+      "urgency": "Urgencia",
+      "reasonForReferral": "Razón de la derivación",
+      "historyOfComplaint": "Historial de la queja",
+      "triedTreatments": "Tratamientos probados",
+      "pastMedicalHistory": "Historial médico",
+      "currentMedications": "Medicamentos actuales",
+      "allergies": "Alergias",
+      "investigationsDone": "Investigaciones realizadas",
+      "specificRequest": "Solicitud específica",
+      "enclosures": "Adjuntos"
+    }
   }
 }

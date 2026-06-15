@@ -1804,5 +1804,94 @@
       "text": "Anonym, kostenlos, rund um die Uhr verfügbar. Erhalten Sie in Minuten einen klaren nächsten Schritt.",
       "button": "Kostenlose Symptomprüfung starten"
     }
+  },
+  "referral": {
+    "title": "Überweisungsbrief",
+    "subtitle": "Clinique de la Brisée · KI-gestützt",
+    "intro": "Ich helfe Ihnen dabei, einen professionellen Überweisungsbrief an einen Spezialisten zu erstellen.\n\nIch werde Ihnen einige Fragen zu dem Spezialisten, den Sie benötigen, Ihren Symptomen und Ihrer Krankengeschichte stellen. Der gesamte Vorgang dauert etwa 3–4 Minuten.",
+    "summaryIntro": "Hier ist eine Zusammenfassung von allem, was Sie mir mitgeteilt haben. Bitte überprüfen Sie jedes Feld — Sie können jede Antwort vor der Generierung bearbeiten.",
+    "summaryTitle": "Überweisungszusammenfassung",
+    "editPrompt": "Natürlich! Lassen Sie mich das noch einmal fragen.",
+    "editSaved": "Verstanden — Antwort aktualisiert.",
+    "generating": "Ihr Überweisungsbrief wird erstellt…",
+    "generatingDesc": "Claude analysiert Ihre Antworten und erstellt den Brief.",
+    "doneTitle": "Überweisungsbrief fertig!",
+    "doneSubtitle": "Ihr PDF wurde erstellt und sollte automatisch heruntergeladen werden.",
+    "vitalsConfirm": "Ich habe Ihre Scan-Ergebnisse (HF: {{hr}} bpm, BD: {{bp}}, SpO₂: {{spo2}} %) zur Überweisung hinzugefügt.",
+    "vitalsIncluded": "Scan-Vitalwerte (HF, BD, SpO₂) werden einbezogen.",
+    "aiNotice": "Vorläufige Diagnose und Untersuchungsbefunde werden von der KI anhand Ihrer Antworten generiert. Überprüfen Sie den Brief, bevor Sie ihn absenden.",
+    "aiDisclosure": "KI-unterstützte Felder wurden von künstlicher Intelligenz generiert und müssen vom überweisenden Arzt vor der Verwendung überprüft werden. Dies ersetzt keinen professionellen medizinischen Rat.",
+    "notProvided": "Nicht angegeben",
+    "errorGenerate": "Überweisung konnte nicht generiert werden",
+    "refNumber": "Referenznr.",
+    "issuedOn": "Ausgestellt am",
+    "provisionalDiagnosis": "Vorläufige Diagnose",
+    "inputPlaceholder": "Geben Sie Ihre Antwort ein…",
+    "modeCard": {
+      "title": "📄 Überweisungsbrief",
+      "desc": "Erstellen Sie einen formellen Überweisungsbrief vom Hausarzt an den Spezialisten anhand Ihres Chat-Verlaufs und Ihrer Vitalwerte.",
+      "badge": "~4 Min · KI-erstellt"
+    },
+    "btn": {
+      "letsGo": "Los geht's",
+      "skip": "Überspringen",
+      "none": "Keine / Überspringen",
+      "generate": "Überweisungsbrief erstellen",
+      "downloadPDF": "PDF herunterladen",
+      "findDoctor": "Arzt finden",
+      "back": "Zurück"
+    },
+    "q": {
+      "patientName": "Wie lautet Ihr vollständiger Name?",
+      "patientDOB": "Wie lautet Ihr Geburtsdatum? (TT/MM/JJJJ)",
+      "patientSex": "Was ist Ihr Geschlecht?",
+      "patientContact": "Wie lautet Ihre Telefonnummer oder E-Mail-Adresse?",
+      "specialistSpecialty": "Welche Art von Spezialisten benötigen Sie?",
+      "specialistClinic": "Haben Sie einen bestimmten Arzt oder eine bestimmte Klinik im Sinn, oder soll das offen bleiben?",
+      "urgency": "Wie dringend ist das?",
+      "reasonForReferral": "In ein bis zwei Sätzen: Was ist der Hauptgrund, warum Sie einen Spezialisten aufsuchen müssen?",
+      "historyOfComplaint": "Wann haben diese Symptome begonnen, und werden sie besser, schlechter oder bleiben sie gleich?",
+      "triedTreatments": "Haben Sie bereits Behandlungen oder Medikamente dagegen versucht? Haben sie geholfen?",
+      "pastMedicalHistory": "Haben Sie bestehende Erkrankungen, frühere Operationen oder relevante Familiengeschichte, die erwähnt werden sollten?",
+      "currentMedications": "Nehmen Sie derzeit Medikamente ein? Wenn ja, geben Sie den Namen, die Dosis und die Häufigkeit an.",
+      "allergies": "Sind Ihnen bekannte Medikamentenallergien oder schlechte Reaktionen auf Medikamente bekannt?",
+      "investigationsDone": "Hatten Sie kürzlich Bluttests, Scans oder EKGs in Bezug darauf? Was waren die Ergebnisse?",
+      "specificRequest": "Was soll der Spezialist tun?",
+      "enclosures": "Gibt es Dokumente, die als Anlagen erwähnt werden sollen, wie Blutbefunde oder Bildgebungsberichte?"
+    },
+    "sex": {
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Sonstiges / Keine Angabe"
+    },
+    "urgency": {
+      "routine": "Routinemäßig",
+      "urgent": "Dringend",
+      "twoWeekWait": "Zwei-Wochen-Wartezeit"
+    },
+    "request": {
+      "assess": "Bewerten",
+      "diagnose": "Diagnostizieren",
+      "treat": "Behandeln",
+      "secondOpinion": "Zweitmeinung"
+    },
+    "summary": {
+      "patientName": "Vollständiger Name",
+      "patientDOB": "Geburtsdatum",
+      "patientSex": "Geschlecht",
+      "patientContact": "Kontakt",
+      "specialistSpecialty": "Fachrichtung",
+      "specialistClinic": "Klinik / Arzt",
+      "urgency": "Dringlichkeit",
+      "reasonForReferral": "Überweisungsgrund",
+      "historyOfComplaint": "Beschwerdengeschichte",
+      "triedTreatments": "Ausprobierte Behandlungen",
+      "pastMedicalHistory": "Vorerkrankungen",
+      "currentMedications": "Aktuelle Medikamente",
+      "allergies": "Allergien",
+      "investigationsDone": "Durchgeführte Untersuchungen",
+      "specificRequest": "Spezielle Anfrage",
+      "enclosures": "Anlagen"
+    }
   }
 }
