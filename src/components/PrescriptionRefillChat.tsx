@@ -190,6 +190,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [ocrResults, setOcrResults] = useState<Array<{ name: string; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
+  const [lastCaptureMethod, setLastCaptureMethod] = useState<"camera" | "upload" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Step 3 sub-state
@@ -519,6 +520,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     if (!file) return;
     e.target.value = ""; // reset input immediately so re-upload works
 
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      typeof navigator !== "undefined" ? navigator.userAgent : ""
+    );
+    setLastCaptureMethod(isMobile ? "camera" : "upload");
     setSub2("upload-reading");
 
     try {
@@ -610,7 +615,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
                 className="rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors px-4"
                 style={{ minHeight: 40, fontSize: 14 }}
               >
-                {t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
+                {lastCaptureMethod === "upload"
+                  ? t("pages.prescriptionRefill.chat.reuploadPhoto", "Re-upload Photo")
+                  : t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
               </button>
               <button
                 onClick={() => {
