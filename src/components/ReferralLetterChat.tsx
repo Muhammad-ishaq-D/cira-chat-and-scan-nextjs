@@ -991,7 +991,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: EMAIL ─────────────────────────────────────────────────── */}
-          {phase === "email" && (
+          {phase === "email" && typingDone && (
             <div className="animate-fade-in space-y-4">
               <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
                 <div className="flex items-center gap-3">
