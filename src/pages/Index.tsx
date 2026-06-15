@@ -176,12 +176,52 @@ const Index = () => {
         jsonLd={[
           {
             "@context": "https://schema.org",
-            "@type": "MedicalOrganization",
-            name: "Cira",
-            url: "https://askainurse.com/",
+            "@type": "MedicalBusiness",
+            "@id": "https://askainurse.com/#medicalbusiness",
+            name: "Cira AI Nurse",
+            url: "https://askainurse.com",
             logo: "https://askainurse.com/favicon.svg",
-            description: "AI health nurse offering symptom guidance and camera-based vital sign scans.",
-            sameAs: ["https://askainurse.com"],
+            image: "https://askainurse.com/og-image.jpg",
+            description:
+              "AI nurse chatbot with 30-second face scan and symptom checking.",
+            medicalSpecialty: "GeneralPractice",
+            priceRange: "Free / Subscription",
+            sameAs: [
+              "https://twitter.com/askainurse",
+              "https://www.linkedin.com/company/askainurse",
+              "https://www.facebook.com/askainurse",
+              "https://www.instagram.com/askainurse",
+            ],
+            availableService: [
+              {
+                "@type": "MedicalProcedure",
+                name: "AI Symptom Checker",
+                description:
+                  "Chat with an AI nurse to understand symptoms and get clear next steps.",
+                url: "https://askainurse.com/symptom-checker",
+              },
+              {
+                "@type": "MedicalProcedure",
+                name: "30-Second Vitals Face Scan",
+                description:
+                  "Camera-based rPPG scan that measures heart rate, blood pressure, HRV and more in about 30 seconds.",
+                url: "https://askainurse.com/technology",
+              },
+              {
+                "@type": "MedicalProcedure",
+                name: "AI Nurse Chat Consultation",
+                description:
+                  "Free, on-demand chat with an AI nurse for everyday health questions.",
+                url: "https://askainurse.com/free-chat",
+              },
+              {
+                "@type": "MedicalProcedure",
+                name: "Prescription Refill Assistance",
+                description:
+                  "Upload a prescription and get help arranging a refill.",
+                url: "https://askainurse.com/prescription-refill",
+              },
+            ],
           },
           {
             "@context": "https://schema.org",
