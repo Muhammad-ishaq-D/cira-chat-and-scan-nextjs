@@ -788,15 +788,28 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
         {/* ── Chat area ──────────────────────────────────────────────────────── */}
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex-1 min-h-0 overflow-y-auto px-4 pt-10 sm:pt-14 pb-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {/* Chat log */}
-          {chatLog.map((msg, i) =>
-            msg.role === "cira"
-              ? <CiraBubble key={i} text={msg.text} />
-              : <UserBubble key={i} text={msg.text} />
-          )}
+          {(() => {
+            const lastCiraIdx = (() => {
+              for (let i = chatLog.length - 1; i >= 0; i--) {
+                if (chatLog[i].role === "cira") return i;
+              }
+              return -1;
+            })();
+            return chatLog.map((msg, i) =>
+              msg.role === "cira"
+                ? <CiraBubble
+                    key={i}
+                    text={msg.text}
+                    isTyping={i === lastCiraIdx && !typingDone}
+                    onDone={i === lastCiraIdx ? () => setTypingDone(true) : undefined}
+                  />
+                : <UserBubble key={i} text={msg.text} />
+            );
+          })()}
 
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
           {phase === "intro" && (
