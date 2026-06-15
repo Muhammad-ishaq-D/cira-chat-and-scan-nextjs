@@ -22,6 +22,7 @@ import {
   Check,
   X,
   Search,
+  Send,
 } from "lucide-react";
 import drugsData from "@/data/drugs.json";
 
