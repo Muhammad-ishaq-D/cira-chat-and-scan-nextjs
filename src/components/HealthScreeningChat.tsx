@@ -76,21 +76,40 @@ type Props = {
 
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-// Typewriter effect — types text character by character (matches main Chat UX)
-const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) => {
+// Typewriter effect — types text smoothly via rAF with a blinking caret
+const TypewriterText = ({ text, speed = 14 }: { text: string; speed?: number }) => {
   const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
   useEffect(() => {
     setDisplayed("");
+    setDone(false);
     const chars = Array.from(text);
+    let raf = 0;
+    let last = performance.now();
     let i = 0;
-    const interval = setInterval(() => {
-      i += 1;
+    const cpm = 1 / Math.max(1, speed);
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      i = Math.min(chars.length, i + Math.max(1, Math.floor(dt * cpm)));
       setDisplayed(chars.slice(0, i).join(""));
-      if (i >= chars.length) clearInterval(interval);
-    }, speed);
-    return () => clearInterval(interval);
+      if (i < chars.length) raf = requestAnimationFrame(tick);
+      else setDone(true);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [text, speed]);
-  return <span className="whitespace-pre-line">{displayed}</span>;
+  return (
+    <span className="whitespace-pre-line">
+      {displayed}
+      {!done && (
+        <span
+          className="inline-block w-[2px] h-[1.05em] align-[-2px] ml-0.5 bg-foreground/60 animate-pulse"
+          aria-hidden
+        />
+      )}
+    </span>
+  );
 };
 
 /**
