@@ -444,35 +444,4 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
   );
 };
 
-const Bubble = ({
-  role,
-  children,
-  wide,
-}: {
-  role: "ai" | "user";
-  children: React.ReactNode;
-  wide?: boolean;
-}) => (
-  <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
-    <div
-      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[80%]"} px-4 py-2.5 leading-relaxed shadow-sm ${
-        role === "user"
-          ? "bg-primary text-primary-foreground rounded-[22px] rounded-tr-md"
-          : "bg-secondary/80 text-foreground rounded-[22px] rounded-tl-md"
-      }`}
-      style={{ fontSize: 14.5 }}
-    >
-      {children}
-    </div>
-  </div>
-);
-
-const TypingDots = () => (
-  <span className="inline-flex items-center gap-1 h-4">
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
-  </span>
-);
-
 export default HealthScreeningChat;
