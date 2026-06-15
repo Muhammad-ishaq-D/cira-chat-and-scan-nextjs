@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import {
   FileText, ChevronRight, SkipForward, Pencil, Download,
   CheckCircle, Loader2, Users, ArrowLeft, ClipboardList,
-  Stethoscope, AlertCircle,
+  Stethoscope, AlertCircle, Lock, Mail, CreditCard,
+  ShieldCheck, Check, Copy, XCircle
 } from "lucide-react";
 import { getUser, getToken } from "@/lib/auth";
 import { userApi } from "@/lib/apiClient";
@@ -13,7 +14,13 @@ import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
-import { Lock, Mail, CreditCard, ShieldCheck, Check, Copy, XCircle } from "lucide-react";
+
+const maskEmail = (email: string) => {
+  if (!email || !email.includes("@")) return email;
+  const [local, domain] = email.split("@");
+  if (local.length <= 2) return `${local[0]}*@${domain}`;
+  return `${local[0]}${"*".repeat(local.length - 2)}${local[local.length - 1]}@${domain}`;
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -199,7 +206,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [answers, setAnswers] = useState<Answers>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1); // -1 = intro
   const [inputValue, setInputValue] = useState("");
-  const [phase, setPhase] = useState<"intro" | "questions" | "summary" | "email" | "checkout" | "done">("intro");
+  const [phase, setPhase] = useState<"intro" | "questions" | "summary" | "generating" | "email" | "checkout" | "done">("intro");
   const [editingKey, setEditingKey] = useState<keyof Answers | null>(null);
   const [generatedReferral, setGeneratedReferral] = useState<ReferralLetter | null>(null);
   const [referralId, setReferralId] = useState<string | number | null>(null);
@@ -481,7 +488,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const handleProceedToCheckout = async () => {
     setIsCreatingSession(true);
     // Temporary change phase to "generating" so user sees a loader while Claude builds findings
-    setPhase("email"); // We'll set it to "email" but handle creation first
+    setPhase("generating");
     
     // Actually let's show generating state if it's slow:
     // But since we want to be safe, let's keep the loader block.

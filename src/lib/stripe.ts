@@ -9,7 +9,7 @@ export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
   prescription_refill: "https://buy.stripe.com/test_6oU7sM9NtbiZ8Mi8fc9Zm04",
 
   // Referral letter — $5.00 one-time payment.
-  referral_letter: "https://buy.stripe.com/test_6oU7sM9NtbiZ8Mi8fc9Zm04_referral",
+  referral_letter: "https://buy.stripe.com/test_8x228se3J1Ip6EagLI9Zm05",
 };
 
 export const PENDING_PLAN_STORAGE_KEY = "cira_pending_plan";
