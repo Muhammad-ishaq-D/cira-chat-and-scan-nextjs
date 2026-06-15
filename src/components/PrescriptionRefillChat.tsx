@@ -1507,10 +1507,13 @@ const BottomInputBar = ({
   }, [value]);
 
   return (
-    <div className="relative shrink-0 bg-[#f7f6f0] border-t border-border/40" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
-      <div className="max-w-2xl mx-auto px-3 py-2 sm:px-5 sm:py-3">
-        <form 
-          className="bg-white rounded-full flex items-center border border-border/50 p-1.5 shadow-sm"
+    <div
+      className="relative shrink-0 bg-gradient-to-t from-[#f7f6f0] via-[#f7f6f0] to-[#f7f6f0]/80 backdrop-blur border-t border-border/40"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)' }}
+    >
+      <div className="max-w-2xl mx-auto px-3 pt-3 sm:px-5">
+        <form
+          className="group bg-white rounded-full flex items-center border border-border/60 pl-1.5 pr-1.5 py-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] focus-within:border-primary/50 focus-within:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.25)] transition-all"
           onSubmit={(e) => {
             e.preventDefault();
             if (value.trim()) {
@@ -1526,18 +1529,23 @@ const BottomInputBar = ({
             onChange={(e) => setValue(e.target.value)}
             placeholder={placeholder}
             autoFocus
+            aria-label={placeholder}
             className="flex-1 px-4 py-2 bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none font-body"
-            style={{ fontSize: 15, minHeight: 44 }}
+            style={{ fontSize: 16, minHeight: 44 }}
           />
           <button
             type="submit"
             disabled={!value.trim()}
-            className="px-6 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
-            style={{ minHeight: 44, fontSize: 15 }}
+            aria-label={buttonLabel}
+            title={buttonLabel}
+            className="w-11 h-11 rounded-full bg-primary text-primary-foreground hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
           >
-            {buttonLabel}
+            <Send className="w-4 h-4" />
           </button>
         </form>
+        <p className="text-center text-[11px] text-muted-foreground/60 mt-2 mb-0">
+          Press Enter to send
+        </p>
       </div>
     </div>
   );
