@@ -52,6 +52,7 @@ const DashboardRefund = () => {
     { icon: Home, id: "home", tKey: "dashboard.nav.home", path: "/dashboard" },
     { icon: Sparkles, id: "chat", tKey: "dashboard.nav.askCira", path: "/chat" },
     { icon: Pill, id: "rx", tKey: "dashboard.nav.prescriptionRefill", path: "/prescription-refill" },
+    { icon: FileText, id: "referral", tKey: "referral.title", path: "/referral-letter" },
     { icon: ScanFace, id: "scan", tKey: "dashboard.nav.scan", path: "/vitals-scan" },
     { icon: FileText, id: "reports", tKey: "dashboard.nav.reports", path: "/reports" },
   ];

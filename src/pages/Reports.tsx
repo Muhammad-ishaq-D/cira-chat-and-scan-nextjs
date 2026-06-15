@@ -16,6 +16,7 @@ const navItems = [
   { icon: Home, tKey: "dashboard.nav.home", id: "home" },
   { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat" },
   { icon: Pill, tKey: "dashboard.nav.prescriptionRefill", id: "rx" },
+  { icon: FileText, tKey: "referral.title", id: "referral" },
   { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan" },
   { icon: FileText, tKey: "dashboard.nav.reports", id: "reports" },
 ];
@@ -147,6 +148,7 @@ const Reports = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "rx") navigate("/prescription-refill");
+                  if (item.id === "referral") navigate("/referral-letter");
                   if (item.id === "scan") navigate("/vitals-scan");
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");

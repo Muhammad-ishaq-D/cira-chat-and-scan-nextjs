@@ -1354,6 +1354,7 @@ const Chat = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "rx") navigate("/prescription-refill");
+                  if (item.id === "referral") navigate("/referral-letter");
                   if (item.id === "scan") { if (canScan()) navigate("/vitals-scan"); }
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
