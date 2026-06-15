@@ -832,7 +832,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
 
           {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
           {phase === "questions" && currentQ && typingDone && (
-            <div className="animate-fade-in ml-9 space-y-2">
+            <div className="animate-fade-in space-y-2">
               {/* Button choices */}
               {currentQ.type === "buttons" && currentQ.buttons && (
                 <div className="flex flex-wrap gap-2">
