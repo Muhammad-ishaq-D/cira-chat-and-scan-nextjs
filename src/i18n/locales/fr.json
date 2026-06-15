@@ -569,6 +569,13 @@
         "done": "Terminé"
       }
     },
+    "referralLetter": {
+      "startTitle": "Lettre de Référence",
+      "startSubtitle": "Propulsé par la CLINIQUE DE LA BRISEE",
+      "startCta": "Démarrer une Nouvelle Référence",
+      "price": "Lettre de référence — 5,00 $",
+      "refund": "Pas satisfait ? Nous offrons un remboursement complet si votre spécialiste n'accepte pas cette lettre de référence."
+    },
     "pricing": {
       "features": {
         "free": [

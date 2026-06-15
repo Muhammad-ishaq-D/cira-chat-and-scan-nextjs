@@ -177,20 +177,91 @@ export async function downloadReferralPDF(
   return res.blob();
 }
 
-/**
- * Convenience: generate a referral and immediately trigger a browser download
- * of the resulting PDF.
- *
- * Usage:
- *   await referralApi.generateAndDownloadPDF({
- *     chatHistory,
- *     userType: "authenticated",
- *     reasonForReferral: "...",
- *     urgency: "routine",
- *     specialistSpecialty: "Cardiology",
- *     specificRequest: "assess",
- *   });
- */
+export interface ReferralSessionResponse {
+  success: boolean;
+  referral_id: number;
+  reference_number: string;
+  referral: ReferralLetter;
+}
+
+export async function createReferralSession(
+  payload: ReferralGenerateRequest
+): Promise<ReferralSessionResponse> {
+  const res = await fetch(`${API_BASE}/api/referral/create-session`, {
+    method: "POST",
+    headers: buildHeaders(true),
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    let errMsg = `Referral create session failed (${res.status})`;
+    try {
+      const errJson = JSON.parse(errText);
+      errMsg = errJson.error || errJson.message || errMsg;
+    } catch {
+      if (errText) errMsg = errText;
+    }
+    throw new Error(errMsg);
+  }
+
+  return res.json();
+}
+
+export async function saveReferralEmail(
+  id: string | number,
+  email: string
+): Promise<{ success: boolean; delivery_email: string }> {
+  const res = await fetch(`${API_BASE}/api/referral/${encodeURIComponent(id)}/email`, {
+    method: "POST",
+    headers: buildHeaders(true),
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    let errMsg = `Save delivery email failed (${res.status})`;
+    try {
+      const errJson = JSON.parse(errText);
+      errMsg = errJson.error || errJson.message || errMsg;
+    } catch {
+      if (errText) errMsg = errText;
+    }
+    throw new Error(errMsg);
+  }
+
+  return res.json();
+}
+
+export interface ReferralStatusResponse {
+  payment_status: "pending" | "paid" | "failed";
+  email_status: "pending" | "sent" | "failed";
+  reference_code: string;
+}
+
+export async function getReferralStatus(
+  id: string | number
+): Promise<ReferralStatusResponse> {
+  const res = await fetch(`${API_BASE}/api/referral/status/${encodeURIComponent(id)}`, {
+    method: "GET",
+    headers: buildHeaders(true),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    let errMsg = `Get referral status failed (${res.status})`;
+    try {
+      const errJson = JSON.parse(errText);
+      errMsg = errJson.error || errJson.message || errMsg;
+    } catch {
+      if (errText) errMsg = errText;
+    }
+    throw new Error(errMsg);
+  }
+
+  return res.json();
+}
+
 export async function generateAndDownloadPDF(
   payload: ReferralGenerateRequest
 ): Promise<ReferralLetter> {
@@ -212,21 +283,10 @@ export async function generateAndDownloadPDF(
 // ─── Grouped export (matches existing apiClient.ts style) ─────────────────────
 
 export const referralApi = {
-  /**
-   * Step 1 — generate structured referral JSON (AI-powered).
-   * Safe to call for both guests and authenticated users.
-   */
+  createSession: createReferralSession,
+  saveEmail: saveReferralEmail,
+  getStatus: getReferralStatus,
   generate: generateReferral,
-
-  /**
-   * Step 2 — download a PDF from the filled referral JSON.
-   * Returns a Blob; caller is responsible for triggering the download.
-   */
   downloadPDF: downloadReferralPDF,
-
-  /**
-   * Step 1 + 2 combined — generate referral then immediately download PDF.
-   * Returns the filled referral object so the caller can cache/display it.
-   */
   generateAndDownloadPDF,
 };

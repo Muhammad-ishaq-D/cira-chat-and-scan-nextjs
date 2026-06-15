@@ -32,6 +32,7 @@ import Pricing from "./pages/Pricing.tsx";
 import RealDoctors from "./pages/RealDoctors.tsx";
 import Terms from "./pages/Terms.tsx";
 import PrescriptionRefill from "./pages/PrescriptionRefill.tsx";
+import ReferralLetter from "./pages/ReferralLetter.tsx";
 import Refund from "./pages/Refund.tsx";
 import DashboardRefund from "./pages/DashboardRefund.tsx";
 import AdminLogin from "./admin/AdminLogin.tsx";
@@ -110,6 +111,7 @@ const App = () => {
           <Route path="/real-doctors" element={<RealDoctors />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/prescription-refill" element={<PrescriptionRefill />} />
+          <Route path="/referral-letter" element={<ReferralLetter />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/dashboard/prescription-refill/refund" element={<ProtectedRoute><DashboardRefund /></ProtectedRoute>} />
           <Route path="/blog" element={<Blog />} />

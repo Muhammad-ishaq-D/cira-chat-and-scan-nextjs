@@ -569,6 +569,13 @@
         "done": "Listo"
       }
     },
+    "referralLetter": {
+      "startTitle": "Carta de Derivación",
+      "startSubtitle": "Impulsado por CLINIQUE DE LA BRISEE",
+      "startCta": "Iniciar Nueva Derivación",
+      "price": "Carta de derivación — $5.00",
+      "refund": "¿No estás satisfecho? Ofrecemos un reembolso completo si tu especialista no acepta esta carta de derivación."
+    },
     "pricing": {
       "features": {
         "free": [

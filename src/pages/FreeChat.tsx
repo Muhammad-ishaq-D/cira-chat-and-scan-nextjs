@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import SEO from "@/components/SEO";
-import ReferralLetterChat from "@/components/ReferralLetterChat";
 import {
   getDeviceId,
   getFreeChatHistory,
@@ -99,7 +98,7 @@ const LiveTypewriterText = ({
   );
 };
 
-type ChatMode = "none" | "assessment" | "vitals" | "chat" | "referral";
+type ChatMode = "none" | "assessment" | "vitals" | "chat";
 
 const chatModes = [
   { id: "assessment" as ChatMode, icon: Stethoscope, title: "Assessment", desc: "Cira adapts — quick triage or deep clinical intake based on your issue.", badge: "Adaptive · AI-Driven", gradient: "from-blue-500 to-purple-400", bgGlow: "bg-blue-100" },
@@ -1022,17 +1021,6 @@ const FreeChat = () => {
           </button>
         </div>
 
-        {chatMode === "referral" ? (
-          <div className="flex-1 overflow-hidden bg-transparent">
-            <ReferralLetterChat
-              userType="guest"
-              onComplete={(pdfBlob) => {
-                syncChatMode("none");
-              }}
-              onBack={() => syncChatMode("none")}
-            />
-          </div>
-        ) : (
           <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4">
             {/* Chat messages */}
             <div className="relative min-h-full bg-white">

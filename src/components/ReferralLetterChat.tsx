@@ -9,9 +9,11 @@ import {
 import { getUser, getToken } from "@/lib/auth";
 import { userApi } from "@/lib/apiClient";
 import { referralApi, type ReferralLetter, type ReferralGenerateRequest } from "@/lib/referralApi";
+import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
 import AiSparkleIcon from "@/components/AiSparkleIcon";
+import { Lock, Mail, CreditCard, ShieldCheck, Check, Copy, XCircle } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -197,13 +199,98 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [answers, setAnswers] = useState<Answers>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1); // -1 = intro
   const [inputValue, setInputValue] = useState("");
-  const [phase, setPhase] = useState<"intro" | "questions" | "summary" | "generating" | "done">("intro");
+  const [phase, setPhase] = useState<"intro" | "questions" | "summary" | "email" | "checkout" | "done">("intro");
   const [editingKey, setEditingKey] = useState<keyof Answers | null>(null);
   const [generatedReferral, setGeneratedReferral] = useState<ReferralLetter | null>(null);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [referralId, setReferralId] = useState<string | number | null>(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [checkoutStatus, setCheckoutStatus] = useState<"ready" | "processing" | "failed">("ready");
+  
+  // Polling state
+  const [pollingStatus, setPollingStatus] = useState<"pending" | "paid" | "canceled" | "failed">("pending");
+  const [emailStatus, setEmailStatus] = useState<"pending" | "sent" | "failed">("pending");
+  const [refNumber, setRefNumber] = useState("");
+  const [isPolling, setIsPolling] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // ── Check Stripe Redirect Status ──────────────────────────────────────────
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    if (status === "success" || status === "cancel") {
+      const savedId = localStorage.getItem("cira_pending_referral_id");
+      if (savedId) {
+        setReferralId(savedId);
+        referralApi.getStatus(savedId).then(res => {
+          setRefNumber(res.reference_code || "");
+        }).catch(() => {});
+        
+        if (status === "success") {
+          setPhase("done");
+          setPollingStatus("pending");
+          setIsPolling(true);
+        } else {
+          setPhase("checkout");
+          setPollingStatus("canceled");
+          const cachedReferral = localStorage.getItem("cira_cached_referral");
+          if (cachedReferral) {
+            try {
+              setGeneratedReferral(JSON.parse(cachedReferral));
+            } catch {}
+          }
+          const savedEmail = localStorage.getItem("cira_pending_referral_email");
+          if (savedEmail) {
+            setEmailInput(savedEmail);
+          }
+        }
+      }
+    }
+  }, []);
+
+  // ── Polling Referral Status ───────────────────────────────────────────────
+  useEffect(() => {
+    if (!isPolling || !referralId) return;
+
+    let intervalId: any;
+    const poll = async () => {
+      try {
+        const res = await referralApi.getStatus(referralId);
+        if (res.payment_status === "paid" && res.email_status === "sent") {
+          setPollingStatus("paid");
+          setEmailStatus("sent");
+          setRefNumber(res.reference_code || "");
+          setIsPolling(false);
+          localStorage.removeItem("cira_pending_referral_id");
+          localStorage.removeItem("cira_cached_referral");
+          localStorage.removeItem("cira_pending_referral_email");
+        } else if (res.payment_status === "failed" || res.email_status === "failed") {
+          if (res.payment_status === "paid") {
+            setPollingStatus("paid");
+            setEmailStatus("failed");
+            setRefNumber(res.reference_code || "");
+            setIsPolling(false);
+            localStorage.removeItem("cira_pending_referral_id");
+            localStorage.removeItem("cira_cached_referral");
+            localStorage.removeItem("cira_pending_referral_email");
+          } else {
+            setPollingStatus("failed");
+            setIsPolling(false);
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    };
+
+    poll();
+    intervalId = setInterval(poll, 2500);
+
+    return () => clearInterval(intervalId);
+  }, [isPolling, referralId]);
 
   // Build chat history for API (all Q&A pairs)
   const buildChatHistory = useCallback(() => {
@@ -390,11 +477,18 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     ]);
   };
 
-  // ── Generate referral ─────────────────────────────────────────────────────
-  const handleGenerate = async () => {
-    setIsGenerating(true);
-    setPhase("generating");
-
+  // ── Proceed to Checkout ──────────────────────────────────────────────────
+  const handleProceedToCheckout = async () => {
+    setIsCreatingSession(true);
+    // Temporary change phase to "generating" so user sees a loader while Claude builds findings
+    setPhase("email"); // We'll set it to "email" but handle creation first
+    
+    // Actually let's show generating state if it's slow:
+    // But since we want to be safe, let's keep the loader block.
+    // Wait, let's just make it show a toast or loader during the call.
+    // Let's set a loading state or use toast loading.
+    const toastId = toast.loading("Processing your clinical answers and generating referral letter...");
+    
     try {
       const chatHistory = buildChatHistory();
       const userType = isAuthenticated ? "authenticated" : "guest";
@@ -428,47 +522,89 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
         enclosures: answers.enclosures || null,
       };
 
-      // Step 1: Generate structured referral JSON
-      const referral = await referralApi.generate(payload);
-      setGeneratedReferral(referral);
-
-      // Step 2: Generate PDF
-      const blob = await referralApi.downloadPDF(referral);
-      setPdfBlob(blob);
-
-      // Auto-download
-      triggerDownload(blob, `referral-${referral.referenceNumber}.pdf`);
-
-      // Mark done
-      setPhase("done");
+      const res = await referralApi.createSession(payload);
+      if (res.success) {
+        toast.dismiss(toastId);
+        setReferralId(res.referral_id);
+        setGeneratedReferral(res.referral);
+        localStorage.setItem("cira_pending_referral_id", String(res.referral_id));
+        localStorage.setItem("cira_cached_referral", JSON.stringify(res.referral));
+        
+        // Prefill email
+        const prefilledEmail = userProfile?.email || localUser?.email || answers.patientContact || "";
+        if (prefilledEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(prefilledEmail.trim())) {
+          setEmailInput(prefilledEmail.trim());
+        }
+        
+        setPhase("email");
+      } else {
+        throw new Error("Failed to create referral session");
+      }
     } catch (err: any) {
-      console.error("[Referral] Generation error:", err);
+      toast.dismiss(toastId);
+      console.error("[Referral] Checkout error:", err);
       toast.error(t("referral.errorGenerate") + ": " + (err.message || "Unknown error"));
       setPhase("summary");
-      setIsGenerating(false);
     } finally {
-      setIsGenerating(false);
+      setIsCreatingSession(false);
     }
   };
 
-  const triggerDownload = (blob: Blob, filename: string) => {
+  const handleEmailSubmit = async (email: string) => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    
     try {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error("[Referral] Download error:", e);
+      setCheckoutStatus("processing");
+      await referralApi.saveEmail(referralId!, trimmed);
+      setEmailInput(trimmed);
+      localStorage.setItem("cira_pending_referral_email", trimmed);
+      setPhase("checkout");
+      setCheckoutStatus("ready");
+    } catch (err: any) {
+      toast.error("Failed to save email: " + (err.message || "Unknown error"));
+      setCheckoutStatus("ready");
     }
   };
 
-  const handleManualDownload = () => {
-    if (!pdfBlob || !generatedReferral) return;
-    triggerDownload(pdfBlob, `referral-${generatedReferral.referenceNumber}.pdf`);
+  const handlePay = async () => {
+    setCheckoutStatus("processing");
+    try {
+      const paymentLink = STRIPE_PAYMENT_LINKS.referral_letter;
+      if (!paymentLink || paymentLink.includes("REPLACE_WITH_REAL_LINK")) {
+        throw new Error("Payment link not configured");
+      }
+      
+      const params = new URLSearchParams();
+      if (emailInput) params.set("prefilled_email", emailInput);
+      if (referralId) params.set("client_reference_id", `referral_${referralId}`);
+      
+      // Store reference in local storage before redirecting
+      localStorage.setItem("cira_pending_referral_id", String(referralId));
+      
+      const qs = params.toString();
+      window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
+    } catch (err: any) {
+      setCheckoutStatus("failed");
+      toast.error("Redirection to Stripe failed: " + (err.message || "Unknown error"));
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(refNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // ignore
+    }
   };
 
   // ── Current question ──────────────────────────────────────────────────────
@@ -656,17 +792,175 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               {/* Action buttons */}
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={handleGenerate}
+                  onClick={handleProceedToCheckout}
+                  disabled={isCreatingSession}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                  <Stethoscope size={16} />
-                  {t("referral.btn.generate")}
+                  {isCreatingSession ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating session...
+                    </>
+                  ) : (
+                    <>
+                      <Stethoscope size={16} />
+                      {t("referral.btn.generate")}
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={onExit}
                   className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
                 >
                   {t("common.back")}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Phase: EMAIL ─────────────────────────────────────────────────── */}
+          {phase === "email" && (
+            <div className="animate-fade-in space-y-4">
+              <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Mail className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                      Delivery Email
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Where should we email your doctor-signed referral letter PDF?</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
+                  />
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      onClick={() => setPhase("summary")}
+                      className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                      style={{ minHeight: 48, fontSize: 14 }}
+                    >
+                      {t("common.back")}
+                    </button>
+                    <button
+                      onClick={() => handleEmailSubmit(emailInput)}
+                      disabled={checkoutStatus === "processing"}
+                      className="rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      style={{ minHeight: 48, fontSize: 14 }}
+                    >
+                      {checkoutStatus === "processing" ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Continue"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Phase: CHECKOUT ───────────────────────────────────────────────── */}
+          {phase === "checkout" && generatedReferral && (
+            <div className="animate-fade-in space-y-4">
+              {pollingStatus === "canceled" && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-amber-600 font-medium">Payment was not completed. You can try again below when ready.</p>
+                </div>
+              )}
+              
+              <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-4 py-3 border-b border-border bg-card/60">
+                  <p className="text-[13px] font-semibold text-foreground">
+                    Checkout Summary
+                  </p>
+                </div>
+
+                <div className="divide-y divide-border/60">
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <FileText size={14} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground truncate">{generatedReferral.patientName || "Referral Letter"}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        {[
+                          generatedReferral.specialistSpecialty,
+                          generatedReferral.urgency ? `Urgency: ${generatedReferral.urgency.replace(/-/g, " ")}` : ""
+                        ].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <Mail size={14} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground truncate">{maskEmail(emailInput)}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Delivery Email (PDF attachment)</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <ShieldCheck size={14} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground">Clinique de la Brisée</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Signed by Dr. Didier Decamps</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 px-4 py-3 bg-secondary/20">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <CreditCard size={14} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground">Total: $5.00</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">One-time payment securely processed via Stripe</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setPhase("email")}
+                  className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                  style={{ minHeight: 52, fontSize: 14 }}
+                >
+                  Edit Email
+                </button>
+                <button
+                  onClick={handlePay}
+                  disabled={checkoutStatus === "processing"}
+                  className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  style={{ minHeight: 52, fontSize: 14 }}
+                >
+                  {checkoutStatus === "processing" ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Redir...
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={14} />
+                      Pay $5.00
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -688,76 +982,118 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: DONE ──────────────────────────────────────────────────── */}
-          {phase === "done" && generatedReferral && (
+          {phase === "done" && (
             <div className="animate-fade-in space-y-4">
-              {/* Success banner */}
-              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-5 py-5 shadow-sm">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                    <CheckCircle size={20} className="text-primary-foreground" />
+              {pollingStatus === "pending" && (
+                <div className="bg-card border border-border rounded-2xl p-6 text-center space-y-3 shadow-sm">
+                  <div className="flex justify-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                   </div>
-                  <div>
-                    <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                      {t("referral.doneTitle")}
-                    </p>
-                    <p className="text-[11px] text-emerald-600 mt-0.5">{t("referral.doneSubtitle")}</p>
-                  </div>
-                </div>
-
-                {/* Referral meta */}
-                <div className="bg-card/70 rounded-xl px-4 py-3 mb-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.refNumber")}</p>
-                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.referenceNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.issuedOn")}</p>
-                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.dateOfIssue}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.summary.specialistSpecialty")}</p>
-                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.specialistSpecialty}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.summary.urgency")}</p>
-                      <p className="text-[12px] font-semibold text-foreground mt-0.5 capitalize">{generatedReferral.urgency?.replace(/-/g, " ")}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diagnosis preview */}
-                <div className="bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-3">
-                  <p className="text-[10px] text-primary/70 font-medium uppercase tracking-wide mb-1">
-                    {t("referral.provisionalDiagnosis")} <span className="normal-case">(AI)</span>
+                  <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
+                    Confirming your payment…
+                  </h3>
+                  <p className="text-foreground/80 text-sm leading-relaxed">
+                    Hang tight — we are generating your referral letter and emailing it to you as a PDF attachment. This usually takes a few seconds.
                   </p>
-                  <p className="text-[12px] text-foreground leading-snug">{generatedReferral.provisionalDiagnosis}</p>
                 </div>
+              )}
 
-                {/* Buttons */}
-                <div className="flex flex-col gap-2">
+              {pollingStatus === "failed" && (
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-14 h-14 rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
+                      <XCircle className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
+                    </div>
+                    <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+                      Payment confirmation failed
+                    </h3>
+                    <p className="mt-2 text-foreground/80 text-sm">
+                      We couldn't confirm your payment. If you have completed the Stripe payment, please contact support with your reference code.
+                    </p>
+                  </div>
                   <button
-                    onClick={handleManualDownload}
-                    className="w-full py-2.5 rounded-xl bg-emerald-500 text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors active:scale-95"
+                    onClick={() => {
+                      setPhase("checkout");
+                      setPollingStatus("pending");
+                    }}
+                    className="w-full rounded-xl py-3 bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
                   >
-                    <Download size={15} />
-                    {t("referral.btn.downloadPDF")}
-                  </button>
-                  <button
-                    onClick={() => navigate("/doctor")}
-                    className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
-                  >
-                    <Users size={15} />
-                    {t("referral.btn.findDoctor")}
-                  </button>
-                  <button
-                    onClick={onExit}
-                    className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
-                  >
-                    {t("common.back")}
+                    Try again
                   </button>
                 </div>
-              </div>
+              )}
+
+              {pollingStatus === "paid" && (
+                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-5 py-5 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                      <CheckCircle size={20} className="text-primary-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                        Referral Letter Ready!
+                      </p>
+                      <p className="text-[11px] text-emerald-600 mt-0.5">We have emailed your referral letter to your inbox.</p>
+                    </div>
+                  </div>
+
+                  {/* Reference number card */}
+                  <div className="rounded-xl border border-border bg-card/60 p-4 text-center space-y-2">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      Reference Number
+                    </p>
+                    <p className="font-mono font-semibold text-foreground tracking-wider text-lg">
+                      {refNumber || "REF-LETTER"}
+                    </p>
+                    <button
+                      onClick={handleCopy}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-accent transition-colors"
+                      style={{ fontSize: 12 }}
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          Copy
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground text-center">
+                    {emailStatus === "sent"
+                      ? "Email sent — check your inbox."
+                      : emailStatus === "failed"
+                      ? "We couldn't send the email — support will reach out."
+                      : "Sending your prescription by email…"}
+                  </p>
+
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
+                    If you do not see the email in 1–2 minutes, please make sure to check your spam folder.
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="flex flex-col gap-2 pt-2">
+                    <button
+                      onClick={() => navigate("/doctor")}
+                      className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+                    >
+                      <Users size={15} />
+                      {t("referral.btn.findDoctor")}
+                    </button>
+                    <button
+                      onClick={onExit}
+                      className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* AI disclosure */}
               <div className="flex items-start gap-2 px-1">

@@ -569,6 +569,13 @@
         "done": "Fertig"
       }
     },
+    "referralLetter": {
+      "startTitle": "Überweisungsbrief",
+      "startSubtitle": "Unterstützt durch CLINIQUE DE LA BRISEE",
+      "startCta": "Neue Überweisung starten",
+      "price": "Überweisungsbrief — $5,00",
+      "refund": "Nicht zufrieden? Wir erstatten den vollen Betrag zurück, wenn Ihr Spezialist diese Überweisung nicht annimmt."
+    },
     "pricing": {
       "features": {
         "free": [
