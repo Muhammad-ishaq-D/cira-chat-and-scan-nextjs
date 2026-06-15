@@ -684,6 +684,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       pushMsg({ role: "ai", kind: "text", text: "I couldn't save your medications. Please try again." });
       return;
     }
+    setUploadedPhotoUrl(null);
     setTimeout(() => setStep(3), 250);
   };
 
