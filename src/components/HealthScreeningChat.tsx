@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AlertTriangle, Loader2, Send, Stethoscope, RotateCcw } from "lucide-react";
 import { getToken, getUser } from "@/lib/auth";
 import { getDeviceId } from "@/lib/freeCredits";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 const AIR_DOCTOR_URL = "https://airdoctor.biz/Cira";
