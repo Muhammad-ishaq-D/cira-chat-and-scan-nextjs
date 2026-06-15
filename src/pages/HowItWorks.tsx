@@ -508,6 +508,29 @@ const HowItWorks = () => {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="bg-secondary/40 border-y">
+        <div className="max-w-3xl mx-auto px-6 py-20">
+          <div className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Frequently asked</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-4">Questions about how Cira works</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Quick answers about the scan, your privacy, accuracy, and supported devices.
+            </p>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((f, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left font-medium">{f.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-4xl mx-auto px-6 py-20 text-center">
         <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">{t("pages.howItWorks.ctaEyebrow")}</p>
