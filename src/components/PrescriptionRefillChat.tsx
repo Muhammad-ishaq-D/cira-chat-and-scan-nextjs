@@ -2439,18 +2439,24 @@ const UnitRow = ({
   unit,
   units,
   onChange,
+  inputRef,
+  onKeyDown,
 }: {
   value: string;
   unit: string;
   units: string[];
   onChange: (val: string, unit: string) => void;
+  inputRef?: React.Ref<HTMLInputElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }) => (
   <div className="flex flex-col gap-2">
     <input
+      ref={inputRef}
       type="number"
       inputMode="decimal"
       value={value}
       onChange={(e) => onChange(e.target.value, unit)}
+      onKeyDown={onKeyDown}
       className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
       style={{ fontSize: 15 }}
     />
