@@ -191,6 +191,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
   const [lastCaptureMethod, setLastCaptureMethod] = useState<"camera" | "upload" | null>(null);
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Step 3 sub-state
@@ -524,6 +525,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       typeof navigator !== "undefined" ? navigator.userAgent : ""
     );
     setLastCaptureMethod(isMobile ? "camera" : "upload");
+
+    // Create a preview URL for the uploaded photo
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUploadedPhotoUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
     setSub2("upload-reading");
 
     try {
@@ -675,6 +684,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       pushMsg({ role: "ai", kind: "text", text: "I couldn't save your medications. Please try again." });
       return;
     }
+    setUploadedPhotoUrl(null);
     setTimeout(() => setStep(3), 250);
   };
 
@@ -697,6 +707,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setSub2("upload-pending");
     fileRef.current?.click();
     setAnswers((a) => ({ ...a, submissionMode: "upload" }));
+    setUploadedPhotoUrl(null);
   };
 
   // --- Step 3 ---
@@ -1152,10 +1163,35 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         )}
         {step === 2 && sub2 === "availability-check" && ocrResults.length > 0 && (
           <Bubble role="ai" wide>
-            <MedicationAvailabilityCard
-              results={ocrResults}
-              onProceed={handleProceedWithAvailable}
-            />
+            <div className="space-y-4">
+              {uploadedPhotoUrl && (
+                <div className="space-y-2">
+                  <div className="rounded-xl overflow-hidden border border-border/50 bg-background">
+                    <img
+                      src={uploadedPhotoUrl}
+                      alt="Uploaded prescription"
+                      className="w-full h-auto max-h-[200px] object-contain"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setUploadedPhotoUrl(null);
+                      setSub2("upload-pending");
+                      fileRef.current?.click();
+                    }}
+                    className="text-sm text-primary font-medium hover:underline"
+                  >
+                    {lastCaptureMethod === "upload"
+                      ? t("pages.prescriptionRefill.chat.reuploadPhoto", "Re-upload Photo")
+                      : t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
+                  </button>
+                </div>
+              )}
+              <MedicationAvailabilityCard
+                results={ocrResults}
+                onProceed={handleProceedWithAvailable}
+              />
+            </div>
           </Bubble>
         )}
         {step === 2 && sub2 === "confirm" && answers.drug && (
