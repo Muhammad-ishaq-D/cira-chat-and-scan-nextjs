@@ -817,7 +817,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
           {phase === "intro" && typingDone && (
             <div className="animate-fade-in flex justify-start">
-              <div className="ml-9">
+              <div>
+
                 <button
                   onClick={handleStart}
                   className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-[13px] font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95"
