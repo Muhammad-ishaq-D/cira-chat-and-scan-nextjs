@@ -45,6 +45,7 @@ import AdminSettings from "./admin/AdminSettings.tsx";
 import AdminBlogs from "./admin/AdminBlogs.tsx";
 import AdminActivity from "./admin/AdminActivity.tsx";
 import AdminRefunds from "./admin/AdminRefunds.tsx";
+import AdminReferralRefunds from "./admin/AdminReferralRefunds.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import RouteTracker from "./components/RouteTracker.tsx";
@@ -138,6 +139,7 @@ const App = () => {
             <Route path="/admin/activity" element={<AdminActivity />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/refunds" element={<AdminRefunds />} />
+            <Route path="/admin/referral-refunds" element={<AdminReferralRefunds />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

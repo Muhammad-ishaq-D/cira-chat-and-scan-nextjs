@@ -408,6 +408,11 @@ export const adminApi = {
   getRefunds: () => adminGet<RefundRequest[]>("/api/admin/prescription-refunds"),
   decideRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
     adminPost(`/api/admin/prescription-refunds/${id}/decide`, { decision, admin_note }),
+
+  // Referral Letter Refunds
+  getReferralRefunds: () => adminGet<ReferralRefundRequest[]>("/api/admin/referral-refunds"),
+  decideReferralRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
+    adminPost(`/api/admin/referral-refunds/${id}/decide`, { decision, admin_note }),
 };
 
 export interface RefundMedication {
@@ -423,6 +428,17 @@ export interface RefundRequest {
   amount_charged: number;
   refund_reason: string;
   refund_proof_file_path: string | null;
+  refund_requested_at: string;
+  delivery_email_masked: string;
+}
+
+export interface ReferralRefundRequest {
+  id: number;
+  reference_code: string;
+  patient_name: string;
+  specialist_specialty: string;
+  amount_charged: number;
+  refund_reason: string;
   refund_requested_at: string;
   delivery_email_masked: string;
 }

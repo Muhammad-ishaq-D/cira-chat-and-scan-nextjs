@@ -11,6 +11,7 @@ const navItems = [
   { icon: TrendingUp, key: "analytics", id: "analytics", path: "/admin/analytics" },
   { icon: CreditCard, key: "billing", id: "billing", path: "/admin/billing" },
   { icon: RotateCcw, key: "refunds", id: "refunds", path: "/admin/refunds" },
+  { icon: FileText, key: "referralRefunds", id: "referralRefunds", path: "/admin/referral-refunds" },
   { icon: FileText, key: "blogs", id: "blogs", path: "/admin/blogs" },
   { icon: Settings, key: "settings", id: "settings", path: "/admin/settings" },
 ];
