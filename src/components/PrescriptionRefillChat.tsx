@@ -520,7 +520,6 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     e.target.value = ""; // reset input immediately so re-upload works
 
     setSub2("upload-reading");
-    pushMsg({ role: "ai", kind: "text", text: t("pages.prescriptionRefill.chat.reading", "Scanning your prescription…") });
 
     try {
       // Build multipart/form-data payload with the image
