@@ -520,6 +520,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     if (!file) return;
     e.target.value = ""; // reset input immediately so re-upload works
 
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      typeof navigator !== "undefined" ? navigator.userAgent : ""
+    );
+    setLastCaptureMethod(isMobile ? "camera" : "upload");
     setSub2("upload-reading");
 
     try {
