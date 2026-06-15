@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
+import { buildFaqJsonLd } from "@/lib/faqSchema";
 import {
   MessageSquare,
   Stethoscope,
