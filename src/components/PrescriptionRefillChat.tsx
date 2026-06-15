@@ -2583,6 +2583,14 @@ const NumberWithUnit = ({
   const { t } = useTranslation();
   const [val, setVal] = useState("");
   const [unit, setUnit] = useState(defaultUnit);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const canSubmit = val.trim().length > 0;
+
+  const submit = () => {
+    if (!canSubmit) return;
+    onSubmit(val, unit);
+  };
+
   return (
     <div className="space-y-3">
       <UnitRow
@@ -2593,6 +2601,7 @@ const NumberWithUnit = ({
           setVal(v);
           setUnit(u);
         }}
+        inputRef={inputRef}
       />
       <input
         type="hidden"
@@ -2600,8 +2609,8 @@ const NumberWithUnit = ({
         readOnly
       />
       <button
-        onClick={() => onSubmit(val, unit)}
-        disabled={!val.trim()}
+        onClick={submit}
+        disabled={!canSubmit}
         className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
         style={{ minHeight: 48, fontSize: 16 }}
       >
