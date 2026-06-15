@@ -176,7 +176,12 @@ const HowItWorks = () => {
 
   return (
     <>
-      <SEO title="How Cira works — chat, scan, guidance" description="Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works." path="/how-it-works" />
+      <SEO
+        title="How Cira works — chat, scan, guidance"
+        description="Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works."
+        path="/how-it-works"
+        jsonLd={buildFaqJsonLd(faqs, { url: "https://askainurse.com/how-it-works" }) ?? undefined}
+      />
     <div className="min-h-screen bg-background">
       {/* Top nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
