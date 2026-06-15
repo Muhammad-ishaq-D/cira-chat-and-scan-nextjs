@@ -358,48 +358,54 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         )}
 
         {phase === "error" && (
-          <Bubble role="ai" wide>
-            <div className="space-y-3">
-              <p style={{ fontSize: 14.5 }}>{error || t("pages.prescriptionRefill.chat.screeningError")}</p>
-              <button
-                onClick={handleRetry}
-                className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90"
-              >
-                {t("pages.prescriptionRefill.chat.screeningRetry")}
-              </button>
+          <div className="flex animate-fade-in justify-start">
+            <div className="max-w-[95%] md:max-w-[80%]">
+              <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+              <div className="space-y-3">
+                <p style={{ fontSize: 14.5 }}>{error || t("pages.prescriptionRefill.chat.screeningError")}</p>
+                <button
+                  onClick={handleRetry}
+                  className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90"
+                >
+                  {t("pages.prescriptionRefill.chat.screeningRetry")}
+                </button>
+              </div>
             </div>
-          </Bubble>
+          </div>
         )}
 
         {phase === "flagged" && (
-          <Bubble role="ai" wide>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <div className="flex animate-fade-in justify-start">
+            <div className="max-w-[95%] md:max-w-[80%] w-full">
+              <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="font-semibold text-foreground pt-1.5" style={{ fontSize: 16 }}>
+                    {t("pages.prescriptionRefill.chat.flaggedTitle")}
+                  </h3>
                 </div>
-                <h3 className="font-semibold text-foreground pt-1.5" style={{ fontSize: 16 }}>
-                  {t("pages.prescriptionRefill.chat.flaggedTitle")}
-                </h3>
+                <button
+                  onClick={handleBookDoctor}
+                  className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  style={{ minHeight: 52, fontSize: 16 }}
+                >
+                  <Stethoscope className="w-5 h-5" />
+                  {t("pages.prescriptionRefill.chat.bookDoctor")}
+                </button>
+                <button
+                  onClick={onStartOver}
+                  className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors flex items-center justify-center gap-2"
+                  style={{ minHeight: 48, fontSize: 15 }}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  {t("pages.prescriptionRefill.chat.startOver")}
+                </button>
               </div>
-              <button
-                onClick={handleBookDoctor}
-                className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                style={{ minHeight: 52, fontSize: 16 }}
-              >
-                <Stethoscope className="w-5 h-5" />
-                {t("pages.prescriptionRefill.chat.bookDoctor")}
-              </button>
-              <button
-                onClick={onStartOver}
-                className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors flex items-center justify-center gap-2"
-                style={{ minHeight: 48, fontSize: 15 }}
-              >
-                <RotateCcw className="w-4 h-4" />
-                {t("pages.prescriptionRefill.chat.startOver")}
-              </button>
             </div>
-          </Bubble>
+          </div>
         )}
       </div>
 
