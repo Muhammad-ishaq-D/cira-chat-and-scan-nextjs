@@ -391,33 +391,42 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
       </div>
 
       {phase === "chatting" && (
-        <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
-          <div className="flex gap-2 w-full max-w-3xl mx-auto">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit();
-                }
-              }}
-              placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
-              disabled={sending}
-              autoFocus
-              className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
-              style={{ fontSize: 16, minHeight: 48 }}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || sending}
-              aria-label={t("common.send", "Send")}
-              className="w-12 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center justify-center"
-              style={{ minHeight: 48 }}
-            >
-              {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-            </button>
+        <div
+          className="border-t border-border/60 bg-gradient-to-t from-background via-background to-background/80 backdrop-blur px-3 sm:px-5 pt-3"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
+        >
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="group flex items-center gap-1.5 bg-card rounded-full border border-border/60 pl-1.5 pr-1.5 py-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] focus-within:border-primary/50 focus-within:shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.25)] transition-all">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
+                disabled={sending}
+                autoFocus
+                aria-label={t("common.send", "Send")}
+                className="flex-1 bg-transparent px-4 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none disabled:opacity-60"
+                style={{ fontSize: 16, minHeight: 44 }}
+              />
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || sending}
+                aria-label={t("common.send", "Send")}
+                title={t("common.send", "Send")}
+                className="w-11 h-11 rounded-full bg-primary text-primary-foreground hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+              >
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-center text-[11px] text-muted-foreground/60 mt-2">
+              Press Enter to send
+            </p>
           </div>
         </div>
       )}
