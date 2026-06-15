@@ -172,6 +172,7 @@ const navItems = [
   { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
   { icon: Pill, label: "Refill", id: "rx", tKey: "dashboard.nav.prescriptionRefill" },
+  { icon: FileText, label: "Referral Letter", id: "referral", tKey: "referral.title" },
   { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
   { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
