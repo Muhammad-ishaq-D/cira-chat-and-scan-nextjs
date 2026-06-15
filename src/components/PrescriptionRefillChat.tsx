@@ -525,6 +525,14 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       typeof navigator !== "undefined" ? navigator.userAgent : ""
     );
     setLastCaptureMethod(isMobile ? "camera" : "upload");
+
+    // Create a preview URL for the uploaded photo
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUploadedPhotoUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
     setSub2("upload-reading");
 
     try {
