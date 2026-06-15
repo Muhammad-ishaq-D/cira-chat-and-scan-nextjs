@@ -360,7 +360,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     doScroll();
     const t1 = setTimeout(doScroll, 150);
     return () => clearTimeout(t1);
-  }, [chatLog, phase, currentQuestionIndex]);
+  }, [chatLog, phase, currentQuestionIndex, typingDone]);
 
   // Focus input when question changes
   useEffect(() => {
