@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
+import { buildFaqJsonLd } from "@/lib/faqSchema";
 import {
   MessageSquare,
   Stethoscope,
@@ -64,16 +65,8 @@ const SymptomChecker = () => {
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       description: t("symptomChecker.seoDescription"),
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    },
-  ];
+    buildFaqJsonLd(faqs, { url: "https://askainurse.com/symptom-checker" }),
+  ].filter(Boolean);
 
   return (
     <>
