@@ -334,12 +334,12 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         ))}
 
         {typing && (
-          <Bubble role="ai">
-            <span className="inline-flex items-center gap-2">
-              <TypingDots />
+          <div className="flex animate-fade-in justify-start">
+            <span className="inline-flex items-center gap-2 px-1 py-2">
+              <AiSparkleIcon size={18} active thinking />
               <ThinkingLabel />
             </span>
-          </Bubble>
+          </div>
         )}
 
         {phase === "error" && (
