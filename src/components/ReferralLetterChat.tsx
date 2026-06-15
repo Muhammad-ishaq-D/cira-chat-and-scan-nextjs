@@ -167,12 +167,12 @@ const TypewriterText = ({ text, speed = 15, onComplete }: { text: string; speed?
   return <>{displayed}</>;
 };
 
-const CiraBubble = ({ text, onTypingComplete, thinking }: { text: string; onTypingComplete?: () => void; thinking?: boolean }) => (
+const CiraBubble = ({ text, onTypingComplete }: { text: string; onTypingComplete?: () => void }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="shrink-0 mt-1">
-          <AiSparkleIcon size={20} active thinking={thinking} />
+        <div className="shrink-0 mt-2">
+          <AiSparkleIcon size={20} active />
         </div>
         <div
           className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
@@ -798,9 +798,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           {chatLog.map((msg, i) => {
             const ciraIndices = chatLog.map((m, idx) => m.role === "cira" ? idx : -1).filter(idx => idx !== -1);
             const lastCiraIndex = ciraIndices.length > 0 ? ciraIndices[ciraIndices.length - 1] : -1;
-            const isLastCira = i === lastCiraIndex;
             return msg.role === "cira"
-              ? <CiraBubble key={i} text={msg.text} thinking={isLastCira && !typingComplete} onTypingComplete={isLastCira ? () => setTypingComplete(true) : undefined} />
+              ? <CiraBubble key={i} text={msg.text} onTypingComplete={i === lastCiraIndex ? () => setTypingComplete(true) : undefined} />
               : <UserBubble key={i} text={msg.text} />;
           })}
 
