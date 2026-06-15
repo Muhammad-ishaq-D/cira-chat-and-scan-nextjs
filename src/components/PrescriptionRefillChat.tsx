@@ -1162,10 +1162,35 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         )}
         {step === 2 && sub2 === "availability-check" && ocrResults.length > 0 && (
           <Bubble role="ai" wide>
-            <MedicationAvailabilityCard
-              results={ocrResults}
-              onProceed={handleProceedWithAvailable}
-            />
+            <div className="space-y-4">
+              {uploadedPhotoUrl && (
+                <div className="space-y-2">
+                  <div className="rounded-xl overflow-hidden border border-border/50 bg-background">
+                    <img
+                      src={uploadedPhotoUrl}
+                      alt="Uploaded prescription"
+                      className="w-full h-auto max-h-[200px] object-contain"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setUploadedPhotoUrl(null);
+                      setSub2("upload-pending");
+                      fileRef.current?.click();
+                    }}
+                    className="text-sm text-primary font-medium hover:underline"
+                  >
+                    {lastCaptureMethod === "upload"
+                      ? t("pages.prescriptionRefill.chat.reuploadPhoto", "Re-upload Photo")
+                      : t("pages.prescriptionRefill.chat.retakePhoto", "Retake Photo")}
+                  </button>
+                </div>
+              )}
+              <MedicationAvailabilityCard
+                results={ocrResults}
+                onProceed={handleProceedWithAvailable}
+              />
+            </div>
           </Bubble>
         )}
         {step === 2 && sub2 === "confirm" && answers.drug && (
