@@ -227,36 +227,28 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [typingDone, setTypingDone] = useState(false);
 
-  // ── Check Stripe Redirect Status ──────────────────────────────────────────
+  // ── Check Stripe Cancel Redirect ─────────────────────────────────────────
+  // Success is handled by ReferralLetter.tsx directly (no chat auto-open).
+  // Only cancel reopens the chat at the checkout phase.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
-    if (status === "success" || status === "cancel") {
+    if (status === "cancel") {
       const savedId = localStorage.getItem("cira_pending_referral_id");
       if (savedId) {
         setReferralId(savedId);
-        referralApi.getStatus(savedId).then(res => {
-          setRefNumber(res.reference_code || "");
-        }).catch(() => {});
-        
-        if (status === "success") {
-          setPhase("done");
-          setPollingStatus("pending");
-          setIsPolling(true);
-        } else {
-          setPhase("checkout");
-          setPollingStatus("canceled");
-          const cachedReferral = localStorage.getItem("cira_cached_referral");
-          if (cachedReferral) {
-            try {
-              setGeneratedReferral(JSON.parse(cachedReferral));
-            } catch {}
-          }
-          const savedEmail = localStorage.getItem("cira_pending_referral_email");
-          if (savedEmail) {
-            setEmailInput(savedEmail);
-          }
+        setPhase("checkout");
+        setPollingStatus("canceled");
+        const cachedReferral = localStorage.getItem("cira_cached_referral");
+        if (cachedReferral) {
+          try {
+            setGeneratedReferral(JSON.parse(cachedReferral));
+          } catch {}
+        }
+        const savedEmail = localStorage.getItem("cira_pending_referral_email");
+        if (savedEmail) {
+          setEmailInput(savedEmail);
         }
       }
     }
