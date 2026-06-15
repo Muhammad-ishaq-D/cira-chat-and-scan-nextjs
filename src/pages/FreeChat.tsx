@@ -124,6 +124,7 @@ const languages = [
   { id: "pl", label: "Polski", flag: "🇵🇱", country: "pl" },
 ];
 
+
 const UI_STRINGS: Record<string, Record<string, string>> = {
   en: {
     welcome: "How would you like to get started? 💙",
