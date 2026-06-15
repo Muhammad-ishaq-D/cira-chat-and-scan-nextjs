@@ -22,6 +22,8 @@ const staticEntries: SitemapEntry[] = [
   { path: "/real-doctors", changefreq: "monthly", priority: "0.7" },
   { path: "/our-story", changefreq: "monthly", priority: "0.7" },
   { path: "/blog", changefreq: "weekly", priority: "0.8" },
+  { path: "/prescription-refill", changefreq: "monthly", priority: "0.7" },
+  { path: "/refund", changefreq: "yearly", priority: "0.3" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
   { path: "/privacy-policy", changefreq: "yearly", priority: "0.3" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },

@@ -27,6 +27,40 @@ import scanImg from "@/assets/how-scan.jpg";
 import nextImg from "@/assets/how-next.jpg";
 import chronicImg from "@/assets/how-chronic.jpg";
 import SEO from "@/components/SEO";
+import { buildFaqJsonLd } from "@/lib/faqSchema";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+const faqs = [
+  {
+    q: "How does the 30-second face scan actually work?",
+    a: "Cira uses Shen AI's remote photoplethysmography (rPPG) to analyze tiny color changes in your skin caused by your pulse. Your device camera records about 30 seconds of your face in good lighting, and the SDK estimates heart rate, breathing rate, heart-rate variability, and blood-pressure trends — all processed on your device.",
+  },
+  {
+    q: "Is the scan private? What happens to the video?",
+    a: "Yes. The face-scan processing runs locally in your browser using Shen AI. Cira calculates vital signs from the video stream and does not store raw face video — image frames are discarded after processing. Only the resulting numerical vitals are saved to your account if you choose to keep the scan.",
+  },
+  {
+    q: "How accurate is the AI nurse and the vital signs?",
+    a: "Shen AI's vitals engine is clinically validated against medical-grade devices and uses neural 3D face tracking with rPPG/rBCG sensor fusion. Cira's clinical reasoning is built on Claude-class models trained on billions of medical data points. Cira is an AI nurse — it offers guidance and a doctor hand-off, not a diagnosis. It does not replace a licensed physician.",
+  },
+  {
+    q: "What devices and browsers do I need?",
+    a: "Any modern device with a front-facing camera and a recent version of Chrome, Safari, Edge, or Firefox. Good, even lighting on your face makes the scan more accurate. No app install, no wearable, no external sensor required.",
+  },
+  {
+    q: "Do I need an account to try Cira?",
+    a: "No. You can start a free chat or run a guest face scan without creating an account. An account lets you save scans, track trends over time, and share a Cira report with a doctor through our Air Doctor partnership.",
+  },
+  {
+    q: "Can Cira connect me to a real doctor?",
+    a: "Yes. Through our partnership with Air Doctor, Cira can hand you off to a network of 20,000 licensed doctors across 180 countries. Your Cira summary — symptoms, history, and vitals — travels with you so you don't have to repeat the basics.",
+  },
+];
 
 const steps = [
   {
@@ -142,7 +176,12 @@ const HowItWorks = () => {
 
   return (
     <>
-      <SEO title="How Cira works — chat, scan, guidance" description="Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works." path="/how-it-works" />
+      <SEO
+        title="How Cira works — chat, scan, guidance"
+        description="Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works."
+        path="/how-it-works"
+        jsonLd={buildFaqJsonLd(faqs, { url: "https://askainurse.com/how-it-works" }) ?? undefined}
+      />
     <div className="min-h-screen bg-background">
       {/* Top nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
@@ -466,6 +505,29 @@ const HowItWorks = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-secondary/40 border-y">
+        <div className="max-w-3xl mx-auto px-6 py-20">
+          <div className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Frequently asked</p>
+            <h2 className="font-heading text-3xl md:text-4xl mb-4">Questions about how Cira works</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Quick answers about the scan, your privacy, accuracy, and supported devices.
+            </p>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((f, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left font-medium">{f.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
