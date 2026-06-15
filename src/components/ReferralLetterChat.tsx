@@ -755,21 +755,23 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               </p>
 
               {/* Buttons */}
-              <div className="flex flex-col gap-2 pt-2">
-                <button
-                  onClick={() => navigate("/doctor")}
-                  className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
-                >
-                  <Users size={15} />
-                  {t("referral.btn.findDoctor")}
-                </button>
-                <button
-                  onClick={onExit}
-                  className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
-                >
-                  Done
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    onClick={() => navigate("/doctor")}
+                    className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+                  >
+                    <Users size={15} />
+                    {t("referral.btn.findDoctor")}
+                  </button>
+                  <button
+                    onClick={onExit}
+                    className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
