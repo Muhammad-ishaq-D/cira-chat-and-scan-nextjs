@@ -144,22 +144,30 @@ const SUMMARY_FIELDS: { key: keyof Answers; labelKey: string }[] = [
 
 // ─── Chat bubble components ───────────────────────────────────────────────────
 
-const TypewriterText = ({ text, speed = 15 }: { text: string; speed?: number }) => {
+const TypewriterText = ({ text, speed = 15, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
+  const doneRef = useRef(false);
   useEffect(() => {
     setDisplayed("");
     let i = 0;
+    doneRef.current = false;
     const timer = setInterval(() => {
       i += 2;
       setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(timer);
+      if (i >= text.length) {
+        clearInterval(timer);
+        if (!doneRef.current) {
+          doneRef.current = true;
+          onComplete?.();
+        }
+      }
     }, speed);
     return () => clearInterval(timer);
-  }, [text, speed]);
+  }, [text, speed, onComplete]);
   return <>{displayed}</>;
 };
 
-const CiraBubble = ({ text }: { text: string }) => (
+const CiraBubble = ({ text, onTypingComplete }: { text: string; onTypingComplete?: () => void }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
@@ -171,7 +179,7 @@ const CiraBubble = ({ text }: { text: string }) => (
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
           <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">
-            <TypewriterText text={text} speed={10} />
+            <TypewriterText text={text} speed={10} onComplete={onTypingComplete} />
           </p>
         </div>
       </div>
