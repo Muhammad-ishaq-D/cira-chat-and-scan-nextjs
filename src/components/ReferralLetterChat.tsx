@@ -144,22 +144,30 @@ const SUMMARY_FIELDS: { key: keyof Answers; labelKey: string }[] = [
 
 // ─── Chat bubble components ───────────────────────────────────────────────────
 
-const TypewriterText = ({ text, speed = 15 }: { text: string; speed?: number }) => {
+const TypewriterText = ({ text, speed = 15, onComplete }: { text: string; speed?: number; onComplete?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
+  const doneRef = useRef(false);
   useEffect(() => {
     setDisplayed("");
     let i = 0;
+    doneRef.current = false;
     const timer = setInterval(() => {
       i += 2;
       setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(timer);
+      if (i >= text.length) {
+        clearInterval(timer);
+        if (!doneRef.current) {
+          doneRef.current = true;
+          onComplete?.();
+        }
+      }
     }, speed);
     return () => clearInterval(timer);
-  }, [text, speed]);
+  }, [text, speed, onComplete]);
   return <>{displayed}</>;
 };
 
-const CiraBubble = ({ text }: { text: string }) => (
+const CiraBubble = ({ text, onTypingComplete }: { text: string; onTypingComplete?: () => void }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
@@ -171,7 +179,7 @@ const CiraBubble = ({ text }: { text: string }) => (
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
           <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">
-            <TypewriterText text={text} speed={10} />
+            <TypewriterText text={text} speed={10} onComplete={onTypingComplete} />
           </p>
         </div>
       </div>
@@ -222,6 +230,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [copied, setCopied] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [typingComplete, setTypingComplete] = useState(false);
 
   // ── Check Stripe Redirect Status ──────────────────────────────────────────
   useEffect(() => {
@@ -357,6 +366,14 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     const t1 = setTimeout(doScroll, 150);
     return () => clearTimeout(t1);
   }, [chatLog, phase, currentQuestionIndex]);
+
+  // ── Reset typing-complete when a new Cira message arrives ────────────────
+  useEffect(() => {
+    const last = chatLog[chatLog.length - 1];
+    if (last?.role === "cira") {
+      setTypingComplete(false);
+    }
+  }, [chatLog]);
 
   // Focus input when question changes
   useEffect(() => {
@@ -635,7 +652,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
 
   if (!profileLoaded) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background">
+      <div className="h-[100dvh] flex flex-col items-center pt-28 bg-background">
         <Loader2 size={24} className="animate-spin text-primary" />
       </div>
     );
@@ -738,21 +755,23 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               </p>
 
               {/* Buttons */}
-              <div className="flex flex-col gap-2 pt-2">
-                <button
-                  onClick={() => navigate("/doctor")}
-                  className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
-                >
-                  <Users size={15} />
-                  {t("referral.btn.findDoctor")}
-                </button>
-                <button
-                  onClick={onExit}
-                  className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
-                >
-                  Done
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    onClick={() => navigate("/doctor")}
+                    className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+                  >
+                    <Users size={15} />
+                    {t("referral.btn.findDoctor")}
+                  </button>
+                  <button
+                    onClick={onExit}
+                    className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -776,14 +795,16 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {/* Chat log */}
-          {chatLog.map((msg, i) =>
-            msg.role === "cira"
-              ? <CiraBubble key={i} text={msg.text} />
-              : <UserBubble key={i} text={msg.text} />
-          )}
+          {chatLog.map((msg, i) => {
+            const ciraIndices = chatLog.map((m, idx) => m.role === "cira" ? idx : -1).filter(idx => idx !== -1);
+            const lastCiraIndex = ciraIndices.length > 0 ? ciraIndices[ciraIndices.length - 1] : -1;
+            return msg.role === "cira"
+              ? <CiraBubble key={i} text={msg.text} onTypingComplete={i === lastCiraIndex ? () => setTypingComplete(true) : undefined} />
+              : <UserBubble key={i} text={msg.text} />;
+          })}
 
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
-          {phase === "intro" && (
+          {phase === "intro" && typingComplete && (
             <div className="animate-fade-in flex justify-start">
               <div className="ml-9">
                 <button
@@ -798,7 +819,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
-          {phase === "questions" && currentQ && (
+          {phase === "questions" && currentQ && typingComplete && (
             <div className="animate-fade-in ml-9 space-y-2">
               {/* Button choices */}
               {currentQ.type === "buttons" && currentQ.buttons && (
@@ -874,7 +895,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 </div>
 
                 {/* Session vitals badge */}
-                {sessionVitals && (
+                {sessionVitals && typingComplete && (
                   <div className="mx-4 mt-3 px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2">
                     <CheckCircle size={13} className="text-emerald-500 shrink-0" />
                     <span className="text-[11px] text-emerald-600 font-medium">
@@ -933,31 +954,33 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               </div>
 
               {/* Action buttons */}
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleProceedToCheckout}
-                  disabled={isCreatingSession}
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  {isCreatingSession ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating session...
-                    </>
-                  ) : (
-                    <>
-                      <Stethoscope size={16} />
-                      {t("referral.btn.generate")}
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={onExit}
-                  className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
-                >
-                  {t("common.back")}
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleProceedToCheckout}
+                    disabled={isCreatingSession}
+                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    {isCreatingSession ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating session...
+                      </>
+                    ) : (
+                      <>
+                        <Stethoscope size={16} />
+                        {t("referral.btn.generate")}
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={onExit}
+                    className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
+                  >
+                    {t("common.back")}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -977,39 +1000,41 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-1">
-                  <input
-                    type="email"
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
-                  />
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <button
-                      onClick={() => setPhase("summary")}
-                      className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
-                      style={{ minHeight: 48, fontSize: 14 }}
-                    >
-                      {t("common.back")}
-                    </button>
-                    <button
-                      onClick={() => handleEmailSubmit(emailInput)}
-                      disabled={checkoutStatus === "processing"}
-                      className="rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                      style={{ minHeight: 48, fontSize: 14 }}
-                    >
-                      {checkoutStatus === "processing" ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        "Continue"
-                      )}
-                    </button>
+                {typingComplete && (
+                  <div className="space-y-3 pt-1">
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/50"
+                    />
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button
+                        onClick={() => setPhase("summary")}
+                        className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                        style={{ minHeight: 48, fontSize: 14 }}
+                      >
+                        {t("common.back")}
+                      </button>
+                      <button
+                        onClick={() => handleEmailSubmit(emailInput)}
+                        disabled={checkoutStatus === "processing"}
+                        className="rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                        style={{ minHeight: 48, fontSize: 14 }}
+                      >
+                        {checkoutStatus === "processing" ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          "Continue"
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -1079,33 +1104,35 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setPhase("email")}
-                  className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
-                  style={{ minHeight: 52, fontSize: 14 }}
-                >
-                  Edit Email
-                </button>
-                <button
-                  onClick={handlePay}
-                  disabled={checkoutStatus === "processing"}
-                  className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  style={{ minHeight: 52, fontSize: 14 }}
-                >
-                  {checkoutStatus === "processing" ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Redir...
-                    </>
-                  ) : (
-                    <>
-                      <Lock size={14} />
-                      Pay $5.00
-                    </>
-                  )}
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setPhase("email")}
+                    className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                    style={{ minHeight: 52, fontSize: 14 }}
+                  >
+                    Edit Email
+                  </button>
+                  <button
+                    onClick={handlePay}
+                    disabled={checkoutStatus === "processing"}
+                    className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    style={{ minHeight: 52, fontSize: 14 }}
+                  >
+                    {checkoutStatus === "processing" ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Redir...
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={14} />
+                        Pay $5.00
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
