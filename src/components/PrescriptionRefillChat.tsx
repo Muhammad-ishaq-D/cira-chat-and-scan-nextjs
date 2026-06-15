@@ -706,6 +706,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setSub2("upload-pending");
     fileRef.current?.click();
     setAnswers((a) => ({ ...a, submissionMode: "upload" }));
+    setUploadedPhotoUrl(null);
   };
 
   // --- Step 3 ---
