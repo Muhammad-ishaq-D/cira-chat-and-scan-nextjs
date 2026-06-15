@@ -812,7 +812,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           })()}
 
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
-          {phase === "intro" && (
+          {phase === "intro" && typingDone && (
             <div className="animate-fade-in flex justify-start">
               <div className="ml-9">
                 <button
