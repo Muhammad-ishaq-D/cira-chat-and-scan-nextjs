@@ -635,7 +635,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
 
   if (!profileLoaded) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background">
+      <div className="h-[100dvh] flex flex-col items-center pt-28 bg-background">
         <Loader2 size={24} className="animate-spin text-primary" />
       </div>
     );
