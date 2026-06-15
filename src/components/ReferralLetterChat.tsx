@@ -1102,33 +1102,35 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setPhase("email")}
-                  className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
-                  style={{ minHeight: 52, fontSize: 14 }}
-                >
-                  Edit Email
-                </button>
-                <button
-                  onClick={handlePay}
-                  disabled={checkoutStatus === "processing"}
-                  className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  style={{ minHeight: 52, fontSize: 14 }}
-                >
-                  {checkoutStatus === "processing" ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Redir...
-                    </>
-                  ) : (
-                    <>
-                      <Lock size={14} />
-                      Pay $5.00
-                    </>
-                  )}
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setPhase("email")}
+                    className="rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-accent transition-colors"
+                    style={{ minHeight: 52, fontSize: 14 }}
+                  >
+                    Edit Email
+                  </button>
+                  <button
+                    onClick={handlePay}
+                    disabled={checkoutStatus === "processing"}
+                    className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    style={{ minHeight: 52, fontSize: 14 }}
+                  >
+                    {checkoutStatus === "processing" ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Redir...
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={14} />
+                        Pay $5.00
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
