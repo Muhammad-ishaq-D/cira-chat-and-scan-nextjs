@@ -1832,10 +1832,20 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const checkboxRef = useRef<HTMLInputElement>(null);
   return (
-    <div className="space-y-3">
+    <div
+      className="space-y-3"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && checked) {
+          e.preventDefault();
+          onAgree();
+        }
+      }}
+    >
       <label className="flex items-start gap-2.5 cursor-pointer select-none">
         <input
+          ref={checkboxRef}
           type="checkbox"
           checked={checked}
           onChange={(e) => setChecked(e.target.checked)}
