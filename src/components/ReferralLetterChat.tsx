@@ -134,6 +134,21 @@ const SUMMARY_FIELDS: { key: keyof Answers; labelKey: string }[] = [
 
 // ─── Chat bubble components ───────────────────────────────────────────────────
 
+const TypewriterText = ({ text, speed = 15 }: { text: string; speed?: number }) => {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    setDisplayed("");
+    let i = 0;
+    const timer = setInterval(() => {
+      i += 2;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(timer);
+    }, speed);
+    return () => clearInterval(timer);
+  }, [text, speed]);
+  return <>{displayed}</>;
+};
+
 const CiraBubble = ({ text }: { text: string }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
@@ -145,7 +160,9 @@ const CiraBubble = ({ text }: { text: string }) => (
           className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
-          <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">{text}</p>
+          <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">
+            <TypewriterText text={text} speed={10} />
+          </p>
         </div>
       </div>
     </div>
@@ -470,45 +487,12 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background items-center">
-      <div className="w-full max-w-2xl flex flex-col h-full relative border-x border-border/20 shadow-sm bg-card/30">
-        {/* ── Header ─────────────────────────────────────────────────────────── */}
-        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border bg-card">
-          <button
-            onClick={onExit}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-primary/70 hover:bg-accent transition-colors"
-            aria-label={t("common.back")}
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
-            <FileText size={15} className="text-primary-foreground" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-foreground leading-none" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-              {t("referral.title")}
-            </p>
-            <p className="text-[10px] text-primary/70 mt-0.5 leading-none">{t("referral.subtitle")}</p>
-          </div>
-          {phase === "questions" && currentQuestionIndex >= 0 && (
-            <div className="shrink-0 text-right">
-              <span className="text-[10px] text-primary/70 font-medium">
-                {currentQuestionIndex + 1} / {activeQs.length}
-              </span>
-              <div className="mt-1 w-20 h-1 bg-primary/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${((currentQuestionIndex + 1) / activeQs.length) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
+    <div className="flex flex-col h-full bg-transparent items-center">
+      <div className="w-full max-w-2xl flex flex-col h-full relative bg-transparent">
         {/* ── Chat area ──────────────────────────────────────────────────────── */}
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4"
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {/* Chat log */}
