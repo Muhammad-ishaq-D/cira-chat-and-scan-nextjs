@@ -1150,15 +1150,7 @@ const FreeChat = () => {
                             <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
                           </button>
                           
-                          <button
-                            onClick={() => selectMode("referral")}
-                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-indigo-200/60 text-left bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100/50 hover:to-purple-100/50 transition-colors active:scale-95"
-                          >
-                            <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
-                              <FileText size={14} className="text-indigo-500" /> {t.referral || "📄 Referral Letter"}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">{t.referral_desc || "AI-drafted GP-to-specialist referral in minutes"}</span>
-                          </button>
+
 
                           <button
                             onClick={() => selectMode("chat")}
@@ -1256,7 +1248,6 @@ const FreeChat = () => {
             </div>
           </div>
         </div>
-        )}
 
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
           <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
