@@ -171,7 +171,7 @@ const CiraBubble = ({ text, isTyping, onDone }: { text: string; isTyping: boolea
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="shrink-0 mt-2">
+        <div className="shrink-0 pt-3">
           <AiSparkleIcon size={20} active thinking={isTyping} />
         </div>
         <div
