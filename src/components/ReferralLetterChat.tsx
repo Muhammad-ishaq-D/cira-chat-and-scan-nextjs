@@ -230,6 +230,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [copied, setCopied] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [typingComplete, setTypingComplete] = useState(false);
 
   // ── Check Stripe Redirect Status ──────────────────────────────────────────
   useEffect(() => {
