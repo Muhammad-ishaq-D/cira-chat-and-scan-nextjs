@@ -105,15 +105,6 @@ const TypewriterText = ({ text, speed = 6, onDone }: { text: string; speed?: num
   return <span className="whitespace-pre-line">{renderFormatted(displayed)}</span>;
 };
 
-const THINKING_PHRASES = ["Thinking...", "Reviewing your answer...", "One moment...", "Checking safety..."];
-const ThinkingLabel = () => {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % THINKING_PHRASES.length), 2000);
-    return () => clearInterval(t);
-  }, []);
-  return <span className="text-foreground/60 italic" style={{ fontSize: 13 }}>{THINKING_PHRASES[idx]}</span>;
-};
 
 const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onStartOver }: Props) => {
   const { t } = useTranslation();
@@ -322,69 +313,90 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (
-          <Bubble key={m.id} role={m.role}>
-            {m.role === "ai" && m.animate ? (
-              <TypewriterText text={m.text} />
-            ) : m.role === "ai" ? (
-              <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
+          <div key={m.id} className={`flex animate-fade-in ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            {m.role === "user" ? (
+              <div
+                className="bg-secondary/80 text-foreground rounded-[22px] rounded-tr-md px-4 py-2.5 max-w-[90%] md:max-w-[80%] leading-relaxed shadow-sm"
+                style={{ fontSize: 14.5 }}
+              >
+                {m.text}
+              </div>
             ) : (
-              m.text
+              <div className="max-w-[95%] md:max-w-[80%]">
+                <div className="mb-2">
+                  <AiSparkleIcon size={20} active thinking={m.animate} />
+                </div>
+                <div className="text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  <p className="text-[14px] md:text-[15px] leading-7">
+                    {m.animate ? (
+                      <TypewriterText text={m.text} />
+                    ) : (
+                      <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             )}
-          </Bubble>
+          </div>
         ))}
 
         {typing && (
           <div className="flex animate-fade-in justify-start">
-            <span className="inline-flex items-center gap-2 px-1 py-2">
-              <AiSparkleIcon size={18} active thinking />
-              <ThinkingLabel />
-            </span>
+            <div className="max-w-[95%] md:max-w-[80%]">
+              <AiSparkleIcon size={20} active thinking />
+            </div>
           </div>
         )}
 
         {phase === "error" && (
-          <Bubble role="ai" wide>
-            <div className="space-y-3">
-              <p style={{ fontSize: 14.5 }}>{error || t("pages.prescriptionRefill.chat.screeningError")}</p>
-              <button
-                onClick={handleRetry}
-                className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90"
-              >
-                {t("pages.prescriptionRefill.chat.screeningRetry")}
-              </button>
+          <div className="flex animate-fade-in justify-start">
+            <div className="max-w-[95%] md:max-w-[80%]">
+              <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+              <div className="space-y-3">
+                <p style={{ fontSize: 14.5 }}>{error || t("pages.prescriptionRefill.chat.screeningError")}</p>
+                <button
+                  onClick={handleRetry}
+                  className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90"
+                >
+                  {t("pages.prescriptionRefill.chat.screeningRetry")}
+                </button>
+              </div>
             </div>
-          </Bubble>
+          </div>
         )}
 
         {phase === "flagged" && (
-          <Bubble role="ai" wide>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <div className="flex animate-fade-in justify-start">
+            <div className="max-w-[95%] md:max-w-[80%] w-full">
+              <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="font-semibold text-foreground pt-1.5" style={{ fontSize: 16 }}>
+                    {t("pages.prescriptionRefill.chat.flaggedTitle")}
+                  </h3>
                 </div>
-                <h3 className="font-semibold text-foreground pt-1.5" style={{ fontSize: 16 }}>
-                  {t("pages.prescriptionRefill.chat.flaggedTitle")}
-                </h3>
+                <button
+                  onClick={handleBookDoctor}
+                  className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                  style={{ minHeight: 52, fontSize: 16 }}
+                >
+                  <Stethoscope className="w-5 h-5" />
+                  {t("pages.prescriptionRefill.chat.bookDoctor")}
+                </button>
+                <button
+                  onClick={onStartOver}
+                  className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors flex items-center justify-center gap-2"
+                  style={{ minHeight: 48, fontSize: 15 }}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  {t("pages.prescriptionRefill.chat.startOver")}
+                </button>
               </div>
-              <button
-                onClick={handleBookDoctor}
-                className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                style={{ minHeight: 52, fontSize: 16 }}
-              >
-                <Stethoscope className="w-5 h-5" />
-                {t("pages.prescriptionRefill.chat.bookDoctor")}
-              </button>
-              <button
-                onClick={onStartOver}
-                className="w-full rounded-full border border-border bg-background text-foreground font-medium hover:bg-accent transition-colors flex items-center justify-center gap-2"
-                style={{ minHeight: 48, fontSize: 15 }}
-              >
-                <RotateCcw className="w-4 h-4" />
-                {t("pages.prescriptionRefill.chat.startOver")}
-              </button>
             </div>
-          </Bubble>
+          </div>
         )}
       </div>
 
@@ -422,36 +434,5 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
     </div>
   );
 };
-
-const Bubble = ({
-  role,
-  children,
-  wide,
-}: {
-  role: "ai" | "user";
-  children: React.ReactNode;
-  wide?: boolean;
-}) => (
-  <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
-    <div
-      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[80%]"} px-4 py-2.5 leading-relaxed shadow-sm ${
-        role === "user"
-          ? "bg-primary text-primary-foreground rounded-[22px] rounded-tr-md"
-          : "bg-secondary/80 text-foreground rounded-[22px] rounded-tl-md"
-      }`}
-      style={{ fontSize: 14.5 }}
-    >
-      {children}
-    </div>
-  </div>
-);
-
-const TypingDots = () => (
-  <span className="inline-flex items-center gap-1 h-4">
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
-  </span>
-);
 
 export default HealthScreeningChat;
