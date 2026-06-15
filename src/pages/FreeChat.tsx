@@ -1025,11 +1025,7 @@ const FreeChat = () => {
         {chatMode === "referral" ? (
           <div className="flex-1 overflow-hidden bg-transparent">
             <ReferralLetterChat
-              userType="guest"
-              onComplete={(pdfBlob) => {
-                syncChatMode("none");
-              }}
-              onBack={() => syncChatMode("none")}
+              onExit={() => syncChatMode("none")}
             />
           </div>
         ) : (
