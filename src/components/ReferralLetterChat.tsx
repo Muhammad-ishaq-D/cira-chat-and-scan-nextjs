@@ -952,31 +952,33 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               </div>
 
               {/* Action buttons */}
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleProceedToCheckout}
-                  disabled={isCreatingSession}
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  {isCreatingSession ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating session...
-                    </>
-                  ) : (
-                    <>
-                      <Stethoscope size={16} />
-                      {t("referral.btn.generate")}
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={onExit}
-                  className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
-                >
-                  {t("common.back")}
-                </button>
-              </div>
+              {typingComplete && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleProceedToCheckout}
+                    disabled={isCreatingSession}
+                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    {isCreatingSession ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating session...
+                      </>
+                    ) : (
+                      <>
+                        <Stethoscope size={16} />
+                        {t("referral.btn.generate")}
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={onExit}
+                    className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
+                  >
+                    {t("common.back")}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
