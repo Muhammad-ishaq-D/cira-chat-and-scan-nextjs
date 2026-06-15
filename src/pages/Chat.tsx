@@ -267,7 +267,7 @@ const Chat = () => {
       scan_desc: "30-second scan captures real vitals from your face",
       book: "🏥 Book a Doctor",
       book_desc: "Connect with a licensed doctor near you",
-      referral: "📄 Referral Letter",
+      referral: "Referral Letter",
       referral_desc: "AI-drafted GP-to-specialist referral in minutes",
       just_chat_msg: "💬 I just want to chat",
       assessment_msg: "🩺 I'd like a health assessment",

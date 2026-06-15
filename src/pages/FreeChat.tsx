@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
 import SEO from "@/components/SEO";
+import ReferralLetterChat from "@/components/ReferralLetterChat";
 import {
   getDeviceId,
   getFreeChatHistory,
@@ -98,7 +99,7 @@ const LiveTypewriterText = ({
   );
 };
 
-type ChatMode = "none" | "assessment" | "vitals" | "chat";
+type ChatMode = "none" | "assessment" | "vitals" | "chat" | "referral";
 
 const chatModes = [
   { id: "assessment" as ChatMode, icon: Stethoscope, title: "Assessment", desc: "Cira adapts — quick triage or deep clinical intake based on your issue.", badge: "Adaptive · AI-Driven", gradient: "from-blue-500 to-purple-400", bgGlow: "bg-blue-100" },
@@ -136,6 +137,8 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     book_desc: "Connect with a licensed doctor near you",
     just_chat_msg: "💬 I just want to chat",
     assessment_msg: "🩺 I'd like a health assessment",
+    referral: "Referral Letter",
+    referral_desc: "AI-drafted GP-to-specialist referral in minutes",
     placeholder: "Ask Cira anything...",
     disclaimer: "Cira can make mistakes. Not a medical service. Verify important info with a clinician.",
     free_messages_today: "{n}/{m} free messages today",
@@ -153,6 +156,8 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     book_desc: "Connectez-vous avec un médecin près de chez vous",
     just_chat_msg: "💬 Je veux juste discuter",
     assessment_msg: "🩺 Je voudrais une évaluation de santé",
+    referral: "📄 Lettre de Référence",
+    referral_desc: "Lettre de référence médecin-spécialiste rédigée par IA",
     placeholder: "Demandez n'importe quoi à Cira...",
     disclaimer: "Cira peut faire des erreurs. Ce n'est pas un service médical. Vérifiez les informations importantes auprès d'un clinicien.",
     free_messages_today: "{n}/{m} messages gratuits aujourd'hui",
@@ -170,6 +175,8 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     book_desc: "Conéctate con un médico licenciado cerca de ti",
     just_chat_msg: "💬 Solo quiero chatear",
     assessment_msg: "🩺 Me gustaría una evaluación de salud",
+    referral: "📄 Carta de Derivación",
+    referral_desc: "Derivación al especialista redactada por IA",
     placeholder: "Pregúntale a Cira cualquier cosa...",
     disclaimer: "Cira puede cometer errores. No es un servicio médico. Verifica la información importante con un profesional clínico.",
     free_messages_today: "{n}/{m} mensajes gratuitos hoy",
@@ -187,6 +194,8 @@ const UI_STRINGS: Record<string, Record<string, string>> = {
     book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
     just_chat_msg: "💬 Ich möchte nur chatten",
     assessment_msg: "🩺 Ich hätte gerne eine Gesundheitsbewertung",
+    referral: "📄 Überweisung",
+    referral_desc: "KI-erstellte Überweisung zum Facharzt",
     placeholder: "Fragen Sie Cira alles...",
     disclaimer: "Cira kann Fehler machen. Kein medizinischer Dienst. Wichtige Informationen mit einer Fachperson überprüfen.",
     free_messages_today: "{n}/{m} kostenlose Nachrichten heute",
@@ -1012,13 +1021,24 @@ const FreeChat = () => {
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4">
-          {/* Chat messages */}
-          <div className="relative min-h-full bg-white">
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
-              <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
-            </div>
+        {chatMode === "referral" ? (
+          <div className="flex-1 overflow-hidden bg-transparent">
+            <ReferralLetterChat
+              userType="guest"
+              onComplete={(pdfBlob) => {
+                syncChatMode("none");
+              }}
+              onBack={() => syncChatMode("none")}
+            />
+          </div>
+        ) : (
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4">
+            {/* Chat messages */}
+            <div className="relative min-h-full bg-white">
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
+              </div>
             <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
@@ -1140,6 +1160,17 @@ const FreeChat = () => {
                             <span className="text-[12px] font-medium text-foreground">{t.book}</span>
                             <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
                           </button>
+                          
+                          <button
+                            onClick={() => selectMode("referral")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-indigo-200/60 text-left bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100/50 hover:to-purple-100/50 transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                              <FileText size={14} className="text-indigo-500" /> {t.referral || "📄 Referral Letter"}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">{t.referral_desc || "AI-drafted GP-to-specialist referral in minutes"}</span>
+                          </button>
+
                           <button
                             onClick={() => selectMode("chat")}
                             className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"

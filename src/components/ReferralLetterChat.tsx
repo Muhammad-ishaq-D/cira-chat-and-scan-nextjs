@@ -11,6 +11,7 @@ import { userApi } from "@/lib/apiClient";
 import { referralApi, type ReferralLetter, type ReferralGenerateRequest } from "@/lib/referralApi";
 import { secureStorage } from "@/lib/storage";
 import { toast } from "sonner";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -153,8 +154,8 @@ const CiraBubble = ({ text }: { text: string }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5">
-          <FileText size={12} className="text-primary-foreground" />
+        <div className="shrink-0 mt-2">
+          <AiSparkleIcon size={20} active />
         </div>
         <div
           className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
