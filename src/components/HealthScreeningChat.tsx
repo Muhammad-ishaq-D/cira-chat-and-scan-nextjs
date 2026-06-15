@@ -337,8 +337,11 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
           <Bubble role="ai">
             <span className="inline-flex items-center gap-2">
               <TypingDots />
-              <span className="text-foreground/60" style={{ fontSize: 13 }}>
-                {t("pages.prescriptionRefill.chat.screeningTyping")}
+              <span
+                className="bg-gradient-to-r from-foreground/40 via-foreground/80 to-foreground/40 bg-clip-text text-transparent animate-shimmer"
+                style={{ fontSize: 13, backgroundSize: "200% 100%" }}
+              >
+                {t("pages.prescriptionRefill.chat.screeningTyping", "Thinking…")}
               </span>
             </span>
           </Bubble>
