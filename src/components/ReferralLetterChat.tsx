@@ -374,6 +374,13 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     }
   }, [currentQuestionIndex, phase]);
 
+  // Track typewriter progress — whenever a new cira message arrives, gate UI until it's done
+  useEffect(() => {
+    const last = chatLog[chatLog.length - 1];
+    if (last?.role === "cira") setTypingDone(false);
+    else setTypingDone(true);
+  }, [chatLog]);
+
   // ── Questions helper ──────────────────────────────────────────────────────
   const getActiveQuestions = useCallback((): QuestionDef[] => {
     return QUESTIONS.filter(q => {
