@@ -2133,7 +2133,7 @@ const EditDrugCard = ({
   ];
   return (
     <div className="space-y-3">
-      {fields.map((f) => (
+      {fields.map((f, i) => (
         <div key={f.key}>
           <label className="block text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             {f.label}
@@ -2142,6 +2142,12 @@ const EditDrugCard = ({
             type="text"
             value={draft[f.key]}
             onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && i === fields.length - 1) {
+                e.preventDefault();
+                onSave();
+              }
+            }}
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             style={{ fontSize: 16, minHeight: 48 }}
           />
