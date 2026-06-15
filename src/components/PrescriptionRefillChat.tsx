@@ -190,6 +190,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
   const [ocrResults, setOcrResults] = useState<Array<{ name: string; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
+  const [lastCaptureMethod, setLastCaptureMethod] = useState<"camera" | "upload" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Step 3 sub-state
