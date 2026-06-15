@@ -225,13 +225,59 @@ const Index = () => {
           },
           {
             "@context": "https://schema.org",
-            "@type": "WebApplication",
-            name: "Cira",
-            url: "https://askainurse.com/",
-            applicationCategory: "HealthApplication",
-            operatingSystem: "Web",
-            description: "Chat with an AI nurse and scan your vitals from any device with a camera.",
-            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            "@type": "SoftwareApplication",
+            "@id": "https://askainurse.com/#software",
+            "name": "Cira AI Nurse",
+            "applicationCategory": "HealthApplication",
+            "operatingSystem": "Web",
+            "description": "AI nurse chatbot with 30-second face scan vitals and symptom checking. Chat with an AI nurse and scan your vitals from any device with a camera.",
+            "url": "https://askainurse.com/",
+            "image": "https://askainurse.com/og-image.jpg",
+            "offers": {
+              "@type": "AggregateOffer",
+              "lowPrice": "0",
+              "highPrice": "10",
+              "priceCurrency": "USD",
+              "offerCount": "3",
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Free",
+                  "price": "0",
+                  "priceCurrency": "USD",
+                  "description": "Basic AI nurse chat and 1 free vitals scan per device"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Premium",
+                  "price": "5",
+                  "priceCurrency": "USD",
+                  "description": "Unlimited AI nurse chat and vitals scans — monthly subscription"
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Family",
+                  "price": "10",
+                  "priceCurrency": "USD",
+                  "description": "Up to 5 family members with unlimited access — monthly subscription"
+                }
+              ]
+            },
+            "featureList": [
+              "AI nurse chat consultation with natural language understanding",
+              "30-second camera-based vital signs scan (rPPG + rBCG)",
+              "Instant heart rate, blood pressure, HRV and breathing rate",
+              "AI symptom checker with guided health questions",
+              "Stress index, wellness score and vascular age estimation",
+              "Prescription refill assistance and medication guidance",
+              "100% on-device face processing — no video uploaded to servers",
+              "Peer-reviewed clinical accuracy validated in 33 countries"
+            ],
+            "screenshot": {
+              "@type": "ImageObject",
+              "url": "https://askainurse.com/og-image.jpg",
+              "caption": "Cira AI Nurse chat and vitals scan interface"
+            }
           },
           {
             "@context": "https://schema.org",
