@@ -817,7 +817,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
           {phase === "intro" && typingDone && (
             <div className="animate-fade-in flex justify-start">
-              <div className="ml-9">
+              <div>
+
                 <button
                   onClick={handleStart}
                   className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-[13px] font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95"
@@ -831,7 +832,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
 
           {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
           {phase === "questions" && currentQ && typingDone && (
-            <div className="animate-fade-in ml-9 space-y-2">
+            <div className="animate-fade-in space-y-2">
               {/* Button choices */}
               {currentQ.type === "buttons" && currentQ.buttons && (
                 <div className="flex flex-wrap gap-2">
