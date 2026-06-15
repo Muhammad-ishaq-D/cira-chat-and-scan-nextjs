@@ -1393,24 +1393,37 @@ const Bubble = ({
   role: "ai" | "user";
   children: React.ReactNode;
   wide?: boolean;
-}) => (
-  <div
-    className={`flex animate-fade-in ${
-      role === "user" ? "justify-end" : "justify-start"
-    }`}
-  >
+}) => {
+  const isUser = role === "user";
+  return (
     <div
-      className={`${wide ? "max-w-[95%] md:max-w-[90%] w-full" : "max-w-[85%] md:max-w-[70%]"} px-4 py-3 leading-relaxed ${
-        role === "user"
-          ? "bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md"
-          : "bg-white border border-border/50 shadow-sm text-foreground rounded-[20px] rounded-tl-md"
-      }`}
-      style={{ fontSize: 14.5 }}
+      className={`flex animate-fade-in ${isUser ? "justify-end" : "justify-start"} gap-2.5`}
     >
-      {children}
+      {!isUser && (
+        <div
+          className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center shadow-sm mt-0.5"
+          aria-hidden
+        >
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>C</span>
+        </div>
+      )}
+      <div
+        className={`${
+          wide ? "max-w-[92%] md:max-w-[85%] w-full" : "max-w-[85%] md:max-w-[72%]"
+        } leading-relaxed transition-colors ${
+          isUser
+            ? "bg-primary text-primary-foreground rounded-[18px] rounded-tr-md px-4 py-2.5 shadow-sm"
+            : wide
+              ? "bg-white border border-border/50 shadow-sm text-foreground rounded-[18px] rounded-tl-md px-4 py-3"
+              : "text-foreground px-1 py-1.5"
+        }`}
+        style={{ fontSize: 15, lineHeight: 1.55 }}
+      >
+        {children}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const renderFormattedText = (text: string) => {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
@@ -1428,28 +1441,43 @@ const renderFormattedText = (text: string) => {
   });
 };
 
-const TypewriterText = ({ text, speed = 4, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
+const TypewriterText = ({ text, speed = 12, onComplete, formatted = false }: { text: string; speed?: number; onComplete?: () => void; formatted?: boolean }) => {
   const [displayed, setDisplayed] = useState("");
-  const indexRef = useRef(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     setDisplayed("");
-    indexRef.current = 0;
+    setDone(false);
     const chars = Array.from(text);
-    const interval = window.setInterval(() => {
-      indexRef.current += 4;
-      setDisplayed(chars.slice(0, indexRef.current).join(""));
-      if (indexRef.current >= chars.length) {
-        window.clearInterval(interval);
+    let raf = 0;
+    let last = performance.now();
+    let i = 0;
+    const charsPerMs = 1 / Math.max(1, speed); // ~1 char per `speed` ms
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      i = Math.min(chars.length, i + Math.max(1, Math.floor(dt * charsPerMs)));
+      setDisplayed(chars.slice(0, i).join(""));
+      if (i < chars.length) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setDone(true);
         onComplete?.();
       }
-    }, speed);
-    return () => window.clearInterval(interval);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [text, speed, onComplete]);
 
   return (
     <span className="whitespace-pre-line">
       {formatted ? renderFormattedText(displayed) : displayed}
+      {!done && (
+        <span
+          className="inline-block w-[2px] h-[1.05em] align-[-2px] ml-0.5 bg-foreground/60 animate-pulse"
+          aria-hidden
+        />
+      )}
     </span>
   );
 };
