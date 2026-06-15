@@ -167,12 +167,12 @@ const TypewriterText = ({ text, speed = 15, onComplete }: { text: string; speed?
   return <>{displayed}</>;
 };
 
-const CiraBubble = ({ text, onTypingComplete }: { text: string; onTypingComplete?: () => void }) => (
+const CiraBubble = ({ text, onTypingComplete, thinking }: { text: string; onTypingComplete?: () => void; thinking?: boolean }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="shrink-0 mt-2">
-          <AiSparkleIcon size={20} active />
+        <div className="shrink-0 mt-1">
+          <AiSparkleIcon size={20} active thinking={thinking} />
         </div>
         <div
           className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
