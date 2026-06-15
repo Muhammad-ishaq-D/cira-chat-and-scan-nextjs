@@ -1044,7 +1044,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: CHECKOUT ───────────────────────────────────────────────── */}
-          {phase === "checkout" && generatedReferral && (
+          {phase === "checkout" && generatedReferral && typingDone && (
             <div className="animate-fade-in space-y-4">
               {pollingStatus === "canceled" && (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5">
