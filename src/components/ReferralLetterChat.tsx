@@ -893,7 +893,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 </div>
 
                 {/* Session vitals badge */}
-                {sessionVitals && (
+                {sessionVitals && typingComplete && (
                   <div className="mx-4 mt-3 px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2">
                     <CheckCircle size={13} className="text-emerald-500 shrink-0" />
                     <span className="text-[11px] text-emerald-600 font-medium">
