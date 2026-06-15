@@ -7,10 +7,25 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "postbuild": "node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
+  },
+  "prerender": {
+    "routes": [
+      "/",
+      "/free-chat",
+      "/symptom-checker",
+      "/pricing",
+      "/how-it-works",
+      "/technology",
+      "/what-cira-helps-with",
+      "/real-doctors",
+      "/our-story",
+      "/blog"
+    ]
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
