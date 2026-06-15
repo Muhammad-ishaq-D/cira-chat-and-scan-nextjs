@@ -2336,6 +2336,12 @@ const ProfileEditCard = ({
             type="text"
             value={draft.fullName}
             onChange={(e) => setDraft({ ...draft, fullName: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSave();
+              }
+            }}
             placeholder="e.g. John Doe"
             className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all shadow-sm"
             style={{ fontSize: 15 }}
