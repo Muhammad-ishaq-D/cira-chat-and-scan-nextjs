@@ -144,34 +144,42 @@ const SUMMARY_FIELDS: { key: keyof Answers; labelKey: string }[] = [
 
 // ─── Chat bubble components ───────────────────────────────────────────────────
 
-const TypewriterText = ({ text, speed = 15 }: { text: string; speed?: number }) => {
+const TypewriterText = ({ text, speed = 15, onDone }: { text: string; speed?: number; onDone?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
+  const doneRef = useRef(false);
   useEffect(() => {
     setDisplayed("");
+    doneRef.current = false;
     let i = 0;
     const timer = setInterval(() => {
       i += 2;
       setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(timer);
+      if (i >= text.length) {
+        clearInterval(timer);
+        if (!doneRef.current) {
+          doneRef.current = true;
+          onDone?.();
+        }
+      }
     }, speed);
     return () => clearInterval(timer);
-  }, [text, speed]);
+  }, [text, speed, onDone]);
   return <>{displayed}</>;
 };
 
-const CiraBubble = ({ text }: { text: string }) => (
+const CiraBubble = ({ text, isTyping, onDone }: { text: string; isTyping: boolean; onDone?: () => void }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
         <div className="shrink-0 mt-2">
-          <AiSparkleIcon size={20} active />
+          <AiSparkleIcon size={20} active thinking={isTyping} />
         </div>
         <div
           className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
           <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">
-            <TypewriterText text={text} speed={10} />
+            {isTyping ? <TypewriterText text={text} speed={10} onDone={onDone} /> : text}
           </p>
         </div>
       </div>
@@ -222,6 +230,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [copied, setCopied] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [typingDone, setTypingDone] = useState(false);
 
   // ── Check Stripe Redirect Status ──────────────────────────────────────────
   useEffect(() => {
@@ -364,6 +373,13 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
       setTimeout(() => inputRef.current?.focus(), 200);
     }
   }, [currentQuestionIndex, phase]);
+
+  // Track typewriter progress — whenever a new cira message arrives, gate UI until it's done
+  useEffect(() => {
+    const last = chatLog[chatLog.length - 1];
+    if (last?.role === "cira") setTypingDone(false);
+    else setTypingDone(true);
+  }, [chatLog]);
 
   // ── Questions helper ──────────────────────────────────────────────────────
   const getActiveQuestions = useCallback((): QuestionDef[] => {
@@ -772,18 +788,31 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
         {/* ── Chat area ──────────────────────────────────────────────────────── */}
         <div
           ref={scrollRef}
-          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex-1 min-h-0 overflow-y-auto px-4 pt-10 sm:pt-14 pb-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {/* Chat log */}
-          {chatLog.map((msg, i) =>
-            msg.role === "cira"
-              ? <CiraBubble key={i} text={msg.text} />
-              : <UserBubble key={i} text={msg.text} />
-          )}
+          {(() => {
+            const lastCiraIdx = (() => {
+              for (let i = chatLog.length - 1; i >= 0; i--) {
+                if (chatLog[i].role === "cira") return i;
+              }
+              return -1;
+            })();
+            return chatLog.map((msg, i) =>
+              msg.role === "cira"
+                ? <CiraBubble
+                    key={i}
+                    text={msg.text}
+                    isTyping={i === lastCiraIdx && !typingDone}
+                    onDone={i === lastCiraIdx ? () => setTypingDone(true) : undefined}
+                  />
+                : <UserBubble key={i} text={msg.text} />
+            );
+          })()}
 
           {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
-          {phase === "intro" && (
+          {phase === "intro" && typingDone && (
             <div className="animate-fade-in flex justify-start">
               <div className="ml-9">
                 <button
@@ -798,7 +827,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
-          {phase === "questions" && currentQ && (
+          {phase === "questions" && currentQ && typingDone && (
             <div className="animate-fade-in ml-9 space-y-2">
               {/* Button choices */}
               {currentQ.type === "buttons" && currentQ.buttons && (
@@ -860,7 +889,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: SUMMARY ───────────────────────────────────────────────── */}
-          {phase === "summary" && (
+          {phase === "summary" && typingDone && (
             <div className="animate-fade-in space-y-3">
               {/* Summary card */}
               <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
@@ -962,7 +991,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: EMAIL ─────────────────────────────────────────────────── */}
-          {phase === "email" && (
+          {phase === "email" && typingDone && (
             <div className="animate-fade-in space-y-4">
               <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
                 <div className="flex items-center gap-3">
@@ -1015,7 +1044,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: CHECKOUT ───────────────────────────────────────────────── */}
-          {phase === "checkout" && generatedReferral && (
+          {phase === "checkout" && generatedReferral && typingDone && (
             <div className="animate-fade-in space-y-4">
               {pollingStatus === "canceled" && (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5">
