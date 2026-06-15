@@ -414,20 +414,33 @@ const Bubble = ({
   role: "ai" | "user";
   children: React.ReactNode;
   wide?: boolean;
-}) => (
-  <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
-    <div
-      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
-        role === "user"
-          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
-          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
-      }`}
-      style={{ fontSize: 14.5 }}
-    >
-      {children}
+}) => {
+  const isUser = role === "user";
+  return (
+    <div className={`flex animate-fade-in gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
+      {!isUser && (
+        <div
+          className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground flex items-center justify-center shadow-sm mt-0.5"
+          aria-hidden
+        >
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>C</span>
+        </div>
+      )}
+      <div
+        className={`${wide ? "max-w-[92%] md:max-w-[85%] w-full" : "max-w-[85%] md:max-w-[72%]"} leading-relaxed ${
+          isUser
+            ? "bg-primary text-primary-foreground rounded-[18px] rounded-tr-md px-4 py-2.5 shadow-sm"
+            : wide
+              ? "bg-white border border-border/50 shadow-sm text-foreground rounded-[18px] rounded-tl-md px-4 py-3"
+              : "text-foreground px-1 py-1.5"
+        }`}
+        style={{ fontSize: 15, lineHeight: 1.55 }}
+      >
+        {children}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const TypingDots = () => (
   <span className="inline-flex items-end gap-1 h-4">
