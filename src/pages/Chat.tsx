@@ -169,6 +169,7 @@ const scanVitals = [
 const navItems = [
   { icon: Home, label: "Home", id: "home", tKey: "dashboard.nav.home" },
   { icon: Sparkles, label: "Ask Cira", id: "chat", tKey: "dashboard.nav.askCira" },
+  { icon: Pill, label: "Refill", id: "rx", tKey: "dashboard.nav.prescriptionRefill" },
   { icon: ScanFace, label: "Scan", id: "scan", tKey: "dashboard.nav.scan" },
   { icon: FileText, label: "Reports", id: "reports", tKey: "dashboard.nav.reports" },
 ];
@@ -1338,6 +1339,7 @@ const Chat = () => {
                   setActiveNav(item.id);
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
+                  if (item.id === "rx") navigate("/prescription-refill");
                   if (item.id === "scan") { if (canScan()) navigate("/vitals-scan"); }
                   if (item.id === "reports") navigate("/reports");
                   if (item.id === "doctor") navigate("/doctor");
