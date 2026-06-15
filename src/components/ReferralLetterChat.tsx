@@ -258,6 +258,17 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     }
   }, []);
 
+  // Clean Stripe redirect params from the URL once consumed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.search) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("status")) {
+      const url = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, "", url);
+    }
+  }, []);
+
   // ── Polling Referral Status ───────────────────────────────────────────────
   useEffect(() => {
     if (!isPolling || !referralId) return;
@@ -630,6 +641,131 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     );
   }
 
+  if (phase === "done") {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-4 w-full max-w-md mx-auto h-full min-h-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="w-full space-y-4">
+          {pollingStatus === "pending" && (
+            <div className="bg-card border border-border rounded-2xl p-6 text-center space-y-3 shadow-sm">
+              <div className="flex justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+              <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
+                Confirming your payment…
+              </h3>
+              <p className="text-foreground/80 text-sm leading-relaxed">
+                Hang tight — we are generating your referral letter and emailing it to you as a PDF attachment. This usually takes a few seconds.
+              </p>
+            </div>
+          )}
+
+          {pollingStatus === "failed" && (
+            <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
+                  <XCircle className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
+                </div>
+                <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
+                  Payment confirmation failed
+                </h3>
+                <p className="mt-2 text-foreground/80 text-sm">
+                  We couldn't confirm your payment. If you have completed the Stripe payment, please contact support with your reference code.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setPhase("checkout");
+                  setPollingStatus("pending");
+                }}
+                className="w-full rounded-xl py-3 bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {pollingStatus === "paid" && (
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-5 py-5 shadow-sm space-y-4">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                  <CheckCircle size={20} className="text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                    Referral Letter Ready!
+                  </p>
+                  <p className="text-[11px] text-emerald-600 mt-0.5">We have emailed your referral letter to your inbox.</p>
+                </div>
+              </div>
+
+              {/* Reference number card */}
+              <div className="rounded-xl border border-border bg-card/60 p-4 text-center space-y-2">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  Reference Number
+                </p>
+                <p className="font-mono font-semibold text-foreground tracking-wider text-lg">
+                  {refNumber || "REF-LETTER"}
+                </p>
+                <button
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-accent transition-colors"
+                  style={{ fontSize: 12 }}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center">
+                {emailStatus === "sent"
+                  ? "Email sent — check your inbox."
+                  : emailStatus === "failed"
+                  ? "We couldn't send the email — support will reach out."
+                  : "Sending your prescription by email…"}
+              </p>
+
+              <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
+                If you do not see the email in 1–2 minutes, please make sure to check your spam folder.
+              </p>
+
+              {/* Buttons */}
+              <div className="flex flex-col gap-2 pt-2">
+                <button
+                  onClick={() => navigate("/doctor")}
+                  className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+                >
+                  <Users size={15} />
+                  {t("referral.btn.findDoctor")}
+                </button>
+                <button
+                  onClick={onExit}
+                  className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* AI disclosure */}
+          <div className="flex items-start gap-2 px-1">
+            <AlertCircle size={12} className="text-muted-foreground/60 shrink-0 mt-0.5" />
+            <p className="text-[10px] text-muted-foreground/60 leading-snug">{t("referral.aiDisclosure")}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-transparent items-center">
       <div className="w-full max-w-2xl flex flex-col h-full relative bg-transparent">
@@ -988,127 +1124,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
             </div>
           )}
 
-          {/* ── Phase: DONE ──────────────────────────────────────────────────── */}
-          {phase === "done" && (
-            <div className="animate-fade-in space-y-4">
-              {pollingStatus === "pending" && (
-                <div className="bg-card border border-border rounded-2xl p-6 text-center space-y-3 shadow-sm">
-                  <div className="flex justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-foreground" style={{ fontSize: 17 }}>
-                    Confirming your payment…
-                  </h3>
-                  <p className="text-foreground/80 text-sm leading-relaxed">
-                    Hang tight — we are generating your referral letter and emailing it to you as a PDF attachment. This usually takes a few seconds.
-                  </p>
-                </div>
-              )}
 
-              {pollingStatus === "failed" && (
-                <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-amber-500/15 flex items-center justify-center mb-3">
-                      <XCircle className="w-8 h-8 text-amber-500" strokeWidth={2.5} />
-                    </div>
-                    <h3 className="font-semibold text-foreground" style={{ fontSize: 18 }}>
-                      Payment confirmation failed
-                    </h3>
-                    <p className="mt-2 text-foreground/80 text-sm">
-                      We couldn't confirm your payment. If you have completed the Stripe payment, please contact support with your reference code.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setPhase("checkout");
-                      setPollingStatus("pending");
-                    }}
-                    className="w-full rounded-xl py-3 bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
-                  >
-                    Try again
-                  </button>
-                </div>
-              )}
-
-              {pollingStatus === "paid" && (
-                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-5 py-5 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3 mb-1">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                      <CheckCircle size={20} className="text-primary-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                        Referral Letter Ready!
-                      </p>
-                      <p className="text-[11px] text-emerald-600 mt-0.5">We have emailed your referral letter to your inbox.</p>
-                    </div>
-                  </div>
-
-                  {/* Reference number card */}
-                  <div className="rounded-xl border border-border bg-card/60 p-4 text-center space-y-2">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                      Reference Number
-                    </p>
-                    <p className="font-mono font-semibold text-foreground tracking-wider text-lg">
-                      {refNumber || "REF-LETTER"}
-                    </p>
-                    <button
-                      onClick={handleCopy}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-accent transition-colors"
-                      style={{ fontSize: 12 }}
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    {emailStatus === "sent"
-                      ? "Email sent — check your inbox."
-                      : emailStatus === "failed"
-                      ? "We couldn't send the email — support will reach out."
-                      : "Sending your prescription by email…"}
-                  </p>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
-                    If you do not see the email in 1–2 minutes, please make sure to check your spam folder.
-                  </p>
-
-                  {/* Buttons */}
-                  <div className="flex flex-col gap-2 pt-2">
-                    <button
-                      onClick={() => navigate("/doctor")}
-                      className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
-                    >
-                      <Users size={15} />
-                      {t("referral.btn.findDoctor")}
-                    </button>
-                    <button
-                      onClick={onExit}
-                      className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* AI disclosure */}
-              <div className="flex items-start gap-2 px-1">
-                <AlertCircle size={12} className="text-muted-foreground/60 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground/60 leading-snug">{t("referral.aiDisclosure")}</p>
-              </div>
-            </div>
-          )}
 
           {/* Spacer at bottom */}
           <div className="h-4" />
