@@ -130,6 +130,9 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
   const pushAi = (text: string) =>
     setMessages((prev) => [...prev, { id: newId(), role: "ai", text, animate: true }]);
 
+  const clearAnimate = (id: string) =>
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, animate: false } : m)));
+
   const startFallbackScreening = async () => {
     setFallbackMode(true);
     setFallbackQuestionIndex(0);
