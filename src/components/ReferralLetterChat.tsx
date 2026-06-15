@@ -169,19 +169,14 @@ const TypewriterText = ({ text, speed = 15, onDone }: { text: string; speed?: nu
 
 const CiraBubble = ({ text, isTyping, onDone }: { text: string; isTyping: boolean; onDone?: () => void }) => (
   <div className="flex justify-start animate-fade-in">
-    <div className="max-w-[88%] md:max-w-[75%]">
-      <div className="flex items-start gap-2 mb-1">
-        <div className="shrink-0 pt-3">
-          <AiSparkleIcon size={20} active thinking={isTyping} />
-        </div>
-        <div
-          className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
-          style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-        >
-          <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">
-            {isTyping ? <TypewriterText text={text} speed={10} onDone={onDone} /> : text}
-          </p>
-        </div>
+    <div className="max-w-[95%] md:max-w-[80%]">
+      <div className="mb-2">
+        <AiSparkleIcon size={20} active thinking={isTyping} />
+      </div>
+      <div className="text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <p className="text-[14px] md:text-[15px] leading-7 whitespace-pre-line">
+          {isTyping ? <TypewriterText text={text} speed={10} onDone={onDone} /> : text}
+        </p>
       </div>
     </div>
   </div>
@@ -190,7 +185,7 @@ const CiraBubble = ({ text, isTyping, onDone }: { text: string; isTyping: boolea
 const UserBubble = ({ text }: { text: string }) => (
   <div className="flex justify-end animate-fade-in">
     <div
-      className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] shadow-sm"
+      className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]"
       style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <p className="text-[14px] leading-6 whitespace-pre-line">{text}</p>
