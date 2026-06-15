@@ -34,21 +34,25 @@ const Refund = () => {
           return;
         }
         const data = await res.json() as {
+          type?: "prescription" | "referral";
           reference_code?: string;
+          specialist_specialty?: string;
           medications?: Array<{ drug_name_inn?: string; drug_strength?: string }>;
           issued_date?: string;
           amount?: number;
           days_remaining?: number;
         };
         const firstMed = data.medications?.[0] ?? {};
+        const isReferral = data.type === "referral";
         setRefill({
           ref: data.reference_code || "",
           date: data.issued_date || new Date().toISOString(),
-          drug: firstMed.drug_name_inn || "",
-          strength: firstMed.drug_strength || "",
+          drug: isReferral ? (data.specialist_specialty || "") : (firstMed.drug_name_inn || ""),
+          strength: isReferral ? "" : (firstMed.drug_strength || ""),
           email: "",
           priceCents: Math.round((data.amount ?? 0) * 100),
           token,
+          type: data.type,
         });
       })
       .catch(() => setInvalid(true))

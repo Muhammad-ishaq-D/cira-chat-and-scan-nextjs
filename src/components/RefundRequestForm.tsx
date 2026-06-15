@@ -11,6 +11,7 @@ export type RefillRecord = {
   email: string;
   priceCents: number;
   token?: string; // refund_token from backend (present on email-link flow)
+  type?: "prescription" | "referral";
 };
 
 const API_BASE =
@@ -155,13 +156,17 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
 
   return (
     <div className="space-y-6">
-      {/* Prescription details */}
+      {/* Service details */}
       <div className="rounded-2xl border border-border bg-card divide-y divide-border">
         <DetailRow label={t("pages.refund.referenceLabel")} value={refill.ref} mono />
-        <DetailRow
-          label={t("pages.refund.medicationLabel")}
-          value={[refill.drug, refill.strength].filter(Boolean).join(" · ") || "—"}
-        />
+        {refill.type === "referral" ? (
+          <DetailRow label={t("pages.refund.specialistLabel", { defaultValue: "Specialist" })} value={refill.drug || "—"} />
+        ) : (
+          <DetailRow
+            label={t("pages.refund.medicationLabel")}
+            value={[refill.drug, refill.strength].filter(Boolean).join(" · ") || "—"}
+          />
+        )}
         <DetailRow label={t("pages.refund.issuedLabel")} value={issuedDisplay} />
         <DetailRow label={t("pages.refund.amountLabel")} value={priceDisplay} />
       </div>
