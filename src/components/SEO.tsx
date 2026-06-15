@@ -1,14 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { SITE_URL, getRouteSEO } from "@/config/seo";
 
-const SITE_URL = "https://askainurse.com";
 const DEFAULT_OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png";
 
 interface SEOProps {
-  title: string;
-  description: string;
   path: string; // e.g. "/", "/pricing"
+  title?: string;
+  description?: string;
   image?: string;
   noindex?: boolean;
   jsonLd?: Record<string, any> | Record<string, any>[];
@@ -19,9 +19,16 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
   const { i18n } = useTranslation();
   const lang = (i18n.language || "en").split("-")[0];
   const url = `${SITE_URL}${path}`;
+
+  // Fall back to centralized config when caller doesn't override.
+  const fallback = getRouteSEO(path);
+  const resolvedTitle = title ?? fallback?.title ?? "Cira — your AI health nurse";
+  const resolvedDesc =
+    description ?? fallback?.description ?? "Cira is your AI health nurse, anytime.";
+
   const ogImage = image || DEFAULT_OG_IMAGE;
-  const safeTitle = title.length > 60 ? title.slice(0, 57) + "..." : title;
-  const safeDesc = description.length > 160 ? description.slice(0, 157) + "..." : description;
+  const safeTitle = resolvedTitle.length > 60 ? resolvedTitle.slice(0, 57) + "..." : resolvedTitle;
+  const safeDesc = resolvedDesc.length > 160 ? resolvedDesc.slice(0, 157) + "..." : resolvedDesc;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
   return (
