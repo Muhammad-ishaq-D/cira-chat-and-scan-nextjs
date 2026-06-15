@@ -138,14 +138,14 @@ const CiraBubble = ({ text }: { text: string }) => (
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 mt-0.5">
-          <FileText size={12} className="text-white" />
+        <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5">
+          <FileText size={12} className="text-primary-foreground" />
         </div>
         <div
-          className="bg-white border border-indigo-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
+          className="bg-card border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
-          <p className="text-[14px] leading-6 text-gray-800 whitespace-pre-line">{text}</p>
+          <p className="text-[14px] leading-6 text-foreground whitespace-pre-line">{text}</p>
         </div>
       </div>
     </div>
@@ -155,7 +155,7 @@ const CiraBubble = ({ text }: { text: string }) => (
 const UserBubble = ({ text }: { text: string }) => (
   <div className="flex justify-end animate-fade-in">
     <div
-      className="bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] shadow-sm"
+      className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] shadow-sm"
       style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <p className="text-[14px] leading-6 whitespace-pre-line">{text}</p>
@@ -463,326 +463,328 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
 
   if (!profileLoaded) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 size={24} className="animate-spin text-indigo-500" />
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <Loader2 size={24} className="animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 to-purple-50">
-        <button
-          onClick={onExit}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-indigo-400 hover:bg-indigo-100 transition-colors"
-          aria-label={t("common.back")}
+    <div className="flex flex-col h-full bg-background items-center">
+      <div className="w-full max-w-2xl flex flex-col h-full relative border-x border-border/20 shadow-sm bg-card/30">
+        {/* ── Header ─────────────────────────────────────────────────────────── */}
+        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border bg-card">
+          <button
+            onClick={onExit}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-primary/70 hover:bg-accent transition-colors"
+            aria-label={t("common.back")}
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
+            <FileText size={15} className="text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold text-foreground leading-none" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+              {t("referral.title")}
+            </p>
+            <p className="text-[10px] text-primary/70 mt-0.5 leading-none">{t("referral.subtitle")}</p>
+          </div>
+          {phase === "questions" && currentQuestionIndex >= 0 && (
+            <div className="shrink-0 text-right">
+              <span className="text-[10px] text-primary/70 font-medium">
+                {currentQuestionIndex + 1} / {activeQs.length}
+              </span>
+              <div className="mt-1 w-20 h-1 bg-primary/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  style={{ width: `${((currentQuestionIndex + 1) / activeQs.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Chat area ──────────────────────────────────────────────────────── */}
+        <div
+          ref={scrollRef}
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4"
+          style={{ WebkitOverflowScrolling: "touch" }}
         >
-          <ArrowLeft size={16} />
-        </button>
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shrink-0">
-          <FileText size={15} className="text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-gray-800 leading-none" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-            {t("referral.title")}
-          </p>
-          <p className="text-[10px] text-indigo-400 mt-0.5 leading-none">{t("referral.subtitle")}</p>
-        </div>
-        {phase === "questions" && currentQuestionIndex >= 0 && (
-          <div className="shrink-0 text-right">
-            <span className="text-[10px] text-indigo-400 font-medium">
-              {currentQuestionIndex + 1} / {activeQs.length}
-            </span>
-            <div className="mt-1 w-20 h-1 bg-indigo-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-400 rounded-full transition-all duration-500"
-                style={{ width: `${((currentQuestionIndex + 1) / activeQs.length) * 100}%` }}
-              />
+          {/* Chat log */}
+          {chatLog.map((msg, i) =>
+            msg.role === "cira"
+              ? <CiraBubble key={i} text={msg.text} />
+              : <UserBubble key={i} text={msg.text} />
+          )}
+
+          {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
+          {phase === "intro" && (
+            <div className="animate-fade-in flex justify-start">
+              <div className="ml-9">
+                <button
+                  onClick={handleStart}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-[13px] font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95"
+                >
+                  <ChevronRight size={15} />
+                  {t("referral.btn.letsGo")}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* ── Chat area ──────────────────────────────────────────────────────── */}
-      <div
-        ref={scrollRef}
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4"
-        style={{ WebkitOverflowScrolling: "touch" }}
-      >
-        {/* Chat log */}
-        {chatLog.map((msg, i) =>
-          msg.role === "cira"
-            ? <CiraBubble key={i} text={msg.text} />
-            : <UserBubble key={i} text={msg.text} />
-        )}
-
-        {/* ── Phase: INTRO ─────────────────────────────────────────────────── */}
-        {phase === "intro" && (
-          <div className="animate-fade-in flex justify-start">
-            <div className="ml-9">
-              <button
-                onClick={handleStart}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[13px] font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95"
-              >
-                <ChevronRight size={15} />
-                {t("referral.btn.letsGo")}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
-        {phase === "questions" && currentQ && (
-          <div className="animate-fade-in ml-9 space-y-2">
-            {/* Button choices */}
-            {currentQ.type === "buttons" && currentQ.buttons && (
-              <div className="flex flex-wrap gap-2">
-                {currentQ.buttons.map(btn => (
-                  <button
-                    key={btn.id}
-                    onClick={() => handleButtonChoice(currentQ.key, btn.id, t(btn.labelKey))}
-                    className="px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-[13px] font-medium rounded-xl hover:bg-indigo-50 hover:border-indigo-400 transition-all active:scale-95 shadow-sm"
-                  >
-                    {t(btn.labelKey)}
-                  </button>
-                ))}
-                {currentQ.skippable && (
-                  <button
-                    onClick={() => handleSkip(currentQ.key)}
-                    className="px-4 py-2 bg-white border border-gray-200 text-gray-400 text-[13px] rounded-xl hover:bg-gray-50 transition-all active:scale-95"
-                  >
-                    <SkipForward size={13} className="inline mr-1" />
-                    {t(currentQ.skipLabelKey || "referral.btn.skip")}
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Text / date / tel input */}
-            {(currentQ.type === "text" || currentQ.type === "date" || currentQ.type === "tel") && (
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-center">
-                  <input
-                    ref={inputRef}
-                    type={currentQ.type === "date" ? "date" : currentQ.type === "tel" ? "tel" : "text"}
-                    value={inputValue}
-                    onChange={e => setInputValue(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleTextSubmit(); } }}
-                    placeholder={t("referral.inputPlaceholder")}
-                    className="flex-1 bg-white border border-indigo-200 rounded-xl px-3 py-2.5 text-[14px] text-gray-800 outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all placeholder:text-gray-300"
-                  />
-                  <button
-                    onClick={handleTextSubmit}
-                    disabled={!inputValue.trim()}
-                    className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center disabled:opacity-30 hover:bg-indigo-600 transition-colors active:scale-95 shrink-0"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-                {currentQ.skippable && (
-                  <button
-                    onClick={() => handleSkip(currentQ.key)}
-                    className="self-start text-[12px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
-                  >
-                    <SkipForward size={12} />
-                    {t(currentQ.skipLabelKey || "referral.btn.skip")}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Phase: SUMMARY ───────────────────────────────────────────────── */}
-        {phase === "summary" && (
-          <div className="animate-fade-in space-y-3">
-            {/* Summary card */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-4 py-3 border-b border-indigo-100 bg-white/60">
-                <div className="flex items-center gap-2">
-                  <ClipboardList size={15} className="text-indigo-500" />
-                  <p className="text-[13px] font-semibold text-gray-800" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                    {t("referral.summaryTitle")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Session vitals badge */}
-              {sessionVitals && (
-                <div className="mx-4 mt-3 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2">
-                  <CheckCircle size={13} className="text-emerald-500 shrink-0" />
-                  <span className="text-[11px] text-emerald-700 font-medium">
-                    {t("referral.vitalsIncluded")}
-                  </span>
+          {/* ── Phase: QUESTIONS ─────────────────────────────────────────────── */}
+          {phase === "questions" && currentQ && (
+            <div className="animate-fade-in ml-9 space-y-2">
+              {/* Button choices */}
+              {currentQ.type === "buttons" && currentQ.buttons && (
+                <div className="flex flex-wrap gap-2">
+                  {currentQ.buttons.map(btn => (
+                    <button
+                      key={btn.id}
+                      onClick={() => handleButtonChoice(currentQ.key, btn.id, t(btn.labelKey))}
+                      className="px-4 py-2 bg-card border border-border text-primary text-[13px] font-medium rounded-xl hover:bg-accent hover:border-border transition-all active:scale-95 shadow-sm"
+                    >
+                      {t(btn.labelKey)}
+                    </button>
+                  ))}
+                  {currentQ.skippable && (
+                    <button
+                      onClick={() => handleSkip(currentQ.key)}
+                      className="px-4 py-2 bg-card border border-border text-muted-foreground text-[13px] rounded-xl hover:bg-accent transition-all active:scale-95"
+                    >
+                      <SkipForward size={13} className="inline mr-1" />
+                      {t(currentQ.skipLabelKey || "referral.btn.skip")}
+                    </button>
+                  )}
                 </div>
               )}
 
-              <div className="p-4 space-y-2">
-                {SUMMARY_FIELDS.map(({ key, labelKey }) => {
-                  const value = answers[key];
-                  // Skip Phase 1 fields for authenticated users
-                  const qDef = QUESTIONS.find(q => q.key === key);
-                  if (qDef?.guestOnly && isAuthenticated) return null;
-                  // Skip vitals question if session vitals present
-                  if (key === "investigationsDone" && sessionVitals) return null;
-
-                  return (
-                    <div
-                      key={key}
-                      className="flex items-start gap-2 group"
+              {/* Text / date / tel input */}
+              {(currentQ.type === "text" || currentQ.type === "date" || currentQ.type === "tel") && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <input
+                      ref={inputRef}
+                      type={currentQ.type === "date" ? "date" : currentQ.type === "tel" ? "tel" : "text"}
+                      value={inputValue}
+                      onChange={e => setInputValue(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleTextSubmit(); } }}
+                      placeholder={t("referral.inputPlaceholder")}
+                      className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60"
+                    />
+                    <button
+                      onClick={handleTextSubmit}
+                      disabled={!inputValue.trim()}
+                      className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:bg-primary/90 transition-colors active:scale-95 shrink-0"
                     >
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[10px] text-indigo-400 font-medium uppercase tracking-wide leading-none">
-                          {t(labelKey)}
-                        </span>
-                        <p className="text-[13px] text-gray-700 leading-snug mt-0.5 break-words">
-                          {value
-                            ? (key === "urgency"
-                              ? t(`referral.urgency.${value.toString().replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`)
-                              : key === "specificRequest"
-                                ? t(`referral.request.${value.toString().replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`)
-                                : String(value))
-                            : <span className="text-gray-300 italic text-[12px]">{t("referral.notProvided")}</span>
-                          }
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleEdit(key)}
-                        className="opacity-0 group-hover:opacity-100 shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-indigo-100 text-indigo-400 hover:text-indigo-600 hover:border-indigo-300 transition-all text-[10px] shadow-sm mt-0.5"
-                        title={t("common.edit")}
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                  {currentQ.skippable && (
+                    <button
+                      onClick={() => handleSkip(currentQ.key)}
+                      className="self-start text-[12px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                    >
+                      <SkipForward size={12} />
+                      {t(currentQ.skipLabelKey || "referral.btn.skip")}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Phase: SUMMARY ───────────────────────────────────────────────── */}
+          {phase === "summary" && (
+            <div className="animate-fade-in space-y-3">
+              {/* Summary card */}
+              <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-4 py-3 border-b border-border bg-card/60">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList size={15} className="text-primary" />
+                    <p className="text-[13px] font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                      {t("referral.summaryTitle")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Session vitals badge */}
+                {sessionVitals && (
+                  <div className="mx-4 mt-3 px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-2">
+                    <CheckCircle size={13} className="text-emerald-500 shrink-0" />
+                    <span className="text-[11px] text-emerald-600 font-medium">
+                      {t("referral.vitalsIncluded")}
+                    </span>
+                  </div>
+                )}
+
+                <div className="p-4 space-y-2">
+                  {SUMMARY_FIELDS.map(({ key, labelKey }) => {
+                    const value = answers[key];
+                    // Skip Phase 1 fields for authenticated users
+                    const qDef = QUESTIONS.find(q => q.key === key);
+                    if (qDef?.guestOnly && isAuthenticated) return null;
+                    // Skip vitals question if session vitals present
+                    if (key === "investigationsDone" && sessionVitals) return null;
+
+                    return (
+                      <div
+                        key={key}
+                        className="flex items-start gap-2 group"
                       >
-                        <Pencil size={9} />
-                        {t("common.edit")}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* AI notice */}
-            <div className="flex items-start gap-2 px-1">
-              <AlertCircle size={13} className="text-purple-400 shrink-0 mt-0.5" />
-              <p className="text-[11px] text-gray-400 leading-snug">{t("referral.aiNotice")}</p>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={handleGenerate}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[14px] font-semibold shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-              >
-                <Stethoscope size={16} />
-                {t("referral.btn.generate")}
-              </button>
-              <button
-                onClick={onExit}
-                className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-500 text-[13px] hover:bg-gray-50 transition-colors active:scale-[0.98]"
-              >
-                {t("common.back")}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Phase: GENERATING ────────────────────────────────────────────── */}
-        {phase === "generating" && (
-          <div className="animate-fade-in flex justify-start">
-            <div className="ml-2">
-              <div className="bg-white border border-indigo-100 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
-                <Loader2 size={20} className="animate-spin text-indigo-500 shrink-0" />
-                <div>
-                  <p className="text-[13px] font-semibold text-gray-800">{t("referral.generating")}</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{t("referral.generatingDesc")}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Phase: DONE ──────────────────────────────────────────────────── */}
-        {phase === "done" && generatedReferral && (
-          <div className="animate-fade-in space-y-4">
-            {/* Success banner */}
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl px-5 py-5 shadow-sm">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                  <CheckCircle size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-[15px] font-bold text-gray-800" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                    {t("referral.doneTitle")}
-                  </p>
-                  <p className="text-[11px] text-emerald-600 mt-0.5">{t("referral.doneSubtitle")}</p>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] text-primary/70 font-medium uppercase tracking-wide leading-none">
+                            {t(labelKey)}
+                          </span>
+                          <p className="text-[13px] text-foreground leading-snug mt-0.5 break-words">
+                            {value
+                              ? (key === "urgency"
+                                ? t(`referral.urgency.${value.toString().replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`)
+                                : key === "specificRequest"
+                                  ? t(`referral.request.${value.toString().replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`)
+                                  : String(value))
+                              : <span className="text-muted-foreground/60 italic text-[12px]">{t("referral.notProvided")}</span>
+                            }
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleEdit(key)}
+                          className="opacity-0 group-hover:opacity-100 shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-card border border-border/50 text-primary/70 hover:text-primary hover:border-border transition-all text-[10px] shadow-sm mt-0.5"
+                          title={t("common.edit")}
+                        >
+                          <Pencil size={9} />
+                          {t("common.edit")}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Referral meta */}
-              <div className="bg-white/70 rounded-xl px-4 py-3 mb-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="text-[9px] text-gray-400 uppercase tracking-wide">{t("referral.refNumber")}</p>
-                    <p className="text-[12px] font-semibold text-gray-700 mt-0.5">{generatedReferral.referenceNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] text-gray-400 uppercase tracking-wide">{t("referral.issuedOn")}</p>
-                    <p className="text-[12px] font-semibold text-gray-700 mt-0.5">{generatedReferral.dateOfIssue}</p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] text-gray-400 uppercase tracking-wide">{t("referral.summary.specialistSpecialty")}</p>
-                    <p className="text-[12px] font-semibold text-gray-700 mt-0.5">{generatedReferral.specialistSpecialty}</p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] text-gray-400 uppercase tracking-wide">{t("referral.summary.urgency")}</p>
-                    <p className="text-[12px] font-semibold text-gray-700 mt-0.5 capitalize">{generatedReferral.urgency?.replace(/-/g, " ")}</p>
-                  </div>
-                </div>
+              {/* AI notice */}
+              <div className="flex items-start gap-2 px-1">
+                <AlertCircle size={13} className="text-primary/70 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-muted-foreground leading-snug">{t("referral.aiNotice")}</p>
               </div>
 
-              {/* Diagnosis preview */}
-              <div className="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3 mb-3">
-                <p className="text-[10px] text-purple-400 font-medium uppercase tracking-wide mb-1">
-                  {t("referral.provisionalDiagnosis")} <span className="normal-case">(AI)</span>
-                </p>
-                <p className="text-[12px] text-gray-700 leading-snug">{generatedReferral.provisionalDiagnosis}</p>
-              </div>
-
-              {/* Buttons */}
+              {/* Action buttons */}
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={handleManualDownload}
-                  className="w-full py-2.5 rounded-xl bg-emerald-500 text-white text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors active:scale-95"
+                  onClick={handleGenerate}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                  <Download size={15} />
-                  {t("referral.btn.downloadPDF")}
-                </button>
-                <button
-                  onClick={() => navigate("/doctor")}
-                  className="w-full py-2.5 rounded-xl bg-white border border-indigo-200 text-indigo-600 text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-indigo-50 transition-colors active:scale-95"
-                >
-                  <Users size={15} />
-                  {t("referral.btn.findDoctor")}
+                  <Stethoscope size={16} />
+                  {t("referral.btn.generate")}
                 </button>
                 <button
                   onClick={onExit}
-                  className="w-full py-2 text-gray-400 text-[12px] hover:text-gray-600 transition-colors"
+                  className="w-full py-2.5 rounded-xl border border-border text-muted-foreground text-[13px] hover:bg-accent transition-colors active:scale-[0.98]"
                 >
                   {t("common.back")}
                 </button>
               </div>
             </div>
+          )}
 
-            {/* AI disclosure */}
-            <div className="flex items-start gap-2 px-1">
-              <AlertCircle size={12} className="text-gray-300 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-gray-300 leading-snug">{t("referral.aiDisclosure")}</p>
+          {/* ── Phase: GENERATING ────────────────────────────────────────────── */}
+          {phase === "generating" && (
+            <div className="animate-fade-in flex justify-start">
+              <div className="ml-2">
+                <div className="bg-card border border-border/50 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+                  <Loader2 size={20} className="animate-spin text-primary shrink-0" />
+                  <div>
+                    <p className="text-[13px] font-semibold text-foreground">{t("referral.generating")}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{t("referral.generatingDesc")}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Spacer at bottom */}
-        <div className="h-4" />
+          {/* ── Phase: DONE ──────────────────────────────────────────────────── */}
+          {phase === "done" && generatedReferral && (
+            <div className="animate-fade-in space-y-4">
+              {/* Success banner */}
+              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl px-5 py-5 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <CheckCircle size={20} className="text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-bold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                      {t("referral.doneTitle")}
+                    </p>
+                    <p className="text-[11px] text-emerald-600 mt-0.5">{t("referral.doneSubtitle")}</p>
+                  </div>
+                </div>
+
+                {/* Referral meta */}
+                <div className="bg-card/70 rounded-xl px-4 py-3 mb-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.refNumber")}</p>
+                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.referenceNumber}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.issuedOn")}</p>
+                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.dateOfIssue}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.summary.specialistSpecialty")}</p>
+                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{generatedReferral.specialistSpecialty}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{t("referral.summary.urgency")}</p>
+                      <p className="text-[12px] font-semibold text-foreground mt-0.5 capitalize">{generatedReferral.urgency?.replace(/-/g, " ")}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diagnosis preview */}
+                <div className="bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-3">
+                  <p className="text-[10px] text-primary/70 font-medium uppercase tracking-wide mb-1">
+                    {t("referral.provisionalDiagnosis")} <span className="normal-case">(AI)</span>
+                  </p>
+                  <p className="text-[12px] text-foreground leading-snug">{generatedReferral.provisionalDiagnosis}</p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={handleManualDownload}
+                    className="w-full py-2.5 rounded-xl bg-emerald-500 text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors active:scale-95"
+                  >
+                    <Download size={15} />
+                    {t("referral.btn.downloadPDF")}
+                  </button>
+                  <button
+                    onClick={() => navigate("/doctor")}
+                    className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+                  >
+                    <Users size={15} />
+                    {t("referral.btn.findDoctor")}
+                  </button>
+                  <button
+                    onClick={onExit}
+                    className="w-full py-2 text-muted-foreground text-[12px] hover:text-foreground transition-colors"
+                  >
+                    {t("common.back")}
+                  </button>
+                </div>
+              </div>
+
+              {/* AI disclosure */}
+              <div className="flex items-start gap-2 px-1">
+                <AlertCircle size={12} className="text-muted-foreground/60 shrink-0 mt-0.5" />
+                <p className="text-[10px] text-muted-foreground/60 leading-snug">{t("referral.aiDisclosure")}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Spacer at bottom */}
+          <div className="h-4" />
+        </div>
       </div>
     </div>
   );
