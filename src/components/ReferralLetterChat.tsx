@@ -171,7 +171,7 @@ const CiraBubble = ({ text, isTyping, onDone }: { text: string; isTyping: boolea
   <div className="flex justify-start animate-fade-in">
     <div className="max-w-[88%] md:max-w-[75%]">
       <div className="flex items-start gap-2 mb-1">
-        <div className="shrink-0 mt-2">
+        <div className="shrink-0 pt-3">
           <AiSparkleIcon size={20} active thinking={isTyping} />
         </div>
         <div
@@ -785,6 +785,14 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   return (
     <div className="flex flex-col h-full bg-transparent items-center">
       <div className="w-full max-w-2xl flex flex-col h-full relative bg-transparent">
+        {/* ── Back arrow (static top-left) ───────────────────────────────────── */}
+        <button
+          onClick={onExit}
+          className="absolute top-2 left-4 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-card/80 border border-border/50 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors backdrop-blur-sm"
+          aria-label="Back"
+        >
+          <ArrowLeft size={18} />
+        </button>
         {/* ── Chat area ──────────────────────────────────────────────────────── */}
         <div
           ref={scrollRef}
