@@ -889,7 +889,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           )}
 
           {/* ── Phase: SUMMARY ───────────────────────────────────────────────── */}
-          {phase === "summary" && (
+          {phase === "summary" && typingDone && (
             <div className="animate-fade-in space-y-3">
               {/* Summary card */}
               <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
