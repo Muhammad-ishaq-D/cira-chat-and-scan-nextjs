@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AlertTriangle, Loader2, Send, Stethoscope, RotateCcw } from "lucide-react";
 import { getToken, getUser } from "@/lib/auth";
 import { getDeviceId } from "@/lib/freeCredits";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
 const AIR_DOCTOR_URL = "https://airdoctor.biz/Cira";
@@ -333,12 +334,12 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         ))}
 
         {typing && (
-          <Bubble role="ai">
-            <span className="inline-flex items-center gap-2">
-              <TypingDots />
+          <div className="flex animate-fade-in justify-start">
+            <span className="inline-flex items-center gap-2 px-1 py-2">
+              <AiSparkleIcon size={18} active thinking />
               <ThinkingLabel />
             </span>
-          </Bubble>
+          </div>
         )}
 
         {phase === "error" && (
