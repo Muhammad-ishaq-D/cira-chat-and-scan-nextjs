@@ -2500,6 +2500,12 @@ const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
   const mRef = useRef<HTMLInputElement>(null);
   const yRef = useRef<HTMLInputElement>(null);
 
+  const submit = () => {
+    if (!valid) return;
+    const iso = `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+    onSubmit(iso);
+  };
+
   return (
     <div className="space-y-4">
       <div className="text-center mb-1">
@@ -2541,16 +2547,18 @@ const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
           placeholder="YYYY"
           value={y}
           onChange={(e) => setY(e.target.value.slice(0, 4))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
           className="w-1/3 rounded-xl border border-border bg-card/50 px-3 py-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
           style={{ fontSize: 16 }}
         />
       </div>
       <button
-        onClick={() => {
-          if (!valid) return;
-          const iso = `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-          onSubmit(iso);
-        }}
+        onClick={submit}
         disabled={!valid}
         className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
         style={{ minHeight: 48, fontSize: 16 }}
