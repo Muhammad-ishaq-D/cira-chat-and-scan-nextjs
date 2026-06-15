@@ -367,6 +367,14 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     return () => clearTimeout(t1);
   }, [chatLog, phase, currentQuestionIndex]);
 
+  // ── Reset typing-complete when a new Cira message arrives ────────────────
+  useEffect(() => {
+    const last = chatLog[chatLog.length - 1];
+    if (last?.role === "cira") {
+      setTypingComplete(false);
+    }
+  }, [chatLog]);
+
   // Focus input when question changes
   useEffect(() => {
     if (phase === "questions" && inputRef.current) {
