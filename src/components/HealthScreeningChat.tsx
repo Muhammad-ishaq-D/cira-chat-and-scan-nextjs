@@ -105,15 +105,6 @@ const TypewriterText = ({ text, speed = 6, onDone }: { text: string; speed?: num
   return <span className="whitespace-pre-line">{renderFormatted(displayed)}</span>;
 };
 
-const THINKING_PHRASES = ["Thinking...", "Reviewing your answer...", "One moment...", "Checking safety..."];
-const ThinkingLabel = () => {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % THINKING_PHRASES.length), 2000);
-    return () => clearInterval(t);
-  }, []);
-  return <span className="text-foreground/60 italic" style={{ fontSize: 13 }}>{THINKING_PHRASES[idx]}</span>;
-};
 
 const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onStartOver }: Props) => {
   const { t } = useTranslation();
