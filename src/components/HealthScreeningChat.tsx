@@ -322,23 +322,38 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         style={{ minHeight: 0 }}
       >
         {messages.map((m) => (
-          <Bubble key={m.id} role={m.role}>
-            {m.role === "ai" && m.animate ? (
-              <TypewriterText text={m.text} />
-            ) : m.role === "ai" ? (
-              <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
+          <div key={m.id} className={`flex animate-fade-in ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            {m.role === "user" ? (
+              <div
+                className="bg-secondary/80 text-foreground rounded-[22px] rounded-tr-md px-4 py-2.5 max-w-[90%] md:max-w-[80%] leading-relaxed shadow-sm"
+                style={{ fontSize: 14.5 }}
+              >
+                {m.text}
+              </div>
             ) : (
-              m.text
+              <div className="max-w-[95%] md:max-w-[80%]">
+                <div className="mb-2">
+                  <AiSparkleIcon size={20} active thinking={m.animate} />
+                </div>
+                <div className="text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  <p className="text-[14px] md:text-[15px] leading-7">
+                    {m.animate ? (
+                      <TypewriterText text={m.text} />
+                    ) : (
+                      <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             )}
-          </Bubble>
+          </div>
         ))}
 
         {typing && (
           <div className="flex animate-fade-in justify-start">
-            <span className="inline-flex items-center gap-2 px-1 py-2">
-              <AiSparkleIcon size={18} active thinking />
-              <ThinkingLabel />
-            </span>
+            <div className="max-w-[95%] md:max-w-[80%]">
+              <AiSparkleIcon size={20} active thinking />
+            </div>
           </div>
         )}
 
