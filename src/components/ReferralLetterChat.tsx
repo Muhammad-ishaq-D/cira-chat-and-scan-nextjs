@@ -780,10 +780,10 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   return (
     <div className="flex flex-col h-full bg-transparent items-center">
       <div className="w-full max-w-2xl flex flex-col h-full relative bg-transparent">
-        {/* ── Back arrow (static top-left) ───────────────────────────────────── */}
+        {/* ── Back arrow (fixed top-left of screen) ──────────────────────────── */}
         <button
           onClick={onExit}
-          className="absolute top-2 left-4 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-card/80 border border-border/50 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors backdrop-blur-sm"
+          className="fixed top-3 left-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-card/80 border border-border/50 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors backdrop-blur-sm shadow-sm"
           aria-label="Back"
         >
           <ArrowLeft size={18} />
