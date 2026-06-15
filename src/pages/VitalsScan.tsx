@@ -22,6 +22,7 @@ const navItems = [
   { icon: Home, labelKey: "home", id: "home" },
   { icon: Sparkles, labelKey: "askCira", id: "chat" },
   { icon: Pill, labelKey: "prescriptionRefill", id: "rx" },
+  { icon: FileText, labelKey: "referralLetter", id: "referral" },
   { icon: ScanFace, labelKey: "scan", id: "scan" },
   { icon: FileText, labelKey: "reports", id: "reports" },
 ];
@@ -332,6 +333,7 @@ const VitalsScan = () => {
                   if (item.id === "home") navigate("/dashboard");
                   if (item.id === "chat") navigate("/chat");
                   if (item.id === "rx") navigate("/prescription-refill");
+                  if (item.id === "referral") navigate("/referral-letter");
                   if (item.id === "scan") {
                   if (noScansLeft) {
                       toast.error(t("vitalsScan.toastNoCredits"), { action: { label: t("vitalsScan.toastUpgrade"), onClick: () => navigate("/upgrade") }, duration: 6000 });
