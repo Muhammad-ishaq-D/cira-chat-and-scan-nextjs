@@ -1832,10 +1832,20 @@ const ConsentCard = ({ onAgree }: { onAgree: () => void }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const checkboxRef = useRef<HTMLInputElement>(null);
   return (
-    <div className="space-y-3">
+    <div
+      className="space-y-3"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && checked) {
+          e.preventDefault();
+          onAgree();
+        }
+      }}
+    >
       <label className="flex items-start gap-2.5 cursor-pointer select-none">
         <input
+          ref={checkboxRef}
           type="checkbox"
           checked={checked}
           onChange={(e) => setChecked(e.target.checked)}
@@ -2123,7 +2133,7 @@ const EditDrugCard = ({
   ];
   return (
     <div className="space-y-3">
-      {fields.map((f) => (
+      {fields.map((f, i) => (
         <div key={f.key}>
           <label className="block text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
             {f.label}
@@ -2132,6 +2142,12 @@ const EditDrugCard = ({
             type="text"
             value={draft[f.key]}
             onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && i === fields.length - 1) {
+                e.preventDefault();
+                onSave();
+              }
+            }}
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             style={{ fontSize: 16, minHeight: 48 }}
           />
@@ -2320,6 +2336,12 @@ const ProfileEditCard = ({
             type="text"
             value={draft.fullName}
             onChange={(e) => setDraft({ ...draft, fullName: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSave();
+              }
+            }}
             placeholder="e.g. John Doe"
             className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all shadow-sm"
             style={{ fontSize: 15 }}
@@ -2429,18 +2451,24 @@ const UnitRow = ({
   unit,
   units,
   onChange,
+  inputRef,
+  onKeyDown,
 }: {
   value: string;
   unit: string;
   units: string[];
   onChange: (val: string, unit: string) => void;
+  inputRef?: React.Ref<HTMLInputElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }) => (
   <div className="flex flex-col gap-2">
     <input
+      ref={inputRef}
       type="number"
       inputMode="decimal"
       value={value}
       onChange={(e) => onChange(e.target.value, unit)}
+      onKeyDown={onKeyDown}
       className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
       style={{ fontSize: 15 }}
     />
@@ -2490,6 +2518,12 @@ const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
   const mRef = useRef<HTMLInputElement>(null);
   const yRef = useRef<HTMLInputElement>(null);
 
+  const submit = () => {
+    if (!valid) return;
+    const iso = `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+    onSubmit(iso);
+  };
+
   return (
     <div className="space-y-4">
       <div className="text-center mb-1">
@@ -2531,16 +2565,18 @@ const DobPicker = ({ onSubmit }: { onSubmit: (dob: string) => void }) => {
           placeholder="YYYY"
           value={y}
           onChange={(e) => setY(e.target.value.slice(0, 4))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
           className="w-1/3 rounded-xl border border-border bg-card/50 px-3 py-3 text-center text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm transition-all"
           style={{ fontSize: 16 }}
         />
       </div>
       <button
-        onClick={() => {
-          if (!valid) return;
-          const iso = `${y.padStart(4, "0")}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-          onSubmit(iso);
-        }}
+        onClick={submit}
         disabled={!valid}
         className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
         style={{ minHeight: 48, fontSize: 16 }}
@@ -2565,6 +2601,14 @@ const NumberWithUnit = ({
   const { t } = useTranslation();
   const [val, setVal] = useState("");
   const [unit, setUnit] = useState(defaultUnit);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const canSubmit = val.trim().length > 0;
+
+  const submit = () => {
+    if (!canSubmit) return;
+    onSubmit(val, unit);
+  };
+
   return (
     <div className="space-y-3">
       <UnitRow
@@ -2575,6 +2619,13 @@ const NumberWithUnit = ({
           setVal(v);
           setUnit(u);
         }}
+        inputRef={inputRef}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            submit();
+          }
+        }}
       />
       <input
         type="hidden"
@@ -2582,8 +2633,8 @@ const NumberWithUnit = ({
         readOnly
       />
       <button
-        onClick={() => onSubmit(val, unit)}
-        disabled={!val.trim()}
+        onClick={submit}
+        disabled={!canSubmit}
         className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
         style={{ minHeight: 48, fontSize: 16 }}
       >
@@ -2825,6 +2876,12 @@ const PaymentCard = ({
               inputMode="numeric"
               value={cvc}
               onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (canPay && status !== "processing") onPay();
+                }
+              }}
               placeholder={t("pages.prescriptionRefill.chat.cvc")}
               className="rounded-xl border border-border bg-background px-3 py-2.5 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               style={{ fontSize: 16, minHeight: 48 }}
