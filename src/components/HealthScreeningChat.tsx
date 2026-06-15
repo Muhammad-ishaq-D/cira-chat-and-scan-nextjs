@@ -11,6 +11,7 @@ type Msg = {
   id: string;
   role: "ai" | "user";
   text: string;
+  animate?: boolean;
 };
 
 type ConsultResult = {
@@ -36,19 +37,8 @@ const SCREENING_QUESTIONS: ScreeningQuestion[] = [
 ];
 
 const flagKeywords = [
-  "pregnan",
-  "chest pain",
-  "faint",
-  "blood pressure",
-  "diabetes",
-  "stroke",
-  "anaphyl",
-  "swelling",
-  "heart",
-  "kidney",
-  "liver",
-  "shortness of breath",
-  "rash",
+  "pregnan", "chest pain", "faint", "blood pressure", "diabetes", "stroke",
+  "anaphyl", "swelling", "heart", "kidney", "liver", "shortness of breath", "rash",
 ];
 
 const isAffirmative = (text: string) => /\b(yes|yeah|yep|new|changed|reaction|allerg|taking|started|currently|supplement)\b/i.test(text);
@@ -64,50 +54,74 @@ const shouldFlagLocalResponse = (question: ScreeningQuestion, answer: string) =>
 };
 
 type Props = {
-  /** Shared refill_id from the parent flow. Used so all step endpoints reference the same record. */
   refillId: string;
-  /** Medication names selected in the parent refill flow, passed directly to the AI chat as a fallback context. */
   medicationSummary?: string;
-  /** Called when the AI screening clears the user. Receives the clearance token (may be empty). */
   onCleared: (token: string) => void;
-  /** Called when the user chooses to restart the refill flow after being flagged. */
   onStartOver: () => void;
 };
 
 const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-// Typewriter effect — types text character by character (matches main Chat UX)
-const TypewriterText = ({ text, speed = 18 }: { text: string; speed?: number }) => {
+// Lightweight markdown: **bold**, *italic*, `code`
+const renderFormatted = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={i} className="bg-muted px-1 py-0.5 rounded text-[13px]">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+};
+
+// Smooth typewriter matching Cira's main chat feel (fast, code-point aware)
+const TypewriterText = ({ text, speed = 6, onDone }: { text: string; speed?: number; onDone?: () => void }) => {
   const [displayed, setDisplayed] = useState("");
+  const doneRef = useRef(false);
   useEffect(() => {
     setDisplayed("");
+    doneRef.current = false;
     const chars = Array.from(text);
     let i = 0;
     const interval = setInterval(() => {
-      i += 1;
+      i += 3;
       setDisplayed(chars.slice(0, i).join(""));
-      if (i >= chars.length) clearInterval(interval);
+      if (i >= chars.length) {
+        clearInterval(interval);
+        if (!doneRef.current) {
+          doneRef.current = true;
+          onDone?.();
+        }
+      }
     }, speed);
     return () => clearInterval(interval);
-  }, [text, speed]);
-  return <span className="whitespace-pre-line">{displayed}</span>;
+  }, [text, speed, onDone]);
+  return <span className="whitespace-pre-line">{renderFormatted(displayed)}</span>;
 };
 
-/**
- * Isolated AI Health Screening chat for the Prescription Refill flow.
- *
- * Owns its own state and message history. Not connected to the main Cira chat
- * store. Used only inside Step 3 of the refill flow.
- */
+const THINKING_PHRASES = ["Thinking...", "Reviewing your answer...", "One moment...", "Checking safety..."];
+const ThinkingLabel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % THINKING_PHRASES.length), 2000);
+    return () => clearInterval(t);
+  }, []);
+  return <span className="text-foreground/60 italic" style={{ fontSize: 13 }}>{THINKING_PHRASES[idx]}</span>;
+};
+
 const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onStartOver }: Props) => {
   const { t } = useTranslation();
 
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [typing, setTyping] = useState(false);
+  const [typing, setTyping] = useState(true); // start with typing indicator visible
   const [phase, setPhase] = useState<"chatting" | "cleared" | "flagged" | "error">("chatting");
-  const [flagReason, setFlagReason] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [fallbackMode, setFallbackMode] = useState(false);
   const [fallbackQuestionIndex, setFallbackQuestionIndex] = useState(0);
@@ -115,6 +129,14 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
 
   const startedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const refocus = () => {
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const pushAi = (text: string) =>
+    setMessages((prev) => [...prev, { id: newId(), role: "ai", text, animate: true }]);
 
   const startFallbackScreening = async () => {
     setFallbackMode(true);
@@ -122,11 +144,10 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
     setFallbackFlagged(false);
     setPhase("chatting");
     setError("");
-    await new Promise((r) => setTimeout(r, 350));
-    setMessages((prev) => [
-      ...prev,
-      { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[0].textKey) },
-    ]);
+    await new Promise((r) => setTimeout(r, 300));
+    pushAi(t(SCREENING_QUESTIONS[0].textKey));
+    setTyping(false);
+    refocus();
   };
 
   const sendFallback = async (message: string) => {
@@ -142,27 +163,19 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
     if (nextIndex < SCREENING_QUESTIONS.length) {
       setFallbackFlagged(flagged);
       setFallbackQuestionIndex(nextIndex);
-      setMessages((prev) => [
-        ...prev,
-        { id: newId(), role: "ai", text: t(SCREENING_QUESTIONS[nextIndex].textKey) },
-      ]);
+      pushAi(t(SCREENING_QUESTIONS[nextIndex].textKey));
       setSending(false);
       setTyping(false);
+      refocus();
       return;
     }
 
     if (flagged) {
       setPhase("flagged");
-      setMessages((prev) => [
-        ...prev,
-        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningRecommendation") },
-      ]);
+      pushAi(t("pages.prescriptionRefill.chat.screeningRecommendation"));
     } else {
       setPhase("cleared");
-      setMessages((prev) => [
-        ...prev,
-        { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningCleared") },
-      ]);
+      pushAi(t("pages.prescriptionRefill.chat.screeningCleared"));
       setTimeout(() => onCleared(`local-${refillId}-${Date.now()}`), 900);
     }
     setSending(false);
@@ -204,38 +217,24 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
       }
       const data = (await res.json()) as RefillChatResponse;
 
-      // Simulate small typing pause so the indicator is visible even on fast responses
-      await new Promise((r) => setTimeout(r, 350));
+      await new Promise((r) => setTimeout(r, 250));
 
-      if (data.reply) {
-        setMessages((prev) => [...prev, { id: newId(), role: "ai", text: data.reply }]);
-      }
+      if (data.reply) pushAi(data.reply);
 
       if (data.consult_result) {
         if (data.consult_result.cleared) {
           setPhase("cleared");
           const token = data.consult_clearance_token || "";
-          setMessages((prev) => [
-            ...prev,
-            { id: newId(), role: "ai", text: t("pages.prescriptionRefill.chat.screeningCleared") },
-          ]);
+          pushAi(t("pages.prescriptionRefill.chat.screeningCleared"));
           setTimeout(() => onCleared(token), 1400);
         } else {
           setPhase("flagged");
           const reason = data.consult_result.flag_reason?.trim();
-          if (reason && reason !== data.reply) {
-            setMessages((prev) => [...prev, { id: newId(), role: "ai", text: reason }]);
-          }
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: newId(),
-              role: "ai",
-              text: t("pages.prescriptionRefill.chat.screeningRecommendation"),
-            },
-          ]);
+          if (reason && reason !== data.reply) pushAi(reason);
+          pushAi(t("pages.prescriptionRefill.chat.screeningRecommendation"));
         }
       }
+      refocus();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : t("pages.prescriptionRefill.chat.screeningError");
       setError(message);
@@ -246,7 +245,7 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
     }
   };
 
-  // Kick off conversation with hidden "start" message
+  // Kick off with hidden "start"
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
@@ -257,8 +256,21 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
   // Auto-scroll
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    if (!el) return;
+    const doScroll = () => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    doScroll();
+    const t1 = setTimeout(doScroll, 120);
+    const t2 = setTimeout(doScroll, 350);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [messages, typing, phase]);
+
+  // Autosize textarea
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+  }, [input]);
 
   const handleSubmit = () => {
     const text = input.trim();
@@ -286,16 +298,12 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(trackingData),
       }).catch(() => {});
-    } catch {
-      void 0;
-    }
+    } catch { void 0; }
     try {
       const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
       clicks.push(trackingData);
       localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
-    } catch {
-      void 0;
-    }
+    } catch { void 0; }
     window.open(AIR_DOCTOR_URL, "_blank", "noopener,noreferrer");
   };
 
@@ -307,10 +315,20 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
 
   return (
     <div className="flex flex-col flex-1 min-h-0 w-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-2.5 w-full max-w-3xl mx-auto" style={{ minHeight: 0 }}>
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto scrollbar-hide px-4 sm:px-6 py-4 space-y-3 w-full max-w-3xl mx-auto"
+        style={{ minHeight: 0 }}
+      >
         {messages.map((m) => (
           <Bubble key={m.id} role={m.role}>
-            {m.role === "ai" ? <TypewriterText text={m.text} /> : m.text}
+            {m.role === "ai" && m.animate ? (
+              <TypewriterText text={m.text} />
+            ) : m.role === "ai" ? (
+              <span className="whitespace-pre-line">{renderFormatted(m.text)}</span>
+            ) : (
+              m.text
+            )}
           </Bubble>
         ))}
 
@@ -318,9 +336,7 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
           <Bubble role="ai">
             <span className="inline-flex items-center gap-2">
               <TypingDots />
-              <span className="text-foreground/60" style={{ fontSize: 13 }}>
-                {t("pages.prescriptionRefill.chat.screeningTyping")}
-              </span>
+              <ThinkingLabel />
             </span>
           </Bubble>
         )}
@@ -373,9 +389,9 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
 
       {phase === "chatting" && (
         <div className="border-t border-border bg-background px-3 sm:px-5 py-3">
-          <div className="flex gap-2 w-full max-w-3xl mx-auto">
-            <input
-              type="text"
+          <div className="flex gap-2 w-full max-w-3xl mx-auto items-end">
+            <textarea
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -387,15 +403,15 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
               placeholder={t("pages.prescriptionRefill.chat.screeningInputPlaceholder")}
               disabled={sending}
               autoFocus
-              className="flex-1 rounded-full border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
-              style={{ fontSize: 16, minHeight: 48 }}
+              rows={1}
+              className="flex-1 resize-none rounded-3xl border border-border bg-card px-5 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60 transition-shadow"
+              style={{ fontSize: 16, minHeight: 48, maxHeight: 140, lineHeight: "1.4" }}
             />
             <button
               onClick={handleSubmit}
               disabled={!input.trim() || sending}
               aria-label={t("common.send", "Send")}
-              className="w-12 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center justify-center"
-              style={{ minHeight: 48 }}
+              className="w-12 h-12 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all disabled:opacity-40 disabled:scale-95 flex items-center justify-center shrink-0 active:scale-95"
             >
               {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </button>
@@ -417,10 +433,10 @@ const Bubble = ({
 }) => (
   <div className={`flex animate-fade-in ${role === "user" ? "justify-end" : "justify-start"}`}>
     <div
-      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[85%]"} px-3.5 py-2.5 leading-relaxed ${
+      className={`${wide ? "max-w-full w-full" : "max-w-[90%] md:max-w-[80%]"} px-4 py-2.5 leading-relaxed shadow-sm ${
         role === "user"
-          ? "bg-primary text-primary-foreground rounded-[20px] rounded-tr-md"
-          : "bg-secondary/80 text-foreground rounded-[20px] rounded-tl-md"
+          ? "bg-primary text-primary-foreground rounded-[22px] rounded-tr-md"
+          : "bg-secondary/80 text-foreground rounded-[22px] rounded-tl-md"
       }`}
       style={{ fontSize: 14.5 }}
     >
@@ -431,9 +447,9 @@ const Bubble = ({
 
 const TypingDots = () => (
   <span className="inline-flex items-end gap-1 h-4">
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
-    <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+    <span className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
   </span>
 );
 
