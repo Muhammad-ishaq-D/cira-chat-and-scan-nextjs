@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
@@ -59,11 +59,16 @@ const Refund = () => {
       .finally(() => setLoading(false));
   }, [token]);
 
+  const isReferral = refill?.type === "referral";
+  const subtitle = isReferral
+    ? "CLINIQUE DE LA BRISEE Referral Letter"
+    : t("pages.refund.subtitle");
+
   return (
     <>
       <SEO
         title="Refund Request — Cira"
-        description="Request a refund for your CLINIQUE DE LA BRISEE prescription within 7 days of issue."
+        description="Request a refund for your CLINIQUE DE LA BRISEE service within 7 days of issue."
         path="/refund"
       />
       <div className="min-h-screen bg-background">
@@ -78,20 +83,16 @@ const Refund = () => {
             <img src={ciraLogo} alt="Cira" width={24} height={24} />
             <span className="font-heading text-lg">Cira</span>
           </button>
-          <span className="w-12" />
         </nav>
 
         <main className="max-w-xl mx-auto px-5 sm:px-6 pb-16">
           <header className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 mb-4">
-              <RefreshCw className="w-6 h-6 text-primary" />
-            </div>
             <h1 className="font-heading text-2xl md:text-3xl leading-tight text-foreground">
               {t("pages.refund.title")}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t("pages.refund.subtitle")}
-            </p>
+            {!loading && (
+              <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
+            )}
           </header>
 
           {loading ? (

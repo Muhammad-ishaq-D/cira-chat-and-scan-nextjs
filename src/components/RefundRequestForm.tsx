@@ -200,7 +200,9 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
             htmlFor="refund-reason"
             className="block text-sm font-medium text-foreground mb-2"
           >
-            {t("pages.refund.reasonLabel")}
+            {refill.type === "referral"
+              ? "Please describe why the specialist did not accept your referral letter:"
+              : t("pages.refund.reasonLabel")}
           </label>
           <textarea
             id="refund-reason"
@@ -208,7 +210,9 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
             disabled={formDisabled}
             value={reason}
             onChange={(e) => setReason(e.target.value.slice(0, 1500))}
-            placeholder={t("pages.refund.reasonPlaceholder")}
+            placeholder={refill.type === "referral"
+              ? "Tell us briefly what the specialist said…"
+              : t("pages.refund.reasonPlaceholder")}
             rows={5}
             className="w-full rounded-xl border border-border bg-background px-3 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 resize-y"
             style={{ fontSize: 16 }}
@@ -220,7 +224,9 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            {t("pages.refund.uploadLabel")}
+            {refill.type === "referral"
+              ? "Upload proof (letter, email, or note from specialist):"
+              : t("pages.refund.uploadLabel")}
           </label>
           <input
             ref={inputRef}
