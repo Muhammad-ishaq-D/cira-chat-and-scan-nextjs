@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Check, Star, Shield, Zap } from "lucide-react";
+import { ArrowLeft, Check, Star, Shield, Zap, Crown } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -28,7 +28,13 @@ const Pricing = () => {
       cta: t("pricing.plans.free.cta"),
       action: () => navigate("/free-chat"),
       highlight: false,
-      features: t("pages.pricing.features.free", { returnObjects: true }) as string[],
+      features: [
+        "1 Face Scan",
+        "100,000 Chat Credits",
+        "Basic Vital Signs",
+        "Health Risk Overview",
+        "Email Support",
+      ],
     },
     {
       id: "pro",
@@ -36,15 +42,50 @@ const Pricing = () => {
       icon: Zap,
       color: "from-primary/20 to-primary/10",
       iconColor: "text-primary",
-      desc: "Everything you need for ongoing health support.",
+      desc: "Advanced monitoring for health-conscious individuals.",
       price: billing === "yearly" ? "$48" : "$5",
       period: billing === "yearly" ? "/year" : "/mo",
-      saving: billing === "yearly" ? t("pricing.plans.premium.saveYearly") : null,
+      saving: billing === "yearly" ? "Save $12 a year" : null,
       cta: "Get Pro",
       action: () => navigate("/upgrade"),
       highlight: true,
-      features: t("pages.pricing.features.premium", { returnObjects: true }) as string[],
+      features: [
+        "4 Face Scans / month",
+        "500,000 Chat Credits",
+        "All Vital Signs + Trends",
+        "Detailed Health Indices",
+        "3 Doctor Consults",
+        "Export Reports (PDF)",
+        "Priority Support",
+        "7-day money-back guarantee",
+        "Cancel anytime",
+      ],
       footnote: t("pricing.plans.premium.footnote"),
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      icon: Crown,
+      color: "from-amber-100 to-orange-100",
+      iconColor: "text-amber-600",
+      desc: "Complete health intelligence for professionals.",
+      price: billing === "yearly" ? "$96" : "$10",
+      period: billing === "yearly" ? "/year" : "/mo",
+      saving: billing === "yearly" ? "Save $24 a year" : null,
+      cta: "Get Enterprise",
+      action: () => navigate("/upgrade"),
+      highlight: false,
+      features: [
+        "Unlimited Face Scans",
+        "Unlimited Chat Credits",
+        "10 Doctor Consults",
+        "Advanced AI Diagnostics",
+        "Priority Support",
+        "All Reports",
+        "HIPAA Private",
+        "7-day money-back guarantee",
+        "Cancel anytime",
+      ],
     },
   ];
 
@@ -106,8 +147,8 @@ const Pricing = () => {
             </div>
           </section>
 
-          <section className="max-w-3xl mx-auto px-6 pb-20">
-            <div className="grid md:grid-cols-2 gap-5">
+          <section className="max-w-5xl mx-auto px-6 pb-20">
+            <div className="grid md:grid-cols-3 gap-5">
               {plans.map((plan) => {
                 const Icon = plan.icon;
                 return (
