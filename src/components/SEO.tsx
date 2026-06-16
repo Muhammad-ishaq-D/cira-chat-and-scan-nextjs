@@ -2,8 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { SITE_URL, getRouteSEO } from "@/config/seo";
 
-const DEFAULT_OG_IMAGE =
-  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/79f99a8b-3f4e-4ecf-a1d4-22d65314359f/id-preview-e35fc074--394ea854-8adf-4e5d-9a7c-bdae5eafddc9.lovable.app-1774687898031.png";
+const DEFAULT_OG_IMAGE = "https://askainurse.com/og-image.jpg";
 
 interface SEOProps {
   path: string; // e.g. "/", "/pricing"
@@ -40,6 +39,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
       <link rel="canonical" href={url} />
 
       <meta property="og:type" content={type} />
+      <meta property="og:site_name" content="Cira AI Nurse" />
       <meta property="og:title" content={safeTitle} />
       <meta property="og:description" content={safeDesc} />
       <meta property="og:url" content={url} />
@@ -47,6 +47,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
       <meta property="og:locale" content={lang} />
 
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@askainurse" />
       <meta name="twitter:title" content={safeTitle} />
       <meta name="twitter:description" content={safeDesc} />
       <meta name="twitter:image" content={ogImage} />
