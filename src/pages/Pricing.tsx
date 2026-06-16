@@ -58,18 +58,7 @@ const Pricing = () => {
 
   return (
     <>
-      <SEO
-        path="/pricing"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: (faqs || []).map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }}
-      />
+      <SEO path="/pricing" />
     <div className="min-h-screen bg-[#fdfaf3] text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <nav className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2">

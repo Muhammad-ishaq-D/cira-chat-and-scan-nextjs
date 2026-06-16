@@ -65,8 +65,7 @@ const SymptomChecker = () => {
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       description: t("symptomChecker.seoDescription"),
     },
-    buildFaqJsonLd(faqs, { url: "https://askainurse.com/symptom-checker" }),
-  ].filter(Boolean);
+  ];
 
   return (
     <>
