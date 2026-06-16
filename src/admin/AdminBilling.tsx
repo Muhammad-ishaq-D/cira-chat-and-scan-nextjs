@@ -143,9 +143,8 @@ const AdminBilling = () => {
               onChange={(e) => setTxStatus(e.target.value)}
               className="text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
             >
-              <option value="all">All</option>
+              <option value="all">All statuses</option>
               <option value="paid">Paid</option>
-              <option value="success">Success</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
               <option value="refunded">Refunded</option>

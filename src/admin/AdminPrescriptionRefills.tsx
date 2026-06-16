@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Search, AlertTriangle, Inbox, Pill, Clock, Copy, CheckCheck } from "lucide-react";
-import { adminApi, type PrescriptionRefill } from "@/lib/apiClient";
+import {
+  RefreshCw, Search, AlertTriangle, Inbox, Pill, Clock, Copy, CheckCheck,
+  RotateCcw, CheckCircle2, XCircle, Loader2, FileText, ExternalLink,
+} from "lucide-react";
+import { adminApi, type PrescriptionRefill, type RefundRequest } from "@/lib/apiClient";
 
 type PayStatus = "all" | "paid" | "refunded" | "failed" | "pending";
 
@@ -32,13 +35,31 @@ const CopyButton = ({ value }: { value: string }) => {
   );
 };
 
+const DetailItem = ({ label, value, bold }: { label: string; value: string; bold?: boolean }) => (
+  <div>
+    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+    <p className={`mt-1 text-sm ${bold ? "font-semibold text-foreground" : "text-foreground/80"}`}>{value}</p>
+  </div>
+);
+
 const AdminPrescriptionRefills = () => {
+  // Main list state
   const [refills, setRefills] = useState<PrescriptionRefill[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PayStatus>("all");
+
+  // Refunds panel state
+  const [showRefunds, setShowRefunds] = useState(false);
+  const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
+  const [loadingRefunds, setLoadingRefunds] = useState(false);
+  const [refundError, setRefundError] = useState<string | null>(null);
+  const [deciding, setDeciding] = useState<Record<number, "approve" | "reject" | null>>({});
+  const [notes, setNotes] = useState<Record<number, string>>({});
+  const [expandedNote, setExpandedNote] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ id: number; msg: string; ok: boolean } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -55,6 +76,44 @@ const AdminPrescriptionRefills = () => {
   }, [status]);
 
   useEffect(() => { load(); }, [load]);
+
+  const loadRefunds = useCallback(async () => {
+    setLoadingRefunds(true);
+    setRefundError(null);
+    try {
+      const data = await adminApi.getRefunds();
+      setRefundRequests(data);
+    } catch (e) {
+      setRefundError(e instanceof Error ? e.message : "Failed to load refund requests");
+    } finally {
+      setLoadingRefunds(false);
+    }
+  }, []);
+
+  const toggleRefunds = () => {
+    const next = !showRefunds;
+    setShowRefunds(next);
+    if (next) loadRefunds();
+  };
+
+  const showToast = (id: number, msg: string, ok: boolean) => {
+    setToast({ id, msg, ok });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleDecide = async (refund: RefundRequest, decision: "approve" | "reject") => {
+    setDeciding(prev => ({ ...prev, [refund.id]: decision }));
+    try {
+      await adminApi.decideRefund(refund.id, decision, notes[refund.id]?.trim() || undefined);
+      showToast(refund.id, decision === "approve" ? "Refund approved and issued." : "Refund rejected.", decision === "approve");
+      setRefundRequests(prev => prev.filter(r => r.id !== refund.id));
+      if (decision === "approve") load();
+    } catch (e) {
+      showToast(refund.id, e instanceof Error ? e.message : "Action failed", false);
+    } finally {
+      setDeciding(prev => ({ ...prev, [refund.id]: null }));
+    }
+  };
 
   const filtered = refills.filter(r => {
     if (!search) return true;
@@ -81,14 +140,175 @@ const AdminPrescriptionRefills = () => {
           </p>
         </div>
         <button
-          onClick={load}
-          disabled={loading}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-accent disabled:opacity-50"
+          onClick={toggleRefunds}
+          className={`flex items-center gap-2 text-sm font-medium transition-colors px-3 py-2 rounded-lg ${
+            showRefunds
+              ? "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent"
+          }`}
         >
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-          Refresh
+          <RotateCcw size={14} />
+          Refunds
+          {refundRequests.length > 0 && (
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-bold">
+              {refundRequests.length}
+            </span>
+          )}
         </button>
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg border text-sm font-medium transition-all ${
+          toast.ok ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-red-50 border-red-200 text-red-800"
+        }`}>
+          {toast.ok ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Refunds Panel */}
+      {showRefunds && (
+        <div className="space-y-4 rounded-xl border border-amber-200/60 bg-amber-50/30 p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-foreground">Pending Refund Requests</h2>
+            <button
+              onClick={loadRefunds}
+              disabled={loadingRefunds}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={loadingRefunds ? "animate-spin" : ""} />
+              Refresh
+            </button>
+          </div>
+
+          {refundError && (
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
+              <p className="text-destructive text-sm">{refundError}</p>
+            </div>
+          )}
+
+          {loadingRefunds && (
+            <div className="animate-pulse space-y-3">
+              {[...Array(2)].map((_, i) => <div key={i} className="bg-card/80 border border-border/50 rounded-xl h-44" />)}
+            </div>
+          )}
+
+          {!loadingRefunds && !refundError && refundRequests.length === 0 && (
+            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-8 flex flex-col items-center gap-3 text-center">
+              <div className="w-10 h-10 rounded-full bg-muted/60 flex items-center justify-center">
+                <Inbox className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <p className="font-medium text-foreground text-sm">No pending refund requests</p>
+              <p className="text-xs text-muted-foreground">All refund requests have been reviewed.</p>
+            </div>
+          )}
+
+          {!loadingRefunds && refundRequests.map(refund => {
+            const isDeciding = !!deciding[refund.id];
+            const noteOpen = expandedNote === refund.id;
+            const amountDisplay = refund.amount_charged != null
+              ? `$${Number(refund.amount_charged).toFixed(2)}`
+              : "—";
+            const medsDisplay = refund.medications.length > 0
+              ? refund.medications.map(m => [m.drug_name_inn, m.drug_strength, m.drug_form].filter(Boolean).join(" ")).join(", ")
+              : "—";
+            const dateDisplay = refund.refund_requested_at
+              ? new Date(refund.refund_requested_at).toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" })
+              : "—";
+
+            return (
+              <div key={refund.id} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                <div className="px-5 py-4 border-b border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                      <RotateCcw size={16} className="text-amber-600" />
+                    </div>
+                    <div>
+                      <span className="font-mono text-sm font-semibold text-foreground tracking-wide">{refund.reference_code}</span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <Clock size={11} className="text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{dateDisplay}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium self-start sm:self-auto">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    Pending Review
+                  </span>
+                </div>
+
+                <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <DetailItem label="Medications" value={medsDisplay} />
+                  <DetailItem label="Amount Charged" value={amountDisplay} bold />
+                  <DetailItem label="Patient Email" value={refund.delivery_email_masked || "—"} />
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proof File</span>
+                    {refund.refund_proof_file_path ? (
+                      <a href={refund.refund_proof_file_path} target="_blank" rel="noopener noreferrer"
+                        className="mt-1 flex items-center gap-1.5 text-sm text-primary hover:underline">
+                        <FileText size={14} />
+                        View File
+                        <ExternalLink size={11} />
+                      </a>
+                    ) : (
+                      <p className="mt-1 text-sm text-muted-foreground">No file attached</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="px-5 pb-4">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Refund Reason</span>
+                  <p className="mt-1 text-sm text-foreground/80 leading-relaxed bg-muted/40 rounded-lg px-3 py-2.5 whitespace-pre-wrap">
+                    {refund.refund_reason || "—"}
+                  </p>
+                </div>
+
+                <div className="px-5 pb-4">
+                  <button
+                    onClick={() => setExpandedNote(noteOpen ? null : refund.id)}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
+                  >
+                    {noteOpen ? "Hide admin note" : "Add admin note (optional)"}
+                  </button>
+                  {noteOpen && (
+                    <textarea
+                      value={notes[refund.id] || ""}
+                      onChange={e => setNotes(prev => ({ ...prev, [refund.id]: e.target.value.slice(0, 500) }))}
+                      placeholder="Internal note for this decision…"
+                      rows={3}
+                      disabled={isDeciding}
+                      className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 resize-none"
+                    />
+                  )}
+                </div>
+
+                <div className="px-5 pb-5 flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => handleDecide(refund, "approve")}
+                    disabled={isDeciding}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors disabled:opacity-60"
+                    style={{ minHeight: 44 }}
+                  >
+                    {deciding[refund.id] === "approve" ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
+                    Approve & Issue Refund
+                  </button>
+                  <button
+                    onClick={() => handleDecide(refund, "reject")}
+                    disabled={isDeciding}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-destructive/40 bg-destructive/5 text-destructive font-semibold text-sm hover:bg-destructive/10 transition-colors disabled:opacity-60"
+                    style={{ minHeight: 44 }}
+                  >
+                    {deciding[refund.id] === "reject" ? <Loader2 size={15} className="animate-spin" /> : <XCircle size={15} />}
+                    Reject Request
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-2">
