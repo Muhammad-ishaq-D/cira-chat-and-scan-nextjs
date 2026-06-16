@@ -404,42 +404,15 @@ export const adminApi = {
     return res.status === 204 ? {} : res.json().catch(() => ({}));
   },
 
-  // Prescription Refunds (user-requested refunds)
+  // Prescription Refunds
   getRefunds: () => adminGet<RefundRequest[]>("/api/admin/prescription-refunds"),
   decideRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
     adminPost(`/api/admin/prescription-refunds/${id}/decide`, { decision, admin_note }),
 
-  // Referral Letter Refunds (user-requested refunds)
+  // Referral Letter Refunds
   getReferralRefunds: () => adminGet<ReferralRefundRequest[]>("/api/admin/referral-refunds"),
   decideReferralRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
     adminPost(`/api/admin/referral-refunds/${id}/decide`, { decision, admin_note }),
-
-  // Prescription Refills — full list + direct admin refund
-  getPrescriptionRefills: (params?: { status?: string; page?: number; limit?: number }) => {
-    const qs = new URLSearchParams();
-    if (params?.status && params.status !== "all") qs.set("status", params.status);
-    if (params?.page) qs.set("page", String(params.page));
-    if (params?.limit) qs.set("limit", String(params.limit));
-    const query = qs.toString();
-    return adminGet<{ refills: PrescriptionRefill[]; total_count: number }>(`/api/admin/prescription-refills${query ? `?${query}` : ""}`);
-  },
-  // Referral Letters — full list
-  getReferralLetters: (params?: { status?: string; page?: number; limit?: number }) => {
-    const qs = new URLSearchParams();
-    if (params?.status && params.status !== "all") qs.set("status", params.status);
-    if (params?.page) qs.set("page", String(params.page));
-    if (params?.limit) qs.set("limit", String(params.limit));
-    const query = qs.toString();
-    return adminGet<{ letters: ReferralLetter[]; total_count: number }>(`/api/admin/referral-letters${query ? `?${query}` : ""}`);
-  },
-  // Unified payments (subscriptions + prescriptions + referrals)
-  getAllPayments: (params?: { search?: string; status?: string }) => {
-    const qs = new URLSearchParams();
-    if (params?.search) qs.set("search", params.search);
-    if (params?.status && params.status !== "all") qs.set("status", params.status);
-    const query = qs.toString();
-    return adminGet<{ payments: UnifiedPayment[]; total: number }>(`/api/admin/all-payments${query ? `?${query}` : ""}`);
-  },
 };
 
 export interface RefundMedication {
@@ -469,41 +442,4 @@ export interface ReferralRefundRequest {
   refund_proof_file_path: string | null;
   refund_requested_at: string;
   delivery_email_masked: string;
-}
-
-export interface PrescriptionRefill {
-  id: number;
-  reference_code: string;
-  created_at: string;
-  delivery_email: string;
-  medications: RefundMedication[];
-  payment_status: "pending" | "paid" | "failed" | "refunded";
-  email_status: "pending" | "sent" | "failed";
-  refund_status: "none" | "requested" | "approved" | "rejected";
-  amount_charged: number;
-  stripe_payment_intent_id: string | null;
-}
-
-export interface ReferralLetter {
-  id: number;
-  reference_code: string;
-  patient_name: string;
-  specialist_specialty: string;
-  amount_charged: number;
-  payment_status: "pending" | "paid" | "failed" | "refunded";
-  refund_status: "none" | "requested" | "approved" | "rejected";
-  created_at: string;
-  delivery_email: string;
-  stripe_payment_intent_id: string | null;
-}
-
-export interface UnifiedPayment {
-  id: string;
-  type: "Subscription" | "Prescription Refill" | "Referral Letter";
-  description: string;
-  user_name: string;
-  reference_code: string | null;
-  amount: number;
-  status: string;
-  created_at: string;
 }
