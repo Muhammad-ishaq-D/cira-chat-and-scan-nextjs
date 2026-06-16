@@ -439,6 +439,7 @@ export interface ReferralRefundRequest {
   specialist_specialty: string;
   amount_charged: number;
   refund_reason: string;
+  refund_proof_file_path: string | null;
   refund_requested_at: string;
   delivery_email_masked: string;
 }

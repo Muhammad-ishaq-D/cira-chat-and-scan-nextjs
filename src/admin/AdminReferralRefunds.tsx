@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   RefreshCw, CheckCircle2, XCircle, Loader2,
-  AlertTriangle, Clock, Inbox, FileText, Stethoscope,
+  AlertTriangle, Clock, Inbox, FileText, Stethoscope, ExternalLink,
 } from "lucide-react";
 import { adminApi, type ReferralRefundRequest } from "@/lib/apiClient";
 
@@ -180,6 +180,24 @@ const AdminReferralRefunds = () => {
                 <p className="mt-1 text-sm text-foreground/80 leading-relaxed bg-muted/40 rounded-lg px-3 py-2.5 whitespace-pre-wrap">
                   {refund.refund_reason || "No reason provided"}
                 </p>
+              </div>
+
+              {/* Proof file */}
+              <div className="px-5 pb-4">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proof File</span>
+                {refund.refund_proof_file_path ? (
+                  <a
+                    href={refund.refund_proof_file_path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 flex items-center gap-1.5 text-sm text-primary hover:underline"
+                  >
+                    <ExternalLink size={13} />
+                    View uploaded proof
+                  </a>
+                ) : (
+                  <p className="mt-1 text-sm text-muted-foreground italic">No file uploaded</p>
+                )}
               </div>
 
               {/* Admin note toggle */}
