@@ -117,19 +117,6 @@ export const ciraSoftwareApplicationSchema = {
 
 export const sitewideJsonLd = [medicalBusinessSchema, ciraSoftwareApplicationSchema];
 
-const symptomCheckerApplicationSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "@id": `${SITE_URL}/symptom-checker#software`,
-  name: "Cira Free AI Symptom Checker",
-  applicationCategory: "HealthApplication",
-  operatingSystem: "Web",
-  url: `${SITE_URL}/symptom-checker`,
-  image: OG_IMAGE,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  description: "Describe your symptoms and get instant AI-nurse guidance on possible causes and next steps.",
-};
-
 const howItWorksFaqSchema = buildFaqJsonLd(
   [
     {
@@ -194,7 +181,6 @@ export const seoConfig = {
       "Describe what you're feeling in your own words. Cira's AI nurse asks targeted clinical questions, narrows down possible causes, and explains which next steps to take — from rest at home to seeing a doctor today.",
       "Built on clinical guidelines and reviewed by licensed physicians. Free to use, no signup required for your first chat.",
     ],
-    jsonLd: symptomCheckerApplicationSchema,
   },
   "/pricing": {
     title: "Pricing — Cira AI health nurse",
