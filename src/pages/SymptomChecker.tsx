@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
-import { buildFaqJsonLd } from "@/lib/faqSchema";
 import {
   MessageSquare,
   Stethoscope,
@@ -54,26 +53,12 @@ const SymptomChecker = () => {
     { q: t("symptomChecker.faq.q4.q"), a: t("symptomChecker.faq.q4.a") },
   ];
 
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      name: "Cira Free AI Symptom Checker",
-      applicationCategory: "HealthApplication",
-      operatingSystem: "Web",
-      url: "https://askainurse.com/symptom-checker",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      description: t("symptomChecker.seoDescription"),
-    },
-  ];
-
   return (
     <>
       <SEO
         title={t("symptomChecker.seoTitle")}
         description={t("symptomChecker.seoDescription")}
         path="/symptom-checker"
-        jsonLd={jsonLd}
       />
       <div className="min-h-screen bg-background">
         <nav className="flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">

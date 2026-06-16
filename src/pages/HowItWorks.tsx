@@ -27,7 +27,6 @@ import scanImg from "@/assets/how-scan.jpg";
 import nextImg from "@/assets/how-next.jpg";
 import chronicImg from "@/assets/how-chronic.jpg";
 import SEO from "@/components/SEO";
-import { buildFaqJsonLd } from "@/lib/faqSchema";
 import {
   Accordion,
   AccordionContent,
@@ -178,7 +177,6 @@ const HowItWorks = () => {
     <>
       <SEO
         path="/how-it-works"
-        jsonLd={buildFaqJsonLd(faqs, { url: "https://askainurse.com/how-it-works" }) ?? undefined}
       />
     <div className="min-h-screen bg-background">
       {/* Top nav */}
