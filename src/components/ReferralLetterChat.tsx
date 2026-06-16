@@ -5,8 +5,9 @@ import {
   FileText, ChevronRight, SkipForward, Pencil, Download,
   CheckCircle, Loader2, Users, ArrowLeft, ClipboardList,
   Stethoscope, AlertCircle, Lock, Mail, CreditCard,
-  ShieldCheck, Check, Copy, XCircle
+  ShieldCheck, Check, Copy, XCircle, Search
 } from "lucide-react";
+import specialists from "@/data/specialists.json";
 import { getUser, getToken } from "@/lib/auth";
 import { userApi } from "@/lib/apiClient";
 import { referralApi, type ReferralLetter, type ReferralGenerateRequest } from "@/lib/referralApi";
@@ -28,7 +29,7 @@ interface Message {
   role: "cira" | "user" | "form";
   text?: string;
   formKey?: string;
-  formType?: "text" | "buttons" | "date" | "tel";
+  formType?: "text" | "buttons" | "date" | "tel" | "specialist-search";
   buttons?: { id: string; label: string }[];
   skippable?: boolean;
   skipLabel?: string;
@@ -71,7 +72,7 @@ interface Props {
 interface QuestionDef {
   key: keyof Answers;
   questionKey: string;   // i18n key for the question text
-  type: "text" | "buttons" | "date" | "tel";
+  type: "text" | "buttons" | "date" | "tel" | "specialist-search";
   buttons?: { id: string; labelKey: string }[];
   skippable?: boolean;
   skipLabelKey?: string;
@@ -88,7 +89,7 @@ const QUESTIONS: QuestionDef[] = [
   { key: "patientContact",   questionKey: "referral.q.patientContact",   type: "tel",     phase: 1, guestOnly: true },
 
   // ── Phase 2 ───────────────────────────────────────────────────────────────
-  { key: "specialistSpecialty", questionKey: "referral.q.specialistSpecialty", type: "text",    phase: 2 },
+  { key: "specialistSpecialty", questionKey: "referral.q.specialistSpecialty", type: "specialist-search", phase: 2 },
   { key: "specialistClinic",    questionKey: "referral.q.specialistClinic",    type: "text",    phase: 2, skippable: true, skipLabelKey: "referral.btn.skip" },
   { key: "urgency", questionKey: "referral.q.urgency", type: "buttons", phase: 2,
     buttons: [
@@ -209,6 +210,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
   const [answers, setAnswers] = useState<Answers>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1); // -1 = intro
   const [inputValue, setInputValue] = useState("");
+  const [specialistSearch, setSpecialistSearch] = useState("");
   const [phase, setPhase] = useState<"intro" | "questions" | "summary" | "generating" | "email" | "checkout" | "done">("intro");
   const [editingKey, setEditingKey] = useState<keyof Answers | null>(null);
   const [generatedReferral, setGeneratedReferral] = useState<ReferralLetter | null>(null);
@@ -846,6 +848,56 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                       {t(currentQ.skipLabelKey || "referral.btn.skip")}
                     </button>
                   )}
+                </div>
+              )}
+
+              {/* Specialist search */}
+              {currentQ.type === "specialist-search" && (
+                <div className="flex flex-col gap-2">
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                    <input
+                      autoFocus
+                      type="text"
+                      value={specialistSearch}
+                      onChange={e => setSpecialistSearch(e.target.value)}
+                      placeholder="Search specialist…"
+                      className="w-full bg-card border border-border rounded-xl pl-8 pr-3 py-2.5 text-[14px] text-foreground outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/60"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-0.5">
+                    {specialists
+                      .filter(s =>
+                        specialistSearch.trim() === "" ||
+                        s.name.toLowerCase().includes(specialistSearch.toLowerCase()) ||
+                        s.description.toLowerCase().includes(specialistSearch.toLowerCase())
+                      )
+                      .map(s => (
+                        <button
+                          key={s.id}
+                          onClick={() => {
+                            setSpecialistSearch("");
+                            submitAnswer(currentQ.key, s.name);
+                          }}
+                          className="flex items-center gap-3 px-3 py-2.5 bg-card border border-border rounded-xl hover:bg-accent hover:border-primary/40 text-left transition-all active:scale-[0.98]"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <Stethoscope size={13} className="text-primary" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[13px] font-semibold text-foreground leading-tight">{s.name}</p>
+                            <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{s.description}</p>
+                          </div>
+                        </button>
+                      ))}
+                    {specialists.filter(s =>
+                      specialistSearch.trim() === "" ||
+                      s.name.toLowerCase().includes(specialistSearch.toLowerCase()) ||
+                      s.description.toLowerCase().includes(specialistSearch.toLowerCase())
+                    ).length === 0 && (
+                      <p className="text-[13px] text-muted-foreground text-center py-4">No specialist found. Try a different search term.</p>
+                    )}
+                  </div>
                 </div>
               )}
 
