@@ -5,7 +5,7 @@
 // TypeScript loader. Never define route titles/descriptions in two places —
 // edit the .mjs file, and TS callers stay in sync automatically.
 
-// @ts-expect-error — plain ESM module, no .d.ts needed
+// @ts-ignore — plain ESM module without .d.ts; shared with the prerender plugin.
 import { SITE_URL as _SITE_URL, OG_IMAGE as _OG_IMAGE, seoConfig as _seoConfig } from "./seo.data.mjs";
 
 export interface RouteSEO {
