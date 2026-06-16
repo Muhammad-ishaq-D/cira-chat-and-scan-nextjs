@@ -15,6 +15,7 @@ export interface RouteSEO {
   prerender?: boolean;
   h1?: string;
   body?: string[];
+  jsonLd?: Record<string, any> | Record<string, any>[];
 }
 
 export const SITE_URL: string = _SITE_URL;

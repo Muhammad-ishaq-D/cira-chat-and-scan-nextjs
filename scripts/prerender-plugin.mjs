@@ -45,6 +45,18 @@ function injectRootContent(html, contentHtml) {
   );
 }
 
+function injectJsonLd(html, jsonLd) {
+  if (!jsonLd) return html;
+  const schemas = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
+  const scripts = schemas
+    .map(
+      (schema) =>
+        `    <script type="application/ld+json">${JSON.stringify(schema).replace(/<\//g, "<\\/")}</script>`,
+    )
+    .join("\n");
+  return html.replace(/<\/head>/i, `${scripts}\n  </head>`);
+}
+
 function escapeAttr(s) {
   return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
@@ -83,6 +95,7 @@ function buildRouteHtml(baseHtml, route) {
   html = setMeta(html, "name", "twitter:title", route.title);
   html = setMeta(html, "name", "twitter:description", route.description);
   html = setMeta(html, "name", "twitter:image", OG_IMAGE);
+  html = injectJsonLd(html, route.jsonLd);
   html = injectRootContent(html, buildSeoBlock(route));
   return html;
 }

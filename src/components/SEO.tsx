@@ -25,11 +25,12 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
   const resolvedDesc =
     description ?? fallback?.description ?? "Cira is your AI health nurse, anytime.";
   const resolvedNoindex = noindex ?? fallback?.noindex ?? false;
+  const resolvedJsonLd = jsonLd ?? fallback?.jsonLd;
 
   const ogImage = image || DEFAULT_OG_IMAGE;
   const safeTitle = resolvedTitle.length > 60 ? resolvedTitle.slice(0, 57) + "..." : resolvedTitle;
   const safeDesc = resolvedDesc.length > 160 ? resolvedDesc.slice(0, 157) + "..." : resolvedDesc;
-  const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  const ldArray = resolvedJsonLd ? (Array.isArray(resolvedJsonLd) ? resolvedJsonLd : [resolvedJsonLd]) : [];
 
   return (
     <Helmet>
