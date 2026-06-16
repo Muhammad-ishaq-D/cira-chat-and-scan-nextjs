@@ -1,66 +1,25 @@
-// Centralized SEO metadata for public routes.
-// The reusable <SEO /> component (src/components/SEO.tsx) reads from here
-// when a page doesn't pass an explicit title/description override.
+// Typed re-export of the canonical SEO config.
+//
+// The actual data lives in `src/config/seo.data.mjs` so the Vite build plugin
+// (`scripts/prerender-plugin.mjs`) can import the exact same strings without a
+// TypeScript loader. Never define route titles/descriptions in two places —
+// edit the .mjs file, and TS callers stay in sync automatically.
 
-export const SITE_URL = "https://askainurse.com";
+// @ts-expect-error — plain ESM module, no .d.ts needed
+import { SITE_URL as _SITE_URL, OG_IMAGE as _OG_IMAGE, seoConfig as _seoConfig } from "./seo.data.mjs";
 
 export interface RouteSEO {
   title: string;
   description: string;
+  noindex?: boolean;
+  prerender?: boolean;
+  h1?: string;
+  body?: string[];
 }
 
-export const seoConfig: Record<string, RouteSEO> = {
-  "/": {
-    title: "Cira — your AI health nurse, anytime",
-    description:
-      "Talk to Cira, your AI nurse. Ask health questions, scan vitals with your camera, and get clear next steps.",
-  },
-  "/free-chat": {
-    title: "Free AI health chat — no signup",
-    description:
-      "Ask Cira your health questions for free. Get AI nurse guidance instantly with no account required.",
-  },
-  "/symptom-checker": {
-    title: "AI symptom checker — Cira",
-    description:
-      "Describe your symptoms and get instant AI-nurse guidance on possible causes and next steps.",
-  },
-  "/pricing": {
-    title: "Cira pricing — plans for everyone",
-    description:
-      "Simple, transparent pricing for Cira. Start free, upgrade for unlimited chat and vital scans.",
-  },
-  "/how-it-works": {
-    title: "How Cira works — chat, scan, guidance",
-    description:
-      "Talk to your AI nurse, scan vitals with your camera, and get clear next steps. See how Cira works.",
-  },
-  "/technology": {
-    title: "Cira technology — clinical-grade AI",
-    description:
-      "rPPG vitals, neural 3D face tracking, and peer-reviewed validation. The clinical tech powering Cira.",
-  },
-  "/what-cira-helps-with": {
-    title: "What Cira helps with — symptoms & vitals",
-    description:
-      "From everyday symptoms to vital signs and chronic risks. See what your AI nurse Cira can help with.",
-  },
-  "/real-doctors": {
-    title: "Real doctors network — Cira",
-    description:
-      "Connect with licensed doctors through Cira when you need human care beyond your AI nurse.",
-  },
-  "/our-story": {
-    title: "Our story — why we built Cira",
-    description:
-      "From a Bangkok blood pressure scare to a global AI health nurse. The founder story behind Cira.",
-  },
-  "/blog": {
-    title: "Cira blog — AI health & wellbeing",
-    description:
-      "Articles on AI in healthcare, vital signs, prevention, and using Cira to understand your body better.",
-  },
-};
+export const SITE_URL: string = _SITE_URL;
+export const OG_IMAGE: string = _OG_IMAGE;
+export const seoConfig: Record<string, RouteSEO> = _seoConfig;
 
 export const getRouteSEO = (path: string): RouteSEO | undefined =>
   seoConfig[path];
