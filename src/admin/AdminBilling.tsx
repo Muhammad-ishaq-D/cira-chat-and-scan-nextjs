@@ -1,56 +1,67 @@
 import { useState, useEffect } from "react";
 import i18n from "@/i18n";
-import { DollarSign, Users, CreditCard, Search } from "lucide-react";
-import { adminApi } from "@/lib/apiClient";
+import { DollarSign, Users, CreditCard, Search, Tag } from "lucide-react";
+import { adminApi, type UnifiedPayment } from "@/lib/apiClient";
+
+const STATUS_COLORS: Record<string, string> = {
+  paid:     "bg-emerald-50 text-emerald-700",
+  success:  "bg-emerald-50 text-emerald-700",
+  pending:  "bg-amber-50 text-amber-700",
+  failed:   "bg-red-50 text-red-700",
+  refunded: "bg-blue-50 text-blue-700",
+};
+const TYPE_COLORS: Record<string, string> = {
+  "Subscription":       "bg-purple-50 text-purple-700",
+  "Prescription Refill":"bg-emerald-50 text-emerald-700",
+  "Referral Letter":    "bg-violet-50 text-violet-700",
+};
 
 const AdminBilling = () => {
   const t = i18n.getFixedT("en");
   const [dashboard, setDashboard] = useState<any>(null);
   const [revenue, setRevenue] = useState<any>(null);
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [payments, setPayments] = useState<UnifiedPayment[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [txSearch, setTxSearch] = useState("");
   const [txStatus, setTxStatus] = useState("all");
 
+  const loadPayments = async (search?: string, status?: string) => {
+    try {
+      const res = await adminApi.getAllPayments({
+        search: search || undefined,
+        status: status && status !== "all" ? status : undefined,
+      });
+      const list = Array.isArray(res) ? res : res?.payments ?? [];
+      setPayments(list);
+      setTotal(res?.total ?? list.length);
+    } catch {
+      setPayments([]);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
-        const [dashRes, revRes, txRes] = await Promise.allSettled([
+        const [dashRes, revRes] = await Promise.allSettled([
           adminApi.getDashboard(),
           adminApi.getRevenue().catch(() => null),
-          adminApi.getTransactions().catch(() => null),
         ]);
         if (dashRes.status === "fulfilled") setDashboard(dashRes.value);
         if (revRes.status === "fulfilled" && revRes.value) setRevenue(revRes.value);
-        if (txRes.status === "fulfilled" && txRes.value) {
-          setTransactions(Array.isArray(txRes.value) ? txRes.value : txRes.value?.transactions ?? []);
-        }
-      } catch (e) {
-        console.error("Billing error:", e);
+      } catch {
+        // ignore
       } finally {
         setLoading(false);
       }
     };
     load();
+    loadPayments();
   }, []);
 
-  const searchTransactions = async () => {
-    try {
-      const params: any = {};
-      if (txSearch) params.search = txSearch;
-      if (txStatus !== "all") params.status = txStatus;
-      const res = await adminApi.getTransactions(params);
-      setTransactions(Array.isArray(res) ? res : res?.transactions ?? []);
-    } catch (e) {
-      console.error("Transaction search error:", e);
-    }
-  };
-
   useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(searchTransactions, 300);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => loadPayments(txSearch, txStatus), 300);
+    return () => clearTimeout(timer);
   }, [txSearch, txStatus]);
 
   if (loading) {
@@ -67,14 +78,21 @@ const AdminBilling = () => {
 
   const totalRevenue = revenue?.total_revenue ?? dashboard?.total_revenue ?? 0;
   const todayRevenue = revenue?.today_revenue ?? dashboard?.today_revenue ?? 0;
-  const activeSubs = revenue?.active_subscriptions ?? dashboard?.active_subscriptions ?? 0;
-  const totalUsers = dashboard?.total_users ?? 0;
+  const activeSubs   = revenue?.active_subscriptions ?? dashboard?.active_subscriptions ?? 0;
+  const totalUsers   = dashboard?.total_users ?? 0;
+
+  // Derive service revenue from unified payments list (non-refunded)
+  const activePayments = payments.filter(p => p.status !== "refunded" && p.status !== "failed");
+  const rxRevenue  = activePayments.filter(p => p.type === "Prescription Refill").reduce((s, p) => s + p.amount, 0);
+  const refRevenue = activePayments.filter(p => p.type === "Referral Letter").reduce((s, p) => s + p.amount, 0);
 
   const stats = [
-    { label: t("admin.billing.totalRevenue"), value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
-    { label: t("admin.billing.todayRevenue"), value: `$${todayRevenue.toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
-    { label: t("admin.billing.activeSubs"), value: activeSubs, icon: Users, color: "bg-blue-50 text-blue-600" },
-    { label: t("admin.billing.totalUsers"), value: totalUsers, icon: Users, color: "bg-purple-50 text-purple-600" },
+    { label: t("admin.billing.totalRevenue"),  value: `$${Number(totalRevenue).toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
+    { label: t("admin.billing.todayRevenue"),   value: `$${Number(todayRevenue).toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
+    { label: "Prescription Revenue",            value: `$${rxRevenue.toFixed(2)}`,                  icon: CreditCard, color: "bg-teal-50 text-teal-600" },
+    { label: "Referral Revenue",                value: `$${refRevenue.toFixed(2)}`,                  icon: DollarSign, color: "bg-violet-50 text-violet-600" },
+    { label: t("admin.billing.activeSubs"),     value: activeSubs,                                   icon: Users,      color: "bg-blue-50 text-blue-600" },
+    { label: t("admin.billing.totalUsers"),     value: totalUsers,                                   icon: Users,      color: "bg-purple-50 text-purple-600" },
   ];
 
   return (
@@ -84,7 +102,7 @@ const AdminBilling = () => {
         <p className="text-sm text-muted-foreground font-body">{t("admin.billing.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {stats.map((s) => {
           const Icon = s.icon;
           return (
@@ -103,7 +121,12 @@ const AdminBilling = () => {
 
       <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <h2 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{t("admin.billing.transactions")}</h2>
+          <div>
+            <h2 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+              All Payments
+            </h2>
+            <p className="text-xs text-muted-foreground">Subscriptions · Prescription Refills · Referral Letters</p>
+          </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -120,54 +143,66 @@ const AdminBilling = () => {
               onChange={(e) => setTxStatus(e.target.value)}
               className="text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
             >
-              <option value="all">{t("admin.billing.allStatus")}</option>
-              <option value="success">{t("admin.billing.success")}</option>
-              <option value="pending">{t("admin.billing.pending")}</option>
-              <option value="failed">{t("admin.billing.failed")}</option>
-              <option value="refunded">{t("admin.billing.refunded")}</option>
+              <option value="all">All</option>
+              <option value="paid">Paid</option>
+              <option value="success">Success</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
             </select>
           </div>
         </div>
 
-        {transactions.length === 0 ? (
+        {payments.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">{t("admin.billing.none")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50 text-left">
-                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.user")}</th>
-                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.amount")}</th>
-                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.plan")}</th>
-                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.status")}</th>
-                  <th className="pb-2 font-medium text-muted-foreground">{t("admin.billing.date")}</th>
+                  <th className="pb-2 font-medium text-muted-foreground">Type</th>
+                  <th className="pb-2 font-medium text-muted-foreground">User / Ref</th>
+                  <th className="pb-2 font-medium text-muted-foreground">Description</th>
+                  <th className="pb-2 font-medium text-muted-foreground">Amount</th>
+                  <th className="pb-2 font-medium text-muted-foreground">Status</th>
+                  <th className="pb-2 font-medium text-muted-foreground">Date</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((tx: any, i: number) => (
-                  <tr key={tx.id || i} className="border-b border-border/30 last:border-0">
-                    <td className="py-2.5">{tx.user_name || tx.email || "—"}</td>
-                    <td className="py-2.5 font-medium">${tx.amount?.toLocaleString() ?? 0}</td>
-                    <td className="py-2.5">{tx.plan_name || tx.plan || tx.plan_id || "—"}</td>
+                {payments.map((p) => (
+                  <tr key={p.id} className="border-b border-border/30 last:border-0">
                     <td className="py-2.5">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        (tx.status === "success" || tx.status === "completed") ? "bg-emerald-50 text-emerald-700" :
-                        tx.status === "pending" ? "bg-amber-50 text-amber-700" :
-                        tx.status === "failed" ? "bg-red-50 text-red-700" :
-                        tx.status === "refunded" ? "bg-blue-50 text-blue-700" :
-                        "bg-muted text-muted-foreground"
-                      }`}>
-                        {tx.status ? (t(`admin.billing.${tx.status === "completed" ? "success" : tx.status}`, { defaultValue: tx.status }) as string) : "—"}
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${TYPE_COLORS[p.type] ?? "bg-muted text-muted-foreground"}`}>
+                        <Tag size={9} />
+                        {p.type}
                       </span>
                     </td>
-                    <td className="py-2.5 text-muted-foreground">
-                      {tx.created_at ? new Date(tx.created_at).toLocaleDateString("en") : "—"}
+                    <td className="py-2.5">
+                      <div className="text-sm">{p.user_name || "—"}</div>
+                      {p.reference_code && (
+                        <div className="font-mono text-[10px] text-muted-foreground">{p.reference_code}</div>
+                      )}
+                    </td>
+                    <td className="py-2.5 text-muted-foreground text-xs">{p.description || "—"}</td>
+                    <td className="py-2.5 font-medium">${p.amount?.toFixed(2) ?? "0.00"}</td>
+                    <td className="py-2.5">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[p.status] ?? "bg-muted text-muted-foreground"}`}>
+                        {p.status || "—"}
+                      </span>
+                    </td>
+                    <td className="py-2.5 text-muted-foreground text-xs">
+                      {p.created_at ? new Date(p.created_at).toLocaleDateString("en") : "—"}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
+        {total > payments.length && (
+          <p className="text-xs text-muted-foreground text-center pt-3">
+            Showing {payments.length} of {total} records
+          </p>
         )}
       </div>
     </div>
