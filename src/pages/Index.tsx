@@ -234,59 +234,26 @@ const Index = () => {
             "url": "https://askainurse.com/",
             "image": "https://askainurse.com/og-image.jpg",
             "offers": {
-              "@type": "AggregateOffer",
-              "lowPrice": "0",
-              "highPrice": "10",
+              "@type": "Offer",
+              "price": "0",
               "priceCurrency": "USD",
-              "offerCount": "3",
-              "offers": [
-                {
-                  "@type": "Offer",
-                  "name": "Free",
-                  "price": "0",
-                  "priceCurrency": "USD",
-                  "description": "Basic AI nurse chat and 1 free vitals scan per device"
-                },
-                {
-                  "@type": "Offer",
-                  "name": "Premium",
-                  "price": "5",
-                  "priceCurrency": "USD",
-                  "description": "Unlimited AI nurse chat and vitals scans — monthly subscription"
-                },
-                {
-                  "@type": "Offer",
-                  "name": "Family",
-                  "price": "10",
-                  "priceCurrency": "USD",
-                  "description": "Up to 5 family members with unlimited access — monthly subscription"
-                }
-              ]
+              "name": "Free",
+              "description": "Free AI nurse chat and vitals face scan"
             },
             "featureList": [
-              "AI nurse chat consultation with natural language understanding",
-              "30-second camera-based vital signs scan (rPPG + rBCG)",
-              "Instant heart rate, blood pressure, HRV and breathing rate",
+              "30-second camera-based vitals face scan (rPPG + rBCG)",
               "AI symptom checker with guided health questions",
+              "Doctor chat — connect with licensed doctors when needed",
+              "Instant heart rate, blood pressure, HRV and breathing rate",
               "Stress index, wellness score and vascular age estimation",
               "Prescription refill assistance and medication guidance",
-              "100% on-device face processing — no video uploaded to servers",
-              "Peer-reviewed clinical accuracy validated in 33 countries"
+              "100% on-device face processing — no video uploaded to servers"
             ],
             "screenshot": {
               "@type": "ImageObject",
               "url": "https://askainurse.com/og-image.jpg",
               "caption": "Cira AI Nurse chat and vitals scan interface"
             }
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: faqs.map((f) => ({
-              "@type": "Question",
-              name: f.q,
-              acceptedAnswer: { "@type": "Answer", text: f.a },
-            })),
           },
         ]}
       />
