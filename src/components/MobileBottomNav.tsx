@@ -8,8 +8,8 @@ import { isAuthenticated } from "@/lib/auth";
 const navItems = [
   { icon: Home, tKey: "dashboard.nav.home", id: "home", path: "/dashboard" },
   { icon: Sparkles, tKey: "dashboard.nav.askCira", id: "chat", path: "/chat" },
-  { icon: Pill, tKey: "dashboard.nav.prescriptionRefill", id: "rx", path: "/prescription-refill" },
-  { icon: FileText, tKey: "referral.title", id: "referral", path: "/referral-letter" },
+  // { icon: Pill, tKey: "dashboard.nav.prescriptionRefill", id: "rx", path: "/prescription-refill" },
+  // { icon: FileText, tKey: "referral.title", id: "referral", path: "/referral-letter" },
   { icon: ScanFace, tKey: "dashboard.nav.scan", id: "scan", path: "/vitals-scan" },
   { icon: FileText, tKey: "dashboard.nav.reports", id: "reports", path: "/reports" },
 ];
