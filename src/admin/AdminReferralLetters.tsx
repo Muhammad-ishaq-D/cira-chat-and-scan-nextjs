@@ -122,7 +122,7 @@ const AdminReferralLetters = () => {
       l.reference_code.toLowerCase().includes(s) ||
       (l.patient_name || "").toLowerCase().includes(s) ||
       (l.specialist_specialty || "").toLowerCase().includes(s) ||
-      (l.delivery_email_masked || "").toLowerCase().includes(s) ||
+      (l.delivery_email || "").toLowerCase().includes(s) ||
       (l.stripe_payment_intent_id || "").toLowerCase().includes(s)
     );
   });
@@ -247,7 +247,7 @@ const AdminReferralLetters = () => {
                       {refund.specialist_specialty}
                     </p>
                   </div>
-                  <DetailItem label="Patient Email" value={refund.delivery_email_masked || "—"} />
+                  <DetailItem label="Patient Email" value={refund.delivery_email || "—"} />
                 </div>
 
                 <div className="px-5 pb-4">
@@ -388,12 +388,7 @@ const AdminReferralLetters = () => {
                 {filtered.map(l => (
                   <tr key={l.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
-                          <FileText size={13} className="text-violet-600" />
-                        </div>
-                        <span className="font-mono text-xs font-semibold text-foreground">{l.reference_code}</span>
-                      </div>
+                      <span className="font-mono text-xs font-semibold text-foreground">{l.reference_code}</span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
                       <div className="flex items-center gap-1">
@@ -408,7 +403,7 @@ const AdminReferralLetters = () => {
                         {l.specialist_specialty || "—"}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{l.delivery_email_masked || "—"}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">{l.delivery_email || "—"}</td>
                     <td className="px-4 py-3 text-sm font-semibold text-foreground">${Number(l.amount_charged).toFixed(2)}</td>
                     <td className="px-4 py-3">
                       {l.stripe_payment_intent_id ? (

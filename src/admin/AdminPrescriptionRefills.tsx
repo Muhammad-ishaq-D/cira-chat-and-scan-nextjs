@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  RefreshCw, Search, AlertTriangle, Inbox, Pill, Clock, Copy, CheckCheck,
+  RefreshCw, Search, AlertTriangle, Inbox, Clock, Copy, CheckCheck,
   RotateCcw, CheckCircle2, XCircle, Loader2, FileText, ExternalLink,
 } from "lucide-react";
 import { adminApi, type PrescriptionRefill, type RefundRequest } from "@/lib/apiClient";
@@ -120,7 +120,7 @@ const AdminPrescriptionRefills = () => {
     const s = search.toLowerCase();
     return (
       r.reference_code.toLowerCase().includes(s) ||
-      (r.delivery_email_masked || "").toLowerCase().includes(s) ||
+      (r.delivery_email || "").toLowerCase().includes(s) ||
       (r.stripe_payment_intent_id || "").toLowerCase().includes(s) ||
       r.medications.some(m => m.drug_name_inn?.toLowerCase().includes(s))
     );
@@ -242,7 +242,7 @@ const AdminPrescriptionRefills = () => {
                 <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DetailItem label="Medications" value={medsDisplay} />
                   <DetailItem label="Amount Charged" value={amountDisplay} bold />
-                  <DetailItem label="Patient Email" value={refund.delivery_email_masked || "—"} />
+                  <DetailItem label="Patient Email" value={refund.delivery_email || "—"} />
                   <div>
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proof File</span>
                     {refund.refund_proof_file_path ? (
@@ -386,12 +386,7 @@ const AdminPrescriptionRefills = () => {
                   return (
                     <tr key={r.id} className="hover:bg-muted/20 transition-colors">
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                            <Pill size={13} className="text-emerald-600" />
-                          </div>
-                          <span className="font-mono text-xs font-semibold text-foreground">{r.reference_code}</span>
-                        </div>
+                        <span className="font-mono text-xs font-semibold text-foreground">{r.reference_code}</span>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
                         <div className="flex items-center gap-1">
@@ -399,7 +394,7 @@ const AdminPrescriptionRefills = () => {
                           {r.created_at ? new Date(r.created_at).toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" }) : "—"}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">{r.delivery_email_masked || "—"}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{r.delivery_email || "—"}</td>
                       <td className="px-4 py-3 text-xs text-foreground/80 max-w-[180px] truncate" title={medsLabel}>{medsLabel}</td>
                       <td className="px-4 py-3 text-sm font-semibold text-foreground">${Number(r.amount_charged).toFixed(2)}</td>
                       <td className="px-4 py-3">

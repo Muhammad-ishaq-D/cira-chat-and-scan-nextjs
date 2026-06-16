@@ -475,7 +475,7 @@ export interface PrescriptionRefill {
   id: number;
   reference_code: string;
   created_at: string;
-  delivery_email_masked: string;
+  delivery_email: string;
   medications: RefundMedication[];
   payment_status: "pending" | "paid" | "failed" | "refunded";
   email_status: "pending" | "sent" | "failed";
@@ -493,7 +493,7 @@ export interface ReferralLetter {
   payment_status: "pending" | "paid" | "failed" | "refunded";
   refund_status: "none" | "requested" | "approved" | "rejected";
   created_at: string;
-  delivery_email_masked: string;
+  delivery_email: string;
   stripe_payment_intent_id: string | null;
 }
 

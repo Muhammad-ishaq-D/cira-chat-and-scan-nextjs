@@ -24,13 +24,12 @@ const AdminBilling = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [txSearch, setTxSearch] = useState("");
-  const [txStatus, setTxStatus] = useState("all");
 
-  const loadPayments = async (search?: string, status?: string) => {
+  const loadPayments = async (search?: string) => {
     try {
       const res = await adminApi.getAllPayments({
         search: search || undefined,
-        status: status && status !== "all" ? status : undefined,
+        status: "paid",
       });
       const list = Array.isArray(res) ? res : res?.payments ?? [];
       setPayments(list);
@@ -60,9 +59,9 @@ const AdminBilling = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => loadPayments(txSearch, txStatus), 300);
+    const timer = setTimeout(() => loadPayments(txSearch), 300);
     return () => clearTimeout(timer);
-  }, [txSearch, txStatus]);
+  }, [txSearch]);
 
   if (loading) {
     return (
@@ -81,10 +80,8 @@ const AdminBilling = () => {
   const activeSubs   = revenue?.active_subscriptions ?? dashboard?.active_subscriptions ?? 0;
   const totalUsers   = dashboard?.total_users ?? 0;
 
-  // Derive service revenue from unified payments list (non-refunded)
-  const activePayments = payments.filter(p => p.status !== "refunded" && p.status !== "failed");
-  const rxRevenue  = activePayments.filter(p => p.type === "Prescription Refill").reduce((s, p) => s + p.amount, 0);
-  const refRevenue = activePayments.filter(p => p.type === "Referral Letter").reduce((s, p) => s + p.amount, 0);
+  const rxRevenue  = payments.filter(p => p.type === "Prescription Refill").reduce((s, p) => s + p.amount, 0);
+  const refRevenue = payments.filter(p => p.type === "Referral Letter").reduce((s, p) => s + p.amount, 0);
 
   const stats = [
     { label: t("admin.billing.totalRevenue"),  value: `$${Number(totalRevenue).toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
@@ -123,32 +120,19 @@ const AdminBilling = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div>
             <h2 className="text-base font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-              All Payments
+              Paid Payments
             </h2>
             <p className="text-xs text-muted-foreground">Subscriptions · Prescription Refills · Referral Letters</p>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:flex-initial">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder={t("admin.billing.search")}
-                value={txSearch}
-                onChange={(e) => setTxSearch(e.target.value)}
-                className="w-full sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30"
-              />
-            </div>
-            <select
-              value={txStatus}
-              onChange={(e) => setTxStatus(e.target.value)}
-              className="text-sm bg-background border border-border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
-            >
-              <option value="all">All statuses</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={t("admin.billing.search")}
+              value={txSearch}
+              onChange={(e) => setTxSearch(e.target.value)}
+              className="w-full sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30"
+            />
           </div>
         </div>
 
