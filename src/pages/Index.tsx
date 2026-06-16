@@ -170,8 +170,6 @@ const Index = () => {
   return (
     <>
       <SEO
-        title="Cira — your AI health nurse, anytime"
-        description="Talk to Cira, your AI nurse. Ask health questions, scan vitals with your camera, and get clear next steps."
         path="/"
         jsonLd={[
           {

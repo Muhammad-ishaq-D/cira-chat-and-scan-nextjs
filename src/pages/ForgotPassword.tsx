@@ -30,7 +30,7 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <SEO title="Forgot password — Cira" description="Reset your Cira password. We'll email you a one-time code to securely regain access to your account." path="/forgot-password" noindex />
+      <SEO path="/forgot-password" />
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">

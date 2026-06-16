@@ -35,7 +35,7 @@ const Blog = () => {
 
   return (
     <>
-      <SEO title="Cira blog — AI health & wellbeing" description="Articles on AI in healthcare, vital signs, prevention, and using Cira to understand your body better." path="/blog" />
+      <SEO path="/blog" />
     <div className="min-h-screen bg-background font-body">
       <header className="max-w-5xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">

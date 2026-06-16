@@ -24,6 +24,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
   const resolvedTitle = title ?? fallback?.title ?? "Cira — your AI health nurse";
   const resolvedDesc =
     description ?? fallback?.description ?? "Cira is your AI health nurse, anytime.";
+  const resolvedNoindex = noindex ?? fallback?.noindex ?? false;
 
   const ogImage = image || DEFAULT_OG_IMAGE;
   const safeTitle = resolvedTitle.length > 60 ? resolvedTitle.slice(0, 57) + "..." : resolvedTitle;
@@ -35,7 +36,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
       <html lang={lang} />
       <title>{safeTitle}</title>
       <meta name="description" content={safeDesc} />
-      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+      <meta name="robots" content={resolvedNoindex ? "noindex, nofollow" : "index, follow"} />
       <link rel="canonical" href={url} />
 
       <meta property="og:type" content={type} />

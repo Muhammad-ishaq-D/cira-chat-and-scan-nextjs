@@ -13,7 +13,7 @@ const NotFound = () => {
 
   return (
     <>
-      <SEO title="Page not found — Cira" description="The page you were looking for doesn't exist. Head back to Cira to talk to your AI nurse." path="/404" noindex />
+      <SEO path="/404" />
     <div className="flex min-h-screen items-center justify-center bg-muted">
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">{t("notFound.title")}</h1>
