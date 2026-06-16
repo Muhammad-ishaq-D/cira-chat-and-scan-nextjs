@@ -56,8 +56,6 @@ const SymptomChecker = () => {
   return (
     <>
       <SEO
-        title={t("symptomChecker.seoTitle")}
-        description={t("symptomChecker.seoDescription")}
         path="/symptom-checker"
       />
       <div className="min-h-screen bg-background">
