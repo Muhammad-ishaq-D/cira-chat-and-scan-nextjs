@@ -115,6 +115,8 @@ export const ciraSoftwareApplicationSchema = {
   },
 };
 
+export const sitewideJsonLd = [medicalBusinessSchema, ciraSoftwareApplicationSchema];
+
 const symptomCheckerApplicationSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -170,7 +172,6 @@ export const seoConfig = {
       "Cira is an AI nurse that helps you understand symptoms and check your vital signs from any device with a camera. Chat about how you feel and get clear, clinical-grade next steps in minutes — no appointment required.",
       "Run a 30-second face scan to measure heart rate, blood pressure, HRV, breathing rate, stress and wellness score using rPPG technology. Then ask follow-up questions through the AI symptom checker, or escalate to a licensed doctor when human care is needed.",
     ],
-    jsonLd: [medicalBusinessSchema, ciraSoftwareApplicationSchema],
   },
   "/free-chat": {
     title: "Free AI health chat — no signup",

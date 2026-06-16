@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
-import { SITE_URL, getRouteSEO } from "@/config/seo";
+import { SITE_URL, sitewideJsonLd, getRouteSEO } from "@/config/seo";
 
 const DEFAULT_OG_IMAGE = "https://askainurse.com/og-image.jpg";
 
@@ -30,7 +30,8 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
   const ogImage = image || DEFAULT_OG_IMAGE;
   const safeTitle = resolvedTitle.length > 60 ? resolvedTitle.slice(0, 57) + "..." : resolvedTitle;
   const safeDesc = resolvedDesc.length > 160 ? resolvedDesc.slice(0, 157) + "..." : resolvedDesc;
-  const ldArray = resolvedJsonLd ? (Array.isArray(resolvedJsonLd) ? resolvedJsonLd : [resolvedJsonLd]) : [];
+  const routeLdArray = resolvedJsonLd ? (Array.isArray(resolvedJsonLd) ? resolvedJsonLd : [resolvedJsonLd]) : [];
+  const ldArray = [...sitewideJsonLd, ...routeLdArray];
 
   return (
     <Helmet>

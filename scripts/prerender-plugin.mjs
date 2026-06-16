@@ -10,7 +10,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { SITE_URL, OG_IMAGE, prerenderRoutes as ROUTES } from "../src/config/seo.data.mjs";
+import { SITE_URL, OG_IMAGE, sitewideJsonLd, prerenderRoutes as ROUTES } from "../src/config/seo.data.mjs";
 
 /** Replace or insert a meta tag in the head HTML by attribute selector. */
 function setMeta(html, attr, value, content) {
@@ -95,7 +95,7 @@ function buildRouteHtml(baseHtml, route) {
   html = setMeta(html, "name", "twitter:title", route.title);
   html = setMeta(html, "name", "twitter:description", route.description);
   html = setMeta(html, "name", "twitter:image", OG_IMAGE);
-  html = injectJsonLd(html, route.jsonLd);
+  html = injectJsonLd(html, [...sitewideJsonLd, ...(route.jsonLd ? (Array.isArray(route.jsonLd) ? route.jsonLd : [route.jsonLd]) : [])]);
   html = injectRootContent(html, buildSeoBlock(route));
   return html;
 }
