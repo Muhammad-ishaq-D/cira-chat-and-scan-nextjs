@@ -18,7 +18,134 @@ export const OG_IMAGE = "https://askainurse.com/og-image.jpg";
  * @property {boolean} [prerender]    - true → emit dist/<path>/index.html with static h1/body
  * @property {string} [h1]            - H1 used in prerendered static content
  * @property {string[]} [body]        - Paragraphs used in prerendered static content
+ * @property {Object|Object[]} [jsonLd] - Route schema emitted by Helmet and static prerender
  */
+
+const buildFaqJsonLd = (faqs, url) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${url}#faq`,
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.a,
+    },
+  })),
+});
+
+export const medicalBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "MedicalBusiness",
+  "@id": `${SITE_URL}/#medicalbusiness`,
+  name: "Cira AI Nurse",
+  url: `${SITE_URL}/`,
+  logo: `${SITE_URL}/favicon.svg`,
+  image: OG_IMAGE,
+  description: "AI nurse chatbot with 30-second face scan and symptom checking.",
+  medicalSpecialty: "GeneralPractice",
+  priceRange: "Free / Subscription",
+  sameAs: [
+    "https://twitter.com/askainurse",
+    "https://www.linkedin.com/company/askainurse",
+    "https://www.facebook.com/askainurse",
+    "https://www.instagram.com/askainurse",
+  ],
+  availableService: [
+    {
+      "@type": "MedicalProcedure",
+      name: "AI Symptom Checker",
+      description: "Chat with an AI nurse to understand symptoms and get clear next steps.",
+      url: `${SITE_URL}/symptom-checker`,
+    },
+    {
+      "@type": "MedicalProcedure",
+      name: "30-Second Vitals Face Scan",
+      description:
+        "Camera-based rPPG scan that measures heart rate, blood pressure, HRV and more in about 30 seconds.",
+      url: `${SITE_URL}/technology`,
+    },
+    {
+      "@type": "MedicalProcedure",
+      name: "AI Nurse Chat Consultation",
+      description: "Free, on-demand chat with an AI nurse for everyday health questions.",
+      url: `${SITE_URL}/free-chat`,
+    },
+    {
+      "@type": "MedicalProcedure",
+      name: "Prescription Refill Assistance",
+      description: "Upload a prescription and get help arranging a refill.",
+      url: `${SITE_URL}/prescription-refill`,
+    },
+  ],
+};
+
+export const ciraSoftwareApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": `${SITE_URL}/#software`,
+  name: "Cira AI Nurse",
+  applicationCategory: "HealthApplication",
+  operatingSystem: "Web",
+  description:
+    "AI nurse chatbot with 30-second face scan vitals and symptom checking. Chat with an AI nurse and scan your vitals from any device with a camera.",
+  url: `${SITE_URL}/`,
+  image: OG_IMAGE,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    name: "Free",
+    description: "Free AI nurse chat and vitals face scan",
+  },
+  featureList: [
+    "30-second camera-based vitals face scan (rPPG + rBCG)",
+    "AI symptom checker with guided health questions",
+    "Doctor chat — connect with licensed doctors when needed",
+    "Instant heart rate, blood pressure, HRV and breathing rate",
+    "Stress index, wellness score and vascular age estimation",
+    "Prescription refill assistance and medication guidance",
+    "100% on-device face processing — no video uploaded to servers",
+  ],
+  screenshot: {
+    "@type": "ImageObject",
+    url: OG_IMAGE,
+    caption: "Cira AI Nurse chat and vitals scan interface",
+  },
+};
+
+export const sitewideJsonLd = [medicalBusinessSchema, ciraSoftwareApplicationSchema];
+
+const howItWorksFaqSchema = buildFaqJsonLd(
+  [
+    {
+      q: "How does the 30-second face scan actually work?",
+      a: "Cira uses Shen AI's remote photoplethysmography (rPPG) to analyze tiny color changes in your skin caused by your pulse. Your device camera records about 30 seconds of your face in good lighting, and the SDK estimates heart rate, breathing rate, heart-rate variability, and blood-pressure trends — all processed on your device.",
+    },
+    {
+      q: "Is the scan private? What happens to the video?",
+      a: "Yes. The face-scan processing runs locally in your browser using Shen AI. Cira calculates vital signs from the video stream and does not store raw face video — image frames are discarded after processing. Only the resulting numerical vitals are saved to your account if you choose to keep the scan.",
+    },
+    {
+      q: "How accurate is the AI nurse and the vital signs?",
+      a: "Shen AI's vitals engine is clinically validated against medical-grade devices and uses neural 3D face tracking with rPPG/rBCG sensor fusion. Cira's clinical reasoning is built on Claude-class models trained on billions of medical data points. Cira is an AI nurse — it offers guidance and a doctor hand-off, not a diagnosis. It does not replace a licensed physician.",
+    },
+    {
+      q: "What devices and browsers do I need?",
+      a: "Any modern device with a front-facing camera and a recent version of Chrome, Safari, Edge, or Firefox. Good, even lighting on your face makes the scan more accurate. No app install, no wearable, no external sensor required.",
+    },
+    {
+      q: "Do I need an account to try Cira?",
+      a: "No. You can start a free chat or run a guest face scan without creating an account. An account lets you save scans, track trends over time, and share a Cira report with a doctor through our Air Doctor partnership.",
+    },
+    {
+      q: "Can Cira connect me to a real doctor?",
+      a: "Yes. Through our partnership with Air Doctor, Cira can hand you off to a network of 20,000 licensed doctors across 180 countries. Your Cira summary — symptoms, history, and vitals — travels with you so you don't have to repeat the basics.",
+    },
+  ],
+  `${SITE_URL}/how-it-works`,
+);
 
 /** @type {Record<string, RouteSEOEntry>} */
 export const seoConfig = {
@@ -77,6 +204,7 @@ export const seoConfig = {
       "Step 2 — Scan. Hold your phone or laptop camera up to your face for 30 seconds. Cira's rPPG technology measures heart rate, blood pressure, HRV and breathing rate — all processed on-device, no video uploaded.",
       "Step 3 — Guidance. Cira summarises findings, suggests next steps, and connects you to a licensed doctor when human care is recommended.",
     ],
+    jsonLd: howItWorksFaqSchema,
   },
   "/technology": {
     title: "Cira technology — clinical-grade AI",
