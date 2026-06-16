@@ -57,10 +57,11 @@ function buildSeoBlock(route) {
   const nav = ROUTES.filter((r) => r.path !== route.path)
     .map((r) => `<a href="${r.path}">${escapeText(r.title)}</a>`)
     .join(" · ");
-  // Wrapped in a comment-flagged container so React's mount cleanly replaces it.
-  // No inline styling — visible briefly before hydration on slow connections.
+  // Hidden by default so it never flashes for real users (React replaces #root
+  // on hydration anyway). A <noscript> override re-shows it for non-JS crawlers
+  // like LinkedIn, Slack, Facebook OG, and Bing's first pass.
   return (
-    `<div id="seo-prerender">` +
+    `<div id="seo-prerender" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">` +
     `<h1>${escapeText(route.h1)}</h1>` +
     paragraphs +
     `<nav aria-label="Site links">${nav}</nav>` +
