@@ -351,7 +351,7 @@ const Login = () => {
 
   return (
     <>
-      <SEO title="Sign in to Cira — your AI health nurse" description="Log in or create your Cira account. Chat with an AI nurse, run vital scans, and track your health in one place." path="/login" />
+      <SEO path="/login" />
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">

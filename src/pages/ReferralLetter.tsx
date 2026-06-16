@@ -102,11 +102,7 @@ const ReferralLetter = () => {
   if (showSuccess) {
     return (
       <>
-        <SEO
-          title="Referral Letter — Cira AI Nurse"
-          description="Your referral letter is being prepared."
-          path="/referral-letter"
-        />
+        <SEO path="/referral-letter" />
         <div className="min-h-screen bg-[#f7f6f0] flex flex-col items-center justify-center px-4 py-8">
           <div className="w-full max-w-md space-y-4">
 
@@ -252,11 +248,7 @@ const ReferralLetter = () => {
   // ── Landing page ─────────────────────────────────────────────────────────────
   return (
     <>
-      <SEO
-        title="Referral Letter — Cira AI Nurse"
-        description="Request a referral letter with Cira. Securely share your history and symptoms with a specialist doctor through our network."
-        path="/referral-letter"
-      />
+      <SEO path="/referral-letter" />
 
       <div className="relative min-h-screen overflow-hidden bg-[#f7f6f0] animate-fade-in">
         {/* Glassy gradient background */}

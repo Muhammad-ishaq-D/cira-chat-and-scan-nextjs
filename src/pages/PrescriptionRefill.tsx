@@ -24,11 +24,7 @@ const PrescriptionRefill = () => {
 
   return (
     <>
-      <SEO
-        title="Prescription Refill — Cira AI Nurse"
-        description="Request a prescription refill with Cira. Securely share your medication and history with a licensed doctor through our network."
-        path="/prescription-refill"
-      />
+      <SEO path="/prescription-refill" />
 
       {showChat ? (
         <div className="h-[100dvh] bg-[#f7f6f0] overflow-hidden">

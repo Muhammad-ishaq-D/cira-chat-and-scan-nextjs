@@ -37,7 +37,7 @@ const WhatCiraHelpsWith = () => {
 
   return (
     <>
-      <SEO title="What Cira helps with — symptoms & vitals" description="From everyday symptoms to vital signs and chronic risks. See what your AI nurse Cira can help with." path="/what-cira-helps-with" />
+      <SEO path="/what-cira-helps-with" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-6 max-w-6xl mx-auto">
         <button onClick={() => navigate("/")} className="flex items-center gap-3">

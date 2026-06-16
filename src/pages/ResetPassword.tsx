@@ -43,7 +43,7 @@ const ResetPassword = () => {
 
   return (
     <>
-      <SEO title="Reset password — Cira" description="Enter your one-time code and choose a new password to securely restore access to your Cira account." path="/reset-password" noindex />
+      <SEO path="/reset-password" />
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">

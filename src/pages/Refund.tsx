@@ -66,11 +66,7 @@ const Refund = () => {
 
   return (
     <>
-      <SEO
-        title="Refund Request — Cira"
-        description="Request a refund for your CLINIQUE DE LA BRISEE service within 7 days of issue."
-        path="/refund"
-      />
+      <SEO path="/refund" />
       <div className="min-h-screen bg-background">
         <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
           <button
