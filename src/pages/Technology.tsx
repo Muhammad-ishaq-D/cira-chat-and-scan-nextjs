@@ -133,7 +133,7 @@ const Technology = () => {
 
   return (
     <>
-      <SEO title="Cira technology — clinical-grade AI" description="rPPG vitals, neural 3D face tracking, and peer-reviewed validation. The clinical tech powering Cira." path="/technology" />
+      <SEO path="/technology" />
     <div className="min-h-screen bg-background">
       {/* Top nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">

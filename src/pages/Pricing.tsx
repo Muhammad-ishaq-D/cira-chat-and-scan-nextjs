@@ -59,8 +59,6 @@ const Pricing = () => {
   return (
     <>
       <SEO
-        title="Pricing — Cira AI health nurse"
-        description="Simple plans for AI health chat and camera-based vital scans. Start free, upgrade when you need more."
         path="/pricing"
         jsonLd={{
           "@context": "https://schema.org",

@@ -72,7 +72,7 @@ const Privacy = () => {
 
   return (
     <>
-      <SEO title="Privacy & data protection — Cira" description="On-device scans, encryption in transit, MFA access. How Cira keeps your health data private and secure." path="/privacy" />
+      <SEO path="/privacy" />
     <div className="min-h-screen bg-background">
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <button
