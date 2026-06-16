@@ -57,11 +57,12 @@ function buildSeoBlock(route) {
   const nav = ROUTES.filter((r) => r.path !== route.path)
     .map((r) => `<a href="${r.path}">${escapeText(r.title)}</a>`)
     .join(" · ");
-  // Hidden by default so it never flashes for real users (React replaces #root
-  // on hydration anyway). A <noscript> override re-shows it for non-JS crawlers
-  // like LinkedIn, Slack, Facebook OG, and Bing's first pass.
+  // display:none keeps it fully invisible to users (no flash on any route,
+  // including unprerendered ones like /refund and /payment-success that fall
+  // back to index.html). A <noscript> override re-shows it for non-JS crawlers.
   return (
-    `<div id="seo-prerender" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">` +
+    `<noscript><style>#seo-prerender{display:block!important;position:static!important}</style></noscript>` +
+    `<div id="seo-prerender" style="display:none" aria-hidden="true">` +
     `<h1>${escapeText(route.h1)}</h1>` +
     paragraphs +
     `<nav aria-label="Site links">${nav}</nav>` +
