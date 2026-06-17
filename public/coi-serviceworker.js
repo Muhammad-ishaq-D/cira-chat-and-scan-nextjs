@@ -1,6 +1,6 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 // Bump this version when the WASM file changes to invalidate the cache.
-const WASM_CACHE_VERSION = 'cira-wasm-v1';
+const WASM_CACHE_VERSION = 'cira-wasm-v2';
 
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
@@ -113,7 +113,7 @@ if (typeof window === 'undefined') {
                         headers: newHeaders,
                     });
                 })
-                .catch((e) => console.error(e))
+                .catch((e) => { console.error(e); return Response.error(); })
         );
     });
 
@@ -126,7 +126,7 @@ if (typeof window === 'undefined') {
         const coi = {
             shouldRegister: () => needsCrossOriginIsolation(),
             shouldDeregister: () => !needsCrossOriginIsolation(),
-            coepCredentialless: () => !(window.chrome || window.netscape),
+            coepCredentialless: () => true,
             doReload: () => window.location.reload(),
             quiet: false,
             ...window.coi
