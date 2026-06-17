@@ -39,9 +39,15 @@ function setCanonical(html, url) {
 }
 
 function injectRootContent(html, contentHtml) {
+  // Inject the SEO block as a SIBLING of #root (not inside it).
+  // This guarantees zero visual flash on client-side routes that fall back to
+  // this HTML (e.g. /admin/*, /payment-success, /refund): #root starts empty,
+  // React mounts instantly, and the SEO block stays display:none for users.
+  // Non-JS crawlers still see the content via the <noscript> override inside
+  // the block itself.
   return html.replace(
     /<div id="root">\s*<\/div>/,
-    `<div id="root">${contentHtml}</div>`,
+    `<div id="root"></div>\n    ${contentHtml}`,
   );
 }
 
