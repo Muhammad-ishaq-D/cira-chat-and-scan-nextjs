@@ -19,8 +19,8 @@ const ADMIN_ROUTES = [
   "/admin/activity",
   "/admin/analytics",
   "/admin/billing",
-  "/admin/refunds",
-  "/admin/referral-refunds",
+  "/admin/prescription-refills",
+  "/admin/referral-letters",
   "/admin/blogs",
   "/admin/settings",
 ];

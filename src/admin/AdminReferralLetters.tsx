@@ -247,7 +247,7 @@ const AdminReferralLetters = () => {
                       {refund.specialist_specialty}
                     </p>
                   </div>
-                  <DetailItem label="Patient Email" value={refund.delivery_email || "—"} />
+                  <DetailItem label="Patient Email" value={refund.delivery_email_masked || "—"} />
                 </div>
 
                 <div className="px-5 pb-4">
