@@ -118,6 +118,26 @@ function buildRouteHtml(baseHtml, route) {
   const url = `${SITE_URL}${route.path}`;
   let html = baseHtml;
   html = setTitle(html, route.title);
+
+  const fallbackScript = `
+    <script>
+      (function() {
+        if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.indexOf('ReactSnap') > -1) return;
+        var currentPath = window.location.pathname;
+        if (currentPath.length > 1 && currentPath.endsWith('/')) {
+          currentPath = currentPath.slice(0, -1);
+        }
+        var expectedPath = "${route.path}";
+        if (currentPath !== expectedPath) {
+          document.write('<style id="spa-fallback-hide">#root { display: none !important; }</style>');
+        }
+      })();
+    </script>
+  `;
+  if (html.includes('<head>')) {
+    html = html.replace('<head>', '<head>' + fallbackScript);
+  }
+
   html = setMeta(html, "name", "description", route.description);
   html = setCanonical(html, url);
   html = setMeta(html, "property", "og:title", route.title);
