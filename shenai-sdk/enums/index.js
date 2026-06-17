@@ -120,6 +120,18 @@ export const CameraMode = new Proxy({}, {
   }
 });
 
+export const CameraError = new Proxy({}, {
+  get(_, prop) { return _getEnum("CameraError", prop); },
+  has(_, prop) { return prop in ((_sdk && _sdk.CameraError) || {}); },
+  ownKeys() { return Object.keys((_sdk && _sdk.CameraError) || {}); },
+  getOwnPropertyDescriptor(target, prop) {
+    if (!(prop in target) && (prop in ((_sdk && _sdk.CameraError) || {}))) {
+      Object.defineProperty(target, prop, { value: _getEnum("CameraError", prop), writable: false, enumerable: true, configurable: false });
+    }
+    return Reflect.getOwnPropertyDescriptor(target, prop);
+  }
+});
+
 export const OnboardingMode = new Proxy({}, {
   get(_, prop) { return _getEnum("OnboardingMode", prop); },
   has(_, prop) { return prop in ((_sdk && _sdk.OnboardingMode) || {}); },

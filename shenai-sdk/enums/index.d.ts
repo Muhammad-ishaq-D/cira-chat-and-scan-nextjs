@@ -133,6 +133,18 @@ export namespace CameraMode {
   const MEDIA_STREAM: CameraMode;
 }
 
+export interface CameraError {
+  readonly value: 0 | 1 | 2 | 3 | 4 | 5;
+}
+export namespace CameraError {
+  const UNKNOWN: CameraError;
+  const UNSUPPORTED_MODE: CameraError;
+  const NO_CAMERA_DEVICE: CameraError;
+  const PERMISSION_NOT_GRANTED: CameraError;
+  const INVALID_DEVICE_ID: CameraError;
+  const DEVICE_UNAVAILABLE: CameraError;
+}
+
 export interface OnboardingMode {
   readonly value: 0 | 1 | 2;
 }
@@ -143,11 +155,12 @@ export namespace OnboardingMode {
 }
 
 export interface UiVersion {
-  readonly value: 0 | 1;
+  readonly value: 0 | 1 | 2;
 }
 export namespace UiVersion {
   const V1: UiVersion;
   const V2: UiVersion;
+  const V3: UiVersion;
 }
 
 export interface InitializationResult {
@@ -174,7 +187,7 @@ export namespace FaceState {
 }
 
 export interface MeasurementState {
-  readonly value: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  readonly value: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 }
 export namespace MeasurementState {
   const NOT_STARTED: MeasurementState;
@@ -183,6 +196,7 @@ export namespace MeasurementState {
   const RUNNING_SIGNAL_GOOD: MeasurementState;
   const RUNNING_SIGNAL_BAD: MeasurementState;
   const RUNNING_SIGNAL_BAD_DEVICE_UNSTABLE: MeasurementState;
+  const FINALIZING: MeasurementState;
   const FINISHED: MeasurementState;
   const FAILED: MeasurementState;
 }
@@ -277,6 +291,7 @@ export interface ShenaiSDKEnums {
   readonly InitializationMode: typeof InitializationMode;
   readonly CalibrationState: typeof CalibrationState;
   readonly CameraMode: typeof CameraMode;
+  readonly CameraError: typeof CameraError;
   readonly OnboardingMode: typeof OnboardingMode;
   readonly UiVersion: typeof UiVersion;
   readonly InitializationResult: typeof InitializationResult;

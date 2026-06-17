@@ -5,7 +5,7 @@ import type {
   InitializationSettings,
   HealthRisks,
   RisksFactors,
-} from "shenai-sdk";
+} from "@shenai/sdk";
 
 const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
@@ -357,7 +357,7 @@ export function useShenAI() {
       finishHandledRef.current = false;
 
       try {
-        const ShenAI = (await import("shenai-sdk")).default;
+        const ShenAI = (await import("@shenai/sdk")).default;
 
         const sdk: ShenaiSDK = await ShenAI({
           enablePreloadDisplay: false,
