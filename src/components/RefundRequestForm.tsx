@@ -127,7 +127,10 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
       formData.append("token", refill.token || refill.ref);
       formData.append("reason", reason.trim());
       formData.append("proof_file", file);
-      const res = await fetch(`${API_BASE}/api/prescription/refund/submit`, {
+      const endpoint = refill.type === "referral"
+        ? `${API_BASE}/api/referral/refund/submit`
+        : `${API_BASE}/api/prescription/refund/submit`;
+      const res = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
