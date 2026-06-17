@@ -242,7 +242,7 @@ const AdminPrescriptionRefills = () => {
                 <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DetailItem label="Medications" value={medsDisplay} />
                   <DetailItem label="Amount Charged" value={amountDisplay} bold />
-                  <DetailItem label="Patient Email" value={refund.delivery_email || "—"} />
+                  <DetailItem label="Patient Email" value={refund.delivery_email_masked || "—"} />
                   <div>
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Proof File</span>
                     {refund.refund_proof_file_path ? (
