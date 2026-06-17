@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import i18n from "@/i18n";
-import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText, Activity, RotateCcw } from "lucide-react";
+import { Users, CreditCard, BarChart3, LogOut, Settings, TrendingUp, Shield, Bell, FileText, Activity, Pill, BookOpen } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const navItems = [
-  { icon: BarChart3, key: "overview", id: "overview", path: "/admin/dashboard" },
-  { icon: Users, key: "users", id: "users", path: "/admin/users" },
-  { icon: Activity, key: "activity", id: "activity", path: "/admin/activity" },
-  { icon: TrendingUp, key: "analytics", id: "analytics", path: "/admin/analytics" },
-  { icon: CreditCard, key: "billing", id: "billing", path: "/admin/billing" },
-  { icon: RotateCcw, key: "refunds", id: "refunds", path: "/admin/refunds" },
-  { icon: FileText, key: "referralRefunds", id: "referralRefunds", path: "/admin/referral-refunds" },
-  { icon: FileText, key: "blogs", id: "blogs", path: "/admin/blogs" },
-  { icon: Settings, key: "settings", id: "settings", path: "/admin/settings" },
+  { icon: BarChart3,  key: "overview",             id: "overview",             path: "/admin/dashboard" },
+  { icon: Users,      key: "users",                 id: "users",                path: "/admin/users" },
+  { icon: Activity,   key: "activity",              id: "activity",             path: "/admin/activity" },
+  { icon: TrendingUp, key: "analytics",             id: "analytics",            path: "/admin/analytics" },
+  { icon: CreditCard, key: "billing",               id: "billing",              path: "/admin/billing" },
+  { icon: Pill,       key: "prescriptionRefills",   id: "prescriptionRefills",  path: "/admin/prescription-refills" },
+  { icon: BookOpen,   key: "referralLetters",       id: "referralLetters",      path: "/admin/referral-letters" },
+  { icon: FileText,   key: "blogs",                 id: "blogs",                path: "/admin/blogs" },
+  { icon: Settings,   key: "settings",              id: "settings",             path: "/admin/settings" },
 ];
 
 const AdminLayout = () => {
