@@ -107,7 +107,11 @@ const AdminReferralLetters = () => {
       await adminApi.decideReferralRefund(refund.id, decision, notes[refund.id]?.trim() || undefined);
       showToast(refund.id, decision === "approve" ? "Refund approved and issued." : "Refund rejected.", decision === "approve");
       setRefundRequests(prev => prev.filter(r => r.id !== refund.id));
-      if (decision === "approve") load();
+      setLetters(prev => prev.map(l =>
+        l.reference_code === refund.reference_code
+          ? { ...l, refund_status: decision === "approve" ? "approved" : "rejected" }
+          : l
+      ));
     } catch (e) {
       showToast(refund.id, e instanceof Error ? e.message : "Action failed", false);
     } finally {

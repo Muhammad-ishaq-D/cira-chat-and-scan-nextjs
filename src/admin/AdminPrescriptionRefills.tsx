@@ -107,7 +107,11 @@ const AdminPrescriptionRefills = () => {
       await adminApi.decideRefund(refund.id, decision, notes[refund.id]?.trim() || undefined);
       showToast(refund.id, decision === "approve" ? "Refund approved and issued." : "Refund rejected.", decision === "approve");
       setRefundRequests(prev => prev.filter(r => r.id !== refund.id));
-      if (decision === "approve") load();
+      setRefills(prev => prev.map(r =>
+        r.reference_code === refund.reference_code
+          ? { ...r, refund_status: decision === "approve" ? "approved" : "rejected" }
+          : r
+      ));
     } catch (e) {
       showToast(refund.id, e instanceof Error ? e.message : "Action failed", false);
     } finally {
