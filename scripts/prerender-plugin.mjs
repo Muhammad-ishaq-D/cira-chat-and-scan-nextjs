@@ -1,7 +1,7 @@
 // Build-time prerender for public marketing routes.
 // After Vite builds dist/index.html, this plugin emits dist/<route>/index.html
 // for each public route with route-specific <title>, meta, canonical, og:*
-// and a static SEO content block injected INSIDE <div id="root">.
+// and a static SEO content block injected next to <div id="root">.
 //
 // Why: this is a CSR React SPA. Non-JS crawlers (LinkedIn, Slack, Facebook,
 // Bing first pass, many AI bots) only see the static HTML and would otherwise
@@ -11,6 +11,19 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_URL, OG_IMAGE, sitewideJsonLd, prerenderRoutes as ROUTES } from "../src/config/seo.data.mjs";
+
+const ADMIN_ROUTES = [
+  "/admin",
+  "/admin/dashboard",
+  "/admin/users",
+  "/admin/activity",
+  "/admin/analytics",
+  "/admin/billing",
+  "/admin/refunds",
+  "/admin/referral-refunds",
+  "/admin/blogs",
+  "/admin/settings",
+];
 
 /** Replace or insert a meta tag in the head HTML by attribute selector. */
 function setMeta(html, attr, value, content) {
@@ -61,6 +74,19 @@ function injectJsonLd(html, jsonLd) {
     )
     .join("\n");
   return html.replace(/<\/head>/i, `${scripts}\n  </head>`);
+}
+
+function buildAdminShellHtml(baseHtml, routePath) {
+  let html = baseHtml;
+  html = setTitle(html, "Cira Admin");
+  html = setMeta(html, "name", "description", "Cira admin dashboard.");
+  html = setCanonical(html, `${SITE_URL}${routePath}`);
+  html = setMeta(html, "name", "robots", "noindex,nofollow,noarchive");
+  html = html.replace(/<script\s+type=["']application\/ld\+json["'][\s\S]*?<\/script>\s*/gi, "");
+  html = html.replace(/<div id="seo-prerender"[\s\S]*?<\/div>/gi, "");
+  html = html.replace(/<noscript><style>#seo-prerender[\s\S]*?<\/noscript>/gi, "");
+  html = html.replace(/<div id="root">[\s\S]*?<\/div>/i, '<div id="root"></div>');
+  return html;
 }
 
 function escapeAttr(s) {
@@ -133,9 +159,16 @@ export default function prerenderPlugin() {
         }
       }
 
+      for (const adminPath of ADMIN_ROUTES) {
+        const html = buildAdminShellHtml(baseHtml, adminPath);
+        const dir = path.join(outDir, adminPath.replace(/^\//, ""));
+        await fs.mkdir(dir, { recursive: true });
+        await fs.writeFile(path.join(dir, "index.html"), html, "utf8");
+      }
+
       // eslint-disable-next-line no-console
       console.log(
-        `[prerender] wrote ${ROUTES.length} route HTML files into dist/`,
+        `[prerender] wrote ${ROUTES.length} public route HTML files and ${ADMIN_ROUTES.length} admin shell files into dist/`,
       );
     },
   };
