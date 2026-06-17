@@ -511,11 +511,9 @@ export function useShenAI() {
         }
 
         const isFinished =
-          mState.value === 6 ||
           mState.value === activeSdk.MeasurementState?.FINISHED?.value;
 
         const isFailed =
-          mState.value === 7 ||
           mState.value === activeSdk.MeasurementState?.FAILED?.value;
 
         if (isFinished) {
@@ -537,15 +535,15 @@ export function useShenAI() {
           let healthRisks: HealthRisksData | null = null;
 
           try {
-            activeSdk.stopMeasurement();
-          } catch (e) {
-            console.warn("[ShenAI] stopMeasurement failed:", e);
-          }
-
-          try {
             rawSnapshot = activeSdk.getMeasurementResults();
           } catch (e) {
             console.warn("[ShenAI] getMeasurementResults failed:", e);
+          }
+
+          try {
+            activeSdk.stopMeasurement();
+          } catch (e) {
+            console.warn("[ShenAI] stopMeasurement failed:", e);
           }
 
           // Main crash fix: stop actual browser camera stream before any delayed
