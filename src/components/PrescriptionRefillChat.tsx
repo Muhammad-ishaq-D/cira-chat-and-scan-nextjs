@@ -30,6 +30,7 @@ import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 import { getDeviceId } from "@/lib/freeCredits";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export type DrugDetails = {
   drug: string;
