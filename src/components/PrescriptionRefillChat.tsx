@@ -561,14 +561,20 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           headers,
           body: formData,
         });
+        type OcrMed = { name: string; strength?: string | null; form?: string | null; dosage?: string | null; confidence?: number };
         const data = (await res.json().catch(() => ({}))) as {
-          medications?: string[];
+          medications?: OcrMed[] | string[];
           error?: string;
         };
         if (!res.ok && (!data.medications || data.medications.length === 0)) {
           throw new Error(data.error || `Server error (${res.status})`);
         }
-        return Array.isArray(data.medications) ? data.medications : [];
+        // Normalise to string names — handle both old string[] and new object[] format
+        return Array.isArray(data.medications)
+          ? (data.medications as Array<OcrMed | string>).map((m) =>
+              typeof m === "string" ? m : m.name
+            )
+          : [];
       });
 
       const settled = await Promise.allSettled(ocrCalls);
