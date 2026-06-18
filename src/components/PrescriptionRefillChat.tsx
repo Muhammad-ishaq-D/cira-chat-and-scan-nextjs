@@ -1129,7 +1129,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             ref={fileRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            multiple
             className="hidden"
             onChange={handleFilePicked}
           />
