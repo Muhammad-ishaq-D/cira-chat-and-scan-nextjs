@@ -1,6 +1,6 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 // Bump this version when the WASM file changes to invalidate the cache.
-const WASM_CACHE_VERSION = 'cira-wasm-v2';
+const WASM_CACHE_VERSION = 'cira-wasm-v3';
 
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
@@ -45,12 +45,19 @@ if (typeof window === 'undefined') {
         event.respondWith((async () => {
             let hasScanMode = false;
             if (r.mode === "navigate") {
-                hasScanMode = url.searchParams.get("mode") === "scan";
+                // For navigation requests, check both query param and pathname.
+                // The pathname match covers cases where the client URL hasn't updated yet.
+                hasScanMode =
+                    url.searchParams.get("mode") === "scan" ||
+                    url.pathname === "/vitals-scan";
             } else if (event.clientId) {
                 try {
                     const client = await self.clients.get(event.clientId);
                     if (client && client.url) {
-                        hasScanMode = new URL(client.url).searchParams.get("mode") === "scan";
+                        const clientUrl = new URL(client.url);
+                        hasScanMode =
+                            clientUrl.searchParams.get("mode") === "scan" ||
+                            clientUrl.pathname === "/vitals-scan";
                     }
                 } catch (e) {
                     // Fallback if client cannot be fetched
@@ -131,8 +138,11 @@ if (typeof window === 'undefined') {
 
 } else {
     (() => {
-        const needsCrossOriginIsolation = () =>
-            new URL(window.location.href).searchParams.get("mode") === "scan";
+        const needsCrossOriginIsolation = () => {
+            const pathname = window.location.pathname;
+            const mode = new URL(window.location.href).searchParams.get("mode");
+            return pathname === "/vitals-scan" || mode === "scan";
+        };
 
         // You can customize the behavior of this script through a global `coi` variable.
         const coi = {
