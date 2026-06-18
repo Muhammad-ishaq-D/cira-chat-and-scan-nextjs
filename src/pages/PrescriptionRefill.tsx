@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ShieldCheck, Stethoscope, ArrowRight } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import PrescriptionRefillChat from "@/components/PrescriptionRefillChat";
 import { isAuthenticated } from "@/lib/auth";
 
