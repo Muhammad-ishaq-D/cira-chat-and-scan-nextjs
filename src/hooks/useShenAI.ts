@@ -221,7 +221,7 @@ function buildRiskFactors(
 
   if (gender) {
     factors.gender =
-      sdk.Gender[
+      (sdk as any).Gender[
         gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : "OTHER"
       ];
   }
@@ -374,7 +374,7 @@ export function useShenAI() {
 
         // Guard: the WASM module must expose enums. If cross-origin isolation
         // failed or the module only partially loaded, these can be undefined.
-        if (!sdk.OperatingMode || !sdk.OperatingMode.POSITIONING) {
+        if (!(sdk as any).OperatingMode || !(sdk as any).OperatingMode.POSITIONING) {
           console.error("[ShenAI] SDK loaded but enums are missing — cross-origin isolation may have failed.");
           setError(
             "Camera scanner could not fully initialize. Please reload the page and try again."
@@ -389,11 +389,11 @@ export function useShenAI() {
         const riskFactors = buildRiskFactors(sdk, normalizedProfile);
 
         const settings: InitializationSettings = {
-          operatingMode: sdk.OperatingMode.POSITIONING,
-          measurementPreset: sdk.MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
-          precisionMode: sdk.PrecisionMode.RELAXED,
-          cameraMode: sdk.CameraMode.FACING_USER,
-          onboardingMode: sdk.OnboardingMode.HIDDEN,
+          operatingMode: (sdk as any).OperatingMode.POSITIONING,
+          measurementPreset: (sdk as any).MeasurementPreset.THIRTY_SECONDS_ALL_METRICS,
+          precisionMode: (sdk as any).PrecisionMode.RELAXED,
+          cameraMode: (sdk as any).CameraMode.FACING_USER,
+          onboardingMode: (sdk as any).OnboardingMode.HIDDEN,
           showUserInterface: true,
           showFacePositioningOverlay: true,
           showVisualWarnings: !isMobile,
@@ -496,7 +496,7 @@ export function useShenAI() {
     setProgress(0);
 
     try {
-      sdk.setOperatingMode(sdk.OperatingMode.MEASURE);
+      sdk.setOperatingMode((sdk as any).OperatingMode.MEASURE);
       sdk.startMeasurement();
     } catch (e: any) {
       console.error("[ShenAI] startMeasurement error:", e);
@@ -700,7 +700,7 @@ export function useShenAI() {
       } catch { }
 
       try {
-        sdk.setOperatingMode(sdk.OperatingMode.POSITIONING);
+        sdk.setOperatingMode((sdk as any).OperatingMode.POSITIONING);
       } catch { }
 
       setStatus("ready");
