@@ -51,7 +51,8 @@ const PrescriptionRefill = () => {
               <span className="font-heading text-xl tracking-tight text-foreground">cira</span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher variant="header" />
               {!loggedIn && (
                 <button
                   onClick={() => navigate("/login")}
