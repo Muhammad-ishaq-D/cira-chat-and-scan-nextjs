@@ -1096,6 +1096,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
+            <div className="absolute right-3 top-3">
+              <LanguageSwitcher variant="header" />
+            </div>
             <div className="text-center">
               <div className="font-semibold text-foreground" style={{ fontSize: 16 }}>
                 {stageInfo.label}
