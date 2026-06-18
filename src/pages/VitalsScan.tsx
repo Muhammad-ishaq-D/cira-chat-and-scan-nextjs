@@ -104,6 +104,14 @@ const VitalsScan = () => {
     let reloadTimer: number | undefined;
 
     const ensureSecureScannerContext = async () => {
+      // 1. Force the parameter FIRST before anything else.
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("mode") !== "scan") {
+        url.searchParams.set("mode", "scan");
+        window.location.replace(url.toString());
+        return false; // wait for navigation
+      }
+
       if (isDocumentCrossOriginIsolated()) {
         clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
         return true;
@@ -212,6 +220,16 @@ const VitalsScan = () => {
       }
       cleanup();
       hasInitRef.current = false;
+
+      // Handle the Reset: If the document is currently isolated, and we are leaving 
+      // the scan screen to a URL without ?mode=scan, force a reload to drop headers instantly.
+      if (window.crossOriginIsolated) {
+        setTimeout(() => {
+          if (new URL(window.location.href).searchParams.get("mode") !== "scan") {
+            window.location.reload();
+          }
+        }, 10);
+      }
     };
   }, [cleanup, initialize, isGuest, navigate, t, sdkLang]);
 

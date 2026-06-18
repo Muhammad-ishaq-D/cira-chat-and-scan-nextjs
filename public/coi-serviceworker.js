@@ -37,18 +37,23 @@ if (typeof window === 'undefined') {
 
     self.addEventListener("fetch", function (event) {
         const r = event.request;
+        const url = new URL(r.url);
         if (r.cache === "only-if-cached" && r.mode !== "same-origin") {
             return;
         }
 
-        // Only add COOP/COEP headers for /vitals-scan pages (where SharedArrayBuffer is needed).
-        // Adding these headers to other pages breaks Google Sign-In popup flow.
-        const url = new URL(r.url);
-        const isNavigationToVitalsScan = r.mode === "navigate" &&
-            (url.pathname === "/vitals-scan" || url.pathname.startsWith("/vitals-scan/"));
-        const isSubresourceForVitalsScan = r.mode !== "navigate";
+        // Only add COOP/COEP headers if the ?mode=scan parameter is present.
+        // This prevents the headers from breaking Google Sign-In on other pages.
+        let hasScanMode = false;
+        if (r.mode === "navigate") {
+            hasScanMode = new URL(r.url).searchParams.get("mode") === "scan";
+        } else if (r.referrer) {
+            try {
+                hasScanMode = new URL(r.referrer).searchParams.get("mode") === "scan";
+            } catch (e) { }
+        }
 
-        const needsHeaders = isNavigationToVitalsScan || isSubresourceForVitalsScan;
+        const needsHeaders = hasScanMode;
 
         const request = (coepCredentialless && r.mode === "no-cors")
             ? new Request(r, { credentials: "omit" })
@@ -120,7 +125,7 @@ if (typeof window === 'undefined') {
 } else {
     (() => {
         const needsCrossOriginIsolation = () =>
-            window.location.pathname === "/vitals-scan" || window.location.pathname.startsWith("/vitals-scan/");
+            new URL(window.location.href).searchParams.get("mode") === "scan";
 
         // You can customize the behavior of this script through a global `coi` variable.
         const coi = {
