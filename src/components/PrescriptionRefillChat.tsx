@@ -64,8 +64,8 @@ export type RefillAnswers = {
   paid: boolean;
 };
 
-const REFILL_PRICE_CENTS = 500;
-const REFILL_PRICE_DISPLAY = "$5.00";
+const REFILL_PRICE_CENTS = 1000;
+const REFILL_PRICE_DISPLAY = "€10.00";
 const PRESCRIBER_NAME = "Dr. Didier Decamps";
 const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
