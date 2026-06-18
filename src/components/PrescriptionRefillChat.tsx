@@ -30,6 +30,7 @@ import { STRIPE_PAYMENT_LINKS } from "@/lib/stripe";
 import { getDeviceId } from "@/lib/freeCredits";
 import ciraLogo from "@/assets/cira-logo.svg";
 import HealthScreeningChat from "@/components/HealthScreeningChat";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export type DrugDetails = {
   drug: string;
@@ -64,8 +65,8 @@ export type RefillAnswers = {
   paid: boolean;
 };
 
-const REFILL_PRICE_CENTS = 500;
-const REFILL_PRICE_DISPLAY = "$5.00";
+const REFILL_PRICE_CENTS = 1000;
+const REFILL_PRICE_DISPLAY = "€10.00";
 const PRESCRIBER_NAME = "Dr. Didier Decamps";
 const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
@@ -517,8 +518,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
 
   // --- Step 2 ---
   const handleFilePicked: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     e.target.value = ""; // reset input immediately so re-upload works
 
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -526,37 +527,68 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     );
     setLastCaptureMethod(isMobile ? "camera" : "upload");
 
-    // Create a preview URL for the uploaded photo
+    // Preview of the first uploaded photo (multi-file support)
     const reader = new FileReader();
     reader.onload = () => {
       setUploadedPhotoUrl(reader.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(files[0]);
 
     setSub2("upload-reading");
 
-    try {
-      // Build multipart/form-data payload with the image
-      const formData = new FormData();
-      formData.append("file", file);
+    if (files.length > 1) {
+      pushMsg({
+        role: "ai",
+        kind: "text",
+        text: t(
+          "pages.prescriptionRefill.chat.ocrMulti",
+          { defaultValue: "Scanning {{count}} prescriptions…", count: files.length }
+        ),
+      });
+    }
 
+    try {
       const token = getToken() || "";
       const headers: Record<string, string> = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch(`${API_BASE}/api/prescription/ocr-image`, {
-        method: "POST",
-        headers,
-        body: formData,
+      // Scan each file in parallel; backend OCR endpoint accepts one image per request.
+      const ocrCalls = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch(`${API_BASE}/api/prescription/ocr-image`, {
+          method: "POST",
+          headers,
+          body: formData,
+        });
+        const data = (await res.json().catch(() => ({}))) as {
+          medications?: string[];
+          error?: string;
+        };
+        if (!res.ok && (!data.medications || data.medications.length === 0)) {
+          throw new Error(data.error || `Server error (${res.status})`);
+        }
+        return Array.isArray(data.medications) ? data.medications : [];
       });
 
-      const data = (await res.json()) as { medications?: string[]; error?: string };
-
-      // Graceful degradation: if the endpoint returned an error but also medications (empty), still handle it
-      const extractedNames: string[] = Array.isArray(data.medications) ? data.medications : [];
-
-      if (!res.ok && extractedNames.length === 0) {
-        throw new Error(data.error || `Server error (${res.status})`);
+      const settled = await Promise.allSettled(ocrCalls);
+      // Aggregate + dedupe medication names across all scanned images.
+      const seen = new Set<string>();
+      const extractedNames: string[] = [];
+      for (const r of settled) {
+        if (r.status === "fulfilled") {
+          for (const name of r.value) {
+            const key = name.trim().toLowerCase();
+            if (key && !seen.has(key)) {
+              seen.add(key);
+              extractedNames.push(name.trim());
+            }
+          }
+        }
+      }
+      const anyFailed = settled.some((r) => r.status === "rejected");
+      if (extractedNames.length === 0 && anyFailed) {
+        throw new Error("All scans failed");
       }
 
       // Match each extracted name against our local drugs database
@@ -1064,6 +1096,9 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
+            <div className="absolute right-3 top-3">
+              <LanguageSwitcher variant="header" />
+            </div>
             <div className="text-center">
               <div className="font-semibold text-foreground" style={{ fontSize: 16 }}>
                 {stageInfo.label}
@@ -1129,7 +1164,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
             ref={fileRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            multiple
             className="hidden"
             onChange={handleFilePicked}
           />

@@ -4,8 +4,9 @@ export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
   pro: "https://buy.stripe.com/4gM28scZF5YFbYufHE9Zm00",
   enterprise: "https://buy.stripe.com/eVq8wQcZF1IpbYubro9Zm01",
   
-  // Prescription refill — $5.00 one-time payment.
-  // prescription_refill: "https://buy.stripe.com/6oUfZi5xd5YF7IefHE9Zm02",
+  // Prescription refill — €10.00 one-time payment.
+  // TODO: Replace the link below with the live Stripe Payment Link priced at €10.00.
+  // The existing test link is kept as a placeholder so the flow still works in test mode.
   prescription_refill: "https://buy.stripe.com/test_6oU7sM9NtbiZ8Mi8fc9Zm04",
 
   // Referral letter — $5.00 one-time payment.

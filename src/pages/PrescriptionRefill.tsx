@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ShieldCheck, Stethoscope, ArrowRight } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 import SEO from "@/components/SEO";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import PrescriptionRefillChat from "@/components/PrescriptionRefillChat";
 import { isAuthenticated } from "@/lib/auth";
 
@@ -50,7 +51,8 @@ const PrescriptionRefill = () => {
               <span className="font-heading text-xl tracking-tight text-foreground">cira</span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher variant="header" />
               {!loggedIn && (
                 <button
                   onClick={() => navigate("/login")}
