@@ -42,28 +42,31 @@ if (typeof window === 'undefined') {
             return;
         }
 
-        // Only add COOP/COEP headers if the ?mode=scan parameter is present.
-        // This prevents the headers from breaking Google Sign-In on other pages.
-        let hasScanMode = false;
-        if (r.mode === "navigate") {
-            hasScanMode = new URL(r.url).searchParams.get("mode") === "scan";
-        } else if (r.referrer) {
-            try {
-                hasScanMode = new URL(r.referrer).searchParams.get("mode") === "scan";
-            } catch (e) { }
-        }
+        event.respondWith((async () => {
+            let hasScanMode = false;
+            if (r.mode === "navigate") {
+                hasScanMode = url.searchParams.get("mode") === "scan";
+            } else if (event.clientId) {
+                try {
+                    const client = await self.clients.get(event.clientId);
+                    if (client && client.url) {
+                        hasScanMode = new URL(client.url).searchParams.get("mode") === "scan";
+                    }
+                } catch (e) {
+                    // Fallback if client cannot be fetched
+                }
+            }
 
-        const needsHeaders = hasScanMode;
+            const needsHeaders = hasScanMode;
 
-        const request = (coepCredentialless && r.mode === "no-cors")
-            ? new Request(r, { credentials: "omit" })
-            : r;
+            const request = (coepCredentialless && r.mode === "no-cors")
+                ? new Request(r, { credentials: "omit" })
+                : r;
 
-        // Cache-first strategy for large WASM files — avoids re-downloading 10+ MB on every visit.
-        // The cached response already has the required COOP/COEP headers applied.
-        if (url.pathname.endsWith(".wasm")) {
-            event.respondWith(
-                caches.open(WASM_CACHE_VERSION).then(async (cache) => {
+            // Cache-first strategy for large WASM files — avoids re-downloading 10+ MB on every visit.
+            if (url.pathname.endsWith(".wasm")) {
+                try {
+                    const cache = await caches.open(WASM_CACHE_VERSION);
                     const cached = await cache.match(r.url);
                     if (cached) return cached;
 
@@ -72,13 +75,15 @@ if (typeof window === 'undefined') {
 
                     const buf = await response.arrayBuffer();
                     const newHeaders = new Headers(response.headers);
-                    newHeaders.set("Cross-Origin-Embedder-Policy",
-                        coepCredentialless ? "credentialless" : "require-corp"
-                    );
-                    if (!coepCredentialless) {
-                        newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+                    if (needsHeaders) {
+                        newHeaders.set("Cross-Origin-Embedder-Policy",
+                            coepCredentialless ? "credentialless" : "require-corp"
+                        );
+                        if (!coepCredentialless) {
+                            newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+                        }
+                        newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
                     }
-                    newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
 
                     const modified = new Response(buf, {
                         status: response.status,
@@ -87,39 +92,41 @@ if (typeof window === 'undefined') {
                     });
                     cache.put(r.url, modified.clone());
                     return modified;
-                }).catch((e) => { console.error(e); return fetch(request); })
-            );
-            return;
-        }
+                } catch (e) {
+                    console.error(e);
+                    return fetch(request);
+                }
+            }
 
-        event.respondWith(
-            fetch(request)
-                .then((response) => {
-                    if (response.status === 0 || !needsHeaders) {
-                        return response;
-                    }
+            try {
+                const response = await fetch(request);
+                if (response.status === 0 || !needsHeaders) {
+                    return response;
+                }
 
-                    const newHeaders = new Headers(response.headers);
-                    newHeaders.set("Cross-Origin-Embedder-Policy",
-                        coepCredentialless ? "credentialless" : "require-corp"
-                    );
-                    if (!coepCredentialless) {
-                        newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
-                    }
-                    newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
+                const newHeaders = new Headers(response.headers);
+                newHeaders.set("Cross-Origin-Embedder-Policy",
+                    coepCredentialless ? "credentialless" : "require-corp"
+                );
+                if (!coepCredentialless) {
+                    newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
+                }
+                newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
 
-                    const body = (response.status === 204 || response.status === 205 || response.status === 304)
-                        ? null
-                        : response.body;
+                const body = (response.status === 204 || response.status === 205 || response.status === 304)
+                    ? null
+                    : response.body;
 
-                    return new Response(body, {
-                        status: response.status,
-                        statusText: response.statusText,
-                        headers: newHeaders,
-                    });
-                })
-                .catch((e) => { console.error(e); return Response.error(); })
-        );
+                return new Response(body, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: newHeaders,
+                });
+            } catch (e) {
+                console.error(e);
+                return Response.error();
+            }
+        })());
     });
 
 } else {

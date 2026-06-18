@@ -372,6 +372,17 @@ export function useShenAI() {
 
         sdkRef.current = sdk;
 
+        // Guard: the WASM module must expose enums. If cross-origin isolation
+        // failed or the module only partially loaded, these can be undefined.
+        if (!sdk.OperatingMode || !sdk.OperatingMode.POSITIONING) {
+          console.error("[ShenAI] SDK loaded but enums are missing — cross-origin isolation may have failed.");
+          setError(
+            "Camera scanner could not fully initialize. Please reload the page and try again."
+          );
+          setStatus("error");
+          return;
+        }
+
         const normalizedProfile = normalizeUserProfile(userProfile);
         riskProfileRef.current = normalizedProfile;
 
