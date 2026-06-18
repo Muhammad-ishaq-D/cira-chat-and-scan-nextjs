@@ -522,10 +522,10 @@ export function useShenAI() {
         }
 
         const isFinished =
-          mState.value === activeSdk.MeasurementState?.FINISHED?.value;
+          mState.value === (activeSdk as any).MeasurementState?.FINISHED?.value;
 
         const isFailed =
-          mState.value === activeSdk.MeasurementState?.FAILED?.value;
+          mState.value === (activeSdk as any).MeasurementState?.FAILED?.value;
 
         if (isFinished) {
           if (finishHandledRef.current) return;
