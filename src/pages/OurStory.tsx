@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
-import founderPhoto from "@/assets/founder-jeanmarc.jpg";
+import founderPhoto from "@/assets/founder-jeanmarc.webp";
 import realScan from "@/assets/real-scan.webp";
 import { useNavigate } from "react-router-dom";
 import SEO from "@/components/SEO";
