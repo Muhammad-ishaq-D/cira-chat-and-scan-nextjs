@@ -1402,7 +1402,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
               emailStatus={emailStatus}
               isLoggedIn={isLoggedIn}
               signupDismissed={signupDismissed}
-              onCreateAccount={() => navigate("/signup")}
+              onCreateAccount={() => navigate("/login")}
               onDismissSignup={() => setSignupDismissed(true)}
               onDone={onExit}
             />
@@ -2832,8 +2832,8 @@ const ReviewSummaryCard = ({
         </button>
         <button
           onClick={onConfirm}
-          className="rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
-          style={{ minHeight: 52, fontSize: 16 }}
+          className="rounded-full font-semibold hover:opacity-90 transition-opacity order-1 sm:order-2"
+          style={{ minHeight: 52, fontSize: 16, backgroundColor: "#00d66f", color: "#fff" }}
         >
           {t("pages.prescriptionRefill.chat.confirmAndPay", { price: priceDisplay })}
         </button>

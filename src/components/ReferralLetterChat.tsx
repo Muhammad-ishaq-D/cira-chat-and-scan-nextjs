@@ -1014,7 +1014,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 <button
                   onClick={handleProceedToCheckout}
                   disabled={isCreatingSession}
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-[14px] font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl text-[14px] font-semibold shadow-sm hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  style={{ backgroundColor: "#00d66f", color: "#fff" }}
                 >
                   {isCreatingSession ? (
                     <>
