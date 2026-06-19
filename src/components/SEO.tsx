@@ -34,7 +34,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
   const ldArray = [...sitewideJsonLd, ...routeLdArray];
 
   return (
-    <Helmet>
+    <Helmet prioritizeSeoTags>
       <html lang={lang} />
       <title>{safeTitle}</title>
       <meta name="description" content={safeDesc} />

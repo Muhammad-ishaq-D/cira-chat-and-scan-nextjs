@@ -1,0 +1,22 @@
+{
+  "name": "Cira — AI Health Nurse",
+  "short_name": "Cira",
+  "description": "Chat about symptoms and scan your vitals in 30 seconds with your phone camera.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f6f0",
+  "theme_color": "#9E1DF4",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
