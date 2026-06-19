@@ -2822,6 +2822,9 @@ const ReviewSummaryCard = ({
           subtitle={t("pages.prescriptionRefill.chat.oneTime")}
         />
       </div>
+      <p className="text-[11px] text-muted-foreground text-center leading-snug px-1">
+        Under constant medical supervision
+      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
         <button
           onClick={onEdit}
