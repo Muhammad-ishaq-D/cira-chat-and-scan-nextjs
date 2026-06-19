@@ -115,17 +115,71 @@ const Profile = () => {
 
       // Profile
       rows.push("=== PROFILE ===");
-      row("Name", "Email", "Age", "Height (cm)", "Weight (kg)", "Sex", "Plan", "Member Since");
+      row("Name", "Email", "Age", "Height (cm)", "Weight (kg)", "Biological Sex", "Plan", "Member Since");
       const p = data.profile || {};
       row(p.name, p.email, p.age, p.height, p.weight, p.biological_sex, p.plan, p.created_at?.slice(0, 10));
       rows.push("");
 
-      // Vitals Scans
+      // Vitals Scans — all columns
       if (Array.isArray(data.vitals_scans) && data.vitals_scans.length > 0) {
         rows.push("=== VITALS SCANS ===");
-        row("Date", "Heart Rate", "Systolic BP", "Diastolic BP", "Breathing Rate", "Stress Index", "HRV SDNN", "BMI", "Wellness Score", "Vascular Age");
+        row(
+          "Date", "Scan Source",
+          "Heart Rate (bpm)", "Systolic BP (mmHg)", "Diastolic BP (mmHg)",
+          "Breathing Rate (/min)", "Stress Index", "HRV SDNN (ms)",
+          "BMI (kg/m²)", "Cardiac Workload", "Wellness Score",
+          "Signal Quality", "Vascular Age",
+          "Parasympathetic Activity",
+          "Body Fat %", "BMR (kcal)", "TDEE (kcal)",
+          "Waist-to-Height Ratio",
+          "CV Disease Risk", "Hypertension Risk", "Diabetes Risk",
+          "Body Shape Index",
+          "Coronary HD Risk", "Stroke Risk", "Heart Failure Risk", "Hard CV Event Risk"
+        );
         for (const s of data.vitals_scans) {
-          row(s.created_at?.slice(0, 10), s.heart_rate, s.systolic_bp, s.diastolic_bp, s.breathing_rate, s.stress_index, s.hrv_sdnn, s.bmi, s.wellness_score, s.vascular_age);
+          row(
+            s.created_at?.slice(0, 10), s.scan_source,
+            s.heart_rate, s.systolic_bp, s.diastolic_bp,
+            s.breathing_rate, s.stress_index, s.hrv_sdnn,
+            s.bmi, s.cardiac_workload, s.wellness_score,
+            s.signal_quality, s.vascular_age,
+            s.parasympathetic_activity,
+            s.body_fat_percentage, s.basal_metabolic_rate, s.total_daily_energy_expenditure,
+            s.waist_to_height_ratio,
+            s.cv_disease_risk, s.hypertension_risk, s.diabetes_risk,
+            s.body_shape_index,
+            s.coronary_heart_disease_risk, s.stroke_risk, s.heart_failure_risk, s.hard_cv_event_risk
+          );
+        }
+      }
+      rows.push("");
+
+      // Reports
+      if (Array.isArray(data.reports) && data.reports.length > 0) {
+        rows.push("=== REPORTS ===");
+        row("Date", "Title", "Type", "Summary");
+        for (const r of data.reports) {
+          row(r.created_at?.slice(0, 10), r.title, r.type, r.summary || r.content || "");
+        }
+        rows.push("");
+      }
+
+      // Chat History — flatten sessions + messages
+      if (Array.isArray(data.chat_history) && data.chat_history.length > 0) {
+        rows.push("=== CHAT HISTORY ===");
+        row("Session Date", "Session ID", "Role", "Message", "Message Date");
+        for (const session of data.chat_history) {
+          if (Array.isArray(session.messages)) {
+            for (const msg of session.messages) {
+              row(
+                session.created_at?.slice(0, 10),
+                session.id,
+                msg.role,
+                msg.content,
+                msg.created_at?.slice(0, 10)
+              );
+            }
+          }
         }
         rows.push("");
       }
@@ -134,8 +188,8 @@ const Profile = () => {
       if (Array.isArray(data.payments) && data.payments.length > 0) {
         rows.push("=== PAYMENTS ===");
         row("Date", "Amount", "Currency", "Status", "Description");
-        for (const p of data.payments) {
-          row(p.created_at?.slice(0, 10), p.amount, p.currency || "eur", p.status, p.description || p.plan_id || "");
+        for (const pay of data.payments) {
+          row(pay.created_at?.slice(0, 10), pay.amount, pay.currency || "eur", pay.status, pay.description || pay.plan_id || "");
         }
         rows.push("");
       }
@@ -147,6 +201,7 @@ const Profile = () => {
         for (const c of data.consent_history) {
           row(c.created_at?.slice(0, 10), c.necessary, c.analytics, c.functional);
         }
+        rows.push("");
       }
 
       const csvBlob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
@@ -278,7 +333,7 @@ const Profile = () => {
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
+              <label className="text-xs text-muted-foreground font-body mb-1 flex items-center gap-1">
                 <Mail size={12} /> {t("profile.email")}
               </label>
               <input
@@ -320,7 +375,7 @@ const Profile = () => {
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
+                <label className="text-xs text-muted-foreground font-body mb-1 flex items-center gap-1">
                   <Calendar size={12} /> {t("profile.age")}
                 </label>
                 <div className="relative">
@@ -339,7 +394,7 @@ const Profile = () => {
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
+                <label className="text-xs text-muted-foreground font-body mb-1 flex items-center gap-1">
                   <Ruler size={12} /> {t("profile.height")}
                 </label>
                 <div className="relative">
@@ -358,7 +413,7 @@ const Profile = () => {
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground font-body mb-1 block flex items-center gap-1">
+                <label className="text-xs text-muted-foreground font-body mb-1 flex items-center gap-1">
                   <Weight size={12} /> {t("profile.weight")}
                 </label>
                 <div className="relative">
