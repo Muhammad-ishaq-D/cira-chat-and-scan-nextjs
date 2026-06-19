@@ -97,10 +97,19 @@ async function put<T = any>(endpoint: string, body?: any): Promise<T> {
 async function del<T = any>(endpoint: string): Promise<T> {
   const res = await authFetch(endpoint, { method: "DELETE" });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || err.message || `Request failed (${res.status})`);
+    const errText = await res.text();
+    const err = errText ? (() => {
+      try { return JSON.parse(errText); } catch { return { message: errText }; }
+    })() : {};
+    const errorMsg = typeof err.error === "string" ? err.error
+      : typeof err.message === "string" ? err.message
+      : `Request failed (${res.status})`;
+    throw new Error(errorMsg);
   }
-  return res.json();
+  if (res.status === 204) return {} as T;
+  const text = await res.text();
+  if (!text) return {} as T;
+  try { return JSON.parse(text) as T; } catch { return { message: text } as T; }
 }
 
 // ─── User Profile ───────────────────────────────────────────────
