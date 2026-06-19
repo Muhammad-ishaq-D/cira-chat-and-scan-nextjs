@@ -213,7 +213,7 @@ const AdminPrescriptionRefills = () => {
             const isDeciding = !!deciding[refund.id];
             const noteOpen = expandedNote === refund.id;
             const amountDisplay = refund.amount_charged != null
-              ? `$${Number(refund.amount_charged).toFixed(2)}`
+              ? `€${Number(refund.amount_charged).toFixed(2)}`
               : "—";
             const medsDisplay = refund.medications.length > 0
               ? refund.medications.map(m => [m.drug_name_inn, m.drug_strength, m.drug_form].filter(Boolean).join(" ")).join(", ")
