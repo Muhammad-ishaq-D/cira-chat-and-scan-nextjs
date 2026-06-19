@@ -366,7 +366,7 @@ export const adminApi = {
   },
 
   // Analytics
-  getAnalytics: () => adminGet("/api/admin/analytics"),
+  getAnalytics: (period?: string) => adminGet(`/api/admin/analytics${period ? `?period=${period}` : ""}`),
 
   // Settings
   getSettings: () => adminGet("/api/admin/settings"),
