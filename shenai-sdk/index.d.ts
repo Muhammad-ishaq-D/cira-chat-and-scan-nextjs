@@ -49,6 +49,21 @@ export interface Heartbeat {
   duration_ms: number
 }
 
+export interface MeasurementQualityMetrics {
+  ppg_quality_index: number | null
+  bcg_quality_index: number | null
+  breathing_quality_index: number | null
+  blood_pressure_quality_index: number | null
+  expected_sbp_median_abs_error_mmHg: number | null
+  expected_sbp_p80_abs_error_mmHg: number | null
+  expected_sbp_mean_abs_error_mmHg: number | null
+  expected_sbp_balanced_mae_mmHg: number | null
+  expected_dbp_median_abs_error_mmHg: number | null
+  expected_dbp_p80_abs_error_mmHg: number | null
+  expected_dbp_mean_abs_error_mmHg: number | null
+  expected_dbp_balanced_mae_mmHg: number | null
+}
+
 export interface MeasurementResults {
   heart_rate_bpm: number
   hrv_sdnn_ms: number | null
@@ -64,6 +79,7 @@ export interface MeasurementResults {
   bmi_category: BmiCategory | null
   weight_kg: number | null
   height_cm: number | null
+  quality_metrics: MeasurementQualityMetrics | null
   heartbeats: Heartbeat[]
   average_signal_quality: number
 }
@@ -215,6 +231,7 @@ export interface InitializationSettings {
   cameraMode?: CameraMode
   cameraAspectRatio?: number
   onboardingMode?: OnboardingMode
+  localMemoryEnabled?: boolean
   showUserInterface?: boolean
   showFacePositioningOverlay?: boolean
   showVisualWarnings?: boolean
@@ -245,6 +262,8 @@ export interface InitializationSettings {
   customColorTheme?: CustomColorTheme
   customMeasurementConfig?: CustomMeasurementConfig
   pdfLogoId?: string
+  pdfEmailSubject?: string
+  pdfEmailBody?: string
   includeTimestampInPdf?: boolean
   risksFactors?: RisksFactors
   uiFlowScreens?: Screen[]
@@ -463,6 +482,8 @@ export interface ShenaiSDK extends ShenaiSDKEnums {
   getSDKConfigString: () => string
   applySDKConfig(configJson: string): void
   setPdfLogoId: (logoId: string) => void
+  setPdfEmailSubject: (subject: string) => void
+  setPdfEmailBody: (body: string) => void
   setIncludeTimestampInPdf: (include: boolean) => void
   getIncludeTimestampInPdf: () => boolean
 
