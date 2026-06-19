@@ -37,7 +37,7 @@ const sum = (arr: any[], key = "count") =>
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 const Skeleton = () => (
-  <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6 animate-pulse">
+  <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6 animate-pulse">
     <div className="flex items-center justify-between gap-3">
       <div className="space-y-2"><div className="h-6 w-28 sm:w-36 bg-muted rounded-xl"/><div className="h-4 w-40 sm:w-56 bg-muted rounded-xl hidden sm:block"/></div>
       <div className="h-9 flex-1 max-w-xs bg-muted rounded-2xl"/>
@@ -150,34 +150,27 @@ const AdminAnalytics = () => {
   const axisTick = { fontSize: 10, fontWeight: 500, fill: "hsl(var(--muted-foreground))" };
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6">
 
       {/* ── Page header ── */}
-      <div className="flex flex-col gap-3 sm:gap-4">
-        {/* Title row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <BarChart2 size={17} className="text-primary"/>
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-none">Analytics</h1>
-              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-0.5 hidden sm:block">Platform usage & engagement intelligence</p>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        {/* Title */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <BarChart2 size={17} className="text-primary"/>
           </div>
-          {/* Refresh on mobile sits here */}
-          <button onClick={() => load(period)}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground transition-all sm:hidden">
-            <RefreshCw size={13} className={loading ? "animate-spin" : ""}/>
-          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-none">Analytics</h1>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-0.5">Platform usage & engagement intelligence</p>
+          </div>
         </div>
 
-        {/* Period selector row */}
-        <div className="flex items-center gap-2">
-          <div className="flex-1 grid grid-cols-4 bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-1 gap-1 shadow-sm">
+        {/* Period selector + refresh */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="grid grid-cols-4 sm:flex bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-1 gap-1 shadow-sm flex-1 sm:flex-none">
             {PERIODS.map(({ id, label }) => (
               <button key={id} onClick={() => setPeriod(id)}
-                className={`py-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap text-center ${
+                className={`px-3 sm:px-4 py-2 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap text-center ${
                   period === id
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -185,9 +178,8 @@ const AdminAnalytics = () => {
               >{label}</button>
             ))}
           </div>
-          {/* Refresh on desktop */}
           <button onClick={() => load(period)}
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all">
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all shrink-0">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""}/>
           </button>
         </div>
