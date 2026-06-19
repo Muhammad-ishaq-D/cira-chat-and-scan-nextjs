@@ -156,17 +156,17 @@ export const userApi = {
 //   POST   /api/user/gdpr/consent  → append-only consent audit log
 // All endpoints are JWT-protected.
 export const gdprApi = {
-  /** Download a full data export as a Blob (JSON). */
+  /** Download a full data export as a Blob (JSON). Backend: GET /api/user/export */
   exportData: async (): Promise<Blob> => {
-    const res = await authFetch("/api/user/gdpr/export");
+    const res = await authFetch("/api/user/export");
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || err.message || `Export failed (${res.status})`);
     }
     return res.blob();
   },
-  /** Permanently delete the user's account and associated data. */
-  deleteAccount: () => del("/api/user/gdpr/account"),
+  /** Permanently delete the user's account and associated data. Backend: DELETE /api/user/account */
+  deleteAccount: () => del("/api/user/account"),
   /** Append-only consent log. Best-effort; safe to ignore failures. */
   recordConsent: (record: {
     version: number;
