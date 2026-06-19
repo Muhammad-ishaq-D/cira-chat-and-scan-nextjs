@@ -1,4 +1,4 @@
-Error: content type "application/wasm" is not allowed
+Error: unsupported file extension: .wasm
 Usage:
   lovable-assets create --file <path> [flags]
 
