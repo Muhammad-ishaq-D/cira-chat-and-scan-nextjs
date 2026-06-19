@@ -26,6 +26,9 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" />
   </noscript>
+  <link rel="preload" as="image" href="/cira-logo.svg" type="image/svg+xml" />
+  <link rel="preload" as="image" href="/face-normal.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/face-heatmap.webp" type="image/webp" fetchpriority="high" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
   <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -35,24 +38,26 @@
          so a page-level prefetch would download the 10MB WASM twice (once for
          the page cache, once through the SW). Nginx already serves the file
          with immutable cache + gzip, so the SW fetch is fast on repeat visits. -->
-  <!-- Google tag (gtag.js) with GDPR-compliant Consent Mode v2 default denied -->
+  <!-- Google tag (gtag.js) with GDPR-compliant Consent Mode v2 — deferred inline init so it does not block parsing -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KQ560MCJ9Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
-    // Default everything to denied until the user makes a choice (GDPR).
-    gtag('consent', 'default', {
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      analytics_storage: 'denied',
-      functionality_storage: 'denied',
-      personalization_storage: 'denied',
-      security_storage: 'granted',
-      wait_for_update: 500
-    });
-    gtag('js', new Date());
-    gtag('config', 'G-KQ560MCJ9Y', { anonymize_ip: true });
+    (function () {
+      // Default everything to denied until the user makes a choice (GDPR).
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'denied',
+        personalization_storage: 'denied',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('js', new Date());
+      gtag('config', 'G-KQ560MCJ9Y', { anonymize_ip: true });
+    })();
   </script>
   <title>Cira — your AI health nurse, anytime</title>
 
