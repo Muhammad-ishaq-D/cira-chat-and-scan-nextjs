@@ -29,7 +29,7 @@ const PALETTE = {
 const PIE_COLORS = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981", "#f43f5e", "#94a3b8"];
 
 const fmt    = (n: number) => n >= 1_000_000 ? `${(n/1_000_000).toFixed(1)}M` : n >= 1000 ? `${(n/1000).toFixed(1)}k` : String(Math.round(n));
-const fmtEur = (n: number) => `€${Number(n).toFixed(2)}`;
+const fmtEur = (n: number) => `$${Number(n).toFixed(2)}`;
 const pctStr = (a: number, b: number) => b > 0 ? `${((a / b) * 100).toFixed(1)}%` : "0.0%";
 
 const sum = (arr: any[], key = "count") =>
@@ -37,21 +37,21 @@ const sum = (arr: any[], key = "count") =>
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 const Skeleton = () => (
-  <div className="max-w-7xl mx-auto px-6 py-8 pb-24 md:pb-8 space-y-6 animate-pulse">
-    <div className="flex items-center justify-between">
-      <div className="space-y-2"><div className="h-7 w-36 bg-muted rounded-xl"/><div className="h-4 w-56 bg-muted rounded-xl"/></div>
-      <div className="h-9 w-72 bg-muted rounded-2xl"/>
+  <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6 animate-pulse">
+    <div className="flex items-center justify-between gap-3">
+      <div className="space-y-2"><div className="h-6 w-28 sm:w-36 bg-muted rounded-xl"/><div className="h-4 w-40 sm:w-56 bg-muted rounded-xl hidden sm:block"/></div>
+      <div className="h-9 flex-1 max-w-xs bg-muted rounded-2xl"/>
     </div>
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-      {[...Array(5)].map((_,i) => <div key={i} className="h-32 bg-card border border-border/40 rounded-2xl"/>)}
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
+      {[...Array(5)].map((_,i) => <div key={i} className="h-28 sm:h-32 bg-card border border-border/40 rounded-2xl"/>)}
     </div>
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-      <div className="h-72 bg-card border border-border/40 rounded-2xl"/>
-      <div className="h-72 bg-card border border-border/40 rounded-2xl"/>
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5">
+      <div className="h-60 sm:h-72 bg-card border border-border/40 rounded-2xl"/>
+      <div className="h-60 sm:h-72 bg-card border border-border/40 rounded-2xl"/>
     </div>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <div className="lg:col-span-2 h-72 bg-card border border-border/40 rounded-2xl"/>
-      <div className="h-72 bg-card border border-border/40 rounded-2xl"/>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+      <div className="lg:col-span-2 h-60 sm:h-72 bg-card border border-border/40 rounded-2xl"/>
+      <div className="h-60 sm:h-72 bg-card border border-border/40 rounded-2xl"/>
     </div>
   </div>
 );
@@ -150,26 +150,34 @@ const AdminAnalytics = () => {
   const axisTick = { fontSize: 10, fontWeight: 500, fill: "hsl(var(--muted-foreground))" };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-28 md:pb-8 space-y-4 sm:space-y-6">
 
       {/* ── Page header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        {/* Title row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <BarChart2 size={17} className="text-primary"/>
             </div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Analytics</h1>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-none">Analytics</h1>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-0.5 hidden sm:block">Platform usage & engagement intelligence</p>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest pl-10">Platform usage & engagement intelligence</p>
+          {/* Refresh on mobile sits here */}
+          <button onClick={() => load(period)}
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground transition-all sm:hidden">
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""}/>
+          </button>
         </div>
 
+        {/* Period selector row */}
         <div className="flex items-center gap-2">
-          {/* Period pill */}
-          <div className="flex items-center bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-1 gap-0.5 shadow-sm">
+          <div className="flex-1 grid grid-cols-4 bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-1 gap-1 shadow-sm">
             {PERIODS.map(({ id, label }) => (
               <button key={id} onClick={() => setPeriod(id)}
-                className={`px-4 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`py-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap text-center ${
                   period === id
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -177,35 +185,35 @@ const AdminAnalytics = () => {
               >{label}</button>
             ))}
           </div>
+          {/* Refresh on desktop */}
           <button onClick={() => load(period)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all">
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-border/50 bg-card/60 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all">
             <RefreshCw size={14} className={loading ? "animate-spin" : ""}/>
           </button>
         </div>
       </div>
 
       {/* ── KPI row ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
         {kpis.map((k) => {
           const Icon = k.icon;
           const displayVal = k.isMoney ? fmtEur(k.value) : fmt(k.value);
           const lifetimeVal = k.isMoney ? fmtEur(k.lifetime) : fmt(k.lifetime);
           return (
             <div key={k.key}
-              className="group relative bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/25 transition-all overflow-hidden">
-              {/* subtle bg glow on hover */}
+              className="group relative bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-3.5 sm:p-5 shadow-sm hover:shadow-md hover:border-primary/25 transition-all overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"/>
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${k.color} mb-4 relative z-10`}>
-                <Icon size={16}/>
+              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center ${k.color} mb-3 sm:mb-4 relative z-10`}>
+                <Icon size={15}/>
               </div>
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest mb-1 relative z-10">{k.label}</p>
-              <p className="text-[1.6rem] font-extrabold text-foreground leading-none tracking-tight relative z-10">{displayVal}</p>
-              <div className="flex items-center justify-between mt-2.5 relative z-10">
-                <p className="text-[10px] text-muted-foreground">
-                  {isLifetime ? "Total since launch" : `Lifetime: ${lifetimeVal}`}
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-semibold uppercase tracking-widest mb-0.5 sm:mb-1 relative z-10">{k.label}</p>
+              <p className="text-xl sm:text-[1.6rem] font-extrabold text-foreground leading-none tracking-tight relative z-10">{displayVal}</p>
+              <div className="flex items-center justify-between mt-2 sm:mt-2.5 relative z-10">
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
+                  {isLifetime ? "Since launch" : `All time: ${lifetimeVal}`}
                 </p>
                 {k.key === "paid" && (
-                  <span className="text-[10px] font-bold text-fuchsia-600 bg-fuchsia-50 px-1.5 py-0.5 rounded-md">{convRate}</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-fuchsia-600 bg-fuchsia-50 px-1.5 py-0.5 rounded-md shrink-0 ml-1">{convRate}</span>
                 )}
               </div>
             </div>
@@ -214,10 +222,10 @@ const AdminAnalytics = () => {
       </div>
 
       {/* ── Charts row ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5">
 
         {/* Visitors & Signups */}
-        <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-6 shadow-sm">
+        <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-4 sm:p-6 shadow-sm">
           <SectionHeader icon={Globe} title="Visitors & Signups" color="bg-violet-100 text-violet-600"/>
           <div className="flex items-center gap-4 mb-4">
             {[
@@ -261,7 +269,7 @@ const AdminAnalytics = () => {
         </div>
 
         {/* Scans & Revenue */}
-        <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-6 shadow-sm">
+        <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-4 sm:p-6 shadow-sm">
           <SectionHeader icon={TrendingUp} title="Scans & Revenue" color="bg-amber-100 text-amber-600"/>
           <div className="flex items-center gap-4 mb-4">
             {[
@@ -306,10 +314,10 @@ const AdminAnalytics = () => {
       </div>
 
       {/* ── Bottom row ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
 
         {/* Top Pages */}
-        <div className="lg:col-span-2 bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-4 sm:p-6 shadow-sm">
           <SectionHeader icon={MapPin} title="User Journey — Top Pages" color="bg-primary/10 text-primary"/>
           {(data?.top_pages||[]).length === 0 ? (
             <div className="py-12 flex flex-col items-center justify-center gap-2">
@@ -346,7 +354,7 @@ const AdminAnalytics = () => {
         <div className="space-y-4">
 
           {/* Plan distribution */}
-          <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-5 shadow-sm">
+          <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-4 sm:p-5 shadow-sm">
             <SectionHeader icon={PieChartIcon} title="Plan Distribution" color="bg-fuchsia-100 text-fuchsia-600"/>
             {(data?.plan_distribution||[]).length === 0 ? (
               <p className="text-xs text-muted-foreground py-4 text-center">No subscription data</p>
