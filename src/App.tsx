@@ -57,24 +57,14 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Warm the service worker's WASM cache in the background so the first scan loads fast.
-    // We wait for the SW to be controlling the page before fetching so the request goes through
-    // the SW's cache-first handler (not just the browser HTTP cache which the SW ignores).
-    const triggerPrefetch = () => {
-      fetch("/wasm/shenai_sdk.wasm", { priority: "low" as any }).catch(() => {});
-    };
-
-    const prefetchTimer = setTimeout(() => {
-      if (typeof window === "undefined") return;
-      if ("requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(triggerPrefetch);
-      } else {
-        triggerPrefetch();
-      }
-    }, 3000);
-
-    return () => clearTimeout(prefetchTimer);
+    // NOTE: We intentionally do NOT prefetch /wasm/shenai_sdk.wasm here.
+    // On production (askainurse.com) the path is only resolvable via the COI
+    // service worker. An early page-level fetch races the SW activation and
+    // hits raw nginx — producing a 404 in the console. The SDK loads the WASM
+    // on first scan; users hovering the "Scan" CTA in pages/Index.tsx trigger
+    // a warm fetch at a moment when the SW is reliably active.
   }, []);
+
 
   return (
     <QueryClientProvider client={queryClient}>
