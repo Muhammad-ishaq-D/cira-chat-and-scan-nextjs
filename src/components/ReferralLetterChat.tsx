@@ -745,7 +745,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
               {/* Buttons */}
               <div className="flex flex-col gap-2 pt-2">
                 <button
-                  onClick={() => navigate("/doctor")}
+                  onClick={() => window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer")}
                   className="w-full py-2.5 rounded-xl bg-card border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
                 >
                   <Users size={15} />
@@ -1019,7 +1019,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                   onClick={handleProceedToCheckout}
                   disabled={isCreatingSession}
                   className="w-full py-3 rounded-xl text-[14px] font-semibold shadow-sm hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  style={{ backgroundColor: "#00d66f", color: "#fff" }}
+                  style={{ backgroundColor: "#db57b1", color: "#fff" }}
                 >
                   {isCreatingSession ? (
                     <>
