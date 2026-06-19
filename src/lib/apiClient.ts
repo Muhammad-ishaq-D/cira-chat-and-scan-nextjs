@@ -159,11 +159,10 @@ export const userApi = {
 };
 
 // ─── GDPR / Data Subject Rights ─────────────────────────────────
-// Backend spec (Node/MySQL):
-//   GET    /api/user/gdpr/export   → 200 JSON { profile, vitalsScans, reports, chats, payments, consents }
-//   DELETE /api/user/gdpr/account  → 200; hard-delete or anonymize within 30d
+// Backend routes (Node/MySQL, JWT-protected):
+//   GET    /api/user/export        → JSON blob download
+//   DELETE /api/user/account       → schedules anonymization within 30d
 //   POST   /api/user/gdpr/consent  → append-only consent audit log
-// All endpoints are JWT-protected.
 export const gdprApi = {
   /** Download a full data export as a Blob (JSON). Backend: GET /api/user/export */
   exportData: async (): Promise<Blob> => {
