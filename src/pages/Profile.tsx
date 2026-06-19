@@ -95,38 +95,87 @@ const Profile = () => {
 
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
 
   const handleExportData = async () => {
     setExporting(true);
     try {
       const blob = await gdprApi.exportData();
-      const url = URL.createObjectURL(blob);
+      const json = await blob.text();
+      const data = JSON.parse(json);
+
+      const rows: string[] = [];
+      const q = (v: any) => {
+        if (v == null) return "";
+        const s = String(v).replace(/"/g, '""');
+        return s.includes(",") || s.includes("\n") || s.includes('"') ? `"${s}"` : s;
+      };
+      const row = (...cells: any[]) => rows.push(cells.map(q).join(","));
+
+      // Profile
+      rows.push("=== PROFILE ===");
+      row("Name", "Email", "Age", "Height (cm)", "Weight (kg)", "Sex", "Plan", "Member Since");
+      const p = data.profile || {};
+      row(p.name, p.email, p.age, p.height, p.weight, p.biological_sex, p.plan, p.created_at?.slice(0, 10));
+      rows.push("");
+
+      // Vitals Scans
+      if (Array.isArray(data.vitals_scans) && data.vitals_scans.length > 0) {
+        rows.push("=== VITALS SCANS ===");
+        row("Date", "Heart Rate", "Systolic BP", "Diastolic BP", "Breathing Rate", "Stress Index", "HRV SDNN", "BMI", "Wellness Score", "Vascular Age");
+        for (const s of data.vitals_scans) {
+          row(s.created_at?.slice(0, 10), s.heart_rate, s.systolic_bp, s.diastolic_bp, s.breathing_rate, s.stress_index, s.hrv_sdnn, s.bmi, s.wellness_score, s.vascular_age);
+        }
+        rows.push("");
+      }
+
+      // Payments
+      if (Array.isArray(data.payments) && data.payments.length > 0) {
+        rows.push("=== PAYMENTS ===");
+        row("Date", "Amount", "Currency", "Status", "Description");
+        for (const p of data.payments) {
+          row(p.created_at?.slice(0, 10), p.amount, p.currency || "eur", p.status, p.description || p.plan_id || "");
+        }
+        rows.push("");
+      }
+
+      // Consent History
+      if (Array.isArray(data.consent_history) && data.consent_history.length > 0) {
+        rows.push("=== CONSENT HISTORY ===");
+        row("Date", "Necessary", "Analytics", "Functional");
+        for (const c of data.consent_history) {
+          row(c.created_at?.slice(0, 10), c.necessary, c.analytics, c.functional);
+        }
+      }
+
+      const csvBlob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(csvBlob);
       const a = document.createElement("a");
       a.href = url;
-      const stamp = new Date().toISOString().slice(0, 10);
-      a.download = `cira-data-export-${stamp}.json`;
+      a.download = `cira-data-export-${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
       toast.success(t("profile.gdpr.exportSuccess", "Your data export was downloaded."));
     } catch (err: any) {
-      toast.error(
-        err?.message || t("profile.gdpr.exportFailed", "Could not export your data.")
-      );
+      toast.error(err?.message || t("profile.gdpr.exportFailed", "Could not export your data."));
     } finally {
       setExporting(false);
     }
   };
 
   const handleDeleteAccount = async () => {
-    const confirmation = window.prompt(
-      t(
-        "profile.gdpr.deleteConfirmPrompt",
-        'This permanently deletes your account, vitals, chats and reports. Type "DELETE" to confirm.'
-      )
-    );
-    if (confirmation !== "DELETE") return;
+    if (!showDeleteConfirm) {
+      setShowDeleteConfirm(true);
+      setDeleteInput("");
+      return;
+    }
+    if (deleteInput !== "DELETE") {
+      toast.error('Please type "DELETE" exactly to confirm.');
+      return;
+    }
     setDeleting(true);
     try {
       await gdprApi.deleteAccount();
@@ -137,6 +186,7 @@ const Profile = () => {
       toast.error(err.message || t("profile.errors.deleteFailed", "Failed to delete account."));
     } finally {
       setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -393,6 +443,39 @@ const Profile = () => {
               {t("profile.deleteAccount")}
             </button>
           </div>
+
+          {showDeleteConfirm && (
+            <div className="mt-2 p-4 bg-destructive/5 border border-destructive/20 rounded-xl space-y-3">
+              <p className="text-xs text-destructive font-medium">
+                This will permanently delete your account, vitals, chats and reports. Type{" "}
+                <span className="font-bold">DELETE</span> to confirm.
+              </p>
+              <input
+                type="text"
+                value={deleteInput}
+                onChange={(e) => setDeleteInput(e.target.value)}
+                placeholder="Type DELETE here"
+                autoFocus
+                className="w-full py-2 px-3 rounded-xl border border-destructive/30 bg-background text-foreground text-sm font-body outline-none focus:ring-2 focus:ring-destructive/30 placeholder:text-muted-foreground"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); }}
+                  className="flex-1 py-2 rounded-xl border border-border text-foreground text-sm font-medium font-body hover:bg-accent transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting || deleteInput !== "DELETE"}
+                  className="flex-1 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium font-body hover:bg-destructive/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  Confirm Delete
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
