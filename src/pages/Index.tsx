@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ciraLogo from "@/assets/cira-logo.svg";
-import dashboardPreview from "@/assets/dashboard-preview.png";
-import founderPhoto from "@/assets/founder-jeanmarc.jpg";
+import dashboardPreview from "@/assets/dashboard-preview.webp";
+import founderPhoto from "@/assets/founder-jeanmarc.webp";
 import realScan from "@/assets/real-scan.webp";
-import faceNormal from "@/assets/face-normal.jpg";
-import faceHeatmap from "@/assets/face-heatmap.jpg";
+import faceNormal from "@/assets/face-normal.webp";
+import faceHeatmap from "@/assets/face-heatmap.webp";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { isAuthenticated, getUser } from "@/lib/auth";

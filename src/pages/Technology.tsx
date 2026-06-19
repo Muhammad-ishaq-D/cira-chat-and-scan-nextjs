@@ -19,10 +19,10 @@ import {
   FileText,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
-import scanImg from "@/assets/tech-scan.jpg";
-import rppgImg from "@/assets/tech-rppg.jpg";
-import researchImg from "@/assets/tech-research.jpg";
-import privacyImg from "@/assets/tech-privacy.jpg";
+import scanImg from "@/assets/tech-scan.webp";
+import rppgImg from "@/assets/tech-rppg.webp";
+import researchImg from "@/assets/tech-research.webp";
+import privacyImg from "@/assets/tech-privacy.webp";
 import SEO from "@/components/SEO";
 
 const heroBadges = [

@@ -22,10 +22,10 @@ import {
   Minus,
 } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
-import talkImg from "@/assets/how-talk.jpg";
-import scanImg from "@/assets/how-scan.jpg";
-import nextImg from "@/assets/how-next.jpg";
-import chronicImg from "@/assets/how-chronic.jpg";
+import talkImg from "@/assets/how-talk.webp";
+import scanImg from "@/assets/how-scan.webp";
+import nextImg from "@/assets/how-next.webp";
+import chronicImg from "@/assets/how-chronic.webp";
 import SEO from "@/components/SEO";
 import {
   Accordion,

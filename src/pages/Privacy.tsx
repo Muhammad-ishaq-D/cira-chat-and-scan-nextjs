@@ -8,9 +8,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import ciraLogo from "@/assets/cira-logo.svg";
-import talkImg from "@/assets/privacy-talk.jpg";
-import scanImg from "@/assets/privacy-scan.jpg";
-import nextImg from "@/assets/privacy-next.jpg";
+import talkImg from "@/assets/privacy-talk.webp";
+import scanImg from "@/assets/privacy-scan.webp";
+import nextImg from "@/assets/privacy-next.webp";
 import SEO from "@/components/SEO";
 
 const principles = [

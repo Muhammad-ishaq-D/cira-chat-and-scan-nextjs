@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ciraLogo from "@/assets/cira-logo.svg";
-import helpDecide from "@/assets/help-decide.jpg";
-import helpRealLife from "@/assets/help-reallife.jpg";
-import helpClarity from "@/assets/help-clarity.jpg";
+import helpDecide from "@/assets/help-decide.webp";
+import helpRealLife from "@/assets/help-reallife.webp";
+import helpClarity from "@/assets/help-clarity.webp";
 import SEO from "@/components/SEO";
 import {
   Stethoscope,
