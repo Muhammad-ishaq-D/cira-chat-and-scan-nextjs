@@ -188,7 +188,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "low-confidence"
     | "edit";
   const [sub2, setSub2] = useState<Sub2>("upload-pending");
-  const [ocrResults, setOcrResults] = useState<Array<{ name: string; available: boolean; match: DrugRow | null }>>([]);
+  const [ocrResults, setOcrResults] = useState<Array<{ name: string; strength?: string | null; dosage?: string | null; quantity?: string | null; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
   const [lastCaptureMethod, setLastCaptureMethod] = useState<"camera" | "upload" | null>(null);
@@ -561,7 +561,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           headers,
           body: formData,
         });
-        type OcrMed = { name: string; strength?: string | null; form?: string | null; dosage?: string | null; confidence?: number };
+        type OcrMed = { name: string; strength?: string | null; form?: string | null; dosage?: string | null; quantity?: string | null; confidence?: number };
         const data = (await res.json().catch(() => ({}))) as {
           medications?: OcrMed[] | string[];
           error?: string;
@@ -569,46 +569,47 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         if (!res.ok && (!data.medications || data.medications.length === 0)) {
           throw new Error(data.error || `Server error (${res.status})`);
         }
-        // Normalise to string names — handle both old string[] and new object[] format
+        // Normalise to objects — handle both old string[] and new object[] format
         return Array.isArray(data.medications)
           ? (data.medications as Array<OcrMed | string>).map((m) =>
-              typeof m === "string" ? m : m.name
+              typeof m === "string"
+                ? { name: m, strength: null, dosage: null, quantity: null }
+                : { name: m.name, strength: m.strength || null, dosage: m.dosage || null, quantity: m.quantity || null }
             )
           : [];
       });
 
       const settled = await Promise.allSettled(ocrCalls);
-      // Aggregate + dedupe medication names across all scanned images.
+      // Aggregate + dedupe medication objects across all scanned images.
+      type ExtractedMed = { name: string; strength: string | null; dosage: string | null; quantity: string | null };
       const seen = new Set<string>();
-      const extractedNames: string[] = [];
+      const extractedMeds: ExtractedMed[] = [];
       for (const r of settled) {
         if (r.status === "fulfilled") {
-          for (const name of r.value) {
-            const key = name.trim().toLowerCase();
+          for (const med of r.value) {
+            const key = med.name.trim().toLowerCase().replace(/[\s\-\.]/g, "");
             if (key && !seen.has(key)) {
               seen.add(key);
-              extractedNames.push(name.trim());
+              extractedMeds.push({ ...med, name: med.name.trim() });
             }
           }
         }
       }
       const anyFailed = settled.some((r) => r.status === "rejected");
-      if (extractedNames.length === 0 && anyFailed) {
+      if (extractedMeds.length === 0 && anyFailed) {
         throw new Error("All scans failed");
       }
 
-      // Match each extracted name against our local drugs database
-      const results = extractedNames.map((name) => {
-        const q = name.toLowerCase();
+      // Match each extracted name against our local drugs database (fuzzy)
+      const results = extractedMeds.map(({ name, strength, dosage, quantity }) => {
+        const q = name.toLowerCase().replace(/[\-\s]/g, "");
         const match =
-          DRUGS.find(
-            (d) =>
-              d.product_name.toLowerCase().includes(q) ||
-              d.inn_name.toLowerCase().includes(q) ||
-              q.includes(d.product_name.toLowerCase()) ||
-              q.includes(d.inn_name.toLowerCase())
-          ) || null;
-        return { name, available: !!match, match };
+          DRUGS.find((d) => {
+            const pn = d.product_name.toLowerCase().replace(/[\-\s]/g, "");
+            const inn = d.inn_name.toLowerCase().replace(/[\-\s]/g, "");
+            return pn.includes(q) || inn.includes(q) || q.includes(pn) || q.includes(inn);
+          }) || null;
+        return { name, strength, dosage, quantity, available: !!match, match };
       });
 
       if (extractedNames.length === 0) {
@@ -1995,7 +1996,7 @@ const MedicationAvailabilityCard = ({
   results,
   onProceed,
 }: {
-  results: Array<{ name: string; available: boolean; match: DrugRow | null }>;
+  results: Array<{ name: string; strength?: string | null; dosage?: string | null; quantity?: string | null; available: boolean; match: DrugRow | null }>;
   onProceed: () => void;
 }) => {
   const { t } = useTranslation();
@@ -2051,12 +2052,17 @@ const MedicationAvailabilityCard = ({
 
             {/* Drug info */}
             <div className="min-w-0 flex-1">
-              <p
-                className={`font-semibold truncate ${r.available ? "text-foreground" : "text-foreground/70"}`}
-                style={{ fontSize: 15 }}
-              >
-                {r.name}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p
+                  className={`font-semibold truncate ${r.available ? "text-foreground" : "text-foreground/70"}`}
+                  style={{ fontSize: 15 }}
+                >
+                  {r.name}
+                </p>
+                {r.strength && (
+                  <span className="text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground shrink-0">{r.strength}</span>
+                )}
+              </div>
               {r.available && r.match ? (
                 <p className="text-emerald-600 font-medium" style={{ fontSize: 12 }}>
                   ✓ {t("pages.prescriptionRefill.chat.drugAvailable", "Available for refill")}
@@ -2068,6 +2074,7 @@ const MedicationAvailabilityCard = ({
               ) : (
                 <p className="text-red-400" style={{ fontSize: 12 }}>
                   ✗ {t("pages.prescriptionRefill.chat.drugUnavailable", "Not available in our system")}
+                  {r.dosage ? ` · ${r.dosage}` : ""}
                 </p>
               )}
             </div>
