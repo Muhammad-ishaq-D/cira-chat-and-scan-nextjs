@@ -1,4 +1,4 @@
-Error: unsupported file extension: .wasm
+Error: unsupported file extension: .bin
 Usage:
   lovable-assets create --file <path> [flags]
 
