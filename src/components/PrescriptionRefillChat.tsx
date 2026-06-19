@@ -612,7 +612,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         return { name, strength, dosage, quantity, available: !!match, match };
       });
 
-      if (extractedNames.length === 0) {
+      if (extractedMeds.length === 0) {
         // No medications found in image — show error and let user retry or type manually
         pushMsg({
           role: "ai",
