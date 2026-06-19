@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown, Pill } from "lucide-react";
+import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import ciraLogo from "@/assets/cira-logo.svg";
 import ProfilePopover from "@/components/ProfilePopover";
@@ -21,8 +21,6 @@ import SdkLoadingOverlay from "@/components/SdkLoadingOverlay";
 const navItems = [
   { icon: Home, labelKey: "home", id: "home" },
   { icon: Sparkles, labelKey: "askCira", id: "chat" },
-  { icon: Pill, labelKey: "prescriptionRefill", id: "rx" },
-  { icon: FileText, labelKey: "referralLetter", id: "referral" },
   { icon: ScanFace, labelKey: "scan", id: "scan" },
   { icon: FileText, labelKey: "reports", id: "reports" },
 ];
