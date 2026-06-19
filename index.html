@@ -15,11 +15,21 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Non-blocking font load (preload + onload swap) to eliminate render-blocking CSS -->
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap"
-    rel="stylesheet" />
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" />
+  </noscript>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <link rel="mask-icon" href="/favicon.svg" color="#9E1DF4" />
   <!-- Note: We intentionally do NOT prefetch/preload shenai_sdk.wasm here.
          The coi-serviceworker intercepts the SDK's fetch in a separate context,
          so a page-level prefetch would download the 10MB WASM twice (once for
