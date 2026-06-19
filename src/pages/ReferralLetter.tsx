@@ -183,8 +183,8 @@ const ReferralLetter = () => {
                     {emailStatus === "sent"
                       ? "Email sent — check your inbox."
                       : emailStatus === "failed"
-                      ? "We couldn't send the email — support will reach out."
-                      : "Sending your referral letter by email…"}
+                        ? "We couldn't send the email — support will reach out."
+                        : "Sending your referral letter by email…"}
                   </p>
 
                   <p className="text-xs text-muted-foreground leading-relaxed text-center px-1">
@@ -194,7 +194,9 @@ const ReferralLetter = () => {
                   {/* Action buttons */}
                   <div className="flex flex-col gap-2 pt-1">
                     <button
-                      onClick={() => navigate("/doctor")}
+                      onClick={() =>
+                        window.open("https://www.air-dr.com/webapp/?utm_source=Cira#home", "_blank", "noopener,noreferrer")
+                      }
                       className="w-full py-3 rounded-xl bg-white border border-border text-primary text-[13px] font-semibold flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
                     >
                       <Users size={15} />
