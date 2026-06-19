@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import i18n from "@/i18n";
-import { Activity, Users, Eye, MousePointerClick, ScrollText, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, Filter, SortAsc, LayoutGrid, PieChart as PieChartIcon, ShieldCheck, RefreshCw } from "lucide-react";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, PieChart, Pie } from "recharts";
+import { Activity, Users, Eye, Clock, Search, ChevronRight, X, Loader2, Smartphone, Monitor, Globe, Laptop, ArrowRightCircle, LogIn, LogOut as LogOutIcon, MousePointer2, Move, Type, MapPin, SortAsc, LayoutGrid, ShieldCheck, RefreshCw, ScanFace, MessageCircle, FileText } from "lucide-react";
 import { adminApi } from "@/lib/apiClient";
 
 type SessionRow = {
@@ -28,15 +27,6 @@ type ActivityEvent = {
   ts: number | string;
 };
 
-type Aggregate = {
-  active_users_24h?: number;
-  sessions_today?: number;
-  sessions_total?: number;
-  avg_duration_sec?: number;
-  top_pages?: { page: string; views: number }[];
-  top_events?: { event_type: string; count: number }[];
-  funnel?: { step: string; count: number }[];
-};
 
 const fmtDuration = (s?: number) => {
   if (!s || s < 0) return "—";
@@ -86,9 +76,8 @@ const getEventColor = (type: string) => {
 
 const AdminActivity = () => {
   const t = i18n.getFixedT("en");
-  const [tab, setTab] = useState<"sessions" | "aggregate" | "audit">("sessions");
+  const [tab, setTab] = useState<"sessions" | "user-events" | "audit">("sessions");
   const [sessions, setSessions] = useState<SessionRow[]>([]);
-  const [agg, setAgg] = useState<Aggregate | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [openSession, setOpenSession] = useState<SessionRow | null>(null);
@@ -97,6 +86,12 @@ const AdminActivity = () => {
   const [deviceFilter, setDeviceFilter] = useState<string>("all");
   const [userFilter, setUserFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"recent" | "duration">("recent");
+
+  // User events (scan / chat / report)
+  const [userEvents, setUserEvents] = useState<any[]>([]);
+  const [userEventsLoading, setUserEventsLoading] = useState(false);
+  const [userEventsSearch, setUserEventsSearch] = useState("");
+  const [userEventsFilter, setUserEventsFilter] = useState("all");
 
   // HIPAA audit states
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -143,13 +138,20 @@ const AdminActivity = () => {
     }
   };
 
-  const loadAggregate = async () => {
+  const loadUserEvents = async () => {
+    setUserEventsLoading(true);
     try {
-      const res: any = await adminApi.getActivityAggregate();
-      setAgg(res || {});
+      const res: any = await adminApi.getUserActivity({
+        search: userEventsSearch || undefined,
+        event_type: userEventsFilter !== "all" ? userEventsFilter : undefined,
+      });
+      const list = Array.isArray(res) ? res : res?.events || [];
+      setUserEvents(list);
     } catch (e) {
-      console.error("Aggregate load error", e);
-      setAgg({});
+      console.error("User events load error", e);
+      setUserEvents([]);
+    } finally {
+      setUserEventsLoading(false);
     }
   };
 
@@ -170,8 +172,8 @@ const AdminActivity = () => {
   useEffect(() => {
     if (tab === "sessions") {
       loadSessions();
-    } else if (tab === "aggregate") {
-      loadAggregate();
+    } else if (tab === "user-events") {
+      loadUserEvents();
     } else if (tab === "audit") {
       loadAuditLogs();
     }
@@ -191,13 +193,6 @@ const AdminActivity = () => {
       setLoadingEvents(false);
     }
   };
-
-  const aggCards = useMemo(() => ([
-    { label: t("admin.activity.activeUsers24h"), value: agg?.active_users_24h ?? "—", icon: Users, color: "text-blue-600 bg-blue-50/50" },
-    { label: t("admin.activity.sessionsToday"), value: agg?.sessions_today ?? "—", icon: Activity, color: "text-emerald-600 bg-emerald-50/50" },
-    { label: t("admin.activity.totalSessions"), value: agg?.sessions_total ?? "—", icon: Eye, color: "text-purple-600 bg-purple-50/50" },
-    { label: t("admin.activity.avgSession"), value: fmtDuration(agg?.avg_duration_sec), icon: Clock, color: "text-orange-600 bg-orange-50/50" },
-  ]), [agg, t]);
 
   const filteredSessions = useMemo(() => {
     let list = [...sessions];
@@ -220,31 +215,6 @@ const AdminActivity = () => {
     }
     return list;
   }, [sessions, deviceFilter, userFilter, sortBy]);
-
-  const browserData = useMemo(() => [
-    { name: 'Chrome', value: 45, color: 'hsl(var(--primary))' },
-    { name: 'Safari', value: 30, color: '#312e81' },
-    { name: 'Firefox', value: 15, color: '#4f46e5' },
-    { name: 'Other', value: 10, color: '#94a3b8' },
-  ], []);
-
-  // Dummy chart data for visualization if agg charts are empty
-  const timeData = useMemo(() => {
-    if (agg?.sessions_total) {
-      // In a real app, this would come from the API
-      // Creating some mock history based on the total for visual flair
-      return [
-        { name: '12am', value: Math.floor(agg.sessions_total * 0.1) },
-        { name: '4am', value: Math.floor(agg.sessions_total * 0.05) },
-        { name: '8am', value: Math.floor(agg.sessions_total * 0.2) },
-        { name: '12pm', value: Math.floor(agg.sessions_total * 0.4) },
-        { name: '4pm', value: Math.floor(agg.sessions_total * 0.3) },
-        { name: '8pm', value: Math.floor(agg.sessions_total * 0.25) },
-        { name: 'Now', value: Math.floor(agg.sessions_total * 0.15) },
-      ];
-    }
-    return [];
-  }, [agg]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6 relative">
@@ -272,22 +242,20 @@ const AdminActivity = () => {
         </div>
 
         <div className="flex items-center gap-2 bg-card/50 backdrop-blur-md border border-border/50 rounded-2xl p-1 shadow-sm">
-          {(["sessions", "aggregate", "audit"] as const).map((tb) => {
-            let label = t("admin.activity.liveSessions");
-            let Icon = Users;
-            if (tb === "aggregate") { label = t("admin.activity.analytics"); Icon = LayoutGrid; }
-            else if (tb === "audit") { label = t("admin.activity.hipaa"); Icon = ShieldCheck; }
-            return (
-              <button
-                key={tb}
-                onClick={() => setTab(tb)}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === tb ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Icon size={14} />
-                {label}
-              </button>
-            );
-          })}
+          {([
+            { id: "sessions", label: t("admin.activity.liveSessions"), Icon: Users },
+            { id: "user-events", label: "User Activity", Icon: Activity },
+            { id: "audit", label: t("admin.activity.hipaa"), Icon: ShieldCheck },
+          ] as const).map(({ id: tb, label, Icon }) => (
+            <button
+              key={tb}
+              onClick={() => setTab(tb)}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === tb ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <Icon size={14} />
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -420,176 +388,116 @@ const AdminActivity = () => {
         </>
       )}
 
-      {tab === "aggregate" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {aggCards.map((c) => {
-              const Icon = c.icon;
-              return (
-                <div key={c.label} className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 shadow-sm">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.color} mb-3`}><Icon size={20} /></div>
-                  <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">{c.label}</p>
-                  <p className="text-2xl font-bold text-foreground mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>{c.value as any}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2 bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm relative overflow-hidden group/chart">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover/chart:opacity-100 transition-opacity" />
-              <div className="flex items-center justify-between mb-6 relative z-10">
-                <h3 className="text-sm font-bold flex items-center gap-2"><Activity size={18} className="text-primary" /> {t("admin.activity.trafficOverview")}</h3>
-                <div className="text-[9px] font-bold uppercase tracking-[0.2em] px-2 py-1 bg-primary/10 text-primary rounded-md">{t("admin.activity.livePulse")}</div>
-              </div>
-              <div className="h-[240px] w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={timeData}>
-                    <defs>
-                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.3} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 500, fill: 'hsl(var(--muted-foreground))' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 500, fill: 'hsl(var(--muted-foreground))' }} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(8px)', border: '1px solid hsl(var(--border))', borderRadius: '12px', fontSize: '11px', fontWeight: 600, boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                      cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
-                    />
-                    <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+      {tab === "user-events" && (
+        <div className="space-y-4">
+          {/* filters */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
+            <div className="relative flex-1 w-full max-w-md">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={userEventsSearch}
+                onChange={(e) => setUserEventsSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && loadUserEvents()}
+                placeholder="Search by name or email…"
+                className="w-full pl-9 pr-3 py-2 text-sm bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
             </div>
-
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm flex flex-col">
-              <h3 className="text-sm font-bold mb-6 flex items-center gap-2"><PieChartIcon size={18} className="text-primary" /> {t("admin.activity.browserMix")}</h3>
-              <div className="flex-1 min-h-[220px] w-full relative">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={browserData}
-                      cx="50%"
-                      cy="45%"
-                      innerRadius={50}
-                      outerRadius={75}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {browserData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                  <p className="text-[10px] text-muted-foreground leading-none font-medium mb-1 uppercase tracking-widest">{t("admin.activity.growth")}</p>
-                  <p className="text-xl font-bold leading-none">+12%</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mt-4">
-                {browserData.map((b) => (
-                  <div key={b.name} className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: b.color }} />
-                    {b.name} <span className="ml-auto text-foreground/40">{b.value}%</span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              {[
+                { id: "all", label: "All", Icon: Activity },
+                { id: "vitals_scan", label: "Scan", Icon: ScanFace },
+                { id: "chat_message", label: "Chat", Icon: MessageCircle },
+                { id: "report_view", label: "Report", Icon: FileText },
+              ].map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => { setUserEventsFilter(id); }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${userEventsFilter === id ? "bg-primary text-primary-foreground shadow-sm" : "bg-card/50 border border-border/50 text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Icon size={12} /> {label}
+                </button>
+              ))}
+              <button
+                onClick={loadUserEvents}
+                className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-xl px-3 py-1.5 text-xs font-bold transition-all"
+              >
+                <RefreshCw size={12} className={userEventsLoading ? "animate-spin" : ""} />
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Eye size={16} className="text-primary" /> {t("admin.activity.mostVisited")}</h3>
-              {agg?.top_pages?.length ? (
-                <div className="space-y-3">
-                  {agg.top_pages.slice(0, 6).map((p, i) => (
-                    <div key={p.page} className="flex items-center gap-3 group">
-                      <div className="w-6 h-6 rounded bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        {i + 1}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="truncate text-xs font-medium text-foreground">{p.page}</span>
-                          <span className="text-[11px] font-semibold text-primary">{p.views}</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary/40 rounded-full"
-                            style={{ width: `${Math.round((p.views / (agg.top_pages![0]?.views || 1)) * 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : <p className="text-xs text-muted-foreground">{t("admin.activity.noPages")}</p>}
-            </div>
-
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><MousePointerClick size={16} className="text-primary" /> {t("admin.activity.topEvents")}</h3>
-              {agg?.top_events?.length ? (
-                <div className="space-y-3">
-                  {agg.top_events.slice(0, 6).map((e, i) => {
-                    const Icon = getEventIcon(e.event_type);
-                    return (
-                      <div key={e.event_type} className="flex items-center gap-3 group">
-                        <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                          <Icon size={14} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="truncate text-xs font-medium text-foreground uppercase tracking-tighter">{e.event_type.replace(/_/g, ' ')}</span>
-                            <span className="text-[11px] font-bold text-foreground">{e.count}</span>
-                          </div>
-                          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-primary/60 rounded-full"
-                              style={{ width: `${Math.round((e.count / (agg.top_events![0]?.count || 1)) * 100)}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : <p className="text-xs text-muted-foreground">{t("admin.activity.noEvents")}</p>}
-            </div>
-          </div>
-
-          {agg?.funnel?.length ? (
-            <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><ScrollText size={16} className="text-primary" /> {t("admin.activity.conversionFunnel")}</h3>
-              <div className="space-y-4 max-w-2xl">
-                {agg.funnel.map((f, i) => {
-                  const max = agg.funnel![0]?.count || 1;
-                  const pct = Math.round((f.count / max) * 100);
-                  return (
-                    <div key={i} className="relative">
-                      <div className="flex justify-between text-xs font-medium mb-1.5 relative z-10">
-                        <span className="font-bold">{f.step}</span>
-                        <span className="text-primary font-bold">{pct}% <span className="text-muted-foreground font-normal ml-1">({f.count})</span></span>
-                      </div>
-                      <div className="h-4 bg-muted rounded-xl overflow-hidden relative">
-                        <div className="h-full bg-primary/20 transition-all duration-1000 ease-out" style={{ width: `${pct}%` }} />
-                      </div>
-                      {i < agg.funnel!.length - 1 && (
-                        <div className="flex justify-center -my-1 relative z-0">
-                          <ChevronRight size={14} className="rotate-90 text-primary/20" />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+          {/* table */}
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+            {userEventsLoading ? (
+              <div className="p-12 flex flex-col items-center justify-center gap-3">
+                <Loader2 className="animate-spin text-primary" size={32} />
+                <p className="text-xs text-muted-foreground animate-pulse">Loading activity…</p>
               </div>
-            </div>
-          ) : null}
-
+            ) : userEvents.length === 0 ? (
+              <div className="p-16 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><Activity size={20} className="text-muted-foreground/50" /></div>
+                <p className="text-sm text-foreground font-semibold">No activity yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Events appear here once logged-in users scan, chat, or download reports.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-border/50 bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <th className="p-4">User</th>
+                      <th className="p-4">Event</th>
+                      <th className="p-4">Details</th>
+                      <th className="p-4 text-right">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40 text-xs">
+                    {userEvents.map((ev, i) => {
+                      const isScan = ev.event_type === "vitals_scan";
+                      const isChat = ev.event_type === "chat_message";
+                      const isReport = ev.event_type === "report_view";
+                      const badge = isScan
+                        ? { label: "Scan", color: "text-amber-600 bg-amber-50 border-amber-100", Icon: ScanFace }
+                        : isChat
+                        ? { label: "Chat", color: "text-blue-600 bg-blue-50 border-blue-100", Icon: MessageCircle }
+                        : { label: "Report", color: "text-purple-600 bg-purple-50 border-purple-100", Icon: FileText };
+                      const data = typeof ev.data === "string" ? JSON.parse(ev.data || "{}") : ev.data || {};
+                      return (
+                        <tr key={i} className="hover:bg-primary/[0.02] transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[11px] font-bold shrink-0">
+                                {(ev.user_name || ev.user_email || "?").slice(0, 2).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-foreground truncate">{ev.user_name || "—"}</p>
+                                <p className="text-[10px] text-muted-foreground truncate">{ev.user_email || "—"}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold text-[10px] uppercase tracking-wider border ${badge.color}`}>
+                              <badge.Icon size={10} /> {badge.label}
+                            </span>
+                          </td>
+                          <td className="p-4 text-muted-foreground">
+                            {isScan && data.heart_rate && <span>HR: <b className="text-foreground">{data.heart_rate} bpm</b></span>}
+                            {isChat && <span className="text-muted-foreground/70">Message sent</span>}
+                            {isReport && data.action && <span>{data.action.replace(/_/g, " ")}</span>}
+                          </td>
+                          <td className="p-4 text-right text-muted-foreground tabular-nums">
+                            {new Date(ev.ts).toLocaleString("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
+
 
       {tab === "audit" && (
         <div className="space-y-6">

@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { secureStorage } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { logAuditEvent } from "@/lib/audit";
+import { trackEvent } from "@/lib/activityTracker";
 import SdkLoadingOverlay from "@/components/SdkLoadingOverlay";
 
 const navItems = [
@@ -278,6 +279,7 @@ const VitalsScan = () => {
       try {
         await vitalsApi.submitScan(payload);
         if (!isActive) return;
+        trackEvent("vitals_scan", { heart_rate: payload.heart_rate, wellness_score: payload.wellness_score });
         userApi.getProfile()
           .then((data) => { if (isActive) setUserProfile(data); })
           .catch(() => { });

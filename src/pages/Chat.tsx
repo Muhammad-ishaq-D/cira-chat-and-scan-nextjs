@@ -13,6 +13,7 @@ import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicato
 import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type DetailedReportData, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
 import { chatApi, userApi } from "@/lib/apiClient";
 import { getUser, getToken, logout } from "@/lib/auth";
+import { trackEvent } from "@/lib/activityTracker";
 import { secureStorage } from "@/lib/storage";
 import RatingModal from "@/components/RatingModal";
 
@@ -1164,7 +1165,7 @@ const Chat = () => {
     const userText = message.trim();
     setMessages((prev) => [...prev, { role: "user", text: userText }]);
     setMessage("");
-
+    trackEvent("chat_message");
     callClaude(userText);
   };
 

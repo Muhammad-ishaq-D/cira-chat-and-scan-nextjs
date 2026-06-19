@@ -394,6 +394,14 @@ export const adminApi = {
   getActivitySession: (sessionId: string) =>
     adminGet(`/api/admin/activity/sessions/${sessionId}`),
   getActivityAggregate: () => adminGet("/api/admin/activity/aggregate"),
+  getUserActivity: (params?: { search?: string; event_type?: string; page?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.search) qs.set("search", params.search);
+    if (params?.event_type && params.event_type !== "all") qs.set("event_type", params.event_type);
+    if (params?.page) qs.set("page", String(params.page));
+    const query = qs.toString();
+    return adminGet(`/api/admin/activity/user-events${query ? `?${query}` : ""}`);
+  },
 
   // Blogs
   getBlogs: () => adminGet<{ blogs?: BlogPost[] } | BlogPost[]>("/api/admin/blogs"),

@@ -11,6 +11,7 @@ import { getUser, logout } from "@/lib/auth";
 import { downloadReportPdf, downloadSingleScanPdf, downloadCombinedScansPdf } from "@/lib/reportPdf";
 import { toast } from "sonner";
 import { logAuditEvent } from "@/lib/audit";
+import { trackEvent } from "@/lib/activityTracker";
 
 const navItems = [
   { icon: Home, tKey: "dashboard.nav.home", id: "home" },
@@ -75,6 +76,7 @@ const Reports = () => {
     try {
       await downloadReportPdf(report);
       logAuditEvent("DOWNLOAD_REPORT_PDF", report.id);
+      trackEvent("report_view", { action: "download_pdf", report_id: report.id });
       toast.success(t("reports.toast.pdfDownloaded"));
     } catch (e) {
       console.error("PDF generation failed:", e);
@@ -112,6 +114,7 @@ const Reports = () => {
     try {
       await downloadCombinedScansPdf(selected);
       logAuditEvent("DOWNLOAD_COMBINED_SCANS_PDF", Array.from(selectedScans).join(","));
+      trackEvent("report_view", { action: "download_combined", count: selected.length });
       toast.success(t("reports.toast.combinedDownloaded", { count: selected.length }));
     } catch (e) {
       console.error("Combined PDF failed:", e);
