@@ -152,7 +152,7 @@ export const seoConfig = {
   "/": {
     title: "Cira — your AI health nurse, anytime",
     description:
-      "Talk to Cira, your AI nurse. Ask health questions, scan vitals with your camera, and get clear next steps.",
+      "Talk to Cira, your AI health nurse. Ask symptoms, get clinical guidance, and scan your vitals in 30 seconds with your phone camera — no appointment needed.",
     prerender: true,
     h1: "Your AI health nurse, anytime",
     body: [
