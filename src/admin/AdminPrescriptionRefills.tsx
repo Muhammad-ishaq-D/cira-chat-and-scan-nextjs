@@ -400,7 +400,7 @@ const AdminPrescriptionRefills = () => {
                       </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{r.delivery_email || "—"}</td>
                       <td className="px-4 py-3 text-xs text-foreground/80 max-w-[180px] truncate" title={medsLabel}>{medsLabel}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-foreground">${Number(r.amount_charged).toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-foreground">€{Number(r.amount_charged).toFixed(2)}</td>
                       <td className="px-4 py-3">
                         {r.stripe_payment_intent_id ? (
                           <div className="flex items-center">

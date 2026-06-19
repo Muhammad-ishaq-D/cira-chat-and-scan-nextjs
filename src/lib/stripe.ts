@@ -7,7 +7,7 @@ export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
   prescription_refill: "https://buy.stripe.com/test_6oU14o4t9biZ2nU6749Zm06",
 
   // Referral letter — €10.00 one-time (EUR). Replace with your live Stripe Payment Link.
-  referral_letter: "https://buy.stripe.com/test_8x228se3J1Ip6EagLI9Zm05",
+  referral_letter: "https://buy.stripe.com/test_5kQ7sM5xd72J5A68fc9Zm07",
 };
 
 export const PENDING_PLAN_STORAGE_KEY = "cira_pending_plan";

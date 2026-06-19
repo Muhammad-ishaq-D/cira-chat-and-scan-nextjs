@@ -125,8 +125,8 @@ const AdminReferralRefunds = () => {
           const isDeciding = !!deciding[refund.id];
           const noteOpen = expandedNote === refund.id;
           const amountDisplay = refund.amount_charged != null
-            ? `$${Number(refund.amount_charged).toFixed(2)}`
-            : "$5.00";
+            ? `€${Number(refund.amount_charged).toFixed(2)}`
+            : "€10.00";
           const dateDisplay = refund.refund_requested_at
             ? new Date(refund.refund_requested_at).toLocaleDateString("en", {
                 year: "numeric", month: "short", day: "numeric",

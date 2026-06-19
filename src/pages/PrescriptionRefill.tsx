@@ -12,16 +12,11 @@ const PrescriptionRefill = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const loggedIn = isAuthenticated();
-  const [showChat, setShowChat] = useState(false);
-
-  // Auto-open chat when Stripe redirects back with a status param.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("status") === "success" || params.get("status") === "cancel") {
-      setShowChat(true);
-    }
-  }, []);
+  const [showChat, setShowChat] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const status = new URLSearchParams(window.location.search).get("status");
+    return status === "success" || status === "cancel";
+  });
 
   return (
     <>
@@ -121,6 +116,9 @@ const PrescriptionRefill = () => {
 
               <p className="mt-6 text-[11px] text-muted-foreground leading-relaxed max-w-sm mx-auto">
                 {t("pages.prescriptionRefill.refund")}
+              </p>
+              <p className="mt-2 text-[11px] text-muted-foreground font-medium max-w-sm mx-auto">
+                Under constant medical supervision
               </p>
             </div>
           </section>

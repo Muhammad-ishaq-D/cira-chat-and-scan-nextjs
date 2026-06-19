@@ -155,7 +155,7 @@ const RefundRequestForm = ({ refill, invalid, backHref }: Props) => {
   const deadlineDisplay = deadline
     ? deadline.toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" })
     : "";
-  const priceDisplay = `$${(refill.priceCents / 100).toFixed(2)}`;
+  const priceDisplay = `€${(refill.priceCents / 100).toFixed(2)}`;
 
   return (
     <div className="space-y-6">

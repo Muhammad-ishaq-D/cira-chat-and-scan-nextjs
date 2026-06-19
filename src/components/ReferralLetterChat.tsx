@@ -1009,6 +1009,10 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 <p className="text-[11px] text-muted-foreground leading-snug">{t("referral.aiNotice")}</p>
               </div>
 
+              <p className="text-[11px] text-muted-foreground text-center leading-snug px-1">
+                Under constant medical supervision
+              </p>
+
               {/* Action buttons */}
               <div className="flex flex-col gap-2">
                 <button
@@ -1150,7 +1154,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                       <CreditCard size={14} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-foreground">Total: $5.00</p>
+                      <p className="text-[13px] font-semibold text-foreground">Total: €10.00</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">One-time payment securely processed via Stripe</p>
                     </div>
                   </div>
@@ -1168,8 +1172,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                 <button
                   onClick={handlePay}
                   disabled={checkoutStatus === "processing"}
-                  className="rounded-xl bg-primary text-primary-foreground font-bold shadow-sm hover:bg-primary/95 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  style={{ minHeight: 52, fontSize: 14 }}
+                  className="rounded-xl font-bold shadow-sm hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  style={{ minHeight: 52, fontSize: 14, backgroundColor: "#00d66f", color: "#fff" }}
                 >
                   {checkoutStatus === "processing" ? (
                     <>
@@ -1179,7 +1183,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
                   ) : (
                     <>
                       <Lock size={14} />
-                      Pay $5.00
+                      Pay €10.00
                     </>
                   )}
                 </button>

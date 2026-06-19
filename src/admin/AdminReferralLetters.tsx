@@ -214,8 +214,8 @@ const AdminReferralLetters = () => {
             const isDeciding = !!deciding[refund.id];
             const noteOpen = expandedNote === refund.id;
             const amountDisplay = refund.amount_charged != null
-              ? `$${Number(refund.amount_charged).toFixed(2)}`
-              : "$5.00";
+              ? `€${Number(refund.amount_charged).toFixed(2)}`
+              : "€10.00";
             const dateDisplay = refund.refund_requested_at
               ? new Date(refund.refund_requested_at).toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" })
               : "—";
@@ -408,7 +408,7 @@ const AdminReferralLetters = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{l.delivery_email || "—"}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-foreground">${Number(l.amount_charged).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-foreground">€{Number(l.amount_charged).toFixed(2)}</td>
                     <td className="px-4 py-3">
                       {l.stripe_payment_intent_id ? (
                         <div className="flex items-center">

@@ -16,38 +16,26 @@ const ReferralLetter = () => {
   const { t } = useTranslation();
   const loggedIn = isAuthenticated();
 
-  const [showChat, setShowChat] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  // Detect Stripe redirect synchronously to avoid blank-page flash on first render
+  const stripeRedirect = (() => {
+    if (typeof window === "undefined") return { status: null, savedId: null };
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    const savedId = status === "success" ? localStorage.getItem("cira_pending_referral_id") : null;
+    if (status) window.history.replaceState({}, "", window.location.pathname);
+    return { status, savedId };
+  })();
+
+  const [showChat, setShowChat] = useState(stripeRedirect.status === "cancel");
+  const [showSuccess, setShowSuccess] = useState(stripeRedirect.status === "success" && !!stripeRedirect.savedId);
 
   // Success polling state
-  const [referralId, setReferralId] = useState<string | null>(null);
+  const [referralId, setReferralId] = useState<string | null>(stripeRedirect.savedId);
   const [pollingStatus, setPollingStatus] = useState<"pending" | "paid" | "failed">("pending");
   const [emailStatus, setEmailStatus] = useState<"pending" | "sent" | "failed">("pending");
   const [refNumber, setRefNumber] = useState("");
-  const [isPolling, setIsPolling] = useState(false);
+  const [isPolling, setIsPolling] = useState(stripeRedirect.status === "success" && !!stripeRedirect.savedId);
   const [copied, setCopied] = useState(false);
-
-  // Detect Stripe redirect on mount
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get("status");
-
-    if (status === "success") {
-      const savedId = localStorage.getItem("cira_pending_referral_id");
-      // Clean the URL immediately
-      window.history.replaceState({}, "", window.location.pathname);
-      if (savedId) {
-        setReferralId(savedId);
-        setShowSuccess(true);
-        setPollingStatus("pending");
-        setIsPolling(true);
-      }
-    } else if (status === "cancel") {
-      // Reopen chat at checkout phase — handled inside ReferralLetterChat
-      setShowChat(true);
-    }
-  }, []);
 
   // Poll for payment + email status
   useEffect(() => {
@@ -338,6 +326,9 @@ const ReferralLetter = () => {
 
             <p className="mt-6 text-[11px] text-muted-foreground leading-relaxed max-w-sm mx-auto">
               {t("pages.referralLetter.refund")}
+            </p>
+            <p className="mt-2 text-[11px] text-muted-foreground font-medium max-w-sm mx-auto">
+              Under constant medical supervision
             </p>
           </div>
         </section>
