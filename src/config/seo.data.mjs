@@ -305,7 +305,7 @@ export const seoConfig = {
     noindex: true,
   },
   "/404": {
-    title: "Page not found — Cira",
+    title: "404 — Page not found — Cira",
     description:
       "The page you were looking for doesn't exist. Head back to Cira to talk to your AI nurse.",
     noindex: true,
