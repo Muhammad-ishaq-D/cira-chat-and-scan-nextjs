@@ -349,6 +349,7 @@ export const adminApi = {
   getUser: (id: string) => adminGet(`/api/admin/users/${id}`),
   suspendUser: (id: string) => adminPost(`/api/admin/users/${id}/suspend`),
   activateUser: (id: string) => adminPost(`/api/admin/users/${id}/activate`),
+  confirmDeleteUser: (id: string) => adminPost(`/api/admin/users/${id}/confirm-delete`),
   adjustCredits: (id: string, amount: number, reason: string) =>
     adminPost(`/api/admin/users/${id}/credits`, { amount, reason }),
   changeUserPlan: (id: string, plan: string) =>

@@ -163,6 +163,10 @@ const Login = () => {
     const searchParams = new URLSearchParams(location.search);
     const wantsRegister = location.pathname === "/register" || searchParams.get("mode") === "register";
 
+    if (searchParams.get("error") === "account_deleted") {
+      toast.error("This account has been scheduled for deletion. Contact support@askainurse.com if this was a mistake.");
+    }
+
     setAuthMode(wantsRegister ? "register" : "login");
     resetOtpFlow();
   }, [location.pathname, location.search, resetOtpFlow]);

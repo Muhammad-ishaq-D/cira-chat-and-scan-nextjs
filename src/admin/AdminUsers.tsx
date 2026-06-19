@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import i18n from "@/i18n";
-import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle } from "lucide-react";
+import { Search, Ban, Edit3, Mail, Calendar, Loader2, CheckCircle, Crown, Zap, Shield, Star, Check, X, Coins, AlertTriangle, Trash2 } from "lucide-react";
 import { adminApi, billingApi } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -54,6 +54,7 @@ interface RawUser {
   created_at?: string;
   createdAt?: string;
   joined_at?: string;
+  pending_deletion?: number | boolean | null;
 }
 
 interface User {
@@ -65,6 +66,7 @@ interface User {
   plan: string;
   credits: number;
   created_at: string;
+  pending_deletion: number;
 }
 
 const normalizeUser = (raw: RawUser): User => {
@@ -92,8 +94,9 @@ const normalizeUser = (raw: RawUser): User => {
   else if (typeof raw.balance === "number") credits = raw.balance;
 
   const created_at = raw.created_at || raw.createdAt || raw.joined_at || "";
+  const pending_deletion = raw.pending_deletion === 1 || raw.pending_deletion === true || (raw.pending_deletion as any) === "1" ? 1 : 0;
 
-  return { id, name, email, avatar, is_suspended: suspended, plan: String(plan), credits, created_at };
+  return { id, name, email, avatar, is_suspended: suspended, plan: String(plan), credits, created_at, pending_deletion };
 };
 
 const AdminUsers = () => {
@@ -107,6 +110,8 @@ const AdminUsers = () => {
   const [applyingPlan, setApplyingPlan] = useState<string | null>(null);
   const [suspendConfirmUser, setSuspendConfirmUser] = useState<User | null>(null);
   const [suspending, setSuspending] = useState(false);
+  const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   const formatCredits = (n: number) =>
     `${Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
@@ -190,6 +195,22 @@ const AdminUsers = () => {
       setSuspendConfirmUser(null);
     } finally {
       setSuspending(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmUser) return;
+    setConfirming(true);
+    try {
+      await adminApi.confirmDeleteUser(deleteConfirmUser.id);
+      setUsers((prev) => prev.filter((u) => u.id !== deleteConfirmUser.id));
+      if (selectedUser?.id === deleteConfirmUser.id) setSelectedUser(null);
+      toast.success(`${deleteConfirmUser.name}'s account has been permanently deleted.`);
+      setDeleteConfirmUser(null);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to delete account.");
+    } finally {
+      setConfirming(false);
     }
   };
 
@@ -324,9 +345,16 @@ const AdminUsers = () => {
                       </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                          {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
+                            {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
+                          </span>
+                          {u.pending_deletion === 1 && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-orange-50 text-orange-600 flex items-center gap-1">
+                              <Trash2 size={9} /> Deletion Pending
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -334,6 +362,11 @@ const AdminUsers = () => {
                           <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors" title="Toggle status">
                             {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                           </button>
+                          {u.pending_deletion === 1 && (
+                            <button onClick={(e) => { e.stopPropagation(); setDeleteConfirmUser(u); }} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Confirm account deletion">
+                              <Trash2 size={14} className="text-red-500" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -359,9 +392,16 @@ const AdminUsers = () => {
                     </div>
                   )}
                   <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground truncate">{u.name}</p><p className="text-xs text-muted-foreground truncate">{u.email}</p></div>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                    {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
+                      {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
+                    </span>
+                    {u.pending_deletion === 1 && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 flex items-center gap-1">
+                        <Trash2 size={9} /> Deletion Pending
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 mb-3 text-xs">
                   <span className={`px-2 py-0.5 rounded-full font-medium ${planBadgeClass(u.plan)}`}>{u.plan}</span>
@@ -375,6 +415,11 @@ const AdminUsers = () => {
                     <button onClick={(e) => { e.stopPropagation(); requestToggleStatus(u); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors">
                       {u.is_suspended ? <CheckCircle size={14} className="text-emerald-600" /> : <Ban size={14} className="text-muted-foreground" />}
                     </button>
+                    {u.pending_deletion === 1 && (
+                      <button onClick={(e) => { e.stopPropagation(); setDeleteConfirmUser(u); }} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                        <Trash2 size={14} className="text-red-500" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -426,6 +471,17 @@ const AdminUsers = () => {
                   {selectedUser.is_suspended ? <><CheckCircle size={14} />{t("admin.users.activate")}</> : <><Ban size={14} />{t("admin.users.suspend")}</>}
                 </button>
               </div>
+              {selectedUser.pending_deletion === 1 && (
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded-xl">
+                  <p className="text-xs text-orange-700 font-medium mb-2 flex items-center gap-1.5"><Trash2 size={13} /> This user has requested account deletion.</p>
+                  <button
+                    onClick={() => setDeleteConfirmUser(selectedUser)}
+                    className="w-full py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Trash2 size={14} /> Confirm & Delete Account
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -502,6 +558,44 @@ const AdminUsers = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Confirmation Modal */}
+      {deleteConfirmUser && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => !confirming && setDeleteConfirmUser(null)}>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                  <Trash2 size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-foreground">Permanently Delete Account</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    This will permanently delete <span className="font-medium text-foreground">{deleteConfirmUser.name}</span>'s account and all their data — vitals, chats, reports, and prescriptions. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => setDeleteConfirmUser(null)}
+                  disabled={confirming}
+                  className="px-4 py-2 rounded-xl border border-border/60 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={confirming}
+                  className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-60"
+                >
+                  {confirming ? <><Loader2 size={14} className="animate-spin" />Deleting…</> : <><Trash2 size={14} />Delete Permanently</>}
+                </button>
               </div>
             </div>
           </div>
