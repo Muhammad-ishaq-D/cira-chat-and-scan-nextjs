@@ -207,8 +207,8 @@ const AdminUsers = () => {
       if (selectedUser?.id === deleteConfirmUser.id) setSelectedUser(null);
       toast.success(`${deleteConfirmUser.name}'s account has been permanently deleted.`);
       setDeleteConfirmUser(null);
-    } catch (e: any) {
-      toast.error(e.message || "Failed to delete account.");
+    } catch {
+      toast.error("Account could not be deleted. Please try again.");
     } finally {
       setConfirming(false);
     }
@@ -345,16 +345,15 @@ const AdminUsers = () => {
                       </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(u.created_at)}</td>
                       <td className="px-4 py-3 text-center">
-                        <div className="flex flex-col items-center gap-1">
+                        {u.pending_deletion === 1 ? (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-orange-50 text-orange-600 flex items-center justify-center gap-1">
+                            <Trash2 size={9} /> Deletion Pending
+                          </span>
+                        ) : (
                           <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
                             {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
                           </span>
-                          {u.pending_deletion === 1 && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-orange-50 text-orange-600 flex items-center gap-1">
-                              <Trash2 size={9} /> Deletion Pending
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -393,12 +392,13 @@ const AdminUsers = () => {
                   )}
                   <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground truncate">{u.name}</p><p className="text-xs text-muted-foreground truncate">{u.email}</p></div>
                   <div className="flex flex-col items-end gap-1">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
-                      {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
-                    </span>
-                    {u.pending_deletion === 1 && (
+                    {u.pending_deletion === 1 ? (
                       <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 flex items-center gap-1">
                         <Trash2 size={9} /> Deletion Pending
+                      </span>
+                    ) : (
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${u.is_suspended ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-600"}`}>
+                        {u.is_suspended ? t("admin.users.suspendedBadge") : t("admin.users.activeBadge")}
                       </span>
                     )}
                   </div>
