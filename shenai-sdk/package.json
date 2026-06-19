@@ -8,7 +8,6 @@
     "index.mjs",
     "index.d.ts",
     "shenai_sdk.mjs",
-    "shenai_sdk.wasm",
     "util",
     "enums"
   ],
