@@ -102,6 +102,7 @@ const normalizeUser = (raw: RawUser): User => {
 const AdminUsers = () => {
   const t = i18n.getFixedT("en");
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -158,10 +159,17 @@ const AdminUsers = () => {
     }).catch(() => {});
   }, []);
 
-  const filtered = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = users.filter((u) => {
+    const matchesSearch =
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "active" && u.is_suspended === 0 && u.pending_deletion !== 1) ||
+      (statusFilter === "suspended" && u.is_suspended === 1) ||
+      (statusFilter === "pending_deletion" && u.pending_deletion === 1);
+    return matchesSearch && matchesStatus;
+  });
 
   const toggleStatus = async (id: string, isSuspended: number) => {
     try {
@@ -299,9 +307,21 @@ const AdminUsers = () => {
         ))}
       </div>
 
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.users.searchPlaceholder")} className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+      <div className="flex items-center gap-2">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="py-2.5 px-3 rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm text-sm outline-none focus:ring-2 focus:ring-primary/30 text-muted-foreground shrink-0"
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+          <option value="pending_deletion">Deletion Pending</option>
+        </select>
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.users.searchPlaceholder")} className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/50 bg-card/80 backdrop-blur-sm text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
       </div>
 
       {loading ? (
