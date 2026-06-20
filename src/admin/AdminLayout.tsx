@@ -107,8 +107,8 @@ const AdminLayout = () => {
         </div>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 px-2" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)", backgroundColor: "rgba(255,255,255,0.95)", WebkitBackdropFilter: "blur(20px)", backdropFilter: "blur(20px)" }}>
-        <div className="flex items-center justify-around py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)", backgroundColor: "rgba(255,255,255,0.95)", WebkitBackdropFilter: "blur(20px)", backdropFilter: "blur(20px)" }}>
+        <div className="flex items-center overflow-x-auto scrollbar-hide py-1.5 px-1 gap-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeId === item.id;
@@ -116,13 +116,15 @@ const AdminLayout = () => {
               <button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[52px] ${
+                className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all shrink-0 w-[58px] ${
                   isActive ? "text-primary" : "text-muted-foreground active:scale-95"
                 }`}
               >
-                <Icon size={20} strokeWidth={isActive ? 2.2 : 1.5} />
-                <span className={`text-[9px] font-medium leading-none ${isActive ? "font-semibold" : ""}`}>{t(`admin.nav.${item.key}`)}</span>
-                {isActive && <div className="w-4 h-0.5 rounded-full bg-primary mt-0.5" />}
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${isActive ? "bg-primary/10" : ""}`}>
+                  <Icon size={17} strokeWidth={isActive ? 2.2 : 1.5} />
+                </div>
+                <span className={`text-[8px] font-medium leading-none truncate w-full text-center ${isActive ? "font-semibold text-primary" : ""}`}>{t(`admin.nav.${item.key}`)}</span>
+                {isActive && <div className="w-3 h-0.5 rounded-full bg-primary mt-0.5" />}
               </button>
             );
           })}
