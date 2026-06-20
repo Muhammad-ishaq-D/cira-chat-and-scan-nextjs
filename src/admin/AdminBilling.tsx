@@ -24,6 +24,7 @@ const AdminBilling = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [txSearch, setTxSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const loadPayments = async (search?: string) => {
     try {
@@ -83,6 +84,8 @@ const AdminBilling = () => {
   const rxRevenue  = payments.filter(p => p.type === "Prescription Refill").reduce((s, p) => s + p.amount, 0);
   const refRevenue = payments.filter(p => p.type === "Referral Letter").reduce((s, p) => s + p.amount, 0);
 
+  const filteredPayments = typeFilter === "all" ? payments : payments.filter(p => p.type === typeFilter);
+
   const stats = [
     { label: t("admin.billing.totalRevenue"),  value: `$${Number(totalRevenue).toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
     { label: t("admin.billing.todayRevenue"),   value: `$${Number(todayRevenue).toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
@@ -124,19 +127,31 @@ const AdminBilling = () => {
             </h2>
             <p className="text-xs text-muted-foreground">Subscriptions · Prescription Refills · Referral Letters</p>
           </div>
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder={t("admin.billing.search")}
-              value={txSearch}
-              onChange={(e) => setTxSearch(e.target.value)}
-              className="w-full sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30"
-            />
+          <div className="flex items-center gap-2">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="py-1.5 px-3 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 text-muted-foreground"
+            >
+              <option value="all">All Types</option>
+              <option value="Subscription">Subscription</option>
+              <option value="Prescription Refill">Prescription Refill</option>
+              <option value="Referral Letter">Referral Letter</option>
+            </select>
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder={t("admin.billing.search")}
+                value={txSearch}
+                onChange={(e) => setTxSearch(e.target.value)}
+                className="w-full sm:w-48 pl-8 pr-3 py-1.5 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30"
+              />
+            </div>
           </div>
         </div>
 
-        {payments.length === 0 ? (
+        {filteredPayments.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">{t("admin.billing.none")}</p>
         ) : (
           <div className="overflow-x-auto">
@@ -152,7 +167,7 @@ const AdminBilling = () => {
                 </tr>
               </thead>
               <tbody>
-                {payments.map((p) => (
+                {filteredPayments.map((p) => (
                   <tr key={p.id} className="border-b border-border/30 last:border-0">
                     <td className="py-2.5">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${TYPE_COLORS[p.type] ?? "bg-muted text-muted-foreground"}`}>
