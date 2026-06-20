@@ -8,9 +8,9 @@ const navItems = [
   { icon: BarChart3,  key: "overview",             id: "overview",             path: "/admin/dashboard" },
   { icon: Users,      key: "users",                 id: "users",                path: "/admin/users" },
   { icon: Activity,   key: "activity",              id: "activity",             path: "/admin/activity" },
-  { icon: CreditCard, key: "billing",               id: "billing",              path: "/admin/billing" },
   { icon: Pill,       key: "prescriptionRefills",   id: "prescriptionRefills",  path: "/admin/prescription-refills" },
   { icon: BookOpen,   key: "referralLetters",       id: "referralLetters",      path: "/admin/referral-letters" },
+  { icon: CreditCard, key: "billing",               id: "billing",              path: "/admin/billing" },
   { icon: FileText,   key: "blogs",                 id: "blogs",                path: "/admin/blogs" },
   { icon: Settings,   key: "settings",              id: "settings",             path: "/admin/settings" },
 ];
