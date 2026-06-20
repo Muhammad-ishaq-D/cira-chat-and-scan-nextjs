@@ -408,7 +408,7 @@ const AdminReferralLetters = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{l.delivery_email || "—"}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-foreground">€{Number(l.amount_charged).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm font-medium">€{Number(l.amount_charged).toFixed(2)}</td>
                     <td className="px-4 py-3">
                       {l.stripe_payment_intent_id ? (
                         <div className="flex items-center">
