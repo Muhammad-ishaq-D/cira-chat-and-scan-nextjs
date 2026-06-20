@@ -295,31 +295,34 @@ const AdminActivity = () => {
         <div className="absolute bottom-[20%] left-[5%] w-[300px] h-[300px] bg-indigo-500/5 rounded-full blur-[100px] animate-float" style={{ animationDelay: '-3s' }} />
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center"><Activity size={18} className="text-primary" /></div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>{t("admin.activity.title")}</h1>
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><Activity size={18} className="text-primary" /></div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>{t("admin.activity.title")}</h1>
           </div>
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest pl-10">{t("admin.activity.subtitle")}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest pl-10">{t("admin.activity.subtitle")}</p>
         </div>
 
-        <div className="flex items-center gap-2 bg-card/50 backdrop-blur-md border border-border/50 rounded-2xl p-1 shadow-sm">
-          {([
-            { id: "sessions", label: t("admin.activity.liveSessions"), Icon: Users },
-            { id: "user-events", label: "User Activity", Icon: Activity },
-            { id: "aggregate", label: t("admin.activity.analytics"), Icon: LayoutGrid },
-            { id: "audit", label: t("admin.activity.hipaa"), Icon: ShieldCheck },
-          ] as const).map(({ id: tb, label, Icon }) => (
-            <button
-              key={tb}
-              onClick={() => setTab(tb)}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === tb ? "bg-primary text-primary-foreground shadow-md scale-[1.02]" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <Icon size={14} />
-              {label}
-            </button>
-          ))}
+        <div className="overflow-x-auto scrollbar-hide w-full md:w-auto">
+          <div className="flex items-center gap-1 bg-card/50 backdrop-blur-md border border-border/50 rounded-2xl p-1 shadow-sm w-max min-w-full md:min-w-0">
+            {([
+              { id: "sessions", label: t("admin.activity.liveSessions"), short: "Sessions", Icon: Users },
+              { id: "user-events", label: "User Activity", short: "Activity", Icon: Activity },
+              { id: "aggregate", label: t("admin.activity.analytics"), short: "Analytics", Icon: LayoutGrid },
+              { id: "audit", label: t("admin.activity.hipaa"), short: "HIPAA", Icon: ShieldCheck },
+            ] as const).map(({ id: tb, label, short, Icon }) => (
+              <button
+                key={tb}
+                onClick={() => setTab(tb)}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap ${tab === tb ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Icon size={13} />
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{short}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -337,8 +340,8 @@ const AdminActivity = () => {
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <div className="flex items-center bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-1">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 w-full sm:w-auto">
+              <div className="flex items-center bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-1 shrink-0">
                 <button
                   onClick={() => setDeviceFilter("all")}
                   className={`p-1.5 rounded-lg transition-all ${deviceFilter === "all" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
@@ -359,7 +362,7 @@ const AdminActivity = () => {
               <select
                 value={userFilter}
                 onChange={(e) => setUserFilter(e.target.value)}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0"
               >
                 <option value="all">{t("admin.activity.allUsers")}</option>
                 <option value="member">{t("admin.activity.members")}</option>
@@ -368,7 +371,7 @@ const AdminActivity = () => {
 
               <button
                 onClick={() => setSortBy(s => s === "recent" ? "duration" : "recent")}
-                className="flex items-center gap-2 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all font-medium"
+                className="flex items-center gap-2 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all font-medium whitespace-nowrap shrink-0"
               >
                 <SortAsc size={12} /> {sortBy === "recent" ? t("admin.activity.recent") : t("admin.activity.longest")}
               </button>
@@ -465,7 +468,7 @@ const AdminActivity = () => {
                 className="w-full pl-9 pr-3 py-2 text-sm bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 w-full sm:w-auto">
               {[
                 { id: "all", label: "All", Icon: Activity },
                 { id: "vitals_scan", label: "Scan", Icon: ScanFace },
@@ -473,12 +476,12 @@ const AdminActivity = () => {
                 { id: "report_view", label: "Report", Icon: FileText },
               ].map(({ id, label, Icon }) => (
                 <button key={id} onClick={() => setUserEventsFilter(id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${userEventsFilter === id ? "bg-primary text-primary-foreground shadow-sm" : "bg-card/50 border border-border/50 text-muted-foreground hover:text-foreground"}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${userEventsFilter === id ? "bg-primary text-primary-foreground shadow-sm" : "bg-card/50 border border-border/50 text-muted-foreground hover:text-foreground"}`}>
                   <Icon size={12} /> {label}
                 </button>
               ))}
               <button onClick={loadUserEvents}
-                className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-xl px-3 py-1.5 text-xs font-bold transition-all">
+                className="flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-xl px-3 py-1.5 text-xs font-bold transition-all shrink-0">
                 <RefreshCw size={12} className={userEventsLoading ? "animate-spin" : ""} />
               </button>
             </div>
