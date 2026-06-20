@@ -86,8 +86,8 @@ const AdminBilling = () => {
   const stats = [
     { label: t("admin.billing.totalRevenue"),  value: `$${Number(totalRevenue).toLocaleString()}`, icon: DollarSign, color: "bg-emerald-50 text-emerald-600" },
     { label: t("admin.billing.todayRevenue"),   value: `$${Number(todayRevenue).toLocaleString()}`, icon: CreditCard, color: "bg-amber-50 text-amber-600" },
-    { label: "Prescription Revenue",            value: `$${rxRevenue.toFixed(2)}`,                  icon: CreditCard, color: "bg-teal-50 text-teal-600" },
-    { label: "Referral Revenue",                value: `$${refRevenue.toFixed(2)}`,                  icon: DollarSign, color: "bg-violet-50 text-violet-600" },
+    { label: "Prescription Revenue",            value: `€${rxRevenue.toFixed(2)}`,                  icon: CreditCard, color: "bg-teal-50 text-teal-600" },
+    { label: "Referral Revenue",                value: `€${refRevenue.toFixed(2)}`,                  icon: DollarSign, color: "bg-violet-50 text-violet-600" },
     { label: t("admin.billing.activeSubs"),     value: activeSubs,                                   icon: Users,      color: "bg-blue-50 text-blue-600" },
     { label: t("admin.billing.totalUsers"),     value: totalUsers,                                   icon: Users,      color: "bg-purple-50 text-purple-600" },
   ];
@@ -167,7 +167,9 @@ const AdminBilling = () => {
                       )}
                     </td>
                     <td className="py-2.5 text-muted-foreground text-xs">{p.description || "—"}</td>
-                    <td className="py-2.5 font-medium">${p.amount?.toFixed(2) ?? "0.00"}</td>
+                    <td className="py-2.5 font-medium">
+                      {p.type === "Subscription" ? "$" : "€"}{p.amount?.toFixed(2) ?? "0.00"}
+                    </td>
                     <td className="py-2.5">
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[p.status] ?? "bg-muted text-muted-foreground"}`}>
                         {p.status || "—"}
