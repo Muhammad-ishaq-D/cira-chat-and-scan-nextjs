@@ -28,6 +28,7 @@ const navItems = [
 
 const CANVAS_ID = "shenai-canvas";
 const VITALS_SCAN_RELOAD_KEY = "cira_vitals_scan_context_reload";
+const COI_SERVICE_WORKER_VERSION = "2026-06-21-sdk312-v5";
 
 const formatVitalsForDisplay = (r: VitalResults) => [
   { label: "Heart Rate", value: String(Math.round(r.heartRate)), unit: "bpm", icon: Heart, color: "text-red-500 bg-red-50" },
@@ -114,7 +115,11 @@ const VitalsScan = () => {
       }
 
       try {
-        await navigator.serviceWorker.register("/coi-serviceworker.js");
+        const registration = await navigator.serviceWorker.register(
+          `/coi-serviceworker.js?v=${COI_SERVICE_WORKER_VERSION}`,
+          { scope: "/" }
+        );
+        await registration.update();
         await navigator.serviceWorker.ready;
       } catch (serviceWorkerError) {
         console.error("[VitalsScan] Failed to register COI service worker:", serviceWorkerError);

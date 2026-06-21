@@ -1,6 +1,6 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 // Bump this version when the WASM file changes to invalidate the cache.
-const WASM_CACHE_VERSION = 'cira-wasm-v4-sdk312';
+const WASM_CACHE_VERSION = 'cira-wasm-v5-sdk312';
 
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
