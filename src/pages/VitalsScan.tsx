@@ -234,7 +234,7 @@ const VitalsScan = () => {
         }, 50);
       }
     };
-  }, [cleanup, initialize, isGuest, navigate, t, sdkLang]);
+  }, [cleanup, initialize, isGuest, navigate, t, sdkLang, initAttempt]);
 
 
   useEffect(() => {
