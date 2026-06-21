@@ -497,9 +497,9 @@ const VitalsScan = () => {
               style={{ display: "block" }}
             />
 
-            {/* Idle/Loading overlay */}
-            {(status === "idle" || status === "loading") && (
-              <SdkLoadingOverlay status={status} progress={progress} />
+            {/* Idle/Loading/Error overlay */}
+            {(status === "idle" || status === "loading" || status === "error") && (
+              <SdkLoadingOverlay status={status} progress={progress} error={error} onRetry={handleSdkRetry} />
             )}
 
             {/* Progress overlay during measurement */}
