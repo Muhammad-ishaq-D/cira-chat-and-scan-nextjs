@@ -113,6 +113,24 @@ const VitalsScan = () => {
     let cancelled = false;
     let reloadTimer: number | undefined;
 
+    const detectInAppWebview = (): string | null => {
+      if (typeof navigator === "undefined") return null;
+      const ua = navigator.userAgent || "";
+      // Common in-app browsers that block SharedArrayBuffer / service workers needed for the scan.
+      const patterns: Array<[RegExp, string]> = [
+        [/Instagram/i, "Instagram"],
+        [/FBAN|FBAV|FB_IAB|FBIOS/i, "Facebook"],
+        [/Messenger/i, "Messenger"],
+        [/LinkedInApp/i, "LinkedIn"],
+        [/Line\//i, "LINE"],
+        [/TikTok/i, "TikTok"],
+        [/Twitter|TwitterAndroid/i, "X / Twitter"],
+        [/MicroMessenger/i, "WeChat"],
+      ];
+      for (const [re, name] of patterns) if (re.test(ua)) return name;
+      return null;
+    };
+
     const ensureSecureScannerContext = async () => {
       if (isDocumentCrossOriginIsolated()) {
         clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
@@ -121,6 +139,9 @@ const VitalsScan = () => {
 
       if (typeof window === "undefined" || !("serviceWorker" in navigator) || !window.isSecureContext) {
         console.error("[VitalsScan] Secure context or service workers are unavailable.");
+        setContextError(
+          "Your browser doesn't support the secure environment the face scan needs. Please open Cira in the latest Chrome, Safari, Edge or Firefox (not an in-app browser)."
+        );
         return false;
       }
 
@@ -133,22 +154,30 @@ const VitalsScan = () => {
         await navigator.serviceWorker.ready;
       } catch (serviceWorkerError) {
         console.error("[VitalsScan] Failed to register COI service worker:", serviceWorkerError);
+        setContextError(
+          "Couldn't enable the secure scan environment on this browser. Try reloading, or open Cira in Chrome or Safari."
+        );
         return false;
       }
 
       if (cancelled) return false;
 
       if (!navigator.serviceWorker.controller || !isDocumentCrossOriginIsolated()) {
-        // Only reload ONCE — if reload didn't fix isolation (e.g., preview iframe blocks SW),
-        // bail out instead of looping.
+        // Only reload ONCE — if reload didn't fix isolation (e.g., in-app webview blocks SW),
+        // surface a clear error instead of a black screen.
         if (!hasRecentDocumentReload(VITALS_SCAN_RELOAD_KEY, 30000)) {
           markDocumentReload(VITALS_SCAN_RELOAD_KEY);
           reloadTimer = window.setTimeout(() => {
             window.location.reload();
           }, 250);
         } else {
-          console.error("[VitalsScan] COI service worker is active, but the page is still not cross-origin isolated. Stopping reload loop.");
-          // Keep the reload marker so we don't try again this session
+          console.error("[VitalsScan] COI service worker active but page is not cross-origin isolated.");
+          const app = detectInAppWebview();
+          setContextError(
+            app
+              ? `The face scan can't run inside the ${app} in-app browser. Tap the menu (⋯) and choose "Open in Chrome" or "Open in Safari", then visit askainurse.com again.`
+              : "Your browser blocked the secure environment needed for the face scan. Please open Cira in the latest Chrome, Safari 17.4+, Edge or Firefox — and not an in-app browser."
+          );
         }
 
         return false;
