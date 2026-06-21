@@ -1,10 +1,14 @@
-import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const partsDir = join(root, "scripts", "shenai-wasm-parts");
 const outputPath = join(root, "public", "wasm", "shenai_sdk.wasm");
+const expectedSha256 = "29f5c1d369730dfb99f6a4310c7a14d756626afd5c7ba125493d2996b1d831e2";
+
+const sha256 = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
 
 const parts = readdirSync(partsDir)
   .filter((file) => file.startsWith("shenai_sdk.wasm.part"))
@@ -16,7 +20,7 @@ if (!parts.length) {
 
 const expectedSize = parts.reduce((total, file) => total + statSync(join(partsDir, file)).size, 0);
 
-if (existsSync(outputPath) && statSync(outputPath).size === expectedSize) {
+if (existsSync(outputPath) && statSync(outputPath).size === expectedSize && sha256(outputPath) === expectedSha256) {
   process.exit(0);
 }
 
@@ -43,3 +47,8 @@ await new Promise((resolve, reject) => {
 });
 
 console.log(`Prepared Shen AI WASM at ${outputPath}`);
+
+const actualSha256 = sha256(outputPath);
+if (actualSha256 !== expectedSha256) {
+  throw new Error(`Prepared Shen AI WASM checksum mismatch: expected ${expectedSha256}, got ${actualSha256}`);
+}
