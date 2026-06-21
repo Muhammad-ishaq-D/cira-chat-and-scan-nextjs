@@ -187,6 +187,13 @@ if (typeof window === 'undefined') {
                 (registration) => {
                     !coi.quiet && console.log("COOP/COEP Service Worker registered", registration.scope);
 
+                    // Force an immediate update check so returning users don't stay on an old
+                    // version for up to 24 hours. Skip this on /vitals-scan to avoid reloading
+                    // mid-scan setup.
+                    if (window.location.pathname !== "/vitals-scan") {
+                        registration.update();
+                    }
+
                     registration.addEventListener("updatefound", () => {
                         !coi.quiet && console.log("Reloading page to make use of updated COOP/COEP Service Worker.");
                         coi.doReload();
