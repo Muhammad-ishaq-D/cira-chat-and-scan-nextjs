@@ -268,6 +268,27 @@ const VitalsScan = () => {
     };
   }, [cleanup, initialize, isGuest, navigate, t, sdkLang, initAttempt]);
 
+  // Stall detection: if the SDK never reports loading progress for 25s,
+  // surface a clear error instead of leaving the user staring at 0%.
+  useEffect(() => {
+    if (status !== "loading" || progress >= 100 || contextError) return;
+    const startedAt = Date.now();
+    const startProgress = progress;
+    const id = window.setInterval(() => {
+      if (progress !== startProgress) {
+        window.clearInterval(id);
+        return;
+      }
+      if (Date.now() - startedAt > 25000) {
+        window.clearInterval(id);
+        setContextError(
+          "The scanner engine isn't downloading. Check your internet connection, then tap retry. If this keeps happening, open Cira in Chrome or Safari (not an in-app browser)."
+        );
+      }
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [status, progress, contextError]);
+
 
   useEffect(() => {
     if (!results) return;

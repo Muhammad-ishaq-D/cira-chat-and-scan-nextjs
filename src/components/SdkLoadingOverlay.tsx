@@ -57,7 +57,7 @@ const SdkLoadingOverlay = ({ progress, status, error, onRetry }: Props) => {
     );
   }
 
-  const shown = status === "loading" ? Math.max(displayed, 2) : displayed;
+  const shown = displayed;
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-10 px-6">
