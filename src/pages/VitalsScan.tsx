@@ -530,8 +530,13 @@ const VitalsScan = () => {
             />
 
             {/* Idle/Loading/Error overlay */}
-            {(status === "idle" || status === "loading" || status === "error") && (
-              <SdkLoadingOverlay status={status} progress={progress} error={error} onRetry={handleSdkRetry} />
+            {(contextError || status === "idle" || status === "loading" || status === "error") && (
+              <SdkLoadingOverlay
+                status={contextError ? "error" : status as "idle" | "loading" | "error"}
+                progress={progress}
+                error={contextError || error}
+                onRetry={handleSdkRetry}
+              />
             )}
 
             {/* Progress overlay during measurement */}
