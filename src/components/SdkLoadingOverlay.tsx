@@ -4,7 +4,8 @@ import { Wifi, WifiOff, Gauge, AlertCircle, Download, RefreshCw } from "lucide-r
 
 interface Props {
   progress: number;
-  status: "idle" | "loading";
+  status: "idle" | "loading" | "error";
+  error?: string | null;
   onRetry?: () => void;
 }
 
