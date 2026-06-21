@@ -71,7 +71,11 @@ if (typeof window === 'undefined') {
                 : r;
 
             // Cache-first strategy for large WASM files — avoids re-downloading 10+ MB on every visit.
-            if (url.pathname.endsWith(".wasm")) {
+            // Only applies to SAME-ORIGIN WASM. Cross-origin WASM (e.g. CloudFront CDN) must pass
+            // through untouched so the browser can stream-instantiate it; reading .arrayBuffer() on
+            // an opaque/cross-origin response breaks WebAssembly.instantiateStreaming and forces the
+            // browser to download the file instead of executing it.
+            if (url.pathname.endsWith(".wasm") && url.origin === self.location.origin) {
                 try {
                     const cache = await caches.open(WASM_CACHE_VERSION);
                     const cached = await cache.match(r.url);
@@ -104,6 +108,7 @@ if (typeof window === 'undefined') {
                     return fetch(request);
                 }
             }
+
 
             try {
                 const response = await fetch(request);
