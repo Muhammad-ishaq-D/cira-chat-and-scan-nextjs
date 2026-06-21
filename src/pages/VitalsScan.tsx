@@ -90,6 +90,7 @@ const VitalsScan = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
   const [initAttempt, setInitAttempt] = useState(0);
+  const [contextError, setContextError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasInitRef = useRef(false);
   const localUser = getUser();
@@ -98,6 +99,8 @@ const VitalsScan = () => {
   const handleSdkRetry = useCallback(() => {
     cleanup();
     hasInitRef.current = false;
+    setContextError(null);
+    clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
     setInitAttempt((n) => n + 1);
   }, [cleanup]);
 
