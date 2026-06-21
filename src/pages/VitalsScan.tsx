@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, LogOut, Heart, Wind, Brain, Zap, Scale, AlertCircle, Menu, ScanFace, Sparkles, FileText, UserRound, Activity, RefreshCw, ShieldCheck, Flame, TrendingUp, LogIn, Info, Crown } from "lucide-react";
@@ -89,10 +89,17 @@ const VitalsScan = () => {
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
+  const [initAttempt, setInitAttempt] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
+
+  const handleSdkRetry = useCallback(() => {
+    cleanup();
+    hasInitRef.current = false;
+    setInitAttempt((n) => n + 1);
+  }, [cleanup]);
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
@@ -227,7 +234,7 @@ const VitalsScan = () => {
         }, 50);
       }
     };
-  }, [cleanup, initialize, isGuest, navigate, t, sdkLang]);
+  }, [cleanup, initialize, isGuest, navigate, t, sdkLang, initAttempt]);
 
 
   useEffect(() => {
@@ -490,9 +497,9 @@ const VitalsScan = () => {
               style={{ display: "block" }}
             />
 
-            {/* Idle/Loading overlay */}
-            {(status === "idle" || status === "loading") && (
-              <SdkLoadingOverlay status={status} progress={progress} />
+            {/* Idle/Loading/Error overlay */}
+            {(status === "idle" || status === "loading" || status === "error") && (
+              <SdkLoadingOverlay status={status} progress={progress} error={error} onRetry={handleSdkRetry} />
             )}
 
             {/* Progress overlay during measurement */}

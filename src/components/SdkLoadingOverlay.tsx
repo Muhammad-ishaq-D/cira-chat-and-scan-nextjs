@@ -4,7 +4,8 @@ import { Wifi, WifiOff, Gauge, AlertCircle, Download, RefreshCw } from "lucide-r
 
 interface Props {
   progress: number;
-  status: "idle" | "loading";
+  status: "idle" | "loading" | "error";
+  error?: string | null;
   onRetry?: () => void;
 }
 
@@ -29,7 +30,7 @@ function readConnection(): NetInfo {
   };
 }
 
-const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
+const SdkLoadingOverlay = ({ progress, status, error, onRetry }: Props) => {
   const { t } = useTranslation();
   const [net, setNet] = useState<NetInfo>(() => readConnection());
   const [ping, setPing] = useState<number | null>(null);
@@ -128,6 +129,28 @@ const SdkLoadingOverlay = ({ progress, status, onRetry }: Props) => {
     if (onRetry) onRetry();
     else window.location.reload();
   };
+
+  if (status === "error") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-10 px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border-2 border-red-500/30">
+          <AlertCircle size={24} className="text-red-400" />
+        </div>
+        <h2 className="text-white text-lg font-heading font-semibold mb-1">
+          {t("components.sdkLoading.connectionIssue")}
+        </h2>
+        <p className="text-white/60 text-xs font-body mb-5 max-w-xs">
+          {error || t("components.sdkLoading.takingLonger")}
+        </p>
+        <button
+          onClick={handleRetry}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          <RefreshCw size={14} /> {t("components.sdkLoading.retry")}
+        </button>
+      </div>
+    );
+  }
 
   if (isStuck) {
     return (
