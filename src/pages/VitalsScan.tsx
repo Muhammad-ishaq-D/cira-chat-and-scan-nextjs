@@ -89,10 +89,17 @@ const VitalsScan = () => {
   const { status, progress, error, results, initialize, startMeasurement, reset, cleanup } = useShenAI();
   const [showHistory, setShowHistory] = useState(false);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
+  const [initAttempt, setInitAttempt] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasInitRef = useRef(false);
   const localUser = getUser();
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
+
+  const handleSdkRetry = useCallback(() => {
+    cleanup();
+    hasInitRef.current = false;
+    setInitAttempt((n) => n + 1);
+  }, [cleanup]);
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
