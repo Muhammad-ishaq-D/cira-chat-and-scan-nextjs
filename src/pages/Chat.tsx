@@ -914,7 +914,7 @@ const Chat = () => {
           processToolCalls(toolCalls, fullText);
         }
         if (fallbackSessionChanged) {
-          loadChatHistory();
+          loadChatHistory({ silent: true });
         }
         return;
       }
