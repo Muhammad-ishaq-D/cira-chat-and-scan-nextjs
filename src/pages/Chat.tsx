@@ -531,20 +531,31 @@ const Chat = () => {
   };
 
   // Load chat history from API
-  const loadChatHistory = useCallback(async () => {
-    setChatHistoryLoading(true);
+  const loadChatHistory = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = opts?.silent === true;
+    if (!silent) setChatHistoryLoading(true);
     try {
       const data = await chatApi.getHistory();
       console.log("[Chat History] Raw response:", data);
       const sessions = Array.isArray(data) ? data : data.history || data.sessions || data.data || [];
-      setChatHistory(sessions);
+      if (silent) {
+        // Merge: keep existing entries in place, only prepend genuinely new sessions
+        setChatHistory((prev) => {
+          const existingIds = new Set(prev.map((c: any) => c?.id));
+          const newOnes = sessions.filter((s: any) => s?.id && !existingIds.has(s.id));
+          if (newOnes.length === 0) return prev;
+          return [...newOnes, ...prev];
+        });
+      } else {
+        setChatHistory(sessions);
+      }
     } catch (err: any) {
       console.error("[Chat History] Failed to load:", err);
-      if (err.message !== "Session expired") {
+      if (!silent && err.message !== "Session expired") {
         toast.error("Failed to load chat history");
       }
     } finally {
-      setChatHistoryLoading(false);
+      if (!silent) setChatHistoryLoading(false);
     }
   }, []);
 
@@ -903,7 +914,7 @@ const Chat = () => {
           processToolCalls(toolCalls, fullText);
         }
         if (fallbackSessionChanged) {
-          loadChatHistory();
+          loadChatHistory({ silent: true });
         }
         return;
       }
@@ -1090,7 +1101,7 @@ const Chat = () => {
       }
       // Refresh sidebar history whenever a new session was created during this stream
       if (sessionChanged) {
-        loadChatHistory();
+        loadChatHistory({ silent: true });
       }
 
       if (toolCalls.length > 0) {
