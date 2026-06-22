@@ -1476,7 +1476,7 @@ const Chat = () => {
               <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
               <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
             </div>
-            <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6 pb-28 md:pb-6">
+            <div className="relative z-10 max-w-2xl md:ml-4 lg:ml-6 md:mr-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6 pb-28 md:pb-6">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
                   {/* Summary card */}
