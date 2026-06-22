@@ -1393,67 +1393,65 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Chat history drawer - slides from sidebar edge, no full overlay */}
+      {/* Chat history - mobile drawer (overlay) / desktop fixed panel */}
+      {/* Mobile backdrop */}
       {showHistory && (
-        <>
-          {/* Click-away backdrop over main content only, not sidebar */}
-          <div
-            className="fixed inset-0 z-40 bg-black/10 md:left-[72px]"
-            onClick={() => setShowHistory(false)}
-          />
-          {/* Drawer panel anchored to sidebar */}
-          <div
-            className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out] left-0 md:left-[72px]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
-              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{tr("components.chatHistory.title")}</p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => { setActiveChat(null); clearLiveTypingState(); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
-                  className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                  title={tr("components.chatHistory.newChat")}
-                >
-                  <Plus size={16} />
-                </button>
-                <button
-                  onClick={() => setShowHistory(false)}
-                  className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18" /><path d="M6 6l12 12" /></svg>
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
-              {chatHistory.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
-              ) : chatHistory.map((chat: any) => (
-                <div
-                  key={chat.id}
-                  className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${activeChat === chat.id
-                    ? "bg-primary/10 text-foreground border border-primary/20"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                    }`}
-                  onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
-                >
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
-                    title={tr("components.chatHistory.deleteChat")}
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+        <div
+          className="fixed inset-0 z-40 bg-black/10 md:hidden"
+          onClick={() => setShowHistory(false)}
+        />
       )}
+      {/* Panel: always visible on desktop, toggled on mobile */}
+      <div
+        className={`${showHistory ? 'flex' : 'hidden'} md:flex fixed md:static top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl md:shadow-none flex-col left-0 shrink-0 animate-[slide-in-left_0.2s_ease-out] md:animate-none`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+          <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>{tr("components.chatHistory.title")}</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setActiveChat(null); clearLiveTypingState(); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncCurrentSessionId(null); syncChatMode("none"); setPendingLandingMessage(null); setShowHistory(false); }}
+              className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+              title={tr("components.chatHistory.newChat")}
+            >
+              <Plus size={16} />
+            </button>
+            <button
+              onClick={() => setShowHistory(false)}
+              className="md:hidden p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18" /><path d="M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto chatgpt-scrollbar p-3 space-y-1">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
+          {chatHistory.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
+          ) : chatHistory.map((chat: any) => (
+            <div
+              key={chat.id}
+              className={`group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer ${activeChat === chat.id
+                ? "bg-primary/10 text-foreground border border-primary/20"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                }`}
+              onClick={() => { setActiveChat(chat.id); startChat(chat.title || "Chat", chat.id); setShowHistory(false); }}
+            >
+              <div className="flex-1 min-w-0 text-left">
+                <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{chat.date || chat.created_at}</p>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
+                className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0"
+                title={tr("components.chatHistory.deleteChat")}
+              >
+                <Trash2 size={13} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
