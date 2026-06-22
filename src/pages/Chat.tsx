@@ -1101,7 +1101,7 @@ const Chat = () => {
       }
       // Refresh sidebar history whenever a new session was created during this stream
       if (sessionChanged) {
-        loadChatHistory();
+        loadChatHistory({ silent: true });
       }
 
       if (toolCalls.length > 0) {
