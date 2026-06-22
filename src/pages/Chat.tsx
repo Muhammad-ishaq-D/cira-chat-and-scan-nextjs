@@ -1430,7 +1430,18 @@ const Chat = () => {
         </div>
         <div className="flex-1 overflow-y-auto chatgpt-scrollbar p-3 space-y-1">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
-          {chatHistory.length === 0 ? (
+          {chatHistoryLoading ? (
+            <div className="space-y-2 px-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-2 px-3 py-2.5 rounded-xl">
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3 w-3/4 rounded bg-muted animate-pulse" />
+                    <div className="h-2 w-1/2 rounded bg-muted animate-pulse" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : chatHistory.length === 0 ? (
             <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
           ) : chatHistory.map((chat: any) => (
             <div
