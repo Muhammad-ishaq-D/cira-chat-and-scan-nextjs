@@ -491,6 +491,7 @@ const Chat = () => {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [chatHistoryLoading, setChatHistoryLoading] = useState(true);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(
     () => sessionStorage.getItem("cira_active_session") || null
   );
