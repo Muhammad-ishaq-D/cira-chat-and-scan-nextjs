@@ -532,6 +532,7 @@ const Chat = () => {
 
   // Load chat history from API
   const loadChatHistory = useCallback(async () => {
+    setChatHistoryLoading(true);
     try {
       const data = await chatApi.getHistory();
       console.log("[Chat History] Raw response:", data);
@@ -542,6 +543,8 @@ const Chat = () => {
       if (err.message !== "Session expired") {
         toast.error("Failed to load chat history");
       }
+    } finally {
+      setChatHistoryLoading(false);
     }
   }, []);
 
