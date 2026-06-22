@@ -1828,7 +1828,7 @@ const Chat = () => {
               )}
             </div>
           </form>
-          <div className="text-center px-3 pb-1">
+          <div className="max-w-2xl md:ml-4 lg:ml-6 md:mr-auto text-center px-3 pb-1">
             <p className="text-[9px] text-muted-foreground/60">{t.disclaimer || tr("components.chatHistory.disclaimer")}</p>
           </div>
         </div>
