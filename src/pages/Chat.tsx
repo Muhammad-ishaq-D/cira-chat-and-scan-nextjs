@@ -1753,7 +1753,7 @@ const Chat = () => {
 
         {/* Bottom input — Gemini-style clean pill */}
         <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
-          <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
+          <form onSubmit={handleSend} className="relative z-10 max-w-2xl md:ml-4 lg:ml-6 md:mr-auto px-3 py-2 md:px-4 md:py-3">
             <div className="bg-secondary/60 rounded-full flex items-center border border-border/30 px-2">
               {/* Language Selector Dropdown inside input */}
               <div className="relative shrink-0" ref={dropdownRef}>
