@@ -115,6 +115,40 @@
   display: none; /* Chrome, Safari and Opera */
 }
 
+/* ChatGPT-like thin scrollbar: subtle when idle, visible on hover/scroll */
+.chatgpt-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+.chatgpt-scrollbar:hover,
+.chatgpt-scrollbar:focus-within,
+.chatgpt-scrollbar:active {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+.chatgpt-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.chatgpt-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chatgpt-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 999px;
+  transition: background-color 0.3s ease;
+}
+.chatgpt-scrollbar:hover::-webkit-scrollbar-thumb,
+.chatgpt-scrollbar:active::-webkit-scrollbar-thumb,
+.chatgpt-scrollbar:focus-within::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.chatgpt-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+
+
 /* Scroll-triggered fade-in */
 .scroll-fade {
   opacity: 0;
