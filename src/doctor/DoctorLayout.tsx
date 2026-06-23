@@ -82,7 +82,12 @@ const DoctorLayout = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto relative">
-        <div className="relative z-10 pt-16 md:pt-0 pb-20 md:pb-0">
+        <div className="fixed inset-0 pointer-events-none md:left-[72px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-pink-50/30 to-orange-50/40" />
+          <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-gradient-to-br from-blue-200/40 to-purple-100/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
+        </div>
+        <div className="relative z-10 pt-16 md:pt-0 md:pl-8 pb-20 md:pb-0">
           <Outlet />
         </div>
       </div>
