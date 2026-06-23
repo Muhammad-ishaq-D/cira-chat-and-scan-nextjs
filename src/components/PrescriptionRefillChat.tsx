@@ -4544,7 +4544,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
               meds={medDraft}
               setMeds={setMedDraft}
               onSubmit={handleMedDetailsSubmit}
-              t={t}
+            
             />
           </Bubble>
         )}
