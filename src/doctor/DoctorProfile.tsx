@@ -87,25 +87,29 @@ const DoctorProfile = () => {
         </button>
       </div>
 
-      <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+      <form className="bg-card rounded-2xl border border-border p-6 space-y-4" autoComplete="off" onSubmit={(e) => { e.preventDefault(); changePw(); }}>
         <h2 className="font-heading text-base font-semibold">Change password</h2>
-        <Field label="Current password" type="password" value={pw.current} onChange={(v) => setPw((p) => ({ ...p, current: v }))} />
-        <Field label="New password" type="password" value={pw.next} onChange={(v) => setPw((p) => ({ ...p, next: v }))} />
-        <button onClick={changePw} disabled={pwSaving || !pw.current || !pw.next} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
+        {/* Hidden dummy fields to defeat browser autofill */}
+        <input type="text" name="username" autoComplete="username" style={{ display: "none" }} />
+        <input type="password" name="password" autoComplete="current-password" style={{ display: "none" }} />
+        <Field label="Current password" type="password" value={pw.current} onChange={(v) => setPw((p) => ({ ...p, current: v }))} autoComplete="new-password" />
+        <Field label="New password" type="password" value={pw.next} onChange={(v) => setPw((p) => ({ ...p, next: v }))} autoComplete="new-password" />
+        <button type="submit" disabled={pwSaving || !pw.current || !pw.next || pw.current === pw.next} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
           {pwSaving ? "Updating…" : "Update password"}
         </button>
-      </div>
+      </form>
     </div>
   );
 };
 
-const Field = ({ label, value, onChange, type = "text", disabled }: { label: string; value: string; onChange?: (v: string) => void; type?: string; disabled?: boolean }) => (
+const Field = ({ label, value, onChange, type = "text", disabled, autoComplete }: { label: string; value: string; onChange?: (v: string) => void; type?: string; disabled?: boolean; autoComplete?: string }) => (
   <div>
     <label className="text-xs font-medium block mb-1">{label}</label>
     <input
       type={type}
       value={value}
       disabled={disabled}
+      autoComplete={autoComplete}
       onChange={(e) => onChange?.(e.target.value)}
       className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
     />
