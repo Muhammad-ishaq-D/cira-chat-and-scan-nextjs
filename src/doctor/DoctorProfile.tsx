@@ -28,11 +28,13 @@ const DoctorProfile = () => {
     if (!doctor) return;
     setSaving(true);
     try {
-      const updated = await doctorApi.updateProfile({
+      await doctorApi.updateProfile({
         name: doctor.name, phone: doctor.phone, bio: doctor.bio,
       });
-      setDoctor(updated);
-      localStorage.setItem("cira_doctor", JSON.stringify(updated));
+      const fresh = await doctorApi.getProfile().catch(() => doctor);
+      const merged = { ...doctor, ...fresh };
+      setDoctor(merged);
+      localStorage.setItem("cira_doctor", JSON.stringify(merged));
       toast.success("Profile updated");
     } catch (e: any) {
       toast.error(e.message || "Failed to update");
