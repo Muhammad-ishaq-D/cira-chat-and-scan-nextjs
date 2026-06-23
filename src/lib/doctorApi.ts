@@ -106,7 +106,9 @@ export const doctorApi = {
 
   getPendingRefills: async () => {
     try {
-      return await request<{ refills: DoctorRefill[] }>("/api/doctor/refills/pending");
+      const res = await request<any>("/api/doctor/refills/pending");
+      const refills = Array.isArray(res) ? res : (res?.refills || res?.data || []);
+      return { refills: refills as DoctorRefill[] };
     } catch (e: any) {
       if (/404|not found/i.test(e?.message || "")) return { refills: [] };
       throw e;
@@ -114,7 +116,9 @@ export const doctorApi = {
   },
   getReviewedRefills: async (status: "approved" | "rejected" | "all" = "all") => {
     try {
-      return await request<{ refills: DoctorRefill[] }>(`/api/doctor/refills/reviewed?status=${status}`);
+      const res = await request<any>(`/api/doctor/refills/reviewed?status=${status}`);
+      const refills = Array.isArray(res) ? res : (res?.refills || res?.data || []);
+      return { refills: refills as DoctorRefill[] };
     } catch (e: any) {
       if (/404|not found/i.test(e?.message || "")) return { refills: [] };
       throw e;
