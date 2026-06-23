@@ -46,6 +46,14 @@ import AdminBlogs from "./admin/AdminBlogs.tsx";
 import AdminActivity from "./admin/AdminActivity.tsx";
 import AdminPrescriptionRefills from "./admin/AdminPrescriptionRefills.tsx";
 import AdminReferralLetters from "./admin/AdminReferralLetters.tsx";
+import AdminDoctors from "./admin/AdminDoctors.tsx";
+import DoctorLogin from "./doctor/DoctorLogin.tsx";
+import DoctorLayout from "./doctor/DoctorLayout.tsx";
+import DoctorProtectedRoute from "./doctor/DoctorProtectedRoute.tsx";
+import DoctorOverview from "./doctor/DoctorOverview.tsx";
+import DoctorPendingRefills from "./doctor/DoctorPendingRefills.tsx";
+import DoctorReviewedRefills from "./doctor/DoctorReviewedRefills.tsx";
+import DoctorProfile from "./doctor/DoctorProfile.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import RouteTracker from "./components/RouteTracker.tsx";
@@ -130,6 +138,16 @@ const App = () => {
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/prescription-refills" element={<AdminPrescriptionRefills />} />
             <Route path="/admin/referral-letters" element={<AdminReferralLetters />} />
+            <Route path="/admin/doctors" element={<AdminDoctors />} />
+          </Route>
+          {/* Doctor Portal */}
+          <Route path="/doctor" element={<DoctorLogin />} />
+          <Route path="/doctor/login" element={<DoctorLogin />} />
+          <Route element={<DoctorProtectedRoute><DoctorLayout /></DoctorProtectedRoute>}>
+            <Route path="/doctor/dashboard" element={<DoctorOverview />} />
+            <Route path="/doctor/pending" element={<DoctorPendingRefills />} />
+            <Route path="/doctor/history" element={<DoctorReviewedRefills />} />
+            <Route path="/doctor/profile" element={<DoctorProfile />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

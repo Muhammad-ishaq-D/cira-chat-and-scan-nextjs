@@ -1,18 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import i18n from "@/i18n";
-import { Users, CreditCard, BarChart3, LogOut, Settings, Shield, Bell, FileText, Activity, Pill, BookOpen } from "lucide-react";
+import { Users, CreditCard, BarChart3, LogOut, Settings, Shield, Bell, FileText, Activity, Pill, BookOpen, Stethoscope } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
 
 const navItems = [
-  { icon: BarChart3,  key: "overview",             id: "overview",             path: "/admin/dashboard" },
-  { icon: Users,      key: "users",                 id: "users",                path: "/admin/users" },
-  { icon: Activity,   key: "activity",              id: "activity",             path: "/admin/activity" },
-  { icon: Pill,       key: "prescriptionRefills",   id: "prescriptionRefills",  path: "/admin/prescription-refills" },
-  { icon: BookOpen,   key: "referralLetters",       id: "referralLetters",      path: "/admin/referral-letters" },
-  { icon: CreditCard, key: "billing",               id: "billing",              path: "/admin/billing" },
-  { icon: FileText,   key: "blogs",                 id: "blogs",                path: "/admin/blogs" },
-  { icon: Settings,   key: "settings",              id: "settings",             path: "/admin/settings" },
+  { icon: BarChart3,  key: "overview",             id: "overview",             path: "/admin/dashboard",            label: "Overview" },
+  { icon: Users,      key: "users",                 id: "users",                path: "/admin/users",                label: "Users" },
+  { icon: Stethoscope, key: "doctors",              id: "doctors",              path: "/admin/doctors",              label: "Doctors" },
+  { icon: Activity,   key: "activity",              id: "activity",             path: "/admin/activity",             label: "Activity" },
+  { icon: Pill,       key: "prescriptionRefills",   id: "prescriptionRefills",  path: "/admin/prescription-refills", label: "Refills" },
+  { icon: BookOpen,   key: "referralLetters",       id: "referralLetters",      path: "/admin/referral-letters",     label: "Referrals" },
+  { icon: CreditCard, key: "billing",               id: "billing",              path: "/admin/billing",              label: "Billing" },
+  { icon: FileText,   key: "blogs",                 id: "blogs",                path: "/admin/blogs",                label: "Blogs" },
+  { icon: Settings,   key: "settings",              id: "settings",             path: "/admin/settings",             label: "Settings" },
 ];
 
 const AdminLayout = () => {
@@ -60,7 +61,7 @@ const AdminLayout = () => {
                 }`}
               >
                 <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
-                <span className="text-[9px] font-body font-medium leading-none">{t(`admin.nav.${item.key}`)}</span>
+                <span className="text-[9px] font-body font-medium leading-none">{t(`admin.nav.${item.key}`, { defaultValue: item.label })}</span>
               </button>
             );
           })}
@@ -123,7 +124,7 @@ const AdminLayout = () => {
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${isActive ? "bg-primary/10" : ""}`}>
                   <Icon size={17} strokeWidth={isActive ? 2.2 : 1.5} />
                 </div>
-                <span className={`text-[8px] font-medium leading-none truncate w-full text-center ${isActive ? "font-semibold text-primary" : ""}`}>{t(`admin.nav.${item.key}`)}</span>
+                <span className={`text-[8px] font-medium leading-none truncate w-full text-center ${isActive ? "font-semibold text-primary" : ""}`}>{t(`admin.nav.${item.key}`, { defaultValue: item.label })}</span>
                 {isActive && <div className="w-3 h-0.5 rounded-full bg-primary mt-0.5" />}
               </button>
             );
