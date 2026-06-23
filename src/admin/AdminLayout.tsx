@@ -45,8 +45,8 @@ const AdminLayout = () => {
           <Shield size={10} className="text-primary" />
           <span className="text-[8px] font-semibold text-primary uppercase tracking-wider">{t("admin.nav.admin")}</span>
         </div>
-        <div className="w-10 h-[1px] bg-border mb-3" />
-        <div className="flex-1 flex flex-col items-center gap-1">
+        <div className="w-10 h-[1px] bg-border mb-4" />
+        <div className="flex-1 flex flex-col items-center gap-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeId === item.id;
