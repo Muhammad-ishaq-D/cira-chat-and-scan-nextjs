@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, forwardRef } from "react";
 import { Loader2, RefreshCw, Plus, Search, ShieldOff, ShieldCheck, KeyRound, Trash2, X, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 import { adminApi, type AdminDoctor } from "@/lib/apiClient";
@@ -19,6 +19,13 @@ const AdminDoctors = () => {
   const [saving, setSaving] = useState(false);
   const [resetFor, setResetFor] = useState<AdminDoctor | null>(null);
   const [newPw, setNewPw] = useState("");
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showAdd && nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, [showAdd]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,9 +101,9 @@ const AdminDoctors = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-28 md:pb-8 space-y-5">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-heading text-xl sm:text-2xl font-semibold">Doctors</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Manage doctor accounts. Doctors review prescription refills.</p>
@@ -208,7 +215,7 @@ const AdminDoctors = () => {
               <button onClick={() => setShowAdd(false)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input label="Full name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+              <Input ref={nameInputRef} label="Full name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
               <Input label="Email *" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
               <Input label="Password *" type="text" value={form.password} onChange={(v) => setForm({ ...form, password: v })} />
               <Input label="Specialty" value={form.specialty} onChange={(v) => setForm({ ...form, specialty: v })} />
@@ -268,12 +275,14 @@ const DoctorActions = ({ d, onToggle, onReset, onRemove }: {
   </div>
 );
 
-const Input = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
-  <div>
-    <label className="text-xs font-medium block mb-1">{label}</label>
-    <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
-      className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30" />
-  </div>
+const Input = forwardRef<HTMLInputElement, { label: string; value: string; onChange: (v: string) => void; type?: string }>(
+  ({ label, value, onChange, type = "text" }, ref) => (
+    <div>
+      <label className="text-xs font-medium block mb-1">{label}</label>
+      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+    </div>
+  )
 );
 
 export default AdminDoctors;
