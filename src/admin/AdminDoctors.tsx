@@ -101,9 +101,9 @@ const AdminDoctors = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-28 md:pb-8 space-y-5">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-heading text-xl sm:text-2xl font-semibold">Doctors</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Manage doctor accounts. Doctors review prescription refills.</p>
