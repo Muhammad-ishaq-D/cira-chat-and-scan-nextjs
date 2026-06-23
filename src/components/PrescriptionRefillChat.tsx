@@ -6196,8 +6196,6 @@ const MedicationDetailsForm = ({
   setMeds: (m: MedicationDetail[]) => void;
   onSubmit: (m: MedicationDetail[]) => void;
   t: (key: string, fallback?: string) => string;
-} & { t: any }) => {
-  void 0;
 }) => {
   const [submitting, setSubmitting] = useState(false);
   const update = (i: number, patch: Partial<MedicationDetail>) => {
