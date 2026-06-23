@@ -215,7 +215,7 @@ const AdminDoctors = () => {
               <button onClick={() => setShowAdd(false)} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input label="Full name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+              <Input ref={nameInputRef} label="Full name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
               <Input label="Email *" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
               <Input label="Password *" type="text" value={form.password} onChange={(v) => setForm({ ...form, password: v })} />
               <Input label="Specialty" value={form.specialty} onChange={(v) => setForm({ ...form, specialty: v })} />
