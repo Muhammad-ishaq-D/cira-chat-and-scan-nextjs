@@ -3919,11 +3919,36 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setAnswers((a) => ({ ...a, drug: { drug: v, form: "—", strength: "—", dosage: "—" } }));
     setTimeout(() => setSub2("confirm"), 250);
   };
-  const handleProceedWithAvailable = async () => {
+  const handleProceedWithAvailable = () => {
     const available = ocrResults.filter((r) => r.available);
     if (available.length === 0) return;
     const names = available.map((r) => r.name).join(", ");
     pushMsg({ role: "user", kind: "text", text: `Continue with: ${names}` });
+    const draft: MedicationDetail[] = available.map((r) => ({
+      drug_name_inn: r.match?.product_name || r.match?.inn_name || r.name,
+      form: r.match?.form && r.match.form !== "N/A" ? r.match.form : "",
+      strength:
+        r.match?.available_strengths && r.match.available_strengths !== "N/A"
+          ? r.match.available_strengths
+          : (r.strength || ""),
+      dosage: r.dosage || "",
+      frequency: "",
+      duration: "",
+      quantity: Number(r.quantity) > 0 ? Number(r.quantity) : 1,
+    }));
+    setMedDraft(draft);
+    setUploadedPhotoUrl(null);
+    setSub2("details");
+  };
+
+  const handleMedDetailsSubmit = async (details: MedicationDetail[]) => {
+    // Validate: every medication needs strength, form, dosage, frequency, duration, quantity ≥ 1.
+    for (const m of details) {
+      if (!m.strength.trim() || !m.form.trim() || !m.dosage.trim() || !m.frequency.trim() || !m.duration.trim() || !m.quantity || m.quantity < 1) {
+        pushMsg({ role: "ai", kind: "text", text: "Please fill in all medication fields before continuing." });
+        return;
+      }
+    }
     try {
       const token = getToken() || "";
       const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -3932,26 +3957,38 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         method: "POST",
         headers,
         body: JSON.stringify({
-          medications: available.map((r) => ({
-            drug_name_inn: r.match?.product_name || r.match?.inn_name || r.name,
-            form: r.match?.form || "Not specified",
-            strength:
-              r.match?.available_strengths && r.match.available_strengths !== "N/A"
-                ? r.match.available_strengths
-                : "Not specified",
-            dosage_instructions: "As previously prescribed",
-            quantity: 1,
+          medications: details.map((m) => ({
+            drug_name_inn: m.drug_name_inn,
+            form: m.form,
+            strength: m.strength,
+            dosage_instructions: m.dosage,
+            dosage: m.dosage,
+            frequency: m.frequency,
+            duration: m.duration,
+            quantity: m.quantity,
           })),
         }),
       });
       if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
-    } catch (err) {
+    } catch {
       pushMsg({ role: "ai", kind: "text", text: "I couldn't save your medications. Please try again." });
       return;
     }
-    setUploadedPhotoUrl(null);
-    setTimeout(() => setStep(3), 250);
+    const joined = details.map((m) => m.drug_name_inn).join(", ");
+    setAnswers((a) => ({
+      ...a,
+      medications: details,
+      drug: {
+        drug: joined,
+        form: details[0]?.form || "—",
+        strength: details[0]?.strength || "—",
+        dosage: details[0]?.dosage || "—",
+      },
+    }));
+    pushMsg({ role: "user", kind: "text", text: details.map((m) => `${m.drug_name_inn} ${m.strength} · ${m.dosage} · ${m.frequency} · ${m.duration} · qty ${m.quantity}`).join("\n") });
+    setTimeout(() => setStep(3), 200);
   };
+
 
   const handleLooksGood = () => {
     if (!answers.drug) return;
