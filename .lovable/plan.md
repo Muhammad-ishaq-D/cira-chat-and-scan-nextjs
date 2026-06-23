@@ -1,143 +1,147 @@
-## GDPR Compliance Plan
+# Doctor Role + Prescription Review Workflow
 
-You selected all four areas. The frontend pieces I can ship inside Lovable today. The backend pieces live in your external Node.js/MySQL API (`VITE_API_URL`) — I'll wire the UI to call new endpoints and give you the exact spec to implement server-side.
-
----
-
-### 1. Cookie / Consent Banner v2 (frontend)
-
-Replace `src/components/ConsentBanner.tsx` (currently a single "Got it" dismiss) with a GDPR-grade banner:
-
-- **Three actions:** `Accept all`, `Reject all`, `Customize`.
-- **Categories** (toggles in Customize panel):
-  - Strictly necessary — always on, not toggleable (auth JWT, `cira_device_id`, consent record itself).
-  - Analytics — Google Analytics. Off by default.
-  - Functional — language preference, UI prefs. Off by default.
-  - We have no marketing/ad cookies, so that category is omitted.
-- **Storage:** new `src/lib/consent.ts` exposing `getConsent()`, `setConsent({analytics, functional})`, `hasDecided()`, plus a `consent-changed` event.
-- **Versioned record:** `cira_consent_v2 = { version: 2, decidedAt, analytics: bool, functional: bool }`. Bumping the version re-prompts users.
-- **GA gating:** load `gtag` only when `analytics === true`. Unload / set `'consent', 'update'` denied if user revokes. Update `src/lib/audit.ts` and any GA call sites.
-- **Re-open from anywhere:** add "Cookie preferences" link in the footer that re-opens the banner.
-- **Withdraw consent:** same link works from Profile page.
-
-### 2. Data Subject Rights UI (frontend + backend contract)
-
-New section on `src/pages/Profile.tsx` → "Privacy & Data":
-
-- **Export my data** button → calls `GET /api/user/gdpr/export` (JWT) → downloads `cira-data-export-<userId>-<date>.json`. Frontend just streams the blob.
-- **Delete my account** button → opens a confirm dialog (typed "DELETE" confirmation) → `DELETE /api/user/gdpr/account` → on 200, clears local storage, logs out, redirects to `/` with a toast.
-- **Withdraw consent** link → opens consent banner in edit mode.
-- **Download my reports** → already exists, keep as-is.
-
-**Backend spec for you to implement (Node/MySQL):**
-
-```
-GET    /api/user/gdpr/export       → 200 JSON { profile, vitalsScans[], reports[], chats[], payments[], consents[] }
-DELETE /api/user/gdpr/account      → 200; hard-delete or anonymize within 30d per policy
-GET    /api/user/gdpr/consent      → returns current server-side consent log (optional but recommended)
-POST   /api/user/gdpr/consent      → body { analytics, functional, version, userAgent } — append-only audit log
-```
-
-If those endpoints don't exist yet, the UI will show a friendly "Coming soon — email privacy@askainurse.com" fallback so nothing breaks.
-
-### 3. Legal Pages Refresh (frontend)
-
-Update `src/pages/PrivacyPolicy.tsx`, `src/pages/Privacy.tsx`, and `src/pages/Terms.tsx`:
-
-- Add **Data Controller** identity block (legal entity name, address, email). I'll use placeholders — you'll fill in the real entity.
-- Add **DPO / privacy contact** section (`privacy@askainurse.com`).
-- Expand **Lawful basis** table per processing purpose (consent, contract, legitimate interest).
-- Add **Sub-processors** table (Anthropic, Shen AI, GA, hosting, MySQL host) with locations.
-- Add **International transfers** SCC language.
-- Add **Automated decision-making** clause (AI-generated health responses, not solely automated decisions with legal effect).
-- Add **Data retention schedule** table (account: until deletion; vitals: 24mo; chats: 12mo; logs: 90d — please confirm or adjust).
-- Add **Your rights** including access, rectification, erasure, restriction, portability, objection, withdraw consent, lodge complaint with supervisory authority.
-- Add **Children**: minimum age 16 in EU.
-- Add **"Last updated"** date.
-
-### 4. Backend / Data Processing items (your Node API — spec only)
-
-I'll document these in `.lovable/plan.md` for your backend dev. Out of scope for Lovable code edits:
-
-- Implement the four `/api/user/gdpr/*` endpoints above.
-- Add `consent_log` table: `id, user_id NULL, anon_id, analytics, functional, version, ip, user_agent, created_at`.
-- 30-day deletion job: hard-delete or anonymize on `DELETE /gdpr/account`.
-- Retention cron: purge vitals_scans > 24mo, chats > 12mo (configurable).
-- TLS-at-rest confirmation for MySQL (`require_secure_transport=ON`), backup encryption.
-- Sub-processor DPAs on file (Anthropic, Shen, hosting).
-- Breach-notification runbook (72h to supervisory authority).
+## Overview
+Add a new "Doctor" role. Admin creates doctor accounts (name, email, password, specialty, license #, phone, etc.). Doctors log in via a dedicated portal, see prescription refills assigned/pending, and approve or reject them. Email behavior changes: on payment the user only gets a payment confirmation (no PDF). PDF is sent only after a doctor approves. If rejected, user gets a refund-notification email and Stripe refund is issued.
 
 ---
 
-### Files I will touch
+## Frontend Changes (this project)
 
-- `src/components/ConsentBanner.tsx` — full rewrite, 3-action + categories.
-- `src/lib/consent.ts` — new.
-- `src/lib/audit.ts` — gate GA on consent.
-- `src/pages/Profile.tsx` — add Privacy & Data section.
-- `src/pages/PrivacyPolicy.tsx`, `src/pages/Privacy.tsx`, `src/pages/Terms.tsx` — expanded copy.
-- `src/i18n/locales/{en,de,es,fr}.json` — new strings for banner + privacy section.
-- Footer component(s) — add "Cookie preferences" link.
-- `.lovable/plan.md` — backend spec handoff.
+### 1. Admin → Doctors Management
+- New page `src/admin/AdminDoctors.tsx` accessible from `AdminLayout` sidebar.
+- Table of doctors: name, email, specialty, license #, phone, status (active/suspended), created date, actions (edit / suspend / reset password / delete).
+- "Add Doctor" dialog with fields: full name, email, password (auto-generate option), specialty, license number, phone, bio (optional), avatar (optional).
+- Uses new admin API: `adminApi.getDoctors`, `createDoctor`, `updateDoctor`, `suspendDoctor`, `deleteDoctor`, `resetDoctorPassword`.
 
-No DB / schema changes on the Lovable side (your backend lives outside Cloud).
+### 2. Doctor Login + Portal
+- New route `/doctor/login` — mirrors admin login UI.
+- New layout `src/doctor/DoctorLayout.tsx` with sidebar: Dashboard, Pending Refills, Reviewed History, Profile, Logout.
+- Pages:
+  - `DoctorOverview.tsx` — counts (pending, approved today, rejected today).
+  - `DoctorPendingRefills.tsx` — table of paid-but-unreviewed refills; row click opens review dialog showing patient info, medications, payment ref, "Approve & Send PDF" or "Reject & Refund" with required note.
+  - `DoctorReviewedRefills.tsx` — history table with filter.
+  - `DoctorProfile.tsx` — change password, edit phone/bio.
+- JWT stored under `cira_doctor_token`; protected route wrapper `DoctorProtectedRoute.tsx`.
+- `src/lib/doctorApi.ts` — `doctorAuth.login`, `doctorApi.getPendingRefills`, `getReviewedRefills`, `approveRefill(id, note?)`, `rejectRefill(id, reason)`, `getProfile`, `updateProfile`, `changePassword`.
 
-### User decisions (provided)
+### 3. Prescription Refill flow change (user side)
+- On Stripe payment success, the user only sees: "Payment received. A licensed doctor will review your prescription within X hours. You'll receive your prescription PDF by email once approved." (No immediate PDF download.)
+- Refill history badge updates to show `awaiting_review` / `approved` / `rejected` / `refunded`.
 
-1. **Retention windows** — vitals 24mo, chats 12mo, logs 90d (applied in Privacy Policy and backend spec).
-2. **Legal entity** — Askainurse, la boue, Charn Issara Tower 1 - Ground Floor, Bangkok, 41250, Thailand (applied in Privacy Policy).
-3. **Account deletion** — anonymize (not hard-delete) within 30 days (applied in backend spec).
+### 4. Admin updates
+- `AdminPrescriptionRefills.tsx` — add `review_status` column (pending / approved / rejected) and reviewing doctor name; admin can override.
 
 ---
 
-## Backend handoff — implement these on the Node.js/MySQL API
+## Backend Prompt (for Antigravity)
 
-### Endpoints (JWT-protected)
+Copy-paste into Antigravity to apply on the Node/MySQL backend:
 
-```
-GET    /api/user/gdpr/export
-       → 200 application/json
-       Body: { profile, vitalsScans[], reports[], chats[], payments[], consents[], exportedAt }
+````text
+Add a "doctor" role to the existing Node.js + MySQL backend with a review workflow that gates prescription-refill PDF emails behind doctor approval.
 
-DELETE /api/user/gdpr/account
-       → 200; hard-delete or queue 30-day anonymization job
-       Side-effects: invalidate JWT, cascade delete vitals_scans, reports, chats, payments
+## 1. Schema (new migration)
 
-POST   /api/user/gdpr/consent
-       Body: { version, analytics, functional, decidedAt, userAgent }
-       → 201; append-only insert into consent_log
-```
-
-### New table
-
-```sql
-CREATE TABLE consent_log (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NULL,
-  anon_id VARCHAR(64) NULL,
-  version SMALLINT NOT NULL,
-  analytics TINYINT(1) NOT NULL,
-  functional TINYINT(1) NOT NULL,
-  ip VARCHAR(45) NULL,
-  user_agent VARCHAR(512) NULL,
+CREATE TABLE doctors (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  specialty VARCHAR(255),
+  license_number VARCHAR(100),
+  phone VARCHAR(50),
+  bio TEXT,
+  avatar MEDIUMTEXT,
+  status ENUM('active','suspended') DEFAULT 'active',
+  created_by_admin_id INT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_user (user_id),
-  INDEX idx_created (created_at)
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-```
 
-### Retention cron (daily)
+ALTER TABLE prescription_refills
+  ADD COLUMN review_status ENUM('pending','approved','rejected') DEFAULT 'pending',
+  ADD COLUMN reviewed_by_doctor_id INT NULL,
+  ADD COLUMN reviewed_at DATETIME NULL,
+  ADD COLUMN doctor_note TEXT NULL,
+  ADD COLUMN pdf_email_status ENUM('not_sent','sent','failed') DEFAULT 'not_sent',
+  ADD FOREIGN KEY (reviewed_by_doctor_id) REFERENCES doctors(id);
 
-- `DELETE FROM vitals_scans WHERE created_at < NOW() - INTERVAL 24 MONTH;`
-- `DELETE FROM chats WHERE updated_at < NOW() - INTERVAL 12 MONTH;`
-- `DELETE FROM audit_logs WHERE created_at < NOW() - INTERVAL 90 DAY;`
+## 2. Auth
 
-### Infrastructure
+- New JWT type with payload { sub: doctorId, role: 'doctor' }, separate secret env DOCTOR_JWT_SECRET (fallback to JWT_SECRET).
+- POST /api/doctor/auth/login { email, password } -> { token, doctor }
+- Middleware requireDoctor verifies JWT and loads doctor (reject if status='suspended').
 
-- MySQL `require_secure_transport=ON`, encrypted backups
-- Sub-processor DPAs on file: Anthropic, Shen AI, hosting, Stripe/Paddle
-- Breach runbook: notify supervisory authority within 72h
+## 3. Admin endpoints (protected by existing admin middleware)
 
-Until these endpoints are deployed, the UI degrades gracefully:
-- "Export my data" shows a toast pointing to privacy@askainurse.com
-- "Delete my account" falls back to the existing `DELETE /api/user/account` endpoint
+GET    /api/admin/doctors                 -> list with search/status filter
+POST   /api/admin/doctors                 -> create { name,email,password,specialty,license_number,phone,bio }
+GET    /api/admin/doctors/:id
+PUT    /api/admin/doctors/:id             -> update profile fields
+POST   /api/admin/doctors/:id/suspend
+POST   /api/admin/doctors/:id/activate
+POST   /api/admin/doctors/:id/reset-password { new_password }
+DELETE /api/admin/doctors/:id
+
+Hash passwords with bcrypt (10+ rounds). Enforce unique email.
+
+## 4. Doctor endpoints (requireDoctor)
+
+GET  /api/doctor/profile
+PUT  /api/doctor/profile                  -> name, phone, bio, avatar
+POST /api/doctor/change-password          { current_password, new_password }
+
+GET  /api/doctor/refills/pending          -> paid + review_status='pending'
+GET  /api/doctor/refills/reviewed?status= -> approved|rejected|all (own reviews; admin sees all via admin route)
+GET  /api/doctor/refills/:id              -> full detail incl. patient, meds, payment
+
+POST /api/doctor/refills/:id/approve { note? }
+  - Guard: payment_status='paid' AND review_status='pending'
+  - Set review_status='approved', reviewed_by_doctor_id, reviewed_at=now, doctor_note
+  - Generate prescription PDF (reuse existing generator)
+  - Send email to refill.delivery_email with PDF attachment (existing template); set pdf_email_status
+  - Return updated row
+
+POST /api/doctor/refills/:id/reject { reason } (reason required, min 10 chars)
+  - Guard same as above
+  - Set review_status='rejected', doctor_note=reason
+  - Issue Stripe refund via stripe.refunds.create({ payment_intent: stripe_payment_intent_id })
+  - On success: payment_status='refunded', refund_status='approved'
+  - Send "refund issued" email to delivery_email explaining the rejection reason
+  - Return updated row
+
+## 5. Change existing prescription-refill payment webhook / success handler
+
+Currently on payment success: generate PDF + send PDF email.
+Change to:
+  - Mark payment_status='paid', review_status='pending'
+  - Send "payment received, awaiting doctor review" email (NEW template) — no PDF attachment
+  - Do NOT generate or email the PDF here
+
+## 6. Email templates (add to existing mailer)
+
+- payment_received_pending_review.html  (subject: "Payment received — prescription under review")
+- prescription_approved.html            (existing PDF email, now triggered by doctor approve)
+- prescription_rejected_refund.html     (subject: "Your prescription was not approved — refund issued"; include doctor's reason)
+
+## 7. Admin extensions
+
+- GET /api/admin/prescription-refills should also return review_status, reviewed_by_doctor_id, doctor name, reviewed_at, doctor_note.
+- Optional: POST /api/admin/prescription-refills/:id/override-review for admin to force approve/reject.
+
+## 8. Audit logging
+
+Log every doctor action (login, approve, reject, refund) and admin doctor-management action to the existing audit_logs table with actor_type='doctor'|'admin'.
+
+## 9. Seed / first doctor
+
+Provide a one-off script `scripts/create-doctor.js` that takes name/email/password from CLI args and inserts a doctor (for bootstrap testing).
+````
+
+---
+
+## Open Questions
+1. Auto-assign refills to a specific doctor, or any logged-in doctor can claim any pending refill? (Plan assumes any doctor can review any pending refill.)
+2. SLA / time limit before auto-refund if no doctor reviews? (Not included — easy to add later.)
+3. Should the doctor see the patient's full name and chat history, or only medications + delivery email? (Plan shows medications, delivery email, payment ref — confirm.)
+4. Should existing `RealDoctors.tsx` public doctor directory be linked to these new accounts, or kept separate? (Plan keeps them separate.)

@@ -421,6 +421,35 @@ export const adminApi = {
     return res.status === 204 ? {} : res.json().catch(() => ({}));
   },
 
+  // Doctors (admin management)
+  getDoctors: (params?: { search?: string; status?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.search) qs.set("search", params.search);
+    if (params?.status && params.status !== "all") qs.set("status", params.status);
+    const query = qs.toString();
+    return adminGet<{ doctors: AdminDoctor[] } | AdminDoctor[]>(`/api/admin/doctors${query ? `?${query}` : ""}`);
+  },
+  getDoctor: (id: number | string) => adminGet<AdminDoctor>(`/api/admin/doctors/${id}`),
+  createDoctor: (data: Partial<AdminDoctor> & { password: string }) =>
+    adminPost<AdminDoctor>("/api/admin/doctors", data),
+  updateDoctor: (id: number | string, data: Partial<AdminDoctor>) =>
+    adminPut<AdminDoctor>(`/api/admin/doctors/${id}`, data),
+  suspendDoctor: (id: number | string) => adminPost(`/api/admin/doctors/${id}/suspend`),
+  activateDoctor: (id: number | string) => adminPost(`/api/admin/doctors/${id}/activate`),
+  resetDoctorPassword: (id: number | string, new_password: string) =>
+    adminPost(`/api/admin/doctors/${id}/reset-password`, { new_password }),
+  deleteDoctor: async (id: number | string) => {
+    const res = await fetch(`${API_BASE}/api/admin/doctors/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", ...adminHeaders() },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed (${res.status})`);
+    }
+    return res.status === 204 ? {} : res.json().catch(() => ({}));
+  },
+
   // Prescription Refunds (user-requested refunds)
   getRefunds: () => adminGet<RefundRequest[]>("/api/admin/prescription-refunds"),
   decideRefund: (id: number | string, decision: "approve" | "reject", admin_note?: string) =>
@@ -523,4 +552,16 @@ export interface UnifiedPayment {
   amount: number;
   status: string;
   created_at: string;
+}
+
+export interface AdminDoctor {
+  id: number;
+  name: string;
+  email: string;
+  specialty?: string;
+  license_number?: string;
+  phone?: string;
+  bio?: string;
+  status?: "active" | "suspended";
+  created_at?: string;
 }
