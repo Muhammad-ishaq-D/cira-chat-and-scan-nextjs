@@ -3312,6 +3312,7 @@ type Props = {
 const emptyAnswers = (): RefillAnswers => ({
   consent: false,
   drug: null,
+  medications: [],
   submissionMode: null,
   consult: {
     healthChanges: { changed: false, detail: "" },
