@@ -23,8 +23,8 @@ const AdminDoctors = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await adminApi.getDoctors({ search });
-      setDoctors(res?.doctors || res || []);
+      const res: any = await adminApi.getDoctors({ search });
+      setDoctors(Array.isArray(res) ? res : (res?.doctors || []));
     } catch (e: any) {
       toast.error(e.message || "Failed to load doctors");
     } finally {
