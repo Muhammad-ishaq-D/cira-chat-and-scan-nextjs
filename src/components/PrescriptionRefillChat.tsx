@@ -3687,28 +3687,19 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       }));
       pushMsg({ role: "user", kind: "text", text: joined });
 
-      // Persist medications to DB — required for prescriptions and refund records.
-      const medsRes = await fetch(
-        `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            medications: selectedDrugs.map((d) => ({
-              drug_name_inn: d.product_name || d.inn_name,
-              form: d.form || "Not specified",
-              strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "Not specified",
-              dosage_instructions: "As previously prescribed",
-              quantity: 1,
-            })),
-          }),
-        }
-      );
-      if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
-
-      // Skip step 2 (medication is already captured) → go straight to health check.
-      seededRef.current.add("step-2");
-      setTimeout(() => setStep(3), 200);
+      // Seed medication details draft — user fills strength/form/dosage/frequency/duration/quantity in Step 2.
+      const draft: MedicationDetail[] = selectedDrugs.map((d) => ({
+        drug_name_inn: d.product_name || d.inn_name,
+        form: d.form && d.form !== "N/A" ? d.form : "",
+        strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "",
+        dosage: "",
+        frequency: "",
+        duration: "",
+        quantity: 1,
+      }));
+      setMedDraft(draft);
+      setSub2("details");
+      setStep(2);
     } catch {
       pushMsg({
         role: "ai",
