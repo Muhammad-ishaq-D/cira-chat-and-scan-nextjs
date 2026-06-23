@@ -102,13 +102,14 @@ const DoctorProfile = () => {
   );
 };
 
-const Field = ({ label, value, onChange, type = "text", disabled }: { label: string; value: string; onChange?: (v: string) => void; type?: string; disabled?: boolean }) => (
+const Field = ({ label, value, onChange, type = "text", disabled, autoComplete }: { label: string; value: string; onChange?: (v: string) => void; type?: string; disabled?: boolean; autoComplete?: string }) => (
   <div>
     <label className="text-xs font-medium block mb-1">{label}</label>
     <input
       type={type}
       value={value}
       disabled={disabled}
+      autoComplete={autoComplete}
       onChange={(e) => onChange?.(e.target.value)}
       className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
     />
