@@ -119,7 +119,15 @@ const AdminPrescriptionRefills = () => {
     }
   };
 
-  const filtered = refills.filter(r => {
+  // Hide abandoned sessions: rows that are still pending and never reached Stripe checkout.
+  const visibleRefills = refills.filter(r => {
+    const payStatus = (r.payment_status || "").toLowerCase();
+    const hasIntent = Boolean(r.stripe_payment_intent_id);
+    if (payStatus === "pending" && !hasIntent) return false;
+    return true;
+  });
+
+  const filtered = visibleRefills.filter(r => {
     if (!search) return true;
     const s = search.toLowerCase();
     return (
