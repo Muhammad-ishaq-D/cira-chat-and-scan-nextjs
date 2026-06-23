@@ -6190,13 +6190,12 @@ const MedicationDetailsForm = ({
   meds,
   setMeds,
   onSubmit,
-  t,
 }: {
   meds: MedicationDetail[];
   setMeds: (m: MedicationDetail[]) => void;
   onSubmit: (m: MedicationDetail[]) => void;
-  t: (key: string, fallback?: string) => string;
 }) => {
+  const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const update = (i: number, patch: Partial<MedicationDetail>) => {
     setMeds(meds.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
