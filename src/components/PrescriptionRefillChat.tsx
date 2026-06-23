@@ -3403,8 +3403,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "manual-input"
     | "confirm"
     | "low-confidence"
-    | "edit";
+    | "edit"
+    | "details";
   const [sub2, setSub2] = useState<Sub2>("upload-pending");
+  const [medDraft, setMedDraft] = useState<MedicationDetail[]>([]);
   const [ocrResults, setOcrResults] = useState<Array<{ name: string; strength?: string | null; dosage?: string | null; quantity?: string | null; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
