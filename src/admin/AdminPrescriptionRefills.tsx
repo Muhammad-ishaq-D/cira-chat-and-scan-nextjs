@@ -148,7 +148,7 @@ const AdminPrescriptionRefills = () => {
             Prescription Refills
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {totalCount} total records — use the Stripe Payment Intent ID to locate and refund in Stripe
+            {visibleRefills.length} record{visibleRefills.length === 1 ? "" : "s"} — use the Stripe Payment Intent ID to locate and refund in Stripe
           </p>
         </div>
         <button
