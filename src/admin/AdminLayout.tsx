@@ -103,7 +103,7 @@ const AdminLayout = () => {
           <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-gradient-to-tl from-orange-200/40 via-pink-100/30 to-rose-100/20 rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 pt-16 md:pt-0">
+        <div className="relative z-10 pt-16 md:pt-0 md:pl-8">
           <Outlet />
         </div>
       </div>
