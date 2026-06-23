@@ -275,12 +275,14 @@ const DoctorActions = ({ d, onToggle, onReset, onRemove }: {
   </div>
 );
 
-const Input = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
-  <div>
-    <label className="text-xs font-medium block mb-1">{label}</label>
-    <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
-      className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30" />
-  </div>
+const Input = React.forwardRef<HTMLInputElement, { label: string; value: string; onChange: (v: string) => void; type?: string }>(
+  ({ label, value, onChange, type = "text" }, ref) => (
+    <div>
+      <label className="text-xs font-medium block mb-1">{label}</label>
+      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-full py-2.5 px-3 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+    </div>
+  )
 );
 
 export default AdminDoctors;
