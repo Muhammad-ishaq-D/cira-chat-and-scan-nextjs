@@ -3244,6 +3244,16 @@ export type DrugDetails = {
   dosage: string;
 };
 
+export type MedicationDetail = {
+  drug_name_inn: string;
+  form: string;
+  strength: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  quantity: number;
+};
+
 export type ConsultAnswers = {
   healthChanges: { changed: boolean; detail: string };
   allergies: { had: boolean; detail: string };
@@ -3263,6 +3273,7 @@ export type PatientInfo = {
 export type RefillAnswers = {
   consent: boolean;
   drug: DrugDetails | null;
+  medications: MedicationDetail[];
   submissionMode: "upload" | "manual" | null;
   consult: ConsultAnswers;
   patient: PatientInfo;
@@ -3301,6 +3312,7 @@ type Props = {
 const emptyAnswers = (): RefillAnswers => ({
   consent: false,
   drug: null,
+  medications: [],
   submissionMode: null,
   consult: {
     healthChanges: { changed: false, detail: "" },
@@ -3391,8 +3403,10 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     | "manual-input"
     | "confirm"
     | "low-confidence"
-    | "edit";
+    | "edit"
+    | "details";
   const [sub2, setSub2] = useState<Sub2>("upload-pending");
+  const [medDraft, setMedDraft] = useState<MedicationDetail[]>([]);
   const [ocrResults, setOcrResults] = useState<Array<{ name: string; strength?: string | null; dosage?: string | null; quantity?: string | null; available: boolean; match: DrugRow | null }>>([]);
   const [manualValue, setManualValue] = useState("");
   const [editDraft, setEditDraft] = useState<DrugDetails | null>(null);
@@ -3673,28 +3687,19 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       }));
       pushMsg({ role: "user", kind: "text", text: joined });
 
-      // Persist medications to DB — required for prescriptions and refund records.
-      const medsRes = await fetch(
-        `${API_BASE}/api/prescription/refill/${encodeURIComponent(newRid)}/medications`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            medications: selectedDrugs.map((d) => ({
-              drug_name_inn: d.product_name || d.inn_name,
-              form: d.form || "Not specified",
-              strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "Not specified",
-              dosage_instructions: "As previously prescribed",
-              quantity: 1,
-            })),
-          }),
-        }
-      );
-      if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
-
-      // Skip step 2 (medication is already captured) → go straight to health check.
-      seededRef.current.add("step-2");
-      setTimeout(() => setStep(3), 200);
+      // Seed medication details draft — user fills strength/form/dosage/frequency/duration/quantity in Step 2.
+      const draft: MedicationDetail[] = selectedDrugs.map((d) => ({
+        drug_name_inn: d.product_name || d.inn_name,
+        form: d.form && d.form !== "N/A" ? d.form : "",
+        strength: d.available_strengths && d.available_strengths !== "N/A" ? d.available_strengths : "",
+        dosage: "",
+        frequency: "",
+        duration: "",
+        quantity: 1,
+      }));
+      setMedDraft(draft);
+      setSub2("details");
+      setStep(2);
     } catch {
       pushMsg({
         role: "ai",
@@ -3914,11 +3919,36 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     setAnswers((a) => ({ ...a, drug: { drug: v, form: "—", strength: "—", dosage: "—" } }));
     setTimeout(() => setSub2("confirm"), 250);
   };
-  const handleProceedWithAvailable = async () => {
+  const handleProceedWithAvailable = () => {
     const available = ocrResults.filter((r) => r.available);
     if (available.length === 0) return;
     const names = available.map((r) => r.name).join(", ");
     pushMsg({ role: "user", kind: "text", text: `Continue with: ${names}` });
+    const draft: MedicationDetail[] = available.map((r) => ({
+      drug_name_inn: r.match?.product_name || r.match?.inn_name || r.name,
+      form: r.match?.form && r.match.form !== "N/A" ? r.match.form : "",
+      strength:
+        r.match?.available_strengths && r.match.available_strengths !== "N/A"
+          ? r.match.available_strengths
+          : (r.strength || ""),
+      dosage: r.dosage || "",
+      frequency: "",
+      duration: "",
+      quantity: Number(r.quantity) > 0 ? Number(r.quantity) : 1,
+    }));
+    setMedDraft(draft);
+    setUploadedPhotoUrl(null);
+    setSub2("details");
+  };
+
+  const handleMedDetailsSubmit = async (details: MedicationDetail[]) => {
+    // Validate: every medication needs strength, form, dosage, frequency, duration, quantity ≥ 1.
+    for (const m of details) {
+      if (!m.strength.trim() || !m.form.trim() || !m.dosage.trim() || !m.frequency.trim() || !m.duration.trim() || !m.quantity || m.quantity < 1) {
+        pushMsg({ role: "ai", kind: "text", text: "Please fill in all medication fields before continuing." });
+        return;
+      }
+    }
     try {
       const token = getToken() || "";
       const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -3927,26 +3957,38 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
         method: "POST",
         headers,
         body: JSON.stringify({
-          medications: available.map((r) => ({
-            drug_name_inn: r.match?.product_name || r.match?.inn_name || r.name,
-            form: r.match?.form || "Not specified",
-            strength:
-              r.match?.available_strengths && r.match.available_strengths !== "N/A"
-                ? r.match.available_strengths
-                : "Not specified",
-            dosage_instructions: "As previously prescribed",
-            quantity: 1,
+          medications: details.map((m) => ({
+            drug_name_inn: m.drug_name_inn,
+            form: m.form,
+            strength: m.strength,
+            dosage_instructions: m.dosage,
+            dosage: m.dosage,
+            frequency: m.frequency,
+            duration: m.duration,
+            quantity: m.quantity,
           })),
         }),
       });
       if (!medsRes.ok) throw new Error(`Medication save failed (${medsRes.status})`);
-    } catch (err) {
+    } catch {
       pushMsg({ role: "ai", kind: "text", text: "I couldn't save your medications. Please try again." });
       return;
     }
-    setUploadedPhotoUrl(null);
-    setTimeout(() => setStep(3), 250);
+    const joined = details.map((m) => m.drug_name_inn).join(", ");
+    setAnswers((a) => ({
+      ...a,
+      medications: details,
+      drug: {
+        drug: joined,
+        form: details[0]?.form || "—",
+        strength: details[0]?.strength || "—",
+        dosage: details[0]?.dosage || "—",
+      },
+    }));
+    pushMsg({ role: "user", kind: "text", text: details.map((m) => `${m.drug_name_inn} ${m.strength} · ${m.dosage} · ${m.frequency} · ${m.duration} · qty ${m.quantity}`).join("\n") });
+    setTimeout(() => setStep(3), 200);
   };
+
 
   const handleLooksGood = () => {
     if (!answers.drug) return;
@@ -4492,6 +4534,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
               onSave={handleEditSave}
               onCancel={() => setSub2("confirm")}
               t={t}
+            />
+          </Bubble>
+        )}
+
+        {step === 2 && sub2 === "details" && medDraft.length > 0 && (
+          <Bubble role="ai" wide>
+            <MedicationDetailsForm
+              meds={medDraft}
+              setMeds={setMedDraft}
+              onSubmit={handleMedDetailsSubmit}
+            
             />
           </Bubble>
         )}
@@ -6031,10 +6084,44 @@ const ReviewSummaryCard = ({
     p.height ? `${p.height} ${p.heightUnit === "cm" ? "cm" : "ft/in"}` : "—",
   ].join(" · ");
 
+  const meds = answers.medications && answers.medications.length > 0
+    ? answers.medications
+    : (drug ? [{ drug_name_inn: drug.drug, form: drug.form, strength: drug.strength, dosage: drug.dosage, frequency: "", duration: "", quantity: 1 } as MedicationDetail] : []);
+
   return (
     <div className="space-y-3">
       <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
-        <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        {meds.length > 0 ? (
+          <div className="px-3 py-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                <Pill className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1 space-y-2">
+                <p className="text-muted-foreground uppercase tracking-wide font-semibold" style={{ fontSize: 10 }}>
+                  Medications ({meds.length})
+                </p>
+                {meds.map((m, i) => (
+                  <div key={i} className="rounded-lg border border-border/60 bg-background px-3 py-2">
+                    <p className="font-semibold text-foreground leading-snug" style={{ fontSize: 14 }}>
+                      {m.drug_name_inn}
+                      {m.strength ? ` · ${m.strength}` : ""}
+                      {m.form ? ` · ${m.form}` : ""}
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-1 text-muted-foreground" style={{ fontSize: 12 }}>
+                      {m.dosage && <span><span className="text-foreground/60">Dose:</span> {m.dosage}</span>}
+                      {m.frequency && <span><span className="text-foreground/60">Freq:</span> {m.frequency}</span>}
+                      {m.duration && <span><span className="text-foreground/60">Duration:</span> {m.duration}</span>}
+                      {m.quantity > 0 && <span><span className="text-foreground/60">Qty:</span> {m.quantity}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        )}
         <SummaryRow icon={<UserIcon className="w-4 h-4" />} title={p.fullName || "—"} subtitle={patientLine} />
         <SummaryRow icon={<Mail className="w-4 h-4" />} title={maskEmail(answers.email) || "—"} subtitle={t("pages.prescriptionRefill.chat.deliveryEmail")} />
         <SummaryRow
@@ -6092,6 +6179,209 @@ const SummaryRow = ({
     </div>
   </div>
 );
+
+// ============= Step 2 — Medication details form =============
+
+const DOSE_FORMS = ["Tablet", "Capsule", "Oral Syrup", "Oral Solution", "Cream", "Lotion", "Ointment", "Eye Drops", "Eye Ointment", "Nasal Spray", "Suppository", "Injection", "Inhaler", "Patch", "Other"];
+const FREQUENCY_PRESETS = ["Once daily", "Twice daily", "Three times daily", "Four times daily", "Every 6 hours", "Every 8 hours", "Every 12 hours", "As needed (PRN)", "Weekly"];
+const DURATION_PRESETS = ["3 days", "5 days", "7 days", "10 days", "14 days", "1 month", "3 months", "Ongoing"];
+
+const MedicationDetailsForm = ({
+  meds,
+  setMeds,
+  onSubmit,
+}: {
+  meds: MedicationDetail[];
+  setMeds: (m: MedicationDetail[]) => void;
+  onSubmit: (m: MedicationDetail[]) => void;
+}) => {
+  const { t } = useTranslation();
+  const [submitting, setSubmitting] = useState(false);
+  const update = (i: number, patch: Partial<MedicationDetail>) => {
+    setMeds(meds.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
+  };
+  const allValid = meds.every(
+    (m) =>
+      m.strength.trim() &&
+      m.form.trim() &&
+      m.dosage.trim() &&
+      m.frequency.trim() &&
+      m.duration.trim() &&
+      m.quantity > 0,
+  );
+
+  const handle = async () => {
+    if (!allValid || submitting) return;
+    setSubmitting(true);
+    try {
+      await onSubmit(meds);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="font-semibold text-foreground" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.detailsTitle", "Medication details")}
+        </p>
+        <p className="text-muted-foreground mt-0.5" style={{ fontSize: 12.5 }}>
+          {t("pages.prescriptionRefill.chat.detailsSub", "Confirm the strength, form, dosage, frequency, duration and quantity for each medication.")}
+        </p>
+      </div>
+
+      {meds.map((m, i) => (
+        <div key={i} className="rounded-xl border border-border bg-background p-3 space-y-2.5">
+          <p className="font-semibold text-foreground truncate" style={{ fontSize: 14 }}>
+            {i + 1}. {m.drug_name_inn}
+          </p>
+
+          <div className="grid grid-cols-2 gap-2">
+            <FieldInput
+              label="Strength"
+              value={m.strength}
+              onChange={(v) => update(i, { strength: v })}
+              placeholder="e.g. 500mg"
+            />
+            <FieldSelect
+              label="Dose form"
+              value={m.form}
+              onChange={(v) => update(i, { form: v })}
+              options={DOSE_FORMS}
+              placeholder="Select form"
+            />
+            <FieldInput
+              label="Dosage"
+              value={m.dosage}
+              onChange={(v) => update(i, { dosage: v })}
+              placeholder="e.g. 1 tablet"
+            />
+            <FieldSelect
+              label="Frequency"
+              value={m.frequency}
+              onChange={(v) => update(i, { frequency: v })}
+              options={FREQUENCY_PRESETS}
+              placeholder="Select frequency"
+              allowCustom
+            />
+            <FieldSelect
+              label="Duration"
+              value={m.duration}
+              onChange={(v) => update(i, { duration: v })}
+              options={DURATION_PRESETS}
+              placeholder="Select duration"
+              allowCustom
+            />
+            <FieldInput
+              label="Quantity"
+              value={String(m.quantity || "")}
+              onChange={(v) => update(i, { quantity: Math.max(0, parseInt(v.replace(/\D/g, ""), 10) || 0) })}
+              placeholder="e.g. 30"
+              inputMode="numeric"
+            />
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={handle}
+        disabled={!allValid || submitting}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ minHeight: 52, fontSize: 16 }}
+      >
+        {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.continue", "Continue")}
+      </button>
+    </div>
+  );
+};
+
+const FieldInput = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  inputMode,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  inputMode?: "text" | "numeric";
+}) => (
+  <label className="block">
+    <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+    <input
+      type="text"
+      inputMode={inputMode}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
+      style={{ fontSize: 14 }}
+    />
+  </label>
+);
+
+const FieldSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  allowCustom,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  placeholder?: string;
+  allowCustom?: boolean;
+}) => {
+  const inList = options.includes(value);
+  const [custom, setCustom] = useState(!!value && !inList && !!allowCustom);
+  if (custom) {
+    return (
+      <label className="block">
+        <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={() => { if (!value) setCustom(false); }}
+          placeholder={placeholder}
+          autoFocus
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          style={{ fontSize: 14 }}
+        />
+      </label>
+    );
+  }
+  return (
+    <label className="block">
+      <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+      <select
+        value={value}
+        onChange={(e) => {
+          if (allowCustom && e.target.value === "__custom__") {
+            onChange("");
+            setCustom(true);
+            return;
+          }
+          onChange(e.target.value);
+        }}
+        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+        style={{ fontSize: 14 }}
+      >
+        <option value="">{placeholder || "Select…"}</option>
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+        {allowCustom && <option value="__custom__">Other…</option>}
+      </select>
+    </label>
+  );
+};
 
 // ============= Step 7 =============
 
