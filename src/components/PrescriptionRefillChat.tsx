@@ -6084,10 +6084,44 @@ const ReviewSummaryCard = ({
     p.height ? `${p.height} ${p.heightUnit === "cm" ? "cm" : "ft/in"}` : "—",
   ].join(" · ");
 
+  const meds = answers.medications && answers.medications.length > 0
+    ? answers.medications
+    : (drug ? [{ drug_name_inn: drug.drug, form: drug.form, strength: drug.strength, dosage: drug.dosage, frequency: "", duration: "", quantity: 1 } as MedicationDetail] : []);
+
   return (
     <div className="space-y-3">
       <div className="rounded-xl bg-background/60 border border-border divide-y divide-border">
-        <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        {meds.length > 0 ? (
+          <div className="px-3 py-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                <Pill className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1 space-y-2">
+                <p className="text-muted-foreground uppercase tracking-wide font-semibold" style={{ fontSize: 10 }}>
+                  Medications ({meds.length})
+                </p>
+                {meds.map((m, i) => (
+                  <div key={i} className="rounded-lg border border-border/60 bg-background px-3 py-2">
+                    <p className="font-semibold text-foreground leading-snug" style={{ fontSize: 14 }}>
+                      {m.drug_name_inn}
+                      {m.strength ? ` · ${m.strength}` : ""}
+                      {m.form ? ` · ${m.form}` : ""}
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mt-1 text-muted-foreground" style={{ fontSize: 12 }}>
+                      {m.dosage && <span><span className="text-foreground/60">Dose:</span> {m.dosage}</span>}
+                      {m.frequency && <span><span className="text-foreground/60">Freq:</span> {m.frequency}</span>}
+                      {m.duration && <span><span className="text-foreground/60">Duration:</span> {m.duration}</span>}
+                      {m.quantity > 0 && <span><span className="text-foreground/60">Qty:</span> {m.quantity}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <SummaryRow icon={<Pill className="w-4 h-4" />} title={drugLine} subtitle={drug?.dosage} />
+        )}
         <SummaryRow icon={<UserIcon className="w-4 h-4" />} title={p.fullName || "—"} subtitle={patientLine} />
         <SummaryRow icon={<Mail className="w-4 h-4" />} title={maskEmail(answers.email) || "—"} subtitle={t("pages.prescriptionRefill.chat.deliveryEmail")} />
         <SummaryRow
