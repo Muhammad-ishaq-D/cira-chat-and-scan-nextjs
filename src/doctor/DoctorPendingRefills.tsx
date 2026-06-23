@@ -116,7 +116,7 @@ const DoctorPendingRefills = () => {
             <div className="space-y-2 text-sm mb-4">
               <div><span className="text-muted-foreground">Patient email: </span>{selected.delivery_email}</div>
               {selected.patient_name && <div><span className="text-muted-foreground">Patient: </span>{selected.patient_name}</div>}
-              <div><span className="text-muted-foreground">Amount: </span>${(selected.amount_charged || 0).toFixed(2)}</div>
+              <div><span className="text-muted-foreground">Amount: </span>${(Number(selected.amount_charged) || 0).toFixed(2)}</div>
               <div>
                 <span className="text-muted-foreground block mb-1">Medications:</span>
                 <ul className="list-disc list-inside text-foreground/90">
