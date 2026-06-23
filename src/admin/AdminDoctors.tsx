@@ -275,7 +275,7 @@ const DoctorActions = ({ d, onToggle, onReset, onRemove }: {
   </div>
 );
 
-const Input = React.forwardRef<HTMLInputElement, { label: string; value: string; onChange: (v: string) => void; type?: string }>(
+const Input = forwardRef<HTMLInputElement, { label: string; value: string; onChange: (v: string) => void; type?: string }>(
   ({ label, value, onChange, type = "text" }, ref) => (
     <div>
       <label className="text-xs font-medium block mb-1">{label}</label>
