@@ -4538,6 +4538,17 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
           </Bubble>
         )}
 
+        {step === 2 && sub2 === "details" && medDraft.length > 0 && (
+          <Bubble role="ai" wide>
+            <MedicationDetailsForm
+              meds={medDraft}
+              setMeds={setMedDraft}
+              onSubmit={handleMedDetailsSubmit}
+              t={t}
+            />
+          </Bubble>
+        )}
+
         {/* Step 3 is handled by the isolated HealthScreeningChat above */}
 
 
