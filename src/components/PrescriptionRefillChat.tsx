@@ -6180,6 +6180,210 @@ const SummaryRow = ({
   </div>
 );
 
+// ============= Step 2 — Medication details form =============
+
+const DOSE_FORMS = ["Tablet", "Capsule", "Oral Syrup", "Oral Solution", "Cream", "Lotion", "Ointment", "Eye Drops", "Eye Ointment", "Nasal Spray", "Suppository", "Injection", "Inhaler", "Patch", "Other"];
+const FREQUENCY_PRESETS = ["Once daily", "Twice daily", "Three times daily", "Four times daily", "Every 6 hours", "Every 8 hours", "Every 12 hours", "As needed (PRN)", "Weekly"];
+const DURATION_PRESETS = ["3 days", "5 days", "7 days", "10 days", "14 days", "1 month", "3 months", "Ongoing"];
+
+const MedicationDetailsForm = ({
+  meds,
+  setMeds,
+  onSubmit,
+  t,
+}: {
+  meds: MedicationDetail[];
+  setMeds: (m: MedicationDetail[]) => void;
+  onSubmit: (m: MedicationDetail[]) => void;
+  t: (key: string, fallback?: string) => string;
+}) => {
+  const [submitting, setSubmitting] = useState(false);
+  const update = (i: number, patch: Partial<MedicationDetail>) => {
+    setMeds(meds.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
+  };
+  const allValid = meds.every(
+    (m) =>
+      m.strength.trim() &&
+      m.form.trim() &&
+      m.dosage.trim() &&
+      m.frequency.trim() &&
+      m.duration.trim() &&
+      m.quantity > 0,
+  );
+
+  const handle = async () => {
+    if (!allValid || submitting) return;
+    setSubmitting(true);
+    try {
+      await onSubmit(meds);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="font-semibold text-foreground" style={{ fontSize: 15 }}>
+          {t("pages.prescriptionRefill.chat.detailsTitle", "Medication details")}
+        </p>
+        <p className="text-muted-foreground mt-0.5" style={{ fontSize: 12.5 }}>
+          {t("pages.prescriptionRefill.chat.detailsSub", "Confirm the strength, form, dosage, frequency, duration and quantity for each medication.")}
+        </p>
+      </div>
+
+      {meds.map((m, i) => (
+        <div key={i} className="rounded-xl border border-border bg-background p-3 space-y-2.5">
+          <p className="font-semibold text-foreground truncate" style={{ fontSize: 14 }}>
+            {i + 1}. {m.drug_name_inn}
+          </p>
+
+          <div className="grid grid-cols-2 gap-2">
+            <FieldInput
+              label="Strength"
+              value={m.strength}
+              onChange={(v) => update(i, { strength: v })}
+              placeholder="e.g. 500mg"
+            />
+            <FieldSelect
+              label="Dose form"
+              value={m.form}
+              onChange={(v) => update(i, { form: v })}
+              options={DOSE_FORMS}
+              placeholder="Select form"
+            />
+            <FieldInput
+              label="Dosage"
+              value={m.dosage}
+              onChange={(v) => update(i, { dosage: v })}
+              placeholder="e.g. 1 tablet"
+            />
+            <FieldSelect
+              label="Frequency"
+              value={m.frequency}
+              onChange={(v) => update(i, { frequency: v })}
+              options={FREQUENCY_PRESETS}
+              placeholder="Select frequency"
+              allowCustom
+            />
+            <FieldSelect
+              label="Duration"
+              value={m.duration}
+              onChange={(v) => update(i, { duration: v })}
+              options={DURATION_PRESETS}
+              placeholder="Select duration"
+              allowCustom
+            />
+            <FieldInput
+              label="Quantity"
+              value={String(m.quantity || "")}
+              onChange={(v) => update(i, { quantity: Math.max(0, parseInt(v.replace(/\D/g, ""), 10) || 0) })}
+              placeholder="e.g. 30"
+              inputMode="numeric"
+            />
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={handle}
+        disabled={!allValid || submitting}
+        className="w-full rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ minHeight: 52, fontSize: 16 }}
+      >
+        {submitting ? <Loader2 className="mx-auto w-5 h-5 animate-spin" /> : t("pages.prescriptionRefill.chat.continue", "Continue")}
+      </button>
+    </div>
+  );
+};
+
+const FieldInput = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  inputMode,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  inputMode?: "text" | "numeric";
+}) => (
+  <label className="block">
+    <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+    <input
+      type="text"
+      inputMode={inputMode}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30"
+      style={{ fontSize: 14 }}
+    />
+  </label>
+);
+
+const FieldSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  allowCustom,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  placeholder?: string;
+  allowCustom?: boolean;
+}) => {
+  const inList = options.includes(value);
+  const [custom, setCustom] = useState(!!value && !inList && !!allowCustom);
+  if (custom) {
+    return (
+      <label className="block">
+        <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={() => { if (!value) setCustom(false); }}
+          placeholder={placeholder}
+          autoFocus
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+          style={{ fontSize: 14 }}
+        />
+      </label>
+    );
+  }
+  return (
+    <label className="block">
+      <span className="text-muted-foreground font-medium block mb-1" style={{ fontSize: 11 }}>{label}</span>
+      <select
+        value={value}
+        onChange={(e) => {
+          if (allowCustom && e.target.value === "__custom__") {
+            onChange("");
+            setCustom(true);
+            return;
+          }
+          onChange(e.target.value);
+        }}
+        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+        style={{ fontSize: 14 }}
+      >
+        <option value="">{placeholder || "Select…"}</option>
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+        {allowCustom && <option value="__custom__">Other…</option>}
+      </select>
+    </label>
+  );
+};
+
 // ============= Step 7 =============
 
 const PaymentCard = ({
