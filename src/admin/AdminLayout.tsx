@@ -49,47 +49,45 @@ const AdminLayout = () => {
         <div className="relative flex-1 w-full overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-card to-transparent z-10 pointer-events-none" />
           <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-t from-card to-transparent z-10 pointer-events-none" />
+          <style>{`
+            .admin-nav-scroll::-webkit-scrollbar {
+              width: 3px;
+            }
+            .admin-nav-scroll::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .admin-nav-scroll::-webkit-scrollbar-thumb {
+              background: hsl(var(--border));
+              border-radius: 999px;
+            }
+          `}</style>
           <div
-            className="flex-1 flex flex-col items-center gap-2 w-full overflow-y-auto overflow-x-hidden"
+            className="admin-nav-scroll flex-1 flex flex-col items-center gap-2 w-full overflow-y-auto overflow-x-hidden"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "hsl(var(--border)) transparent",
-              paddingTop: "2px",
-              paddingBottom: "2px",
+              paddingTop: "6px",
+              paddingBottom: "6px",
             }}
           >
-            <style>{`
-              .admin-nav-scroll::-webkit-scrollbar {
-                width: 3px;
-              }
-              .admin-nav-scroll::-webkit-scrollbar-track {
-                background: transparent;
-              }
-              .admin-nav-scroll::-webkit-scrollbar-thumb {
-                background: hsl(var(--border));
-                border-radius: 999px;
-              }
-            `}</style>
-            <div className="admin-nav-scroll flex flex-col items-center gap-2 w-full">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeId === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => navigate(item.path)}
-                    className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                    }`}
-                  >
-                    <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
-                    <span className="text-[9px] font-body font-medium leading-none">{t(`admin.nav.${item.key}`, { defaultValue: item.label })}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeId === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.path)}
+                  className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
+                  <span className="text-[9px] font-body font-medium leading-none">{t(`admin.nav.${item.key}`, { defaultValue: item.label })}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
         <div className="mt-auto flex flex-col items-center gap-2 pt-2 shrink-0">
