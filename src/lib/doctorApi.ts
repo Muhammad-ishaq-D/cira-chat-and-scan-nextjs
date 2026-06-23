@@ -104,9 +104,22 @@ export const doctorApi = {
       body: JSON.stringify({ current_password, new_password }),
     }),
 
-  getPendingRefills: () => request<{ refills: DoctorRefill[] }>("/api/doctor/refills/pending"),
-  getReviewedRefills: (status: "approved" | "rejected" | "all" = "all") =>
-    request<{ refills: DoctorRefill[] }>(`/api/doctor/refills/reviewed?status=${status}`),
+  getPendingRefills: async () => {
+    try {
+      return await request<{ refills: DoctorRefill[] }>("/api/doctor/refills/pending");
+    } catch (e: any) {
+      if (/404|not found/i.test(e?.message || "")) return { refills: [] };
+      throw e;
+    }
+  },
+  getReviewedRefills: async (status: "approved" | "rejected" | "all" = "all") => {
+    try {
+      return await request<{ refills: DoctorRefill[] }>(`/api/doctor/refills/reviewed?status=${status}`);
+    } catch (e: any) {
+      if (/404|not found/i.test(e?.message || "")) return { refills: [] };
+      throw e;
+    }
+  },
   getRefill: (id: number | string) => request<DoctorRefill>(`/api/doctor/refills/${id}`),
   approveRefill: (id: number | string, note?: string) =>
     request<DoctorRefill>(`/api/doctor/refills/${id}/approve`, {
