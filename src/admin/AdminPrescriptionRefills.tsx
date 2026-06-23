@@ -119,7 +119,15 @@ const AdminPrescriptionRefills = () => {
     }
   };
 
-  const filtered = refills.filter(r => {
+  // Hide abandoned sessions: rows that are still pending and never reached Stripe checkout.
+  const visibleRefills = refills.filter(r => {
+    const payStatus = (r.payment_status || "").toLowerCase();
+    const hasIntent = Boolean(r.stripe_payment_intent_id);
+    if (payStatus === "pending" && !hasIntent) return false;
+    return true;
+  });
+
+  const filtered = visibleRefills.filter(r => {
     if (!search) return true;
     const s = search.toLowerCase();
     return (
@@ -140,7 +148,7 @@ const AdminPrescriptionRefills = () => {
             Prescription Refills
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {totalCount} total records — use the Stripe Payment Intent ID to locate and refund in Stripe
+            {visibleRefills.length} record{visibleRefills.length === 1 ? "" : "s"} — use the Stripe Payment Intent ID to locate and refund in Stripe
           </p>
         </div>
         <button
