@@ -85,16 +85,27 @@ const DoctorPendingRefills = () => {
             <tbody>
               {items.map((r) => (
                 <tr key={r.id} className="border-t border-border hover:bg-muted/30">
-                  <td className="p-3 font-mono text-xs">{r.reference_code}</td>
+                  <td className="p-3 font-mono text-xs whitespace-nowrap">{r.reference_code}</td>
                   <td className="p-3">{r.delivery_email}</td>
-                  <td className="p-3">
-                    {(r.medications || []).map((m, i) => (
-                      <span key={i} className="inline-block mr-1 mb-1 px-2 py-0.5 rounded-md bg-muted text-xs">
-                        {m.drug_name_inn} {m.drug_strength}
-                      </span>
-                    ))}
+                  <td className="p-3 max-w-[260px] md:max-w-[320px]">
+                    <div className="flex flex-col gap-1.5">
+                      {(r.medications || []).slice(0, 2).map((m, i) => (
+                        <span
+                          key={i}
+                          className="block truncate text-xs"
+                          title={`${m.drug_name_inn} ${m.drug_strength} ${m.drug_form || ""}`.trim()}
+                        >
+                          {m.drug_name_inn} {m.drug_strength} {m.drug_form}
+                        </span>
+                      ))}
+                      {(r.medications || []).length > 2 && (
+                        <span className="text-xs text-muted-foreground">
+                          +{(r.medications || []).length - 2} more
+                        </span>
+                      )}
+                    </div>
                   </td>
-                  <td className="p-3 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</td>
+                  <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">{new Date(r.created_at).toLocaleString()}</td>
                   <td className="p-3 text-right">
                     <button onClick={() => setSelected(r)} className="text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 inline-flex items-center gap-1">
                       <FileText size={12} /> Review
