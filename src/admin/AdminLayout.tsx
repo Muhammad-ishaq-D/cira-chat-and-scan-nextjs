@@ -46,7 +46,7 @@ const AdminLayout = () => {
           <span className="text-[8px] font-semibold text-primary uppercase tracking-wider">{t("admin.nav.admin")}</span>
         </div>
         <div className="w-10 h-[1px] bg-border mb-4 shrink-0" />
-        <div className="relative flex-1 w-full overflow-hidden">
+        <div className="relative flex-1 min-h-0 w-full">
           <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-card to-transparent z-10 pointer-events-none" />
           <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-t from-card to-transparent z-10 pointer-events-none" />
           <style>{`
@@ -62,7 +62,7 @@ const AdminLayout = () => {
             }
           `}</style>
           <div
-            className="admin-nav-scroll flex-1 flex flex-col items-center gap-2 w-full overflow-y-auto overflow-x-hidden"
+            className="admin-nav-scroll absolute inset-0 flex flex-col items-center gap-2 w-full overflow-y-auto overflow-x-hidden"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "hsl(var(--border)) transparent",
@@ -77,7 +77,7 @@ const AdminLayout = () => {
                 <button
                   key={item.id}
                   onClick={() => navigate(item.path)}
-                  className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 transition-all ${
+                  className={`w-14 py-2 rounded-xl flex flex-col items-center gap-0.5 shrink-0 transition-all ${
                     isActive
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
