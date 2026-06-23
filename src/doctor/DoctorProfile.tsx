@@ -87,14 +87,17 @@ const DoctorProfile = () => {
         </button>
       </div>
 
-      <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+      <form className="bg-card rounded-2xl border border-border p-6 space-y-4" autoComplete="off" onSubmit={(e) => { e.preventDefault(); changePw(); }}>
         <h2 className="font-heading text-base font-semibold">Change password</h2>
-        <Field label="Current password" type="password" value={pw.current} onChange={(v) => setPw((p) => ({ ...p, current: v }))} />
-        <Field label="New password" type="password" value={pw.next} onChange={(v) => setPw((p) => ({ ...p, next: v }))} />
-        <button onClick={changePw} disabled={pwSaving || !pw.current || !pw.next} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
+        {/* Hidden dummy fields to defeat browser autofill */}
+        <input type="text" name="username" autoComplete="username" style={{ display: "none" }} />
+        <input type="password" name="password" autoComplete="current-password" style={{ display: "none" }} />
+        <Field label="Current password" type="password" value={pw.current} onChange={(v) => setPw((p) => ({ ...p, current: v }))} autoComplete="new-password" />
+        <Field label="New password" type="password" value={pw.next} onChange={(v) => setPw((p) => ({ ...p, next: v }))} autoComplete="new-password" />
+        <button type="submit" disabled={pwSaving || !pw.current || !pw.next || pw.current === pw.next} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
           {pwSaving ? "Updating…" : "Update password"}
         </button>
-      </div>
+      </form>
     </div>
   );
 };
