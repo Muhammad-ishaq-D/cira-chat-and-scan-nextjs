@@ -194,3 +194,28 @@ The frontend expects exactly these URLs and shapes:
 - All errors should return `{ error: string }` with appropriate HTTP status (`400`, `401`, `403`, `404`, `409`, `500`).
 
 After these endpoints are live, the frontend works end-to-end without further changes.
+
+---
+
+## Addendum: Stop creating empty prescription_refill rows on session start
+
+**Problem:** `POST /api/prescription/create-refill` currently inserts a row in `prescription_refills` (status `pending`, amount €5) as soon as the user opens the chat and picks medications. If the user abandons the flow before paying, these empty pending rows pile up in the admin Prescription Refills table and confuse staff.
+
+**Required backend change — pick ONE of these approaches:**
+
+### Option A (preferred) — Defer DB insert until checkout
+1. Make `POST /api/prescription/create-refill` return an in-memory/session-only `refill_id` (e.g. a UUID stored in Redis or a short-lived `refill_sessions` table) instead of inserting into `prescription_refills`.
+2. Endpoints that currently write against `refill_id` (`/medications`, `/patient-info`, `/email`, `/refill-chat`) should write to the same session store, NOT to `prescription_refills`.
+3. Only when the user hits the Stripe checkout endpoint (`/api/prescription/checkout` or equivalent) do you:
+   - Create the real `prescription_refills` row with status `pending` + Stripe `payment_intent_id`.
+   - Copy medications / patient info / email from the session store into the new row + child tables.
+4. After Stripe webhook confirms `payment_intent.succeeded`, flip status to `paid`.
+
+### Option B (minimum) — Filter abandoned rows from admin endpoints
+If Option A is too invasive, at least exclude abandoned sessions from `GET /api/admin/prescription-refills`:
+```sql
+WHERE NOT (payment_status = 'pending' AND stripe_payment_intent_id IS NULL)
+```
+And add a nightly cleanup job that deletes `prescription_refills` rows older than 24h where `payment_status = 'pending'` AND `stripe_payment_intent_id IS NULL`.
+
+**Apply the same logic to `referral_letters` and any other table that follows the same "create on session start" pattern.**
