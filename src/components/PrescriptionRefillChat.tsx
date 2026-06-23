@@ -3244,6 +3244,16 @@ export type DrugDetails = {
   dosage: string;
 };
 
+export type MedicationDetail = {
+  drug_name_inn: string;
+  form: string;
+  strength: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  quantity: number;
+};
+
 export type ConsultAnswers = {
   healthChanges: { changed: boolean; detail: string };
   allergies: { had: boolean; detail: string };
@@ -3263,6 +3273,7 @@ export type PatientInfo = {
 export type RefillAnswers = {
   consent: boolean;
   drug: DrugDetails | null;
+  medications: MedicationDetail[];
   submissionMode: "upload" | "manual" | null;
   consult: ConsultAnswers;
   patient: PatientInfo;
