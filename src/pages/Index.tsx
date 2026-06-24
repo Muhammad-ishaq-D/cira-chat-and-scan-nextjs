@@ -186,7 +186,6 @@ const Index = () => {
 
               {/* Badge 2: SLA refill verified */}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg">
-                <Clock className="w-3.5 h-3.5" />
                 <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">⏰ 2-Hour SLA Refill Verified</span>
               </div>
             </div>
