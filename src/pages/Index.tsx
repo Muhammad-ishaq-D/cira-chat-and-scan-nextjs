@@ -143,13 +143,15 @@ const Index = () => {
                   Live · Doctors signing prescriptions now
                 </span>
               </div>
-              <h1 className="font-heading text-4xl sm:text-6xl md:text-[64px] font-semibold text-foreground leading-[1.05] tracking-tight mb-5">
-                Real Medical Care.<br />
-                <span className="text-primary">In Under 2 Hours.</span>
+              <h1 className="font-heading text-4xl sm:text-6xl md:text-[64px] font-semibold text-foreground leading-[1.05] tracking-tight mb-4">
+                Prescription Refills.<br />
+                <span className="text-primary">Approved in Minutes.</span>
               </h1>
+              <h2 className="font-heading text-xl sm:text-2xl md:text-[28px] font-medium text-foreground leading-snug tracking-tight mb-5">
+                Skip the clinic waiting room. Real medical care, on-demand.
+              </h2>
               <p className="font-body text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                A digital medical clinic clinically fulfilled by the <strong className="text-foreground">VeryPatient</strong> private network of registered European physicians.
-                Signed prescriptions, video consultations, and clinical documents — delivered with a fixed price and a 2-hour SLA.
+                Direct medical solutions and prescription renewals fulfilled entirely under the supervision of our licensed on-duty clinic doctors. No appointments required. Instant routing straight to your local neighborhood pharmacy.
               </p>
             </div>
 
@@ -184,9 +186,9 @@ const Index = () => {
                 <span className="text-[11px] font-semibold font-body text-foreground whitespace-nowrap">🟢 Dr. Jean-Marc, MD — Active Now</span>
               </div>
 
-              {/* Badge 2: SLA refill verified */}
+              {/* Badge 2: instant refill verified */}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg">
-                <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">⏰ 2-Hour SLA Refill Verified</span>
+                <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">⚡ Approved in Minutes</span>
               </div>
             </div>
           </div>
@@ -196,7 +198,7 @@ const Index = () => {
             {/* €10 Rapid Refill */}
             <article className="group relative bg-card border border-border rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
               <div className="absolute top-4 right-4 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold tracking-wider uppercase">
-                <Clock className="w-3 h-3" /> 2hr SLA
+                <Clock className="w-3 h-3" /> Fast Track
               </div>
               <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                 <Pill className="w-6 h-6" />
