@@ -8,8 +8,6 @@ import HamburgerMenu from "@/components/HamburgerMenu";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import SEO from "@/components/SEO";
 import ciraLogo from "@/assets/cira-logo.svg";
-import doctorAsset from "@/assets/doctor-portrait.jpg.asset.json";
-import patientAsset from "@/assets/patient-phone.jpg.asset.json";
 import { ShieldCheck, Stethoscope, Pill, Video, Clock, CheckCircle2, Lock, FileText, ArrowRight, Activity } from "lucide-react";
 
 type FunnelChoice = "refill" | "consult" | null;
