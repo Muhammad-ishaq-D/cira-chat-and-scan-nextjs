@@ -264,16 +264,22 @@ const Index = () => {
               No anonymous AI signatures, no offshore call centers. Each clinician below holds an active ORDOMED registration, verifiable on request.
             </p>
           </div>
-          <div className="scroll-fade grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="scroll-fade grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {doctors.map((d) => (
-              <div key={d.reg} className="bg-card border border-border rounded-2xl p-5 flex gap-4 hover:shadow-md transition-shadow">
-                <img src={d.img} alt={d.name} className="w-16 h-16 rounded-xl object-cover border border-border/60 flex-shrink-0" loading="lazy" />
-                <div className="min-w-0">
-                  <h3 className="font-heading text-base font-semibold text-foreground leading-tight">{d.name}</h3>
-                  <p className="text-xs text-primary font-body mt-0.5">{d.role}</p>
-                  <p className="text-[11px] text-muted-foreground font-body mt-1.5 tabular-nums">{d.reg}</p>
-                  <p className="text-[11px] text-muted-foreground font-body">{d.city} · {d.years} yrs practice</p>
+              <div key={d.reg} className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
+                <div className="relative mx-auto mb-4">
+                  <img
+                    src={d.img}
+                    alt={`Portrait of ${d.name}`}
+                    className="w-28 h-28 rounded-full object-cover border-4 border-background shadow-sm mx-auto"
+                    loading="lazy"
+                  />
+                  <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-background" title="Active on VeryPatient network" />
                 </div>
+                <h3 className="font-heading text-lg font-semibold text-foreground leading-tight">{d.name}</h3>
+                <p className="text-xs text-primary font-body mt-1">{d.role}</p>
+                <p className="text-[11px] text-muted-foreground font-body mt-2 tabular-nums">{d.reg}</p>
+                <p className="text-[11px] text-muted-foreground font-body">{d.city} · {d.years} yrs practice</p>
               </div>
             ))}
           </div>
