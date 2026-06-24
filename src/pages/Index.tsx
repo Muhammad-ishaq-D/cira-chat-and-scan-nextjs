@@ -180,8 +180,7 @@ const Index = () => {
               </div>
 
               {/* Badge 1: active doctor status */}
-              <div className="absolute top-6 -left-2 sm:left-0 lg:-left-10 z-20 inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full bg-card border border-border shadow-lg">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="absolute top-6 -left-2 sm:left-0 lg:-left-10 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border shadow-lg">
                 <span className="text-[11px] font-semibold font-body text-foreground whitespace-nowrap">🟢 Dr. Jean-Marc, MD — Active Now</span>
               </div>
 
