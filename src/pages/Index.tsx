@@ -527,6 +527,18 @@ const Index = () => {
           </Accordion>
         </section>
 
+        {/* Ethical Manifesto */}
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+          <div className="scroll-fade bg-card/40 border border-border/60 rounded-3xl px-8 sm:px-14 py-14 sm:py-20 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-8">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <blockquote className="font-heading text-2xl sm:text-3xl md:text-4xl font-medium text-foreground leading-snug max-w-3xl mx-auto">
+              "I will first do no harm. Every response, every care recommendation, and every clinical action taken by Cira Health will be measured against one question: does this serve the patient's wellbeing?"
+            </blockquote>
+          </div>
+        </section>
+
         {/* FINAL CTA */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
           <div className="bg-foreground text-background rounded-3xl p-10 sm:p-14 text-center">
@@ -626,6 +638,11 @@ const Index = () => {
 
             {stepIndex === 0 && (
               <div className="space-y-4">
+                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-5">
+                  <p className="font-body text-sm text-foreground leading-relaxed">
+                    Hi, I am Cira, your specialized AI Clinical Care Coordinator. I possess a vast, integrated repository of peer-reviewed medical knowledge trained exclusively to optimize your patient journey. I will securely assess your needs and coordinate directly with our on-duty VeryPatient clinic doctors to authorize your request under 2 hours. Everything we discuss is encrypted and fully confidential. {funnelChoice === "refill" ? "What routine medication do you need refilled today?" : "What health concern brings you in today?"}
+                  </p>
+                </div>
                 <div>
                   <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Full legal name</label>
                   <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="Jean Dupont" />
