@@ -162,7 +162,7 @@ const Index = () => {
                 onClick={() => openFunnel("refill")}
                 className="w-full px-6 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                Request Refill Now <ArrowRight className="w-4 h-4" />
+                Request €10 Refill Now ➔
               </button>
             </article>
 
