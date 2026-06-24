@@ -158,7 +158,7 @@ const Index = () => {
               {/* Patient lifestyle card layered behind */}
               <div className="absolute -bottom-2 left-4 sm:left-12 lg:-left-8 w-40 h-52 sm:w-44 sm:h-56 rounded-2xl overflow-hidden border border-border shadow-xl bg-card rotate-[-6deg] z-0">
                 <img
-                  src={patientAsset.url}
+                  src="/patient-phone.jpg"
                   alt="Patient smiling during a seamless consultation on her phone"
                   className="w-full h-full object-cover"
                   loading="lazy"
