@@ -116,41 +116,83 @@ const Index = () => {
 
         {/* HERO */}
         <header className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-12">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            {/* AVATAR STACK */}
-            <div className="flex justify-center mb-6">
-              <div className="flex items-center -space-x-3">
-                {[
-                  "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop&crop=faces",
-                  "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop&crop=faces",
-                  "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop&crop=faces",
-                  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop&crop=faces",
-                ].map((src, i) => (
-                  <img
-                    key={i}
-                    src={src}
-                    alt={`VeryPatient doctor ${i + 1}`}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-[3px] border-background shadow-sm"
-                    loading="eager"
-                  />
-                ))}
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center mb-10">
+            {/* LEFT: core text */}
+            <div className="text-center lg:text-left">
+              {/* AVATAR STACK */}
+              <div className="flex justify-center lg:justify-start mb-6">
+                <div className="flex items-center -space-x-3">
+                  {[
+                    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop&crop=faces",
+                    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop&crop=faces",
+                    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop&crop=faces",
+                    "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop&crop=faces",
+                  ].map((src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`VeryPatient doctor ${i + 1}`}
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-[3px] border-background shadow-sm"
+                      loading="eager"
+                    />
+                  ))}
+                </div>
               </div>
+
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur shadow-sm mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-bold font-body tracking-widest uppercase text-foreground">
+                  Live · Doctors signing prescriptions now
+                </span>
+              </div>
+              <h1 className="font-heading text-4xl sm:text-6xl md:text-[64px] font-semibold text-foreground leading-[1.05] tracking-tight mb-5">
+                Real Medical Care.<br />
+                <span className="text-primary">In Under 2 Hours.</span>
+              </h1>
+              <p className="font-body text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                A digital medical clinic clinically fulfilled by the <strong className="text-foreground">VeryPatient</strong> private network of registered European physicians.
+                Signed prescriptions, video consultations, and clinical documents — delivered with a fixed price and a 2-hour SLA.
+              </p>
             </div>
 
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur shadow-sm mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-bold font-body tracking-widest uppercase text-foreground">
-                Live · Doctors signing prescriptions now
-              </span>
+            {/* RIGHT: phone mockup */}
+            <div className="relative flex justify-center lg:justify-end pb-8 lg:pb-0">
+              {/* Patient lifestyle card layered behind */}
+              <div className="absolute -bottom-2 left-4 sm:left-12 lg:-left-8 w-40 h-52 sm:w-44 sm:h-56 rounded-2xl overflow-hidden border border-border shadow-xl bg-card rotate-[-6deg] z-0">
+                <img
+                  src={patientAsset.url}
+                  alt="Patient smiling during a seamless consultation on her phone"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Smartphone frame */}
+              <div className="relative z-10 w-[260px] sm:w-[300px] bg-foreground rounded-[2.5rem] p-3 shadow-2xl">
+                <div className="relative bg-background rounded-[2rem] overflow-hidden">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-foreground rounded-b-2xl z-20" />
+                  <img
+                    src={doctorAsset.url}
+                    alt="Licensed VeryPatient doctor in a white coat with a stethoscope"
+                    className="w-full aspect-[9/19] object-cover"
+                    loading="eager"
+                  />
+                </div>
+              </div>
+
+              {/* Badge 1: active doctor status */}
+              <div className="absolute top-6 -left-2 sm:left-0 lg:-left-10 z-20 inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full bg-card border border-border shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-semibold font-body text-foreground whitespace-nowrap">🟢 Dr. Jean-Marc, MD — Active Now</span>
+              </div>
+
+              {/* Badge 2: SLA refill verified */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">⏰ 2-Hour SLA Refill Verified</span>
+              </div>
             </div>
-            <h1 className="font-heading text-4xl sm:text-6xl md:text-[64px] font-semibold text-foreground leading-[1.05] tracking-tight mb-5">
-              Real Medical Care.<br />
-              <span className="text-primary">In Under 2 Hours.</span>
-            </h1>
-            <p className="font-body text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              A digital medical clinic clinically fulfilled by the <strong className="text-foreground">VeryPatient</strong> private network of registered European physicians.
-              Signed prescriptions, video consultations, and clinical documents — delivered with a fixed price and a 2-hour SLA.
-            </p>
           </div>
 
           {/* DUAL CONVERSION CARDS */}
