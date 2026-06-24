@@ -1903,5 +1903,275 @@
       "specificRequest": "Specific Request",
       "enclosures": "Enclosures"
     }
+  },
+  "home": {
+    "nav": {
+      "networkBadge": "VeryPatient Network",
+      "patientLogin": "Patient Login"
+    },
+    "hero": {
+      "live": "Live · Doctors signing prescriptions now",
+      "title1": "Prescription Refills.",
+      "title2": "Approved in Minutes.",
+      "h2": "Skip the clinic waiting room. Real medical care, on-demand.",
+      "body": "Direct medical solutions and prescription renewals fulfilled entirely under the supervision of our licensed on-duty clinic doctors. No appointments required. Instant routing straight to your local neighborhood pharmacy.",
+      "badgeDoctor": "🟢 Dr. Jean-Marc, MD — Active Now",
+      "badgeApproved": "⚡ Approved in Minutes"
+    },
+    "cards": {
+      "refill": {
+        "tag": "Fast Track",
+        "title": "Rapid Prescription Refill",
+        "body": "Out of your medication? A VeryPatient GP reviews your case and dispatches a signed e-prescription to your pharmacy. Fixed price, no surprises.",
+        "price": "€10",
+        "priceSuffix": ".00 fixed",
+        "refunded": "Refunded if not approved",
+        "checkSigned": "Signed by MD",
+        "checkPdf": "PDF + pharmacy",
+        "cta": "Request €10 Refill Now ➔"
+      },
+      "consult": {
+        "tag": "Same Day",
+        "title": "Video Doctor Consultation",
+        "body": "Face-to-face 20-minute video appointment with a licensed VeryPatient specialist. Diagnosis, treatment plan, and follow-up document included.",
+        "price": "€39",
+        "priceSuffix": ".00 fixed",
+        "duration": "20-minute HD session",
+        "checkMatch": "Specialist match",
+        "checkPlan": "Treatment plan",
+        "cta": "Book €39 Video Consult ➔"
+      }
+    },
+    "telemetry": {
+      "refillsToday": "Refills today",
+      "avgFulfillment": "Avg fulfillment",
+      "minSuffix": "min",
+      "approvalRate": "Approval rate",
+      "networkMds": "Network MDs"
+    },
+    "process": {
+      "eyebrow": "The Clinical Workflow",
+      "title": "Three steps. One signed document. Zero waiting rooms.",
+      "s1Title": "Submit your case in 90 seconds",
+      "s1Body": "Pick your service, describe your symptoms or prescription, and upload any prior medical document. The intake is structured for clinical review.",
+      "s2Title": "A VeryPatient MD reviews your file",
+      "s2Body": "A real licensed European physician — not an AI — reviews, validates, and signs your prescription or treatment plan. Average review window: under 90 minutes.",
+      "s3Title": "Signed document arrives in your inbox",
+      "s3Body": "PDF e-prescription delivered to you and forwarded directly to your chosen pharmacy. Fully traceable, legally valid across the EU."
+    },
+    "doctorsGrid": {
+      "eyebrow": "The VeryPatient Clinical Roster",
+      "title": "Every case is signed by a registered European physician.",
+      "body": "No anonymous AI signatures, no offshore call centers. Each clinician below holds an active ORDOMED registration, verifiable on request.",
+      "yrsPractice": "{{years}} yrs practice"
+    },
+    "matrix": {
+      "eyebrow": "Service · SLA · Price Matrix",
+      "title": "Fixed pricing. Documented SLAs. No subscriptions.",
+      "colService": "Service",
+      "colFulfilledBy": "Fulfilled by",
+      "colSla": "SLA",
+      "colDeliverable": "Deliverable",
+      "colPrice": "Fixed Price",
+      "fine": "All prices in EUR, VAT inclusive. Charged only upon clinical approval. Refunded automatically if a clinician declines.",
+      "rows": [
+        {
+          "service": "Rapid Prescription Refill",
+          "who": "Licensed VeryPatient GP",
+          "sla": "Under 2 hours",
+          "deliverable": "Signed e-prescription (PDF)"
+        },
+        {
+          "service": "Video Doctor Consultation",
+          "who": "VeryPatient Specialist",
+          "sla": "Same day · 20 min slot",
+          "deliverable": "HD video + treatment plan"
+        },
+        {
+          "service": "Sick Leave Certificate",
+          "who": "Licensed VeryPatient GP",
+          "sla": "Under 3 hours",
+          "deliverable": "Signed work certificate"
+        },
+        {
+          "service": "Lab Result Interpretation",
+          "who": "VeryPatient Specialist",
+          "sla": "Same day",
+          "deliverable": "Written clinical report"
+        },
+        {
+          "service": "Specialist Referral Letter",
+          "who": "Licensed VeryPatient GP",
+          "sla": "Under 4 hours",
+          "deliverable": "Signed referral letter"
+        }
+      ]
+    },
+    "ugc": {
+      "eyebrow": "Patient Stories",
+      "title": "Stories from real patients who skipped the waiting room.",
+      "b1": "Routine prescription renewals",
+      "b2": "Quick peace of mind",
+      "b3": "Expat healthcare access",
+      "prev": "Previous testimonials",
+      "next": "Next testimonials",
+      "items": [
+        {
+          "name": "Camille, 34",
+          "city": "Paris",
+          "quote": "Refill in 40 minutes."
+        },
+        {
+          "name": "Mateo, 29",
+          "city": "Barcelona",
+          "quote": "No more clinic queues."
+        },
+        {
+          "name": "Hannah, 41",
+          "city": "Berlin",
+          "quote": "Felt heard in 5 minutes."
+        },
+        {
+          "name": "Liam, 27",
+          "city": "Amsterdam",
+          "quote": "Expat life, finally easy."
+        },
+        {
+          "name": "Sofia, 38",
+          "city": "Milan",
+          "quote": "Renewed my script on lunch."
+        }
+      ]
+    },
+    "guides": {
+      "title": "Informed Care. Clear Answers.",
+      "subtitle": "Explore professional medical guides verified directly by our on-duty clinical team.",
+      "cta": "Read Verified Guide",
+      "items": [
+        {
+          "label": "💊 MEDICAL PROTOCOLS",
+          "title": "Managing Routine Prescription Renewals Securely Online",
+          "snippet": "A comprehensive breakdown of how our registered clinic physicians verify telemetry vitals to safely route maintenance scripts to your pharmacy in under 2 hours."
+        },
+        {
+          "label": "📸 ADVANCED DIAGNOSTICS",
+          "title": "Understanding Remote Camera Telemetry and Vital Tracking",
+          "snippet": "How clinical-grade rPPG technology reads micro-fluctuations in skin color to pull exact heart rate and blood pressure baselines over standard smartphone lenses."
+        },
+        {
+          "label": "🇪🇺 EXPAT HEALTH",
+          "title": "Navigating Healthcare Continuity as an Expat in Europe",
+          "snippet": "A practical guide to transferring local maintenance prescriptions, accessing 24/7 on-duty English-speaking doctors, and managing cross-border medical compliance."
+        }
+      ]
+    },
+    "science": {
+      "title": "Engineered for Clinical Safety. Grounded in Medical Science.",
+      "subtitle": "How we train our Specialized AI Environment and utilize clinically validated camera telemetry.",
+      "col1Title": "Isolated Medical Datasets",
+      "col1Body": "Unlike open-ended consumer LLMs, Cira is an isolated Specialist Care Coordinator. She is trained exclusively on over 7 million data points of peer-reviewed clinical guidelines, medical case studies, and validated triage protocols. She does not guess, hypothesize, or access unstructured public data networks. Her sole task is to act as a highly knowledgeable data clerk—efficiently structuring your symptoms, checking historical dosage boundaries, and cross-referencing contraindications before routing a clean file straight to our on-duty Clinique de la Brisée physicians.",
+      "col2Title": "Contactless Biosignal Extraction via Shen.ai",
+      "col2Body": "Our backend utilizes proprietary technology developed by Shen.ai to gather real-time physiological metrics. By leveraging Remote Photoplethysmography (rPPG), the smartphone camera captures subtle, ambient light reflections to record color-tone fluctuations in the facial skin layers caused by sub-surface blood flow. Simultaneously, Remote Ballistocardiography (rBCG) tracks minute, invisible micro-motions in the head and neck generated by the heart's mechanical activity. In 30 seconds, this dual-optical approach securely pulls heart rate metrics (with under 0.5 bpm error level), respiratory metrics, and blood pressure baselines—providing your video physician with immediate clinical context.",
+      "badge1": "Trained on 7M+ Clinical Reference Points",
+      "badge2": "Powered by Validated Shen.ai Technology",
+      "badge3": "Contactless rPPG & rBCG Biomarkers"
+    },
+    "faqSection": {
+      "eyebrow": "Patient FAQ",
+      "title": "Clear answers, no clinical jargon.",
+      "items": [
+        {
+          "q": "Are the doctors real and licensed?",
+          "a": "Yes. Every clinician fulfilling on Cira Health is a registered medical doctor within the VeryPatient private network, verifiable by ORDOMED registration number listed on their profile."
+        },
+        {
+          "q": "Is the €10 prescription refill price final?",
+          "a": "Yes. €10.00 fixed, all-inclusive. No subscription, no consultation surcharge, no pharmacy markup. You pay only if a clinician approves and signs your refill."
+        },
+        {
+          "q": "What happens if a doctor cannot approve my refill?",
+          "a": "You are refunded 100% within minutes. We never charge for an unfulfilled clinical decision."
+        },
+        {
+          "q": "How fast is the 2-hour window enforced?",
+          "a": "Internal SLA. 96.2% of refills are signed in under 90 minutes during European working hours, with overnight queue picked up at 06:30 CET."
+        },
+        {
+          "q": "Is my data sold or shared?",
+          "a": "Never. Clinical records are encrypted at rest, stored within EU jurisdiction, and accessible only to the assigned VeryPatient clinician for the duration of your case."
+        },
+        {
+          "q": "Can I use this instead of my regular GP?",
+          "a": "Cira Health is a complement, not a replacement, for ongoing primary care. It is built for acute, time-sensitive, transactional medical needs."
+        }
+      ]
+    },
+    "manifesto": {
+      "quote": "\"I will first do no harm. Every response, every care recommendation, and every clinical action taken by Cira Health will be measured against one question: does this serve the patient's wellbeing?\""
+    },
+    "finalCta": {
+      "title": "A real doctor. A signed prescription. Under 2 hours.",
+      "body": "Skip the waiting room. Pay one fixed price. Get a clinically valid document delivered to your inbox today.",
+      "ctaRefill": "Get €10 Prescription Refill",
+      "ctaConsult": "Book €39 Video Consult"
+    },
+    "footerSection": {
+      "tagline": "A digital clinic clinically fulfilled by the VeryPatient registered medical network.",
+      "h1": "Clinical Services",
+      "refillLink": "Prescription Refill — €10",
+      "consultLink": "Video Consultation — €39",
+      "pricingLink": "Full Pricing Matrix",
+      "h2": "Network",
+      "cliniciansLink": "VeryPatient Clinicians",
+      "howLink": "How it works",
+      "contactLink": "Contact",
+      "h3": "Legal",
+      "securityLink": "Security",
+      "privacyLink": "Privacy Policy",
+      "termsLink": "Terms",
+      "copyright": "© {{year}} Cira Health · Fulfilled by VeryPatient SAS",
+      "disclaimer": "Cira Health is a digital intake clinic. All clinical decisions are made by registered VeryPatient physicians."
+    },
+    "funnel": {
+      "titleRefill": "Rapid Prescription Refill",
+      "titleConsult": "Video Doctor Consultation",
+      "sub": "Fulfilled by a registered VeryPatient physician · Fixed price · Refund if not approved",
+      "step1": "Intake",
+      "step2": "Clinical Review",
+      "step3": "Payment",
+      "introIntro": "Hi, I am Cira, your specialized AI Clinical Care Coordinator. I possess a vast, integrated repository of peer-reviewed medical knowledge trained exclusively to optimize your patient journey. I will securely assess your needs and coordinate directly with our on-duty VeryPatient clinic doctors to authorize your request under 2 hours. Everything we discuss is encrypted and fully confidential.",
+      "introRefillQ": "What routine medication do you need refilled today?",
+      "introConsultQ": "What health concern brings you in today?",
+      "lblName": "Full legal name",
+      "namePlaceholder": "Jean Dupont",
+      "lblMed": "Medication name & dosage",
+      "lblReason": "Reason for consultation",
+      "medPlaceholder": "e.g. Levothyroxine 50mcg, 1 daily",
+      "reasonPlaceholder": "e.g. Persistent migraine, 6 days",
+      "lblPharmacy": "Pharmacy / delivery email",
+      "emailPlaceholder": "you@email.com",
+      "continueReview": "Continue to Clinical Review",
+      "matched": "Matched with a VeryPatient clinician",
+      "elig1": "Case eligible for clinical review",
+      "elig2": "Estimated fulfillment: under 2 hours",
+      "elig3": "100% refund if not approved",
+      "proceedPay": "Proceed to Secure Payment",
+      "ledger": "Ledger",
+      "fService": "Service",
+      "fWindow": "Fulfillment window",
+      "fDue": "Due now",
+      "sRefill": "Rapid Human Doctor Prescription Review",
+      "sConsult": "Video Doctor Consultation",
+      "wRefill": "Under 2 hours",
+      "wConsult": "Same day · 20 min",
+      "dueRefill": "€10.00 FIXED",
+      "dueConsult": "€39.00 FIXED",
+      "lblCardName": "Cardholder Name",
+      "lblCardNum": "Credit Card Number",
+      "lblExpiry": "Expiry",
+      "lblCvc": "CVC",
+      "payBtnPrefix": "Complete Secure Clinical Payment —",
+      "secureNote": "Encrypted · PCI-DSS · Refund automatic if declined"
+    }
   }
 }
