@@ -386,6 +386,85 @@ const Index = () => {
           </div>
         </section>
 
+        {/* UGC Video Testimonials */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">Patient Stories</p>
+          <h2 className="scroll-fade font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-5 text-center max-w-3xl mx-auto">
+            Stories from real patients who skipped the waiting room.
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-body text-muted-foreground mb-10">
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Routine prescription renewals</span>
+            <span className="hidden sm:inline text-border">•</span>
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Quick peace of mind</span>
+            <span className="hidden sm:inline text-border">•</span>
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Expat healthcare access</span>
+          </div>
+
+          {(() => {
+            const testimonials = [
+              { name: "Camille, 34", city: "Paris", quote: "Refill in 40 minutes.", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=1067&fit=crop&crop=faces" },
+              { name: "Mateo, 29", city: "Barcelona", quote: "No more clinic queues.", img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&h=1067&fit=crop&crop=faces" },
+              { name: "Hannah, 41", city: "Berlin", quote: "Felt heard in 5 minutes.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=1067&fit=crop&crop=faces" },
+              { name: "Liam, 27", city: "Amsterdam", quote: "Expat life, finally easy.", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=1067&fit=crop&crop=faces" },
+              { name: "Sofia, 38", city: "Milan", quote: "Renewed my script on lunch.", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=1067&fit=crop&crop=faces" },
+            ];
+            const scroll = (dir: number) => {
+              const el = document.getElementById("ugc-scroller");
+              if (el) el.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: "smooth" });
+            };
+            return (
+              <div className="scroll-fade">
+                <div
+                  id="ugc-scroller"
+                  className="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+                >
+                  {testimonials.map((t, i) => (
+                    <div
+                      key={i}
+                      className="snap-start shrink-0 w-[220px] sm:w-[240px] md:w-[260px] aspect-[9/16] relative rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm hover:shadow-lg transition-shadow"
+                    >
+                      <img
+                        src={t.img}
+                        alt={`${t.name} from ${t.city}`}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center group-hover:bg-white/35 group-hover:scale-110 transition-all">
+                          <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 sm:w-7 sm:h-7 ml-1">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <p className="font-heading text-base font-semibold leading-tight">"{t.quote}"</p>
+                        <p className="text-xs font-body opacity-90 mt-1">{t.name} — {t.city}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center gap-3 mt-6">
+                  <button
+                    onClick={() => scroll(-1)}
+                    aria-label="Previous testimonials"
+                    className="w-11 h-11 rounded-full border border-border bg-background hover:bg-muted flex items-center justify-center transition-colors"
+                  >
+                    <span className="text-foreground text-lg">←</span>
+                  </button>
+                  <button
+                    onClick={() => scroll(1)}
+                    aria-label="Next testimonials"
+                    className="w-11 h-11 rounded-full border border-border bg-background hover:bg-muted flex items-center justify-center transition-colors"
+                  >
+                    <span className="text-foreground text-lg">→</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+
         {/* FAQ */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">Patient FAQ</p>
