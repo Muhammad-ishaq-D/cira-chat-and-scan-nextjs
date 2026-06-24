@@ -115,6 +115,26 @@ const Index = () => {
         {/* HERO */}
         <header className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-12">
           <div className="text-center max-w-3xl mx-auto mb-10">
+            {/* AVATAR STACK */}
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center -space-x-3">
+                {[
+                  "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop&crop=faces",
+                  "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop&crop=faces",
+                  "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop&crop=faces",
+                  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop&crop=faces",
+                ].map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt={`VeryPatient doctor ${i + 1}`}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-[3px] border-background shadow-sm"
+                    loading="eager"
+                  />
+                ))}
+              </div>
+            </div>
+
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur shadow-sm mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[11px] font-bold font-body tracking-widest uppercase text-foreground">
