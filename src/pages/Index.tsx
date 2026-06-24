@@ -467,6 +467,50 @@ const Index = () => {
           })()}
         </section>
 
+        {/* Clinical Resource Guides */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <h2 className="scroll-fade font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4 text-left">
+            Informed Care. Clear Answers.
+          </h2>
+          <p className="scroll-fade font-body text-base sm:text-lg text-muted-foreground max-w-2xl mb-10">
+            Explore professional medical guides verified directly by our on-duty clinical team.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                label: "💊 MEDICAL PROTOCOLS",
+                title: "Managing Routine Prescription Renewals Securely Online",
+                snippet: "A comprehensive breakdown of how our registered clinic physicians verify telemetry vitals to safely route maintenance scripts to your pharmacy in under 2 hours."
+              },
+              {
+                label: "📸 ADVANCED DIAGNOSTICS",
+                title: "Understanding Remote Camera Telemetry and Vital Tracking",
+                snippet: "How clinical-grade rPPG technology reads micro-fluctuations in skin color to pull exact heart rate and blood pressure baselines over standard smartphone lenses."
+              },
+              {
+                label: "🇪🇺 EXPAT HEALTH",
+                title: "Navigating Healthcare Continuity as an Expat in Europe",
+                snippet: "A practical guide to transferring local maintenance prescriptions, accessing 24/7 on-duty English-speaking doctors, and managing cross-border medical compliance."
+              }
+            ].map((guide, i) => (
+              <article key={i} className="group scroll-fade bg-card border border-border/60 rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
+                <p className="text-[11px] font-bold font-body tracking-widest uppercase text-muted-foreground mb-4">
+                  {guide.label}
+                </p>
+                <h3 className="font-heading text-xl font-semibold text-foreground leading-snug mb-3">
+                  {guide.title}
+                </h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                  {guide.snippet}
+                </p>
+                <button className="inline-flex items-center gap-1.5 text-sm font-semibold font-body text-primary hover:opacity-80 transition-opacity">
+                  Read Verified Guide <span aria-hidden="true">➔</span>
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {/* FAQ */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">Patient FAQ</p>
