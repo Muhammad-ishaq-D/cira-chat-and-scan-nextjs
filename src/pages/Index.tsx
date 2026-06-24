@@ -217,7 +217,7 @@ const Index = () => {
                 </div>
               </div>
               <button
-                onClick={() => openFunnel("refill")}
+                onClick={() => navigate("/prescription-refill")}
                 className="w-full px-6 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 {t("home.cards.refill.cta")}
@@ -567,7 +567,7 @@ const Index = () => {
               {t("home.finalCta.body")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button onClick={() => openFunnel("refill")} className="px-8 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 transition-all">
+              <button onClick={() => navigate("/prescription-refill")} className="px-8 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 transition-all">
                 {t("home.finalCta.ctaRefill")}
               </button>
               <button onClick={() => openFunnel("consult")} className="px-8 py-3.5 rounded-full bg-background/10 border border-background/30 text-background text-sm font-semibold font-body hover:bg-background/20 transition-all">
@@ -593,7 +593,7 @@ const Index = () => {
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("home.footerSection.h1")}</h4>
                 <ul className="space-y-2.5 text-sm">
-                  <li><button onClick={() => openFunnel("refill")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.refillLink")}</button></li>
+                  <li><button onClick={() => navigate("/prescription-refill")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.refillLink")}</button></li>
                   <li><button onClick={() => openFunnel("consult")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.consultLink")}</button></li>
                   <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.pricingLink")}</button></li>
                 </ul>
