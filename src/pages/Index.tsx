@@ -171,7 +171,7 @@ const Index = () => {
                   {/* Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-foreground rounded-b-2xl z-20" />
                   <img
-                    src={doctorAsset.url}
+                    src="/doctor-portrait.jpg"
                     alt="Licensed VeryPatient doctor in a white coat with a stethoscope"
                     className="w-full aspect-[9/19] object-cover"
                     loading="eager"
