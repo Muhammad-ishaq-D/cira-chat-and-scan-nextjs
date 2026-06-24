@@ -1900,5 +1900,275 @@
       "specificRequest": "Spezielle Anfrage",
       "enclosures": "Anlagen"
     }
+  },
+  "home": {
+    "nav": {
+      "networkBadge": "VeryPatient-Netzwerk",
+      "patientLogin": "Patienten-Login"
+    },
+    "hero": {
+      "live": "Live · Ärzte unterschreiben gerade Rezepte",
+      "title1": "Rezeptverlängerungen.",
+      "title2": "In Minuten freigegeben.",
+      "h2": "Kein Wartezimmer. Echte medizinische Versorgung, sofort verfügbar.",
+      "body": "Direkte medizinische Lösungen und Rezeptverlängerungen, vollständig unter Aufsicht unserer approbierten diensthabenden Klinikärzte. Keine Termine nötig. Sofortige Weiterleitung an deine Wohnort-Apotheke.",
+      "badgeDoctor": "🟢 Dr. Jean-Marc, MD — Jetzt aktiv",
+      "badgeApproved": "⚡ In Minuten freigegeben"
+    },
+    "cards": {
+      "refill": {
+        "tag": "Schnellspur",
+        "title": "Schnelle Rezeptverlängerung",
+        "body": "Medikament leer? Ein VeryPatient-Hausarzt prüft deinen Fall und schickt ein signiertes E-Rezept an deine Apotheke. Festpreis, keine Überraschungen.",
+        "price": "10 €",
+        "priceSuffix": ",00 fix",
+        "refunded": "Rückerstattung bei Ablehnung",
+        "checkSigned": "Vom Arzt signiert",
+        "checkPdf": "PDF + Apotheke",
+        "cta": "Jetzt 10 € Verlängerung anfordern ➔"
+      },
+      "consult": {
+        "tag": "Am selben Tag",
+        "title": "Video-Arztkonsultation",
+        "body": "20-minütige Video-Sprechstunde mit einem approbierten VeryPatient-Spezialisten. Diagnose, Therapieplan und Folgedokument inklusive.",
+        "price": "39 €",
+        "priceSuffix": ",00 fix",
+        "duration": "20-minütige HD-Sitzung",
+        "checkMatch": "Spezialistenzuteilung",
+        "checkPlan": "Therapieplan",
+        "cta": "39 € Video-Konsultation buchen ➔"
+      }
+    },
+    "telemetry": {
+      "refillsToday": "Verlängerungen heute",
+      "avgFulfillment": "Ø Bearbeitung",
+      "minSuffix": "Min",
+      "approvalRate": "Genehmigungsquote",
+      "networkMds": "Ärzte im Netzwerk"
+    },
+    "process": {
+      "eyebrow": "Der klinische Ablauf",
+      "title": "Drei Schritte. Ein signiertes Dokument. Null Wartezimmer.",
+      "s1Title": "Reiche deinen Fall in 90 Sekunden ein",
+      "s1Body": "Wähle den Dienst, beschreibe Symptome oder Rezept und lade frühere medizinische Unterlagen hoch. Die Aufnahme ist für die klinische Prüfung strukturiert.",
+      "s2Title": "Ein VeryPatient-Arzt prüft deine Akte",
+      "s2Body": "Ein echter, approbierter europäischer Arzt — keine KI — prüft, validiert und signiert dein Rezept oder deinen Therapieplan. Durchschnittliche Prüfdauer: unter 90 Minuten.",
+      "s3Title": "Signiertes Dokument landet in deinem Postfach",
+      "s3Body": "PDF-E-Rezept an dich geliefert und direkt an deine Wunsch-Apotheke weitergeleitet. Vollständig nachverfolgbar und in der gesamten EU rechtsgültig."
+    },
+    "doctorsGrid": {
+      "eyebrow": "Das klinische Team von VeryPatient",
+      "title": "Jeder Fall wird von einem zugelassenen europäischen Arzt signiert.",
+      "body": "Keine anonymen KI-Signaturen, keine Offshore-Callcenter. Jeder Arzt unten hat eine aktive ORDOMED-Registrierung, auf Anfrage überprüfbar.",
+      "yrsPractice": "{{years}} Jahre Praxis"
+    },
+    "matrix": {
+      "eyebrow": "Leistung · SLA · Preismatrix",
+      "title": "Festpreise. Dokumentierte SLAs. Keine Abonnements.",
+      "colService": "Leistung",
+      "colFulfilledBy": "Erbracht von",
+      "colSla": "SLA",
+      "colDeliverable": "Ergebnis",
+      "colPrice": "Festpreis",
+      "fine": "Alle Preise in EUR inkl. MwSt. Belastung nur bei klinischer Freigabe. Automatische Rückerstattung bei Ablehnung.",
+      "rows": [
+        {
+          "service": "Schnelle Rezeptverlängerung",
+          "who": "Approbierter VeryPatient-Hausarzt",
+          "sla": "Unter 2 Stunden",
+          "deliverable": "Signiertes E-Rezept (PDF)"
+        },
+        {
+          "service": "Video-Arztkonsultation",
+          "who": "VeryPatient-Spezialist",
+          "sla": "Gleicher Tag · 20-Min-Slot",
+          "deliverable": "HD-Video + Therapieplan"
+        },
+        {
+          "service": "Arbeitsunfähigkeitsbescheinigung",
+          "who": "Approbierter VeryPatient-Hausarzt",
+          "sla": "Unter 3 Stunden",
+          "deliverable": "Signierte AU-Bescheinigung"
+        },
+        {
+          "service": "Befundinterpretation",
+          "who": "VeryPatient-Spezialist",
+          "sla": "Gleicher Tag",
+          "deliverable": "Schriftlicher klinischer Bericht"
+        },
+        {
+          "service": "Facharzt-Überweisung",
+          "who": "Approbierter VeryPatient-Hausarzt",
+          "sla": "Unter 4 Stunden",
+          "deliverable": "Signierte Überweisung"
+        }
+      ]
+    },
+    "ugc": {
+      "eyebrow": "Patientengeschichten",
+      "title": "Echte Geschichten von Patient:innen, die das Wartezimmer übersprungen haben.",
+      "b1": "Routine-Rezeptverlängerungen",
+      "b2": "Sofortige Beruhigung",
+      "b3": "Gesundheitsversorgung für Expats",
+      "prev": "Vorherige Stimmen",
+      "next": "Nächste Stimmen",
+      "items": [
+        {
+          "name": "Camille, 34",
+          "city": "Paris",
+          "quote": "Verlängerung in 40 Minuten."
+        },
+        {
+          "name": "Mateo, 29",
+          "city": "Barcelona",
+          "quote": "Keine Warteschlangen mehr."
+        },
+        {
+          "name": "Hannah, 41",
+          "city": "Berlin",
+          "quote": "In 5 Minuten gehört worden."
+        },
+        {
+          "name": "Liam, 27",
+          "city": "Amsterdam",
+          "quote": "Expat-Leben endlich einfach."
+        },
+        {
+          "name": "Sofia, 38",
+          "city": "Mailand",
+          "quote": "Rezept in der Pause erneuert."
+        }
+      ]
+    },
+    "guides": {
+      "title": "Informierte Versorgung. Klare Antworten.",
+      "subtitle": "Professionelle medizinische Leitfäden, direkt von unserem diensthabenden klinischen Team verifiziert.",
+      "cta": "Geprüften Leitfaden lesen",
+      "items": [
+        {
+          "label": "💊 MEDIZINISCHE PROTOKOLLE",
+          "title": "Routine-Rezeptverlängerungen sicher online verwalten",
+          "snippet": "Eine umfassende Erläuterung, wie unsere registrierten Klinikärzte Vital-Telemetrie prüfen, um Dauermedikation in unter 2 Stunden sicher an deine Apotheke weiterzuleiten."
+        },
+        {
+          "label": "📸 ERWEITERTE DIAGNOSTIK",
+          "title": "Remote-Kamera-Telemetrie und Vitalwerterfassung verstehen",
+          "snippet": "Wie klinisch validierte rPPG-Technologie Mikrofluktuationen der Hautfarbe liest, um Herzfrequenz- und Blutdruck-Baselines über Standard-Smartphone-Linsen zu erfassen."
+        },
+        {
+          "label": "🇪🇺 EXPAT-GESUNDHEIT",
+          "title": "Gesundheitsversorgungs-Kontinuität als Expat in Europa",
+          "snippet": "Ein praktischer Leitfaden zum Übertragen lokaler Dauerrezepte, zum Zugang zu englischsprachigen Ärzten rund um die Uhr und zur grenzüberschreitenden medizinischen Compliance."
+        }
+      ]
+    },
+    "science": {
+      "title": "Konstruiert für klinische Sicherheit. Verankert in medizinischer Wissenschaft.",
+      "subtitle": "Wie wir unser spezialisiertes KI-Umfeld trainieren und klinisch validierte Kamera-Telemetrie nutzen.",
+      "col1Title": "Isolierte medizinische Datensätze",
+      "col1Body": "Anders als offene Consumer-LLMs ist Cira eine isolierte spezialisierte Versorgungskoordinatorin. Sie wird ausschließlich mit über 7 Millionen Datenpunkten aus peer-reviewten klinischen Leitlinien, medizinischen Fallstudien und validierten Triage-Protokollen trainiert. Sie rät nicht, hypothetisiert nicht und greift nicht auf unstrukturierte öffentliche Datennetze zu. Ihre einzige Aufgabe ist die einer hochkompetenten klinischen Datenverwalterin — sie strukturiert deine Symptome, prüft historische Dosierungsgrenzen und gleicht Kontraindikationen ab, bevor eine saubere Akte direkt an unsere diensthabenden Ärzte der Clinique de la Brisée geleitet wird.",
+      "col2Title": "Kontaktlose Biosignal-Erfassung über Shen.ai",
+      "col2Body": "Unser Backend nutzt proprietäre Technologie von Shen.ai zur Erfassung physiologischer Echtzeit-Metriken. Mittels Remote-Photoplethysmographie (rPPG) erfasst die Smartphone-Kamera subtile Umgebungslicht-Reflexionen, um Farbton-Schwankungen in den Hautschichten infolge subkutaner Durchblutung aufzuzeichnen. Gleichzeitig erfasst Remote-Ballistokardiographie (rBCG) winzige, unsichtbare Mikrobewegungen in Kopf und Hals, die durch die mechanische Herzaktivität entstehen. In 30 Sekunden liefert dieser duale optische Ansatz Herzfrequenz (mit einem Fehler unter 0,5 bpm), Atemmetriken und Blutdruck-Baselines — und stellt deinem Videoarzt sofortigen klinischen Kontext zur Verfügung.",
+      "badge1": "Trainiert mit über 7 Mio. klinischen Referenzpunkten",
+      "badge2": "Angetrieben von validierter Shen.ai-Technologie",
+      "badge3": "Kontaktlose rPPG- & rBCG-Biomarker"
+    },
+    "faqSection": {
+      "eyebrow": "Patienten-FAQ",
+      "title": "Klare Antworten, ohne Klinik-Jargon.",
+      "items": [
+        {
+          "q": "Sind die Ärzte echt und approbiert?",
+          "a": "Ja. Jeder Arzt bei Cira Health ist ein im privaten VeryPatient-Netzwerk registrierter Mediziner, überprüfbar anhand der ORDOMED-Registrierungsnummer im Profil."
+        },
+        {
+          "q": "Ist der Preis von 10 € für die Rezeptverlängerung endgültig?",
+          "a": "Ja. 10,00 € fix, alles inklusive. Kein Abo, kein Konsultationsaufschlag, kein Apotheken-Aufschlag. Du zahlst nur, wenn ein Arzt deine Verlängerung freigibt und signiert."
+        },
+        {
+          "q": "Was passiert, wenn ein Arzt meine Verlängerung nicht freigibt?",
+          "a": "Du erhältst innerhalb von Minuten 100 % zurück. Wir berechnen nie eine nicht erbrachte klinische Entscheidung."
+        },
+        {
+          "q": "Wie wird das 2-Stunden-Fenster eingehalten?",
+          "a": "Internes SLA. 96,2 % der Verlängerungen werden während europäischer Arbeitszeiten in unter 90 Minuten signiert, die Nachtschlange wird ab 06:30 MEZ abgearbeitet."
+        },
+        {
+          "q": "Werden meine Daten verkauft oder geteilt?",
+          "a": "Niemals. Klinische Daten werden verschlüsselt gespeichert, in EU-Jurisdiktion gehalten und sind nur für den zugeteilten VeryPatient-Arzt während deines Falls zugänglich."
+        },
+        {
+          "q": "Kann ich das anstelle meines Hausarztes nutzen?",
+          "a": "Cira Health ist eine Ergänzung, kein Ersatz für die laufende Hausarztversorgung. Es ist für akute, zeitkritische, transaktionale medizinische Bedürfnisse gebaut."
+        }
+      ]
+    },
+    "manifesto": {
+      "quote": "„Zuerst keinen Schaden zufügen. Jede Antwort, jede Versorgungsempfehlung und jede klinische Handlung von Cira Health wird an einer Frage gemessen: Dient dies dem Wohl des Patienten?\""
+    },
+    "finalCta": {
+      "title": "Ein echter Arzt. Ein signiertes Rezept. Unter 2 Stunden.",
+      "body": "Kein Wartezimmer. Ein Festpreis. Ein klinisch gültiges Dokument heute in deinem Postfach.",
+      "ctaRefill": "10 € Rezeptverlängerung holen",
+      "ctaConsult": "39 € Video-Konsultation buchen"
+    },
+    "footerSection": {
+      "tagline": "Eine digitale Klinik, klinisch erbracht vom registrierten medizinischen VeryPatient-Netzwerk.",
+      "h1": "Klinische Leistungen",
+      "refillLink": "Rezeptverlängerung — 10 €",
+      "consultLink": "Video-Konsultation — 39 €",
+      "pricingLink": "Vollständige Preismatrix",
+      "h2": "Netzwerk",
+      "cliniciansLink": "VeryPatient-Ärzte",
+      "howLink": "So funktioniert es",
+      "contactLink": "Kontakt",
+      "h3": "Rechtliches",
+      "securityLink": "Sicherheit",
+      "privacyLink": "Datenschutz",
+      "termsLink": "AGB",
+      "copyright": "© {{year}} Cira Health · Erbracht von VeryPatient SAS",
+      "disclaimer": "Cira Health ist eine digitale Aufnahmeklinik. Alle klinischen Entscheidungen treffen registrierte VeryPatient-Ärzte."
+    },
+    "funnel": {
+      "titleRefill": "Schnelle Rezeptverlängerung",
+      "titleConsult": "Video-Arztkonsultation",
+      "sub": "Erbracht von einem registrierten VeryPatient-Arzt · Festpreis · Rückerstattung bei Ablehnung",
+      "step1": "Aufnahme",
+      "step2": "Klinische Prüfung",
+      "step3": "Bezahlung",
+      "introIntro": "Hallo, ich bin Cira, deine spezialisierte KI-Versorgungskoordinatorin. Ich verfüge über ein umfangreiches, integriertes Repository peer-reviewten medizinischen Wissens, ausschließlich darauf trainiert, deine Patientenreise zu optimieren. Ich erfasse deine Bedürfnisse sicher und koordiniere direkt mit unseren diensthabenden VeryPatient-Klinikärzten, um deine Anfrage in unter 2 Stunden zu autorisieren. Alles, worüber wir sprechen, ist verschlüsselt und vollständig vertraulich.",
+      "introRefillQ": "Welche Routinemedikation brauchst du heute verlängert?",
+      "introConsultQ": "Welches Gesundheitsanliegen führt dich heute her?",
+      "lblName": "Vollständiger amtlicher Name",
+      "namePlaceholder": "Jean Dupont",
+      "lblMed": "Medikamentenname & Dosierung",
+      "lblReason": "Konsultationsgrund",
+      "medPlaceholder": "z. B. Levothyroxin 50 µg, 1 täglich",
+      "reasonPlaceholder": "z. B. anhaltende Migräne, 6 Tage",
+      "lblPharmacy": "Apotheke / Zustell-E-Mail",
+      "emailPlaceholder": "du@email.de",
+      "continueReview": "Weiter zur klinischen Prüfung",
+      "matched": "Mit einem VeryPatient-Arzt zusammengeführt",
+      "elig1": "Fall für klinische Prüfung geeignet",
+      "elig2": "Geschätzte Bearbeitung: unter 2 Stunden",
+      "elig3": "100 % Rückerstattung bei Ablehnung",
+      "proceedPay": "Weiter zur sicheren Zahlung",
+      "ledger": "Übersicht",
+      "fService": "Leistung",
+      "fWindow": "Bearbeitungsfenster",
+      "fDue": "Jetzt fällig",
+      "sRefill": "Schnelle Rezeptprüfung durch Arzt",
+      "sConsult": "Video-Arztkonsultation",
+      "wRefill": "Unter 2 Stunden",
+      "wConsult": "Gleicher Tag · 20 Min",
+      "dueRefill": "10,00 € FIX",
+      "dueConsult": "39,00 € FIX",
+      "lblCardName": "Karteninhaber",
+      "lblCardNum": "Kartennummer",
+      "lblExpiry": "Gültig bis",
+      "lblCvc": "CVC",
+      "payBtnPrefix": "Sichere klinische Zahlung abschließen —",
+      "secureNote": "Verschlüsselt · PCI-DSS · Automatische Rückerstattung bei Ablehnung"
+    }
   }
 }

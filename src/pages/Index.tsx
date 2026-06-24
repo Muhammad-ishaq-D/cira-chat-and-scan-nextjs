@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { isAuthenticated, getUser } from "@/lib/auth";
 import ConsentBanner from "@/components/ConsentBanner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,6 +15,7 @@ type FunnelChoice = "refill" | "consult" | null;
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pageRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [funnelChoice, setFunnelChoice] = useState<FunnelChoice>(null);
@@ -55,21 +57,20 @@ const Index = () => {
     { name: "Dr. Mathieu Caron", role: "General Practitioner", reg: "ORDOMED #FR-47291", city: "Toulouse, FR", years: 9, img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop&crop=faces" },
   ];
 
-  const dataMatrix = [
-    { service: "Rapid Prescription Refill", who: "Licensed VeryPatient GP", sla: "Under 2 hours", deliverable: "Signed e-prescription (PDF)", price: "€10.00" },
-    { service: "Video Doctor Consultation", who: "VeryPatient Specialist", sla: "Same day · 20 min slot", deliverable: "HD video + treatment plan", price: "€39.00" },
-    { service: "Sick Leave Certificate", who: "Licensed VeryPatient GP", sla: "Under 3 hours", deliverable: "Signed work certificate", price: "€10.00" },
-    { service: "Lab Result Interpretation", who: "VeryPatient Specialist", sla: "Same day", deliverable: "Written clinical report", price: "€19.00" },
-    { service: "Specialist Referral Letter", who: "Licensed VeryPatient GP", sla: "Under 4 hours", deliverable: "Signed referral letter", price: "€15.00" },
-  ];
+  const dataMatrixPrices = ["€10.00", "€39.00", "€10.00", "€19.00", "€15.00"];
+  const dataMatrix = (t("home.matrix.rows", { returnObjects: true }) as Array<{
+    service: string; who: string; sla: string; deliverable: string;
+  }>).map((row, i) => ({ ...row, price: dataMatrixPrices[i] }));
 
-  const faqs = [
-    { q: "Are the doctors real and licensed?", a: "Yes. Every clinician fulfilling on Cira Health is a registered medical doctor within the VeryPatient private network, verifiable by ORDOMED registration number listed on their profile." },
-    { q: "Is the €10 prescription refill price final?", a: "Yes. €10.00 fixed, all-inclusive. No subscription, no consultation surcharge, no pharmacy markup. You pay only if a clinician approves and signs your refill." },
-    { q: "What happens if a doctor cannot approve my refill?", a: "You are refunded 100% within minutes. We never charge for an unfulfilled clinical decision." },
-    { q: "How fast is the 2-hour window enforced?", a: "Internal SLA. 96.2% of refills are signed in under 90 minutes during European working hours, with overnight queue picked up at 06:30 CET." },
-    { q: "Is my data sold or shared?", a: "Never. Clinical records are encrypted at rest, stored within EU jurisdiction, and accessible only to the assigned VeryPatient clinician for the duration of your case." },
-    { q: "Can I use this instead of my regular GP?", a: "Cira Health is a complement, not a replacement, for ongoing primary care. It is built for acute, time-sensitive, transactional medical needs." },
+  const faqs = t("home.faqSection.items", { returnObjects: true }) as Array<{ q: string; a: string }>;
+  const ugcItems = t("home.ugc.items", { returnObjects: true }) as Array<{ name: string; city: string; quote: string }>;
+  const guideItems = t("home.guides.items", { returnObjects: true }) as Array<{ label: string; title: string; snippet: string }>;
+  const ugcImages = [
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=1067&fit=crop&crop=faces",
+    "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&h=1067&fit=crop&crop=faces",
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=1067&fit=crop&crop=faces",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=1067&fit=crop&crop=faces",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=1067&fit=crop&crop=faces",
   ];
 
   return (
@@ -84,7 +85,7 @@ const Index = () => {
               <img src={ciraLogo} alt="Cira Health logo" width={28} height={28} />
               <span className="font-heading text-xl font-semibold text-foreground">Cira Health</span>
               <span className="hidden sm:inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full border border-border bg-card/60 text-[10px] font-body uppercase tracking-wider text-muted-foreground">
-                <ShieldCheck className="w-3 h-3 text-emerald-500" /> VeryPatient Network
+                <ShieldCheck className="w-3 h-3 text-emerald-500" /> {t("home.nav.networkBadge")}
               </span>
             </div>
           </div>
@@ -106,7 +107,7 @@ const Index = () => {
               })()
             ) : (
               <button onClick={() => navigate("/login")} className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium font-body hover:opacity-90 transition-all">
-                Patient Login
+                {t("home.nav.patientLogin")}
               </button>
             )}
           </div>
@@ -140,24 +141,23 @@ const Index = () => {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur shadow-sm mb-5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[11px] font-bold font-body tracking-widest uppercase text-foreground">
-                  Live · Doctors signing prescriptions now
+                  {t("home.hero.live")}
                 </span>
               </div>
               <h1 className="font-heading text-4xl sm:text-6xl md:text-[64px] font-semibold text-foreground leading-[1.05] tracking-tight mb-4">
-                Prescription Refills.<br />
-                <span className="text-primary">Approved in Minutes.</span>
+                {t("home.hero.title1")}<br />
+                <span className="text-primary">{t("home.hero.title2")}</span>
               </h1>
               <h2 className="font-heading text-xl sm:text-2xl md:text-[28px] font-medium text-foreground leading-snug tracking-tight mb-5">
-                Skip the clinic waiting room. Real medical care, on-demand.
+                {t("home.hero.h2")}
               </h2>
               <p className="font-body text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Direct medical solutions and prescription renewals fulfilled entirely under the supervision of our licensed on-duty clinic doctors. No appointments required. Instant routing straight to your local neighborhood pharmacy.
+                {t("home.hero.body")}
               </p>
             </div>
 
             {/* RIGHT: phone mockup */}
             <div className="relative flex justify-center lg:justify-end pb-8 lg:pb-0">
-              {/* Patient lifestyle card layered behind */}
               <div className="absolute -bottom-2 left-4 sm:left-12 lg:-left-8 w-40 h-52 sm:w-44 sm:h-56 rounded-2xl overflow-hidden border border-border shadow-xl bg-card rotate-[-6deg] z-0">
                 <img
                   src="/patient-phone.jpg"
@@ -167,10 +167,8 @@ const Index = () => {
                 />
               </div>
 
-              {/* Smartphone frame */}
               <div className="relative z-10 w-[260px] sm:w-[300px] bg-foreground rounded-[2.5rem] p-3 shadow-2xl">
                 <div className="relative bg-background rounded-[2rem] overflow-hidden">
-                  {/* Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-foreground rounded-b-2xl z-20" />
                   <img
                     src="/doctor-portrait.jpg"
@@ -181,14 +179,12 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Badge 1: active doctor status */}
               <div className="absolute top-6 -left-2 sm:left-0 lg:-left-10 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border shadow-lg">
-                <span className="text-[11px] font-semibold font-body text-foreground whitespace-nowrap">🟢 Dr. Jean-Marc, MD — Active Now</span>
+                <span className="text-[11px] font-semibold font-body text-foreground whitespace-nowrap">{t("home.hero.badgeDoctor")}</span>
               </div>
 
-              {/* Badge 2: instant refill verified */}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg">
-                <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">⚡ Approved in Minutes</span>
+                <span className="text-[11px] font-bold font-body tracking-wide whitespace-nowrap">{t("home.hero.badgeApproved")}</span>
               </div>
             </div>
           </div>
@@ -198,66 +194,66 @@ const Index = () => {
             {/* €10 Rapid Refill */}
             <article className="group relative bg-card border border-border rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
               <div className="absolute top-4 right-4 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold tracking-wider uppercase">
-                <Clock className="w-3 h-3" /> Fast Track
+                <Clock className="w-3 h-3" /> {t("home.cards.refill.tag")}
               </div>
               <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                 <Pill className="w-6 h-6" />
               </div>
-              <h2 className="font-heading text-2xl font-semibold text-foreground mb-1.5">Rapid Prescription Refill</h2>
+              <h2 className="font-heading text-2xl font-semibold text-foreground mb-1.5">{t("home.cards.refill.title")}</h2>
               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
-                Out of your medication? A VeryPatient GP reviews your case and dispatches a signed e-prescription to your pharmacy. Fixed price, no surprises.
+                {t("home.cards.refill.body")}
               </p>
               <div className="flex items-end justify-between mb-5">
                 <div>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="font-heading text-4xl font-semibold text-foreground">€10</span>
-                    <span className="font-body text-xs text-muted-foreground">.00 fixed</span>
+                    <span className="font-heading text-4xl font-semibold text-foreground">{t("home.cards.refill.price")}</span>
+                    <span className="font-body text-xs text-muted-foreground">{t("home.cards.refill.priceSuffix")}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground font-body mt-0.5">Refunded if not approved</p>
+                  <p className="text-[11px] text-muted-foreground font-body mt-0.5">{t("home.cards.refill.refunded")}</p>
                 </div>
                 <div className="text-right text-[11px] text-muted-foreground font-body">
-                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> Signed by MD</div>
-                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> PDF + pharmacy</div>
+                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> {t("home.cards.refill.checkSigned")}</div>
+                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> {t("home.cards.refill.checkPdf")}</div>
                 </div>
               </div>
               <button
                 onClick={() => openFunnel("refill")}
                 className="w-full px-6 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                Request €10 Refill Now ➔
+                {t("home.cards.refill.cta")}
               </button>
             </article>
 
             {/* €39 Video Consult */}
             <article className="group relative bg-card border border-border rounded-2xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
               <div className="absolute top-4 right-4 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold tracking-wider uppercase">
-                <Video className="w-3 h-3" /> Same Day
+                <Video className="w-3 h-3" /> {t("home.cards.consult.tag")}
               </div>
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
                 <Stethoscope className="w-6 h-6" />
               </div>
-              <h2 className="font-heading text-2xl font-semibold text-foreground mb-1.5">Video Doctor Consultation</h2>
+              <h2 className="font-heading text-2xl font-semibold text-foreground mb-1.5">{t("home.cards.consult.title")}</h2>
               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
-                Face-to-face 20-minute video appointment with a licensed VeryPatient specialist. Diagnosis, treatment plan, and follow-up document included.
+                {t("home.cards.consult.body")}
               </p>
               <div className="flex items-end justify-between mb-5">
                 <div>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="font-heading text-4xl font-semibold text-foreground">€39</span>
-                    <span className="font-body text-xs text-muted-foreground">.00 fixed</span>
+                    <span className="font-heading text-4xl font-semibold text-foreground">{t("home.cards.consult.price")}</span>
+                    <span className="font-body text-xs text-muted-foreground">{t("home.cards.consult.priceSuffix")}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground font-body mt-0.5">20-minute HD session</p>
+                  <p className="text-[11px] text-muted-foreground font-body mt-0.5">{t("home.cards.consult.duration")}</p>
                 </div>
                 <div className="text-right text-[11px] text-muted-foreground font-body">
-                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> Specialist match</div>
-                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> Treatment plan</div>
+                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> {t("home.cards.consult.checkMatch")}</div>
+                  <div className="flex items-center gap-1 justify-end"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> {t("home.cards.consult.checkPlan")}</div>
                 </div>
               </div>
               <button
                 onClick={() => openFunnel("consult")}
                 className="w-full px-6 py-3.5 rounded-full bg-foreground text-background text-sm font-semibold font-body hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                Book €39 Video Consult ➔
+                {t("home.cards.consult.cta")}
               </button>
             </article>
           </div>
@@ -266,22 +262,22 @@ const Index = () => {
           <div className="mt-8 max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-card/60 border border-border rounded-xl px-4 py-3">
               <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">
-                <Activity className="w-3 h-3 text-primary" /> Refills today
+                <Activity className="w-3 h-3 text-primary" /> {t("home.telemetry.refillsToday")}
               </div>
               <div className="font-heading text-xl font-semibold text-foreground tabular-nums">{scansToday.toLocaleString()}</div>
             </div>
             <div className="bg-card/60 border border-border rounded-xl px-4 py-3">
               <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">
-                <Clock className="w-3 h-3 text-primary" /> Avg fulfillment
+                <Clock className="w-3 h-3 text-primary" /> {t("home.telemetry.avgFulfillment")}
               </div>
-              <div className="font-heading text-xl font-semibold text-foreground tabular-nums">{avgFulfillment} min</div>
+              <div className="font-heading text-xl font-semibold text-foreground tabular-nums">{avgFulfillment} {t("home.telemetry.minSuffix")}</div>
             </div>
             <div className="bg-card/60 border border-border rounded-xl px-4 py-3">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">Approval rate</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">{t("home.telemetry.approvalRate")}</div>
               <div className="font-heading text-xl font-semibold text-foreground tabular-nums">96.2%</div>
             </div>
             <div className="bg-card/60 border border-border rounded-xl px-4 py-3">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">Network MDs</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-body mb-1">{t("home.telemetry.networkMds")}</div>
               <div className="font-heading text-xl font-semibold text-foreground tabular-nums">312</div>
             </div>
           </div>
@@ -291,16 +287,16 @@ const Index = () => {
         <section className="bg-card/40 border-y border-border/60 py-16 sm:py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12 max-w-2xl mx-auto">
-              <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">The Clinical Workflow</p>
+              <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">{t("home.process.eyebrow")}</p>
               <h2 className="scroll-fade font-heading text-3xl sm:text-4xl font-semibold text-foreground leading-tight">
-                Three steps. One signed document. Zero waiting rooms.
+                {t("home.process.title")}
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-5">
               {[
-                { n: "01", title: "Submit your case in 90 seconds", body: "Pick your service, describe your symptoms or prescription, and upload any prior medical document. The intake is structured for clinical review.", icon: FileText },
-                { n: "02", title: "A VeryPatient MD reviews your file", body: "A real licensed European physician — not an AI — reviews, validates, and signs your prescription or treatment plan. Average review window: under 90 minutes.", icon: Stethoscope },
-                { n: "03", title: "Signed document arrives in your inbox", body: "PDF e-prescription delivered to you and forwarded directly to your chosen pharmacy. Fully traceable, legally valid across the EU.", icon: CheckCircle2 },
+                { n: "01", title: t("home.process.s1Title"), body: t("home.process.s1Body"), icon: FileText },
+                { n: "02", title: t("home.process.s2Title"), body: t("home.process.s2Body"), icon: Stethoscope },
+                { n: "03", title: t("home.process.s3Title"), body: t("home.process.s3Body"), icon: CheckCircle2 },
               ].map((s) => (
                 <div key={s.n} className="scroll-fade bg-card border border-border rounded-2xl p-6 hover:border-primary/40 transition-colors">
                   <div className="flex items-center justify-between mb-4">
@@ -318,12 +314,12 @@ const Index = () => {
         {/* DOCTORS GRID */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="text-center mb-12 max-w-2xl mx-auto">
-            <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">The VeryPatient Clinical Roster</p>
+            <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">{t("home.doctorsGrid.eyebrow")}</p>
             <h2 className="scroll-fade font-heading text-3xl sm:text-4xl font-semibold text-foreground leading-tight mb-3">
-              Every case is signed by a registered European physician.
+              {t("home.doctorsGrid.title")}
             </h2>
             <p className="font-body text-sm text-muted-foreground leading-relaxed">
-              No anonymous AI signatures, no offshore call centers. Each clinician below holds an active ORDOMED registration, verifiable on request.
+              {t("home.doctorsGrid.body")}
             </p>
           </div>
           <div className="scroll-fade grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -341,7 +337,7 @@ const Index = () => {
                 <h3 className="font-heading text-lg font-semibold text-foreground leading-tight">{d.name}</h3>
                 <p className="text-xs text-primary font-body mt-1">{d.role}</p>
                 <p className="text-[11px] text-muted-foreground font-body mt-2 tabular-nums">{d.reg}</p>
-                <p className="text-[11px] text-muted-foreground font-body">{d.city} · {d.years} yrs practice</p>
+                <p className="text-[11px] text-muted-foreground font-body">{d.city} · {t("home.doctorsGrid.yrsPractice", { years: d.years })}</p>
               </div>
             ))}
           </div>
@@ -351,9 +347,9 @@ const Index = () => {
         <section className="bg-card/40 border-y border-border/60 py-16 sm:py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10 max-w-2xl mx-auto">
-              <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">Service · SLA · Price Matrix</p>
+              <p className="text-xs text-primary font-body tracking-widest uppercase mb-3">{t("home.matrix.eyebrow")}</p>
               <h2 className="scroll-fade font-heading text-3xl sm:text-4xl font-semibold text-foreground leading-tight">
-                Fixed pricing. Documented SLAs. No subscriptions.
+                {t("home.matrix.title")}
               </h2>
             </div>
             <div className="scroll-fade bg-card border border-border rounded-2xl overflow-hidden">
@@ -361,11 +357,11 @@ const Index = () => {
                 <table className="w-full text-sm font-body">
                   <thead className="bg-muted/40 text-foreground">
                     <tr className="text-left">
-                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">Service</th>
-                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">Fulfilled by</th>
-                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">SLA</th>
-                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">Deliverable</th>
-                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider text-right">Fixed Price</th>
+                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">{t("home.matrix.colService")}</th>
+                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">{t("home.matrix.colFulfilledBy")}</th>
+                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">{t("home.matrix.colSla")}</th>
+                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider">{t("home.matrix.colDeliverable")}</th>
+                      <th className="px-5 py-4 font-semibold text-xs uppercase tracking-wider text-right">{t("home.matrix.colPrice")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -383,33 +379,27 @@ const Index = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-4 font-body">
-              All prices in EUR, VAT inclusive. Charged only upon clinical approval. Refunded automatically if a clinician declines.
+              {t("home.matrix.fine")}
             </p>
           </div>
         </section>
 
         {/* UGC Video Testimonials */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">Patient Stories</p>
+          <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">{t("home.ugc.eyebrow")}</p>
           <h2 className="scroll-fade font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-5 text-center max-w-3xl mx-auto">
-            Stories from real patients who skipped the waiting room.
+            {t("home.ugc.title")}
           </h2>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-body text-muted-foreground mb-10">
-            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Routine prescription renewals</span>
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> {t("home.ugc.b1")}</span>
             <span className="hidden sm:inline text-border">•</span>
-            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Quick peace of mind</span>
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> {t("home.ugc.b2")}</span>
             <span className="hidden sm:inline text-border">•</span>
-            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> Expat healthcare access</span>
+            <span className="flex items-center gap-2"><span className="text-emerald-600">✓</span> {t("home.ugc.b3")}</span>
           </div>
 
           {(() => {
-            const testimonials = [
-              { name: "Camille, 34", city: "Paris", quote: "Refill in 40 minutes.", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=1067&fit=crop&crop=faces" },
-              { name: "Mateo, 29", city: "Barcelona", quote: "No more clinic queues.", img: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=600&h=1067&fit=crop&crop=faces" },
-              { name: "Hannah, 41", city: "Berlin", quote: "Felt heard in 5 minutes.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=1067&fit=crop&crop=faces" },
-              { name: "Liam, 27", city: "Amsterdam", quote: "Expat life, finally easy.", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=1067&fit=crop&crop=faces" },
-              { name: "Sofia, 38", city: "Milan", quote: "Renewed my script on lunch.", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=1067&fit=crop&crop=faces" },
-            ];
+            const testimonials = ugcItems.map((it, i) => ({ ...it, img: ugcImages[i] }));
             const scroll = (dir: number) => {
               const el = document.getElementById("ugc-scroller");
               if (el) el.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: "smooth" });
@@ -420,14 +410,14 @@ const Index = () => {
                   id="ugc-scroller"
                   className="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
                 >
-                  {testimonials.map((t, i) => (
+                  {testimonials.map((item, i) => (
                     <div
                       key={i}
                       className="snap-start shrink-0 w-[220px] sm:w-[240px] md:w-[260px] aspect-[9/16] relative rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm hover:shadow-lg transition-shadow"
                     >
                       <img
-                        src={t.img}
-                        alt={`${t.name} from ${t.city}`}
+                        src={item.img}
+                        alt={`${item.name} from ${item.city}`}
                         loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -440,8 +430,8 @@ const Index = () => {
                         </div>
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                        <p className="font-heading text-base font-semibold leading-tight">"{t.quote}"</p>
-                        <p className="text-xs font-body opacity-90 mt-1">{t.name} — {t.city}</p>
+                        <p className="font-heading text-base font-semibold leading-tight">"{item.quote}"</p>
+                        <p className="text-xs font-body opacity-90 mt-1">{item.name} — {item.city}</p>
                       </div>
                     </div>
                   ))}
@@ -449,14 +439,14 @@ const Index = () => {
                 <div className="flex items-center justify-center gap-3 mt-6">
                   <button
                     onClick={() => scroll(-1)}
-                    aria-label="Previous testimonials"
+                    aria-label={t("home.ugc.prev")}
                     className="w-11 h-11 rounded-full border border-border bg-background hover:bg-muted flex items-center justify-center transition-colors"
                   >
                     <span className="text-foreground text-lg">←</span>
                   </button>
                   <button
                     onClick={() => scroll(1)}
-                    aria-label="Next testimonials"
+                    aria-label={t("home.ugc.next")}
                     className="w-11 h-11 rounded-full border border-border bg-background hover:bg-muted flex items-center justify-center transition-colors"
                   >
                     <span className="text-foreground text-lg">→</span>
@@ -470,29 +460,13 @@ const Index = () => {
         {/* Clinical Resource Guides */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <h2 className="scroll-fade font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4 text-left">
-            Informed Care. Clear Answers.
+            {t("home.guides.title")}
           </h2>
           <p className="scroll-fade font-body text-base sm:text-lg text-muted-foreground max-w-2xl mb-10">
-            Explore professional medical guides verified directly by our on-duty clinical team.
+            {t("home.guides.subtitle")}
           </p>
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                label: "💊 MEDICAL PROTOCOLS",
-                title: "Managing Routine Prescription Renewals Securely Online",
-                snippet: "A comprehensive breakdown of how our registered clinic physicians verify telemetry vitals to safely route maintenance scripts to your pharmacy in under 2 hours."
-              },
-              {
-                label: "📸 ADVANCED DIAGNOSTICS",
-                title: "Understanding Remote Camera Telemetry and Vital Tracking",
-                snippet: "How clinical-grade rPPG technology reads micro-fluctuations in skin color to pull exact heart rate and blood pressure baselines over standard smartphone lenses."
-              },
-              {
-                label: "🇪🇺 EXPAT HEALTH",
-                title: "Navigating Healthcare Continuity as an Expat in Europe",
-                snippet: "A practical guide to transferring local maintenance prescriptions, accessing 24/7 on-duty English-speaking doctors, and managing cross-border medical compliance."
-              }
-            ].map((guide, i) => (
+            {guideItems.map((guide, i) => (
               <article key={i} className="group scroll-fade bg-card border border-border/60 rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
                 <p className="text-[11px] font-bold font-body tracking-widest uppercase text-muted-foreground mb-4">
                   {guide.label}
@@ -504,7 +478,7 @@ const Index = () => {
                   {guide.snippet}
                 </p>
                 <button className="inline-flex items-center gap-1.5 text-sm font-semibold font-body text-primary hover:opacity-80 transition-opacity">
-                  Read Verified Guide <span aria-hidden="true">➔</span>
+                  {t("home.guides.cta")} <span aria-hidden="true">➔</span>
                 </button>
               </article>
             ))}
@@ -514,40 +488,36 @@ const Index = () => {
         {/* Clinical Science & Agent Architecture */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <h2 className="scroll-fade font-heading text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4 text-left">
-            Engineered for Clinical Safety. Grounded in Medical Science.
+            {t("home.science.title")}
           </h2>
           <p className="scroll-fade font-body text-base sm:text-lg text-muted-foreground max-w-3xl mb-12">
-            How we train our Specialized AI Environment and utilize clinically validated camera telemetry.
+            {t("home.science.subtitle")}
           </p>
 
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-12">
             <article className="scroll-fade bg-card border border-border/60 rounded-2xl p-6 sm:p-8">
               <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground leading-snug mb-4">
                 <span className="mr-2" aria-hidden="true">🧠</span>
-                Isolated Medical Datasets
+                {t("home.science.col1Title")}
               </h3>
               <p className="font-body text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Unlike open-ended consumer LLMs, Cira is an isolated Specialist Care Coordinator. She is trained exclusively on over 7 million data points of peer-reviewed clinical guidelines, medical case studies, and validated triage protocols. She does not guess, hypothesize, or access unstructured public data networks. Her sole task is to act as a highly knowledgeable data clerk—efficiently structuring your symptoms, checking historical dosage boundaries, and cross-referencing contraindications before routing a clean file straight to our on-duty Clinique de la Brisée physicians.
+                {t("home.science.col1Body")}
               </p>
             </article>
 
             <article className="scroll-fade bg-card border border-border/60 rounded-2xl p-6 sm:p-8">
               <h3 className="font-heading text-xl sm:text-2xl font-semibold text-foreground leading-snug mb-4">
                 <span className="mr-2" aria-hidden="true">📸</span>
-                Contactless Biosignal Extraction via Shen.ai
+                {t("home.science.col2Title")}
               </h3>
               <p className="font-body text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Our backend utilizes proprietary technology developed by Shen.ai to gather real-time physiological metrics. By leveraging Remote Photoplethysmography (rPPG), the smartphone camera captures subtle, ambient light reflections to record color-tone fluctuations in the facial skin layers caused by sub-surface blood flow. Simultaneously, Remote Ballistocardiography (rBCG) tracks minute, invisible micro-motions in the head and neck generated by the heart's mechanical activity. In 30 seconds, this dual-optical approach securely pulls heart rate metrics (with under 0.5 bpm error level), respiratory metrics, and blood pressure baselines—providing your video physician with immediate clinical context.
+                {t("home.science.col2Body")}
               </p>
             </article>
           </div>
 
           <div className="scroll-fade flex flex-wrap items-center justify-center gap-4">
-            {[
-              "Trained on 7M+ Clinical Reference Points",
-              "Powered by Validated Shen.ai Technology",
-              "Contactless rPPG & rBCG Biomarkers"
-            ].map((text, i) => (
+            {[t("home.science.badge1"), t("home.science.badge2"), t("home.science.badge3")].map((text, i) => (
               <div
                 key={i}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background/80 text-foreground font-body text-sm font-medium"
@@ -561,9 +531,9 @@ const Index = () => {
 
         {/* FAQ */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">Patient FAQ</p>
+          <p className="text-xs text-primary font-body mb-4 tracking-widest uppercase text-center">{t("home.faqSection.eyebrow")}</p>
           <h2 className="scroll-fade font-heading text-3xl sm:text-4xl font-semibold text-foreground leading-tight mb-10 text-center">
-            Clear answers, no clinical jargon.
+            {t("home.faqSection.title")}
           </h2>
           <Accordion type="single" collapsible className="scroll-fade w-full">
             {faqs.map((item, i) => (
@@ -582,7 +552,7 @@ const Index = () => {
               <ShieldCheck className="w-8 h-8" />
             </div>
             <blockquote className="font-heading text-2xl sm:text-3xl md:text-4xl font-medium text-foreground leading-snug max-w-3xl mx-auto">
-              "I will first do no harm. Every response, every care recommendation, and every clinical action taken by Cira Health will be measured against one question: does this serve the patient's wellbeing?"
+              {t("home.manifesto.quote")}
             </blockquote>
           </div>
         </section>
@@ -591,17 +561,17 @@ const Index = () => {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
           <div className="bg-foreground text-background rounded-3xl p-10 sm:p-14 text-center">
             <h2 className="font-heading text-3xl sm:text-4xl font-semibold leading-tight mb-3">
-              A real doctor. A signed prescription. Under 2 hours.
+              {t("home.finalCta.title")}
             </h2>
             <p className="font-body text-sm sm:text-base opacity-80 max-w-xl mx-auto mb-7">
-              Skip the waiting room. Pay one fixed price. Get a clinically valid document delivered to your inbox today.
+              {t("home.finalCta.body")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button onClick={() => openFunnel("refill")} className="px-8 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 transition-all">
-                Get €10 Prescription Refill
+                {t("home.finalCta.ctaRefill")}
               </button>
               <button onClick={() => openFunnel("consult")} className="px-8 py-3.5 rounded-full bg-background/10 border border-background/30 text-background text-sm font-semibold font-body hover:bg-background/20 transition-all">
-                Book €39 Video Consult
+                {t("home.finalCta.ctaConsult")}
               </button>
             </div>
           </div>
@@ -617,41 +587,41 @@ const Index = () => {
                   <span className="font-heading text-lg font-semibold text-foreground">Cira Health</span>
                 </button>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                  A digital clinic clinically fulfilled by the VeryPatient registered medical network.
+                  {t("home.footerSection.tagline")}
                 </p>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Clinical Services</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("home.footerSection.h1")}</h4>
                 <ul className="space-y-2.5 text-sm">
-                  <li><button onClick={() => openFunnel("refill")} className="text-muted-foreground hover:text-primary transition-colors">Prescription Refill — €10</button></li>
-                  <li><button onClick={() => openFunnel("consult")} className="text-muted-foreground hover:text-primary transition-colors">Video Consultation — €39</button></li>
-                  <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">Full Pricing Matrix</button></li>
+                  <li><button onClick={() => openFunnel("refill")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.refillLink")}</button></li>
+                  <li><button onClick={() => openFunnel("consult")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.consultLink")}</button></li>
+                  <li><button onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.pricingLink")}</button></li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Network</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("home.footerSection.h2")}</h4>
                 <ul className="space-y-2.5 text-sm">
-                  <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">VeryPatient Clinicians</button></li>
-                  <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">How it works</button></li>
-                  <li><a href="mailto:hello@cirahealth.com" className="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+                  <li><button onClick={() => navigate("/real-doctors")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.cliniciansLink")}</button></li>
+                  <li><button onClick={() => navigate("/how-it-works")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.howLink")}</button></li>
+                  <li><a href="mailto:hello@cirahealth.com" className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.contactLink")}</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">Legal</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-4">{t("home.footerSection.h3")}</h4>
                 <ul className="space-y-2.5 text-sm">
-                  <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">Security</button></li>
-                  <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</button></li>
-                  <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">Terms</button></li>
+                  <li><button onClick={() => navigate("/privacy")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.securityLink")}</button></li>
+                  <li><button onClick={() => navigate("/privacy-policy")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.privacyLink")}</button></li>
+                  <li><button onClick={() => navigate("/terms")} className="text-muted-foreground hover:text-primary transition-colors">{t("home.footerSection.termsLink")}</button></li>
                 </ul>
               </div>
             </div>
             <div className="pt-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-4">
-                <p>© {new Date().getFullYear()} Cira Health · Fulfilled by VeryPatient SAS</p>
+                <p>{t("home.footerSection.copyright", { year: new Date().getFullYear() })}</p>
                 <LanguageSwitcher />
               </div>
               <p className="text-center md:text-right italic">
-                Cira Health is a digital intake clinic. All clinical decisions are made by registered VeryPatient physicians.
+                {t("home.footerSection.disclaimer")}
               </p>
             </div>
           </div>
@@ -665,17 +635,17 @@ const Index = () => {
         <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto bg-background">
           <SheetHeader className="mb-5">
             <SheetTitle className="font-heading text-2xl text-foreground">
-              {funnelChoice === "refill" ? "Rapid Prescription Refill" : "Video Doctor Consultation"}
+              {funnelChoice === "refill" ? t("home.funnel.titleRefill") : t("home.funnel.titleConsult")}
             </SheetTitle>
             <SheetDescription className="font-body text-xs text-muted-foreground">
-              Fulfilled by a registered VeryPatient physician · Fixed price · Refund if not approved
+              {t("home.funnel.sub")}
             </SheetDescription>
           </SheetHeader>
 
           {/* Funnel state */}
           <div className="space-y-5">
             <div className="flex items-center gap-2 text-[11px] font-body text-muted-foreground">
-              {["Intake", "Clinical Review", "Payment"].map((label, i) => (
+              {[t("home.funnel.step1"), t("home.funnel.step2"), t("home.funnel.step3")].map((label, i) => (
                 <div key={label} className="flex items-center gap-2">
                   <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold ${i <= stepIndex ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{i + 1}</span>
                   <span className={i === stepIndex ? "text-foreground font-medium" : ""}>{label}</span>
@@ -688,25 +658,25 @@ const Index = () => {
               <div className="space-y-4">
                 <div className="bg-primary/5 border border-primary/10 rounded-2xl p-5">
                   <p className="font-body text-sm text-foreground leading-relaxed">
-                    Hi, I am Cira, your specialized AI Clinical Care Coordinator. I possess a vast, integrated repository of peer-reviewed medical knowledge trained exclusively to optimize your patient journey. I will securely assess your needs and coordinate directly with our on-duty VeryPatient clinic doctors to authorize your request under 2 hours. Everything we discuss is encrypted and fully confidential. {funnelChoice === "refill" ? "What routine medication do you need refilled today?" : "What health concern brings you in today?"}
+                    {t("home.funnel.introIntro")} {funnelChoice === "refill" ? t("home.funnel.introRefillQ") : t("home.funnel.introConsultQ")}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Full legal name</label>
-                  <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="Jean Dupont" />
+                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblName")}</label>
+                  <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder={t("home.funnel.namePlaceholder")} />
                 </div>
                 <div>
                   <label className="block text-xs font-body font-semibold text-foreground mb-1.5">
-                    {funnelChoice === "refill" ? "Medication name & dosage" : "Reason for consultation"}
+                    {funnelChoice === "refill" ? t("home.funnel.lblMed") : t("home.funnel.lblReason")}
                   </label>
-                  <textarea rows={3} className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder={funnelChoice === "refill" ? "e.g. Levothyroxine 50mcg, 1 daily" : "e.g. Persistent migraine, 6 days"} />
+                  <textarea rows={3} className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder={funnelChoice === "refill" ? t("home.funnel.medPlaceholder") : t("home.funnel.reasonPlaceholder")} />
                 </div>
                 <div>
-                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Pharmacy / delivery email</label>
-                  <input type="email" className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="you@email.com" />
+                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblPharmacy")}</label>
+                  <input type="email" className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder={t("home.funnel.emailPlaceholder")} />
                 </div>
                 <button onClick={() => setStepIndex(1)} className="w-full px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 transition-all flex items-center justify-center gap-2">
-                  Continue to Clinical Review <ArrowRight className="w-4 h-4" />
+                  {t("home.funnel.continueReview")} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -715,7 +685,7 @@ const Index = () => {
               <div className="space-y-4">
                 <div className="bg-card border border-border rounded-xl p-5">
                   <div className="flex items-center gap-2 text-xs font-body text-emerald-600 dark:text-emerald-400 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Matched with a VeryPatient clinician
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> {t("home.funnel.matched")}
                   </div>
                   <div className="flex items-center gap-3">
                     <img src={doctors[0].img} alt={doctors[0].name} className="w-12 h-12 rounded-xl object-cover border border-border/60" />
@@ -726,12 +696,12 @@ const Index = () => {
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm font-body text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> Case eligible for clinical review</li>
-                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> Estimated fulfillment: under 2 hours</li>
-                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> 100% refund if not approved</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> {t("home.funnel.elig1")}</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> {t("home.funnel.elig2")}</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5" /> {t("home.funnel.elig3")}</li>
                 </ul>
                 <button onClick={() => setStepIndex(2)} className="w-full px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-semibold font-body hover:opacity-90 transition-all flex items-center justify-center gap-2">
-                  Proceed to Secure Payment <ArrowRight className="w-4 h-4" />
+                  {t("home.funnel.proceedPay")} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             )}
@@ -739,36 +709,36 @@ const Index = () => {
             {stepIndex === 2 && (
               <div className="space-y-4">
                 <div className="bg-card border border-border rounded-xl overflow-hidden">
-                  <div className="px-4 py-3 bg-muted/40 text-xs font-semibold uppercase tracking-wider text-foreground font-body">Ledger</div>
+                  <div className="px-4 py-3 bg-muted/40 text-xs font-semibold uppercase tracking-wider text-foreground font-body">{t("home.funnel.ledger")}</div>
                   <dl className="divide-y divide-border text-sm font-body">
-                    <div className="flex justify-between px-4 py-2.5"><dt className="text-muted-foreground">Service</dt><dd className="text-foreground font-medium text-right">{funnelChoice === "refill" ? "Rapid Human Doctor Prescription Review" : "Video Doctor Consultation"}</dd></div>
-                    <div className="flex justify-between px-4 py-2.5"><dt className="text-muted-foreground">Fulfillment window</dt><dd className="text-foreground font-medium">{funnelChoice === "refill" ? "Under 2 hours" : "Same day · 20 min"}</dd></div>
-                    <div className="flex justify-between px-4 py-3 bg-primary/5"><dt className="text-foreground font-semibold">Due now</dt><dd className="text-primary font-heading text-lg font-semibold">{funnelChoice === "refill" ? "€10.00 FIXED" : "€39.00 FIXED"}</dd></div>
+                    <div className="flex justify-between px-4 py-2.5"><dt className="text-muted-foreground">{t("home.funnel.fService")}</dt><dd className="text-foreground font-medium text-right">{funnelChoice === "refill" ? t("home.funnel.sRefill") : t("home.funnel.sConsult")}</dd></div>
+                    <div className="flex justify-between px-4 py-2.5"><dt className="text-muted-foreground">{t("home.funnel.fWindow")}</dt><dd className="text-foreground font-medium">{funnelChoice === "refill" ? t("home.funnel.wRefill") : t("home.funnel.wConsult")}</dd></div>
+                    <div className="flex justify-between px-4 py-3 bg-primary/5"><dt className="text-foreground font-semibold">{t("home.funnel.fDue")}</dt><dd className="text-primary font-heading text-lg font-semibold">{funnelChoice === "refill" ? t("home.funnel.dueRefill") : t("home.funnel.dueConsult")}</dd></div>
                   </dl>
                 </div>
                 <div>
-                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Cardholder Name</label>
-                  <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="Jean Dupont" />
+                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblCardName")}</label>
+                  <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder={t("home.funnel.namePlaceholder")} />
                 </div>
                 <div>
-                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Credit Card Number</label>
+                  <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblCardNum")}</label>
                   <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="4242 4242 4242 4242" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-body font-semibold text-foreground mb-1.5">Expiry</label>
+                    <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblExpiry")}</label>
                     <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="MM / YY" />
                   </div>
                   <div>
-                    <label className="block text-xs font-body font-semibold text-foreground mb-1.5">CVC</label>
+                    <label className="block text-xs font-body font-semibold text-foreground mb-1.5">{t("home.funnel.lblCvc")}</label>
                     <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-sm font-body tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40" placeholder="123" />
                   </div>
                 </div>
                 <button className="w-full px-6 py-4 rounded-full bg-primary text-primary-foreground text-base font-semibold font-body hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg">
-                  <Lock className="w-4 h-4" /> Complete Secure Clinical Payment — {funnelChoice === "refill" ? "€10" : "€39"}
+                  <Lock className="w-4 h-4" /> {t("home.funnel.payBtnPrefix")} {funnelChoice === "refill" ? t("home.cards.refill.price") : t("home.cards.consult.price")}
                 </button>
                 <p className="text-[11px] text-center text-muted-foreground font-body flex items-center justify-center gap-1.5">
-                  <ShieldCheck className="w-3 h-3 text-emerald-500" /> Encrypted · PCI-DSS · Refund automatic if declined
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" /> {t("home.funnel.secureNote")}
                 </p>
               </div>
             )}

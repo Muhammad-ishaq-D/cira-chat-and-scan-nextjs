@@ -1900,5 +1900,275 @@
       "specificRequest": "Demande spécifique",
       "enclosures": "Pièces jointes"
     }
+  },
+  "home": {
+    "nav": {
+      "networkBadge": "Réseau VeryPatient",
+      "patientLogin": "Espace patient"
+    },
+    "hero": {
+      "live": "En direct · Des médecins signent des ordonnances",
+      "title1": "Renouvellement d'ordonnance.",
+      "title2": "Approuvé en quelques minutes.",
+      "h2": "Évitez la salle d'attente. Une vraie prise en charge médicale, à la demande.",
+      "body": "Solutions médicales directes et renouvellements d'ordonnance entièrement réalisés sous la supervision de nos médecins de garde diplômés. Sans rendez-vous. Acheminement instantané vers votre pharmacie de quartier.",
+      "badgeDoctor": "🟢 Dr. Jean-Marc, MD — Actif maintenant",
+      "badgeApproved": "⚡ Approuvé en minutes"
+    },
+    "cards": {
+      "refill": {
+        "tag": "Voie rapide",
+        "title": "Renouvellement rapide d'ordonnance",
+        "body": "À court de médicaments ? Un médecin VeryPatient examine votre dossier et envoie une ordonnance électronique signée à votre pharmacie. Prix fixe, sans surprise.",
+        "price": "10 €",
+        "priceSuffix": ",00 fixe",
+        "refunded": "Remboursé si non approuvé",
+        "checkSigned": "Signé par MD",
+        "checkPdf": "PDF + pharmacie",
+        "cta": "Demander le renouvellement à 10 € ➔"
+      },
+      "consult": {
+        "tag": "Le jour même",
+        "title": "Consultation vidéo médecin",
+        "body": "Rendez-vous vidéo de 20 minutes avec un spécialiste VeryPatient diplômé. Diagnostic, plan de traitement et document de suivi inclus.",
+        "price": "39 €",
+        "priceSuffix": ",00 fixe",
+        "duration": "Session HD de 20 minutes",
+        "checkMatch": "Spécialiste attribué",
+        "checkPlan": "Plan de traitement",
+        "cta": "Réserver la vidéo-consultation à 39 € ➔"
+      }
+    },
+    "telemetry": {
+      "refillsToday": "Renouvellements aujourd'hui",
+      "avgFulfillment": "Délai moyen",
+      "minSuffix": "min",
+      "approvalRate": "Taux d'approbation",
+      "networkMds": "Médecins du réseau"
+    },
+    "process": {
+      "eyebrow": "Le parcours clinique",
+      "title": "Trois étapes. Un document signé. Zéro salle d'attente.",
+      "s1Title": "Soumettez votre dossier en 90 secondes",
+      "s1Body": "Choisissez le service, décrivez vos symptômes ou votre ordonnance et téléversez tout document médical antérieur. La saisie est structurée pour la revue clinique.",
+      "s2Title": "Un médecin VeryPatient examine votre dossier",
+      "s2Body": "Un véritable médecin européen diplômé — pas une IA — examine, valide et signe votre ordonnance ou votre plan de traitement. Délai moyen de revue : moins de 90 minutes.",
+      "s3Title": "Le document signé arrive dans votre boîte mail",
+      "s3Body": "Ordonnance électronique PDF qui vous est remise et transmise directement à la pharmacie de votre choix. Entièrement traçable et juridiquement valable dans toute l'UE."
+    },
+    "doctorsGrid": {
+      "eyebrow": "L'équipe clinique VeryPatient",
+      "title": "Chaque dossier est signé par un médecin européen inscrit.",
+      "body": "Aucune signature anonyme par IA, aucun centre d'appel offshore. Chaque clinicien ci-dessous dispose d'une inscription ORDOMED active, vérifiable sur demande.",
+      "yrsPractice": "{{years}} ans d'exercice"
+    },
+    "matrix": {
+      "eyebrow": "Service · SLA · Grille tarifaire",
+      "title": "Tarifs fixes. SLA documentés. Pas d'abonnement.",
+      "colService": "Service",
+      "colFulfilledBy": "Réalisé par",
+      "colSla": "SLA",
+      "colDeliverable": "Livrable",
+      "colPrice": "Prix fixe",
+      "fine": "Tous les prix en EUR, TVA incluse. Facturation uniquement après validation clinique. Remboursement automatique si le clinicien refuse.",
+      "rows": [
+        {
+          "service": "Renouvellement rapide d'ordonnance",
+          "who": "Médecin généraliste VeryPatient",
+          "sla": "Moins de 2 heures",
+          "deliverable": "Ordonnance électronique signée (PDF)"
+        },
+        {
+          "service": "Consultation vidéo médecin",
+          "who": "Spécialiste VeryPatient",
+          "sla": "Le jour même · créneau 20 min",
+          "deliverable": "Vidéo HD + plan de traitement"
+        },
+        {
+          "service": "Arrêt de travail",
+          "who": "Médecin généraliste VeryPatient",
+          "sla": "Moins de 3 heures",
+          "deliverable": "Certificat d'arrêt signé"
+        },
+        {
+          "service": "Interprétation de résultats",
+          "who": "Spécialiste VeryPatient",
+          "sla": "Le jour même",
+          "deliverable": "Rapport clinique écrit"
+        },
+        {
+          "service": "Lettre d'orientation spécialiste",
+          "who": "Médecin généraliste VeryPatient",
+          "sla": "Moins de 4 heures",
+          "deliverable": "Lettre d'orientation signée"
+        }
+      ]
+    },
+    "ugc": {
+      "eyebrow": "Témoignages patients",
+      "title": "Histoires vraies de patients qui ont sauté la salle d'attente.",
+      "b1": "Renouvellements d'ordonnance courants",
+      "b2": "Tranquillité d'esprit rapide",
+      "b3": "Santé pour expatriés",
+      "prev": "Témoignages précédents",
+      "next": "Témoignages suivants",
+      "items": [
+        {
+          "name": "Camille, 34",
+          "city": "Paris",
+          "quote": "Renouvellement en 40 minutes."
+        },
+        {
+          "name": "Mateo, 29",
+          "city": "Barcelone",
+          "quote": "Plus de file d'attente."
+        },
+        {
+          "name": "Hannah, 41",
+          "city": "Berlin",
+          "quote": "Écoutée en 5 minutes."
+        },
+        {
+          "name": "Liam, 27",
+          "city": "Amsterdam",
+          "quote": "La vie d'expat enfin simple."
+        },
+        {
+          "name": "Sofia, 38",
+          "city": "Milan",
+          "quote": "Ordonnance refaite à la pause."
+        }
+      ]
+    },
+    "guides": {
+      "title": "Soins éclairés. Réponses claires.",
+      "subtitle": "Consultez des guides médicaux professionnels vérifiés directement par notre équipe clinique de garde.",
+      "cta": "Lire le guide vérifié",
+      "items": [
+        {
+          "label": "💊 PROTOCOLES MÉDICAUX",
+          "title": "Gérer les renouvellements d'ordonnance courants en ligne en toute sécurité",
+          "snippet": "Un décryptage complet de la façon dont nos médecins enregistrés vérifient la télémétrie vitale pour acheminer en toute sécurité vos traitements de fond à votre pharmacie en moins de 2 heures."
+        },
+        {
+          "label": "📸 DIAGNOSTIC AVANCÉ",
+          "title": "Comprendre la télémétrie caméra à distance et le suivi des constantes",
+          "snippet": "Comment la technologie rPPG de qualité clinique lit les micro-variations de couleur de peau pour extraire la fréquence cardiaque et les bases de tension artérielle via un objectif de smartphone standard."
+        },
+        {
+          "label": "🇪🇺 SANTÉ EXPAT",
+          "title": "La continuité des soins en tant qu'expatrié en Europe",
+          "snippet": "Un guide pratique pour transférer les ordonnances de fond locales, accéder à des médecins anglophones de garde 24/7 et gérer la conformité médicale transfrontalière."
+        }
+      ]
+    },
+    "science": {
+      "title": "Conçu pour la sécurité clinique. Ancré dans la science médicale.",
+      "subtitle": "Comment nous entraînons notre environnement IA spécialisé et utilisons une télémétrie caméra cliniquement validée.",
+      "col1Title": "Jeux de données médicaux isolés",
+      "col1Body": "Contrairement aux LLM grand public ouverts, Cira est une Coordinatrice de Soins spécialisée et isolée. Elle est entraînée exclusivement sur plus de 7 millions de points de données issus de référentiels cliniques relus par les pairs, d'études de cas médicaux et de protocoles de triage validés. Elle ne devine pas, n'émet pas d'hypothèses et n'accède pas à des réseaux de données publics non structurés. Sa seule mission est d'agir comme une assistante clinique hautement qualifiée — structurer vos symptômes, vérifier les bornes posologiques historiques et croiser les contre-indications avant d'acheminer un dossier propre à nos médecins de garde de la Clinique de la Brisée.",
+      "col2Title": "Extraction biosignal sans contact via Shen.ai",
+      "col2Body": "Notre backend exploite une technologie propriétaire développée par Shen.ai pour collecter des indicateurs physiologiques en temps réel. Grâce à la photopléthysmographie à distance (rPPG), la caméra du smartphone capte de subtils reflets de lumière ambiante pour enregistrer les variations de teinte des couches cutanées du visage liées au flux sanguin sous-cutané. En parallèle, la ballistocardiographie à distance (rBCG) suit les micro-mouvements invisibles de la tête et du cou générés par l'activité mécanique du cœur. En 30 secondes, cette approche optique duale produit en toute sécurité la fréquence cardiaque (avec une erreur inférieure à 0,5 bpm), des indicateurs respiratoires et des bases de tension artérielle — fournissant à votre médecin vidéo un contexte clinique immédiat.",
+      "badge1": "Entraînée sur plus de 7 M de références cliniques",
+      "badge2": "Propulsée par la technologie validée Shen.ai",
+      "badge3": "Biomarqueurs rPPG et rBCG sans contact"
+    },
+    "faqSection": {
+      "eyebrow": "FAQ patients",
+      "title": "Réponses claires, sans jargon clinique.",
+      "items": [
+        {
+          "q": "Les médecins sont-ils réels et diplômés ?",
+          "a": "Oui. Chaque clinicien qui exerce sur Cira Health est un médecin inscrit au réseau privé VeryPatient, vérifiable par son numéro ORDOMED affiché sur son profil."
+        },
+        {
+          "q": "Le prix de 10 € pour le renouvellement est-il définitif ?",
+          "a": "Oui. 10,00 € fixes, tout inclus. Pas d'abonnement, pas de surcoût de consultation, pas de marge pharmacie. Vous payez uniquement si un clinicien approuve et signe votre renouvellement."
+        },
+        {
+          "q": "Que se passe-t-il si un médecin ne peut pas approuver mon renouvellement ?",
+          "a": "Vous êtes remboursé à 100 % en quelques minutes. Nous ne facturons jamais une décision clinique non délivrée."
+        },
+        {
+          "q": "Comment la fenêtre de 2 heures est-elle tenue ?",
+          "a": "SLA interne. 96,2 % des renouvellements sont signés en moins de 90 minutes en horaires européens, la file de nuit étant traitée dès 06:30 CET."
+        },
+        {
+          "q": "Mes données sont-elles vendues ou partagées ?",
+          "a": "Jamais. Les dossiers cliniques sont chiffrés au repos, stockés en juridiction UE et accessibles uniquement au clinicien VeryPatient assigné pour la durée de votre dossier."
+        },
+        {
+          "q": "Puis-je l'utiliser à la place de mon médecin traitant ?",
+          "a": "Cira Health est un complément, pas un remplacement, du suivi en médecine générale. C'est conçu pour des besoins médicaux aigus, urgents et transactionnels."
+        }
+      ]
+    },
+    "manifesto": {
+      "quote": "« D'abord, ne pas nuire. Chaque réponse, chaque recommandation et chaque acte clinique de Cira Health sera évalué à l'aune d'une seule question : cela sert-il le bien-être du patient ? »"
+    },
+    "finalCta": {
+      "title": "Un vrai médecin. Une ordonnance signée. En moins de 2 heures.",
+      "body": "Évitez la salle d'attente. Payez un prix fixe. Recevez un document cliniquement valable dans votre boîte mail aujourd'hui.",
+      "ctaRefill": "Obtenir le renouvellement à 10 €",
+      "ctaConsult": "Réserver la vidéo-consultation à 39 €"
+    },
+    "footerSection": {
+      "tagline": "Une clinique numérique cliniquement réalisée par le réseau médical inscrit VeryPatient.",
+      "h1": "Services cliniques",
+      "refillLink": "Renouvellement d'ordonnance — 10 €",
+      "consultLink": "Vidéo-consultation — 39 €",
+      "pricingLink": "Grille tarifaire complète",
+      "h2": "Réseau",
+      "cliniciansLink": "Cliniciens VeryPatient",
+      "howLink": "Comment ça marche",
+      "contactLink": "Contact",
+      "h3": "Mentions légales",
+      "securityLink": "Sécurité",
+      "privacyLink": "Politique de confidentialité",
+      "termsLink": "Conditions",
+      "copyright": "© {{year}} Cira Health · Réalisé par VeryPatient SAS",
+      "disclaimer": "Cira Health est une clinique numérique d'admission. Toutes les décisions cliniques sont prises par des médecins inscrits VeryPatient."
+    },
+    "funnel": {
+      "titleRefill": "Renouvellement rapide d'ordonnance",
+      "titleConsult": "Consultation vidéo médecin",
+      "sub": "Réalisé par un médecin inscrit VeryPatient · Prix fixe · Remboursé si non approuvé",
+      "step1": "Admission",
+      "step2": "Revue clinique",
+      "step3": "Paiement",
+      "introIntro": "Bonjour, je suis Cira, votre Coordinatrice de Soins Cliniques IA spécialisée. Je dispose d'un référentiel intégré et étendu de connaissances médicales relues par les pairs, entraîné exclusivement pour optimiser votre parcours patient. J'évalue vos besoins en toute sécurité et coordonne directement avec nos médecins VeryPatient de garde pour autoriser votre demande en moins de 2 heures. Tout ce dont nous discutons est chiffré et entièrement confidentiel.",
+      "introRefillQ": "Quel traitement de fond souhaitez-vous renouveler aujourd'hui ?",
+      "introConsultQ": "Quel problème de santé vous amène aujourd'hui ?",
+      "lblName": "Nom légal complet",
+      "namePlaceholder": "Jean Dupont",
+      "lblMed": "Nom du médicament et posologie",
+      "lblReason": "Motif de la consultation",
+      "medPlaceholder": "ex. Lévothyroxine 50 µg, 1/jour",
+      "reasonPlaceholder": "ex. migraine persistante, 6 jours",
+      "lblPharmacy": "Pharmacie / e-mail de livraison",
+      "emailPlaceholder": "vous@email.com",
+      "continueReview": "Continuer vers la revue clinique",
+      "matched": "Mis en relation avec un clinicien VeryPatient",
+      "elig1": "Dossier éligible à la revue clinique",
+      "elig2": "Délai estimé : moins de 2 heures",
+      "elig3": "Remboursement 100 % si non approuvé",
+      "proceedPay": "Passer au paiement sécurisé",
+      "ledger": "Récapitulatif",
+      "fService": "Service",
+      "fWindow": "Fenêtre de traitement",
+      "fDue": "À payer",
+      "sRefill": "Revue rapide d'ordonnance par un médecin",
+      "sConsult": "Vidéo-consultation médecin",
+      "wRefill": "Moins de 2 heures",
+      "wConsult": "Le jour même · 20 min",
+      "dueRefill": "10,00 € FIXE",
+      "dueConsult": "39,00 € FIXE",
+      "lblCardName": "Titulaire de la carte",
+      "lblCardNum": "Numéro de carte",
+      "lblExpiry": "Expiration",
+      "lblCvc": "CVC",
+      "payBtnPrefix": "Finaliser le paiement clinique sécurisé —",
+      "secureNote": "Chiffré · PCI-DSS · Remboursement automatique si refusé"
+    }
   }
 }
