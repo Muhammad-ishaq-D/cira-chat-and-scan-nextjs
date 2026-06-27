@@ -1,6 +1,6 @@
 /*! coi-serviceworker v0.1.7-fix-1 - Guido Zuidhof and contributors, licensed under MIT */
 // Bump this version when the WASM file changes to invalidate the cache.
-const WASM_CACHE_VERSION = 'cira-wasm-v6-cdn';
+const WASM_CACHE_VERSION = 'cira-wasm-v7';
 
 let coepCredentialless = false;
 if (typeof window === 'undefined') {
@@ -149,11 +149,10 @@ if (typeof window === 'undefined') {
             return pathname === "/vitals-scan" || mode === "scan";
         };
 
-        // You can customize the behavior of this script through a global `coi` variable.
         const coi = {
             shouldRegister: () => needsCrossOriginIsolation(),
             shouldDeregister: () => !needsCrossOriginIsolation(),
-            coepCredentialless: () => true,
+            coepCredentialless: () => false,
             doReload: () => window.location.reload(),
             quiet: false,
             ...window.coi
