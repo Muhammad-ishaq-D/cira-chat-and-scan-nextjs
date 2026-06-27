@@ -7,6 +7,12 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: "Ask Cira - AI Healthcare Assistant",
   description: "Your personal AI healthcare assistant.",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', type: 'image/png' }
+    ]
+  }
 };
 
 export default function RootLayout({
