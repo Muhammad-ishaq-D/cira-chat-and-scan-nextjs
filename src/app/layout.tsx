@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
+import { CoiScripts } from "@/components/CoiScripts";
 
 export const metadata: Metadata = {
   title: "Ask Cira - AI Healthcare Assistant",
@@ -23,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script src="/coi-serviceworker.js" strategy="beforeInteractive" />
+        <CoiScripts />
         <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
       </head>
       <body suppressHydrationWarning>
