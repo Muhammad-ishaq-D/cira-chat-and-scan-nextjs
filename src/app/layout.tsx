@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -19,7 +20,11 @@ export default function RootLayout({
         <Script src="/coi-serviceworker.js" strategy="beforeInteractive" />
       </head>
       <body suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            {children}
+          </Suspense>
+        </Providers>
       </body>
     </html>
   );
