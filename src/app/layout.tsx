@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <Script src="/coi-serviceworker.js" strategy="beforeInteractive" />
+        <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
       </head>
       <body suppressHydrationWarning>
         <Providers>
