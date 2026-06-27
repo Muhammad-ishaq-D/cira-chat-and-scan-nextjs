@@ -37,6 +37,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const googleButtonRef = useRef<HTMLDivElement>(null);
+  const googleInitialized = useRef(false);
 
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [fullName, setFullName] = useState("");
@@ -290,9 +291,10 @@ const Login = () => {
       }
 
       container.innerHTML = "";
-      google.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async (response: { credential?: string }) => {
+      if (!googleInitialized.current) {
+        google.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: async (response: { credential?: string }) => {
           if (!response.credential) {
             toast.error(t("auth.errors.googleFailed"));
             return;
@@ -332,6 +334,8 @@ const Login = () => {
           }
         },
       });
+      googleInitialized.current = true;
+      }
 
       google.renderButton(container, {
         type: "standard",

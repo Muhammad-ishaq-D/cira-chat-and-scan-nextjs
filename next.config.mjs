@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/vitals-scan',
         headers: [
           {
             key: 'Cross-Origin-Embedder-Policy',
@@ -17,12 +20,6 @@ const nextConfig = {
         ],
       },
     ];
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
 };
 
