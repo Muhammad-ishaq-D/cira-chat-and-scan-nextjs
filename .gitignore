@@ -27,9 +27,4 @@ node_modules
 
 # Build output
 dist
-
-# Large binary assets
-public/wasm/*.wasm
-
 .next
-
