@@ -13,7 +13,7 @@ const readStoredUser = (): any => {
   if (authUser) return authUser;
 
   // Fallback: legacy/alternate keys
-  for (const store of [sessionStorage, localStorage]) {
+  for (const store of [globalThis?.sessionStorage, globalThis?.localStorage]) {
     for (const key of ["cira_user", "user"]) {
       try {
         const raw = store.getItem(key);
@@ -59,9 +59,9 @@ const AirDoctorButton = () => {
 
     // Also store in localStorage for local analytics
     try {
-      const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+      const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]");
       clicks.push(trackingData);
-      localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+      globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
     } catch {/* silent */}
 
     // Open in new tab

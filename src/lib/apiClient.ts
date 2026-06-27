@@ -284,7 +284,7 @@ export const blogsApi = {
 
 // ─── Admin ──────────────────────────────────────────────────────
 function adminHeaders() {
-  const token = localStorage.getItem("cira_admin_token");
+  const token = globalThis?.localStorage?.getItem("cira_admin_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -293,8 +293,8 @@ async function adminGet<T = any>(endpoint: string): Promise<T> {
     headers: { "Content-Type": "application/json", ...adminHeaders() },
   });
   if (res.status === 401) {
-    localStorage.removeItem("cira_admin");
-    localStorage.removeItem("cira_admin_token");
+    globalThis?.localStorage?.removeItem("cira_admin");
+    globalThis?.localStorage?.removeItem("cira_admin_token");
     window.location.href = "/admin";
     throw new Error("Session expired");
   }

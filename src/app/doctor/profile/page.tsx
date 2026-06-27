@@ -18,7 +18,7 @@ const DoctorProfile = () => {
       try {
         const d = await doctorApi.getProfile();
         setDoctor(d);
-        localStorage.setItem("cira_doctor", JSON.stringify(d));
+        globalThis?.localStorage?.setItem("cira_doctor", JSON.stringify(d));
       } catch {/* ignore */}
       finally { setLoading(false); }
     })();
@@ -36,7 +36,7 @@ const DoctorProfile = () => {
       const fresh = await doctorApi.getProfile().catch(() => doctor);
       const merged = { ...doctor, ...fresh };
       setDoctor(merged);
-      localStorage.setItem("cira_doctor", JSON.stringify(merged));
+      globalThis?.localStorage?.setItem("cira_doctor", JSON.stringify(merged));
       toast.success("Profile updated");
     } catch (e: any) {
       toast.error(e.message || "Failed to update");

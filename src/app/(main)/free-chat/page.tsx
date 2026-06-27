@@ -899,7 +899,7 @@ const FreeChat = () => {
       }
       syncChatMode(mode);
       setShowModeSelection(false);
-      sessionStorage.setItem("cira_free_scan_return", "/free-chat");
+      globalThis?.sessionStorage?.setItem("cira_free_scan_return", "/free-chat");
       navigate("/vitals-scan?guest=1");
       return;
     }
@@ -1082,7 +1082,7 @@ const FreeChat = () => {
                                 const trackingData = { timestamp: new Date().toISOString(), deviceId: deviceId.current, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
                                 console.log("[AirDoctor] Referral click:", trackingData);
                                 try { const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { }); } catch { }
-                                try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
+                                try { const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
                                 window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
                               }
                             }}
@@ -1140,9 +1140,9 @@ const FreeChat = () => {
                                 fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { });
                               } catch { }
                               try {
-                                const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]");
                                 clicks.push(trackingData);
-                                localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                                globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
                               } catch { }
                               window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
                             }}

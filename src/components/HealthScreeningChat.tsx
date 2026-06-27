@@ -297,9 +297,9 @@ const HealthScreeningChat = ({ refillId, medicationSummary = "", onCleared, onSt
       }).catch(() => {});
     } catch { void 0; }
     try {
-      const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+      const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]");
       clicks.push(trackingData);
-      localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+      globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
     } catch { void 0; }
     window.open(AIR_DOCTOR_URL, "_blank", "noopener,noreferrer");
   };

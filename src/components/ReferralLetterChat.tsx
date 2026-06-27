@@ -239,18 +239,18 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
     if (status === "cancel") {
-      const savedId = localStorage.getItem("cira_pending_referral_id");
+      const savedId = globalThis?.localStorage?.getItem("cira_pending_referral_id");
       if (savedId) {
         setReferralId(savedId);
         setPhase("checkout");
         setPollingStatus("canceled");
-        const cachedReferral = localStorage.getItem("cira_cached_referral");
+        const cachedReferral = globalThis?.localStorage?.getItem("cira_cached_referral");
         if (cachedReferral) {
           try {
             setGeneratedReferral(JSON.parse(cachedReferral));
           } catch {}
         }
-        const savedEmail = localStorage.getItem("cira_pending_referral_email");
+        const savedEmail = globalThis?.localStorage?.getItem("cira_pending_referral_email");
         if (savedEmail) {
           setEmailInput(savedEmail);
         }
@@ -282,18 +282,18 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
           setEmailStatus("sent");
           setRefNumber(res.reference_code || "");
           setIsPolling(false);
-          localStorage.removeItem("cira_pending_referral_id");
-          localStorage.removeItem("cira_cached_referral");
-          localStorage.removeItem("cira_pending_referral_email");
+          globalThis?.localStorage?.removeItem("cira_pending_referral_id");
+          globalThis?.localStorage?.removeItem("cira_cached_referral");
+          globalThis?.localStorage?.removeItem("cira_pending_referral_email");
         } else if (res.payment_status === "failed" || res.email_status === "failed") {
           if (res.payment_status === "paid") {
             setPollingStatus("paid");
             setEmailStatus("failed");
             setRefNumber(res.reference_code || "");
             setIsPolling(false);
-            localStorage.removeItem("cira_pending_referral_id");
-            localStorage.removeItem("cira_cached_referral");
-            localStorage.removeItem("cira_pending_referral_email");
+            globalThis?.localStorage?.removeItem("cira_pending_referral_id");
+            globalThis?.localStorage?.removeItem("cira_cached_referral");
+            globalThis?.localStorage?.removeItem("cira_pending_referral_email");
           } else {
             setPollingStatus("failed");
             setIsPolling(false);
@@ -552,8 +552,8 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
         toast.dismiss(toastId);
         setReferralId(res.referral_id);
         setGeneratedReferral(res.referral);
-        localStorage.setItem("cira_pending_referral_id", String(res.referral_id));
-        localStorage.setItem("cira_cached_referral", JSON.stringify(res.referral));
+        globalThis?.localStorage?.setItem("cira_pending_referral_id", String(res.referral_id));
+        globalThis?.localStorage?.setItem("cira_cached_referral", JSON.stringify(res.referral));
         
         // Prefill email
         const prefilledEmail = userProfile?.email || localUser?.email || answers.patientContact || "";
@@ -590,7 +590,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
       setCheckoutStatus("processing");
       await referralApi.saveEmail(referralId!, trimmed);
       setEmailInput(trimmed);
-      localStorage.setItem("cira_pending_referral_email", trimmed);
+      globalThis?.localStorage?.setItem("cira_pending_referral_email", trimmed);
       setPhase("checkout");
       setCheckoutStatus("ready");
     } catch (err: any) {
@@ -612,7 +612,7 @@ export default function ReferralLetterChat({ onExit, sessionVitals }: Props) {
       if (referralId) params.set("client_reference_id", `referral_${referralId}`);
       
       // Store reference in local storage before redirecting
-      localStorage.setItem("cira_pending_referral_id", String(referralId));
+      globalThis?.localStorage?.setItem("cira_pending_referral_id", String(referralId));
       
       const qs = params.toString();
       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;

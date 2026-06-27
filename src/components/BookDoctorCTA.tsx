@@ -15,7 +15,7 @@ const readStoredUser = (): any => {
   const authUser = getUser();
   if (authUser) return authUser;
 
-  for (const store of [sessionStorage, localStorage]) {
+  for (const store of [globalThis?.sessionStorage, globalThis?.localStorage]) {
     for (const key of ["cira_user", "user"]) {
       try {
         const raw = store.getItem(key);
@@ -56,9 +56,9 @@ const BookDoctorCTA = ({ source = "report_card" }: Props) => {
     } catch {}
 
     try {
-      const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+      const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]");
       clicks.push(trackingData);
-      localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+      globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
     } catch {}
 
     window.open(AIR_DOCTOR_URL, "_blank", "noopener,noreferrer");

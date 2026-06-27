@@ -36,7 +36,7 @@ export interface DoctorRefill {
 }
 
 function doctorHeaders() {
-  const token = localStorage.getItem("cira_doctor_token");
+  const token = globalThis?.localStorage?.getItem("cira_doctor_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -50,8 +50,8 @@ async function request<T = any>(endpoint: string, opts: RequestInit = {}): Promi
     },
   });
   if (res.status === 401) {
-    localStorage.removeItem("cira_doctor");
-    localStorage.removeItem("cira_doctor_token");
+    globalThis?.localStorage?.removeItem("cira_doctor");
+    globalThis?.localStorage?.removeItem("cira_doctor_token");
     if (typeof window !== "undefined") window.location.href = "/doctor/login";
     throw new Error("Session expired");
   }
@@ -77,21 +77,21 @@ export const doctorAuth = {
       throw new Error(err.error || err.message || "Invalid credentials");
     }
     const data = await res.json();
-    localStorage.setItem("cira_doctor_token", data.token);
-    localStorage.setItem("cira_doctor", JSON.stringify(data.doctor));
+    globalThis?.localStorage?.setItem("cira_doctor_token", data.token);
+    globalThis?.localStorage?.setItem("cira_doctor", JSON.stringify(data.doctor));
     return data;
   },
   logout: () => {
-    localStorage.removeItem("cira_doctor_token");
-    localStorage.removeItem("cira_doctor");
+    globalThis?.localStorage?.removeItem("cira_doctor_token");
+    globalThis?.localStorage?.removeItem("cira_doctor");
   },
   current: (): Doctor | null => {
     try {
-      const raw = localStorage.getItem("cira_doctor");
+      const raw = globalThis?.localStorage?.getItem("cira_doctor");
       return raw ? (JSON.parse(raw) as Doctor) : null;
     } catch { return null; }
   },
-  isAuthenticated: () => !!localStorage.getItem("cira_doctor_token"),
+  isAuthenticated: () => !!globalThis?.localStorage?.getItem("cira_doctor_token"),
 };
 
 export const doctorApi = {

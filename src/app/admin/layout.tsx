@@ -26,14 +26,14 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const isLoginPage = location.pathname === '/admin/login';
 
   useEffect(() => {
-    if (!isLoginPage && (localStorage.getItem("cira_admin") !== "true" || !localStorage.getItem("cira_admin_token"))) {
+    if (!isLoginPage && (globalThis?.localStorage?.getItem("cira_admin") !== "true" || !globalThis?.localStorage?.getItem("cira_admin_token"))) {
       navigate("/admin/login");
     }
   }, [navigate, isLoginPage]);
 
   const handleLogout = () => {
-    localStorage.removeItem("cira_admin");
-    localStorage.removeItem("cira_admin_token");
+    globalThis?.localStorage?.removeItem("cira_admin");
+    globalThis?.localStorage?.removeItem("cira_admin_token");
     navigate("/admin/login");
   };
 

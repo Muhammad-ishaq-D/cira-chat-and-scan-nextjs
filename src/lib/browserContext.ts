@@ -43,15 +43,15 @@ export async function unregisterCoiServiceWorkers(): Promise<boolean> {
 export function markDocumentReload(key: string, path = getCurrentDocumentPath()) {
   if (typeof window === "undefined") return;
 
-  sessionStorage.setItem(`${key}${RELOAD_AT_SUFFIX}`, String(Date.now()));
-  sessionStorage.setItem(`${key}${RELOAD_PATH_SUFFIX}`, path);
+  globalThis?.sessionStorage?.setItem(`${key}${RELOAD_AT_SUFFIX}`, String(Date.now()));
+  globalThis?.sessionStorage?.setItem(`${key}${RELOAD_PATH_SUFFIX}`, path);
 }
 
 export function hasRecentDocumentReload(key: string, maxAgeMs = 4000, path = getCurrentDocumentPath()): boolean {
   if (typeof window === "undefined") return false;
 
-  const lastReloadAt = Number(sessionStorage.getItem(`${key}${RELOAD_AT_SUFFIX}`) || "0");
-  const lastReloadPath = sessionStorage.getItem(`${key}${RELOAD_PATH_SUFFIX}`) || "";
+  const lastReloadAt = Number(globalThis?.sessionStorage?.getItem(`${key}${RELOAD_AT_SUFFIX}`) || "0");
+  const lastReloadPath = globalThis?.sessionStorage?.getItem(`${key}${RELOAD_PATH_SUFFIX}`) || "";
 
   return lastReloadPath === path && Date.now() - lastReloadAt <= maxAgeMs;
 }
@@ -59,6 +59,6 @@ export function hasRecentDocumentReload(key: string, maxAgeMs = 4000, path = get
 export function clearDocumentReload(key: string) {
   if (typeof window === "undefined") return;
 
-  sessionStorage.removeItem(`${key}${RELOAD_AT_SUFFIX}`);
-  sessionStorage.removeItem(`${key}${RELOAD_PATH_SUFFIX}`);
+  globalThis?.sessionStorage?.removeItem(`${key}${RELOAD_AT_SUFFIX}`);
+  globalThis?.sessionStorage?.removeItem(`${key}${RELOAD_PATH_SUFFIX}`);
 }

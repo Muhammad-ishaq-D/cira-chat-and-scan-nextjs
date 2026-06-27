@@ -495,7 +495,7 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [chatHistoryLoading, setChatHistoryLoading] = useState(true);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(
-    () => sessionStorage.getItem("cira_active_session") || null
+    () => globalThis?.sessionStorage?.getItem("cira_active_session") || null
   );
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatModeRef = useRef<ChatMode>("none");
@@ -1201,7 +1201,7 @@ const Chat = () => {
   const setScanLangOverride = () => {
     try {
       const base = (selectedLanguage || "en").split("-")[0].toLowerCase();
-      sessionStorage.setItem("cira_scan_lang_override", base);
+      globalThis?.sessionStorage?.setItem("cira_scan_lang_override", base);
     } catch {}
   };
 
@@ -1562,7 +1562,7 @@ const Chat = () => {
                                 const trackingData = { timestamp: new Date().toISOString(), userId: user?.id || null, userName: user?.name || null, userEmail: user?.email || null, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
                                 console.log("[AirDoctor] Referral click:", trackingData);
                                 try { const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { }); } catch { }
-                                try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
+                                try { const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
                                 window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
                               }
                             }}
@@ -1629,9 +1629,9 @@ const Chat = () => {
                                 fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { });
                               } catch { }
                               try {
-                                const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                const clicks = JSON.parse(globalThis?.localStorage?.getItem("cira_airdoctor_clicks") || "[]");
                                 clicks.push(trackingData);
-                                localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                                globalThis?.localStorage?.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
                               } catch { }
                               window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
                             }}

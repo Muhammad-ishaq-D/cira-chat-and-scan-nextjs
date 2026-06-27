@@ -26,7 +26,7 @@ export interface ConsentRecord {
 
 export function getConsent(): ConsentRecord | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = globalThis?.localStorage?.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as ConsentRecord;
     if (parsed?.version !== CONSENT_VERSION) return null;
@@ -49,7 +49,7 @@ export function setConsent(opts: { analytics: boolean; functional: boolean }) {
     functional: !!opts.functional,
   };
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+    globalThis?.localStorage?.setItem(STORAGE_KEY, JSON.stringify(record));
   } catch {}
 
   applyToGoogleConsentMode(record);
@@ -65,7 +65,7 @@ export function setConsent(opts: { analytics: boolean; functional: boolean }) {
 }
 
 export function revokeConsent() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  try { globalThis?.localStorage?.removeItem(STORAGE_KEY); } catch {}
   applyToGoogleConsentMode(null);
   window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: null }));
 }

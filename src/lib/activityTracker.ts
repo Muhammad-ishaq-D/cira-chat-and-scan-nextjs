@@ -25,19 +25,19 @@ let started = false;
 let lastScrollAt = 0;
 
 const isAdmin = () => {
-  try { return localStorage.getItem("cira_admin") === "true"; } catch { return false; }
+  try { return globalThis?.localStorage?.getItem("cira_admin") === "true"; } catch { return false; }
 };
 
 const isAuthenticated = () => {
-  try { return !!localStorage.getItem("cira_token"); } catch { return false; }
+  try { return !!globalThis?.localStorage?.getItem("cira_token"); } catch { return false; }
 };
 
 const getOrCreate = (key: string) => {
   try {
-    let v = localStorage.getItem(key);
+    let v = globalThis?.localStorage?.getItem(key);
     if (!v) {
       v = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-      localStorage.setItem(key, v);
+      globalThis?.localStorage?.setItem(key, v);
     }
     return v;
   } catch {
@@ -47,10 +47,10 @@ const getOrCreate = (key: string) => {
 
 const getSessionId = () => {
   try {
-    let v = sessionStorage.getItem("cira_session_id");
+    let v = globalThis?.sessionStorage?.getItem("cira_session_id");
     if (!v) {
       v = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-      sessionStorage.setItem("cira_session_id", v);
+      globalThis?.sessionStorage?.setItem("cira_session_id", v);
     }
     return v;
   } catch {
@@ -60,8 +60,8 @@ const getSessionId = () => {
 
 const getUser = () => {
   try {
-    const token = localStorage.getItem("cira_token") || null;
-    const userRaw = localStorage.getItem("cira_user");
+    const token = globalThis?.localStorage?.getItem("cira_token") || null;
+    const userRaw = globalThis?.localStorage?.getItem("cira_user");
     const user = userRaw ? JSON.parse(userRaw) : null;
     return {
       user_id: user?.id || user?.user_id || null,

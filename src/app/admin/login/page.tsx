@@ -31,8 +31,8 @@ const AdminLogin = () => {
         throw new Error(err.error || t("admin.login.invalid"));
       }
       const data = await res.json();
-      localStorage.setItem("cira_admin_token", data.token);
-      localStorage.setItem("cira_admin", "true");
+      globalThis?.localStorage?.setItem("cira_admin_token", data.token);
+      globalThis?.localStorage?.setItem("cira_admin", "true");
       navigate("/admin/dashboard");
     } catch (err: any) {
       setError(err.message || t("admin.login.failed"));

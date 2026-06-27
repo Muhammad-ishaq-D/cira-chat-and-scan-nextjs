@@ -162,7 +162,7 @@ const Upgrade = () => {
     if (searchParams.get("paid") !== "1") return;
 
     const pendingKey =
-      sessionStorage.getItem(PENDING_PLAN_STORAGE_KEY) || searchParams.get("plan") || "";
+      globalThis?.sessionStorage?.getItem(PENDING_PLAN_STORAGE_KEY) || searchParams.get("plan") || "";
     const targetKey = normalizePlanKey(pendingKey);
     if (!targetKey || targetKey === "basic") return;
 
@@ -193,7 +193,7 @@ const Upgrade = () => {
       if (cancelled) return;
       if (activated) {
         toast.success(t("upgrade.toast.planActive", { plan: targetKey }));
-        sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
+        globalThis?.sessionStorage?.removeItem(PENDING_PLAN_STORAGE_KEY);
       } else {
         toast.error(activationError || t("upgrade.errors.activationFailed"));
       }
@@ -214,7 +214,7 @@ const Upgrade = () => {
     }
 
     setRedirectingId(plan.id);
-    sessionStorage.setItem(PENDING_PLAN_STORAGE_KEY, normalizePlanKey(plan.name));
+    globalThis?.sessionStorage?.setItem(PENDING_PLAN_STORAGE_KEY, normalizePlanKey(plan.name));
 
     const userId = getUserId();
     if (!userId) {

@@ -14,7 +14,7 @@ import { getUser, logout } from "@/lib/auth";
 function loadHistory(): RefillRecord[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem("cira_refill_history");
+    const raw = window.globalThis?.localStorage?.getItem("cira_refill_history");
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];

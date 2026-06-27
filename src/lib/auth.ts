@@ -11,11 +11,11 @@ const POST_AUTH_REDIRECT_KEY = "cira_post_auth_redirect";
 function getStoredValue(key: string): string | null {
   if (typeof window === "undefined") return null;
   
-  const value = localStorage.getItem(key);
+  const value = globalThis?.localStorage?.getItem(key);
 
   if (!value || value === "undefined" || value === "null") {
     if (value) {
-      localStorage.removeItem(key);
+      globalThis?.localStorage?.removeItem(key);
     }
     return null;
   }
@@ -75,7 +75,7 @@ export function getUser(): AuthUser | null {
       const parsed = JSON.parse(raw) as AuthUser;
       if (parsed?.id) return parsed;
     } catch {
-      localStorage.removeItem(USER_KEY);
+      globalThis?.localStorage?.removeItem(USER_KEY);
     }
   }
   const token = getToken();
@@ -108,21 +108,21 @@ export function isAuthenticated(): boolean {
 /** Store auth data */
 function saveAuth(data: AuthResponse) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(TOKEN_KEY, data.token);
-  if (data.refreshToken) localStorage.setItem(REFRESH_KEY, data.refreshToken);
-  else localStorage.removeItem(REFRESH_KEY);
+  globalThis?.localStorage?.setItem(TOKEN_KEY, data.token);
+  if (data.refreshToken) globalThis?.localStorage?.setItem(REFRESH_KEY, data.refreshToken);
+  else globalThis?.localStorage?.removeItem(REFRESH_KEY);
   const user = data.user?.id ? data.user : parseTokenUser(data.token);
-  if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-  else localStorage.removeItem(USER_KEY);
+  if (user) globalThis?.localStorage?.setItem(USER_KEY, JSON.stringify(user));
+  else globalThis?.localStorage?.removeItem(USER_KEY);
 }
 
 /** Clear auth data */
 export function logout() {
   if (typeof window === "undefined") return;
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
-  localStorage.removeItem(USER_KEY);
-  sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+  globalThis?.localStorage?.removeItem(TOKEN_KEY);
+  globalThis?.localStorage?.removeItem(REFRESH_KEY);
+  globalThis?.localStorage?.removeItem(USER_KEY);
+  globalThis?.sessionStorage?.removeItem(POST_AUTH_REDIRECT_KEY);
 }
 
 /** Update avatar in stored user data */
@@ -130,7 +130,7 @@ export function updateUserAvatar(avatar: string) {
   if (typeof window === "undefined") return;
   const user = getUser();
   if (user) {
-    localStorage.setItem(USER_KEY, JSON.stringify({ ...user, avatar }));
+    globalThis?.localStorage?.setItem(USER_KEY, JSON.stringify({ ...user, avatar }));
   }
 }
 

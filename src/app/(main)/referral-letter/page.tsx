@@ -23,7 +23,7 @@ const ReferralLetter = () => {
     if (typeof window === "undefined") return { status: null, savedId: null };
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
-    const savedId = status === "success" ? localStorage.getItem("cira_pending_referral_id") : null;
+    const savedId = status === "success" ? globalThis?.localStorage?.getItem("cira_pending_referral_id") : null;
     if (status) window.history.replaceState({}, "", window.location.pathname);
     return { status, savedId };
   })();
@@ -52,9 +52,9 @@ const ReferralLetter = () => {
           setRefNumber(res.reference_code || "");
           setEmailStatus(res.email_status);
           setIsPolling(false);
-          localStorage.removeItem("cira_pending_referral_id");
-          localStorage.removeItem("cira_cached_referral");
-          localStorage.removeItem("cira_pending_referral_email");
+          globalThis?.localStorage?.removeItem("cira_pending_referral_id");
+          globalThis?.localStorage?.removeItem("cira_cached_referral");
+          globalThis?.localStorage?.removeItem("cira_pending_referral_email");
         } else if (res.payment_status === "failed") {
           setPollingStatus("failed");
           setIsPolling(false);

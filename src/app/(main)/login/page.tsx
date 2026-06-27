@@ -133,7 +133,7 @@ const Login = () => {
     // Double-check we're actually authenticated before doing anything
     if (!isAuthenticated()) return;
 
-    const followUpPath = requestedPath || (sessionStorage.getItem("cira_landing_message") ? "/chat" : null);
+    const followUpPath = requestedPath || (globalThis?.sessionStorage?.getItem("cira_landing_message") ? "/chat" : null);
 
     try {
       const profile = await userApi.getProfile();

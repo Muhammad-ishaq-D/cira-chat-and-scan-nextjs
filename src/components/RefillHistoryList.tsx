@@ -95,8 +95,8 @@ const RefillHistoryList = ({ reloadKey = 0 }: { reloadKey?: number }) => {
       try {
         await new Promise((r) => setTimeout(r, 450));
         if (cancelled) return;
-        const rawHistory = window.localStorage.getItem("cira_refill_history");
-        const rawRefunds = window.localStorage.getItem("cira_refund_requests");
+        const rawHistory = window.globalThis?.localStorage?.getItem("cira_refill_history");
+        const rawRefunds = window.globalThis?.localStorage?.getItem("cira_refund_requests");
         const history: RefillHistoryItem[] = rawHistory ? JSON.parse(rawHistory) : [];
         const refunds: RefundRecord[] = rawRefunds ? JSON.parse(rawRefunds) : [];
         const refundMap = new Map<string, RefundRecord>();

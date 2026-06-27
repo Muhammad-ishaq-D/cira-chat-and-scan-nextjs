@@ -161,8 +161,8 @@
 //     const params = new URLSearchParams(window.location.search);
 //     const status = params.get("status");
 //     if (status === "success" || status === "cancel") {
-//       const rid = localStorage.getItem("cira_pending_refill_id") || "";
-//       if (status === "success") localStorage.removeItem("cira_pending_refill_id");
+//       const rid = globalThis?.localStorage?.getItem("cira_pending_refill_id") || "";
+//       if (status === "success") globalThis?.localStorage?.removeItem("cira_pending_refill_id");
 //       if (rid) return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
 //     }
 //     return { step: 1, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
@@ -372,7 +372,7 @@
 //               // Persist to local refill history for logged-in users
 //               if (isLoggedIn && typeof window !== "undefined" && data.reference_code) {
 //                 try {
-//                   const raw = window.localStorage.getItem("cira_refill_history");
+//                   const raw = window.globalThis?.localStorage?.getItem("cira_refill_history");
 //                   const list = raw ? JSON.parse(raw) : [];
 //                   list.unshift({
 //                     ref: data.reference_code,
@@ -382,7 +382,7 @@
 //                     email: answers.email,
 //                     priceCents: REFILL_PRICE_CENTS,
 //                   });
-//                   window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+//                   window.globalThis?.localStorage?.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
 //                 } catch {
 //                   // ignore storage errors
 //                 }
@@ -994,7 +994,7 @@
 //       const params = new URLSearchParams();
 //       if (answers.email) params.set("prefilled_email", answers.email);
 //       if (refillId) params.set("client_reference_id", String(refillId));
-//       localStorage.setItem("cira_pending_refill_id", String(refillId));
+//       globalThis?.localStorage?.setItem("cira_pending_refill_id", String(refillId));
 //       const qs = params.toString();
 //       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
 //     } catch {
@@ -1023,7 +1023,7 @@
 //       if (answers.email) params.set("prefilled_email", answers.email);
 //       if (refillId) params.set("client_reference_id", String(refillId));
 //       // Store refill_id before leaving — Stripe return URL can't carry client_reference_id back.
-//       localStorage.setItem("cira_pending_refill_id", String(refillId));
+//       globalThis?.localStorage?.setItem("cira_pending_refill_id", String(refillId));
 //       const qs = params.toString();
 //       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
 //     } catch {
@@ -3377,8 +3377,8 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
     if (status === "success" || status === "cancel") {
-      const rid = localStorage.getItem("cira_pending_refill_id") || "";
-      if (status === "success") localStorage.removeItem("cira_pending_refill_id");
+      const rid = globalThis?.localStorage?.getItem("cira_pending_refill_id") || "";
+      if (status === "success") globalThis?.localStorage?.removeItem("cira_pending_refill_id");
       if (rid) return { step: 8, refillId: rid, outcome: status as "success" | "cancel" };
     }
     return { step: 1, refillId: newRefillId(), outcome: null as null | "success" | "cancel" };
@@ -3609,7 +3609,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
               // Persist to local refill history for logged-in users
               if (isLoggedIn && typeof window !== "undefined" && data.reference_code) {
                 try {
-                  const raw = window.localStorage.getItem("cira_refill_history");
+                  const raw = window.globalThis?.localStorage?.getItem("cira_refill_history");
                   const list = raw ? JSON.parse(raw) : [];
                   list.unshift({
                     ref: data.reference_code,
@@ -3619,7 +3619,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
                     email: answers.email,
                     priceCents: REFILL_PRICE_CENTS,
                   });
-                  window.localStorage.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
+                  window.globalThis?.localStorage?.setItem("cira_refill_history", JSON.stringify(list.slice(0, 50)));
                 } catch {
                   // ignore storage errors
                 }
@@ -4255,7 +4255,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       const params = new URLSearchParams();
       if (answers.email) params.set("prefilled_email", answers.email);
       if (refillId) params.set("client_reference_id", String(refillId));
-      localStorage.setItem("cira_pending_refill_id", String(refillId));
+      globalThis?.localStorage?.setItem("cira_pending_refill_id", String(refillId));
       const qs = params.toString();
       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
     } catch {
@@ -4284,7 +4284,7 @@ const PrescriptionRefillChat = ({ onExit, onComplete }: Props) => {
       if (answers.email) params.set("prefilled_email", answers.email);
       if (refillId) params.set("client_reference_id", String(refillId));
       // Store refill_id before leaving — Stripe return URL can't carry client_reference_id back.
-      localStorage.setItem("cira_pending_refill_id", String(refillId));
+      globalThis?.localStorage?.setItem("cira_pending_refill_id", String(refillId));
       const qs = params.toString();
       window.location.href = qs ? `${paymentLink}?${qs}` : paymentLink;
     } catch {

@@ -69,7 +69,7 @@ const PaymentSuccess = () => {
       const planFromUrl = searchParams.get("plan") || "";
       const resolvedKey =
         normalizePlanKey(planFromUrl) ||
-        normalizePlanKey(sessionStorage.getItem(PENDING_PLAN_STORAGE_KEY) || "") ||
+        normalizePlanKey(globalThis?.sessionStorage?.getItem(PENDING_PLAN_STORAGE_KEY) || "") ||
         null;
 
       if (!resolvedKey || resolvedKey === "basic") {
@@ -87,7 +87,7 @@ const PaymentSuccess = () => {
         setPlanKey(normalizePlanKey(result.plan_name || resolvedKey) || resolvedKey);
         if (result.payment) setPayment(result.payment);
         setStatus("success");
-        sessionStorage.removeItem(PENDING_PLAN_STORAGE_KEY);
+        globalThis?.sessionStorage?.removeItem(PENDING_PLAN_STORAGE_KEY);
       } catch (err: unknown) {
         if (cancelled) return;
         setErrorMsg(err instanceof Error ? err.message : t("paymentSuccess.activationFailed"));

@@ -37,7 +37,7 @@ const SecurityDeterrents = () => {
     let devToolsAlertShown = false;
 
     const isDevModeActive = () => {
-      const storedKey = localStorage.getItem("cira_dev_key");
+      const storedKey = globalThis?.localStorage?.getItem("cira_dev_key");
       return storedKey && storedKey === correctKey;
     };
 
@@ -73,7 +73,7 @@ const SecurityDeterrents = () => {
 
         // Use the key fetched from backend
         if (devKey === correctKey && correctKey) {
-          localStorage.setItem("cira_dev_key", devKey);
+          globalThis?.localStorage?.setItem("cira_dev_key", devKey);
           overlay.remove();
           devToolsAlertShown = false;
           return; // Allow access

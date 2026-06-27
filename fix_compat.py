@@ -1,4 +1,8 @@
-"use client";
+import os
+
+filepath = r"c:\Users\Admin\Desktop\INSTLY Technology\AskCira\v3\cira-chat-and-scan-nextjs\src\lib\react-router-compat.tsx"
+
+new_content = """\"use client\";
 
 import NextLink from 'next/link';
 import { useRouter, usePathname, useParams as useNextParams } from 'next/navigation';
@@ -75,3 +79,9 @@ export function Navigate({ to, replace }: { to: string; replace?: boolean }) {
 export function Outlet() {
   return null; // Next.js uses children in layouts instead of Outlet
 }
+"""
+
+with open(filepath, "w", encoding="utf-8") as f:
+    f.write(new_content)
+
+print("Updated react-router-compat.tsx")

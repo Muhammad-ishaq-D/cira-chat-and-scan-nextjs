@@ -16,15 +16,15 @@ export function storePostAuthRedirect(path?: string | null) {
   const safePath = sanitizeAuthRedirect(path);
 
   if (!safePath) {
-    sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+    globalThis?.sessionStorage?.removeItem(POST_AUTH_REDIRECT_KEY);
     return;
   }
 
-  sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, safePath);
+  globalThis?.sessionStorage?.setItem(POST_AUTH_REDIRECT_KEY, safePath);
 }
 
 export function consumePostAuthRedirect(): string | null {
-  const storedPath = sanitizeAuthRedirect(sessionStorage.getItem(POST_AUTH_REDIRECT_KEY));
-  sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+  const storedPath = sanitizeAuthRedirect(globalThis?.sessionStorage?.getItem(POST_AUTH_REDIRECT_KEY));
+  globalThis?.sessionStorage?.removeItem(POST_AUTH_REDIRECT_KEY);
   return storedPath;
 }

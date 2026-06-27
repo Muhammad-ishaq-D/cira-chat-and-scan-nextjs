@@ -61,9 +61,9 @@ const VitalsScan = () => {
   const prevLangRef = useRef<string | null>(null);
   if (scanLangOverrideRef.current === null) {
     try {
-      const o = sessionStorage.getItem("cira_scan_lang_override");
+      const o = globalThis?.sessionStorage?.getItem("cira_scan_lang_override");
       scanLangOverrideRef.current = o || "";
-      if (o) sessionStorage.removeItem("cira_scan_lang_override");
+      if (o) globalThis?.sessionStorage?.removeItem("cira_scan_lang_override");
     } catch { scanLangOverrideRef.current = ""; }
   }
   // Temporarily switch page UI language to the chat-picked override (e.g. Hindi)
