@@ -1,4 +1,6 @@
-import { useNavigate, useLocation } from "react-router-dom";
+"use client";
+
+import { useNavigate, useLocation } from '@/lib/react-router-compat';
 import { useTranslation } from "react-i18next";
 import { Home, ScanFace, FileText, UserRound, Sparkles, Pill } from "lucide-react";
 import AiSparkleIcon from "@/components/AiSparkleIcon";

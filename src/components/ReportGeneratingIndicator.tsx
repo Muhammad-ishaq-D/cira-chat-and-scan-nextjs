@@ -1,3 +1,5 @@
+"use client";
+
 import { FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AiSparkleIcon from "./AiSparkleIcon";

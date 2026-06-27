@@ -1,6 +1,8 @@
+"use client";
+
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link } from '@/lib/react-router-compat';
 import { AlertTriangle, CheckCircle2, Upload, X, FileText, Image as ImageIcon } from "lucide-react";
 
 export type RefillRecord = {
@@ -15,7 +17,7 @@ export type RefillRecord = {
 };
 
 const API_BASE =
-  (import.meta as unknown as { env: { VITE_API_URL?: string } }).env.VITE_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
   "https://askainurse.com";
 
 const REFUND_WINDOW_DAYS = 7;

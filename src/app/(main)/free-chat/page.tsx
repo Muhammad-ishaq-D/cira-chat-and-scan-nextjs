@@ -1,0 +1,1338 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from '@/lib/react-router-compat';
+import { Home, Menu, Send, Plus, Sparkles, ScanFace, Activity, MessageCircle, FileText, Stethoscope, Heart, Wind, Brain, Zap, Scale, X, Camera, Trash2, LogIn, AlertTriangle, SlidersHorizontal, Square, ChevronDown } from "lucide-react";
+import ciraLogo from "@/assets/cira-logo.svg";
+import AiSparkleIcon from "@/components/AiSparkleIcon";
+import ConsentBanner from "@/components/ConsentBanner";
+import ConsultSummaryCard from "@/components/ConsultSummaryCard";
+import DetailedReportCard from "@/components/DetailedReportCard";
+import type { DetailedReport } from "@/components/DetailedReportCard";
+import { ReportGeneratingIndicator } from "@/components/ReportGeneratingIndicator";
+import { extractText, extractToolCalls, type ChatMessage as ApiMessage, type ConsultSummary, type ToolUse, type ClaudeResponse } from "@/lib/chatApi";
+import { secureStorage } from "@/lib/storage";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { getInitialChatLang, subscribeChatLang, syncGlobalFromChat } from "@/lib/chatLanguageSync";
+import SEO from "@/components/SEO";
+import {
+  getDeviceId,
+  getFreeChatHistory,
+  saveFreeChatSession,
+  deleteFreeChatSession,
+  getFreeCredits,
+  deductFreeCredits,
+  type FreeChatSession,
+} from "@/lib/freeCredits";
+
+// Render basic markdown: **bold**, *italic*, `code`
+const renderFormattedText = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    if (part.startsWith("*") && part.endsWith("*")) return <em key={i}>{part.slice(1, -1)}</em>;
+    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} className="bg-muted px-1 py-0.5 rounded text-[13px]">{part.slice(1, -1)}</code>;
+    return part;
+  });
+};
+
+const THINKING_PHRASES = ["Thinking...", "Looking into it...", "Processing...", "One moment..."];
+const ThinkingLabel = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % THINKING_PHRASES.length), 2000);
+    return () => clearInterval(t);
+  }, []);
+  return <p className="text-[11px] text-muted-foreground/50 mt-1.5 italic font-body">{THINKING_PHRASES[idx]}</p>;
+};
+
+const LiveTypewriterText = ({
+  text,
+  speed = 4,
+  formatted = false,
+  isComplete = false,
+  onComplete,
+}: {
+  text: string;
+  speed?: number;
+  formatted?: boolean;
+  isComplete?: boolean;
+  onComplete?: () => void;
+}) => {
+  const [displayed, setDisplayed] = useState("");
+  const targetRef = useRef(text);
+  const completionFiredRef = useRef(false);
+
+  useEffect(() => {
+    targetRef.current = text;
+    completionFiredRef.current = false;
+    setDisplayed((prev) => {
+      const targetChars = Array.from(text);
+      const prevChars = Array.from(prev);
+      return targetChars.slice(0, prevChars.length).join("") === prev ? prev : "";
+    });
+  }, [text]);
+
+  useEffect(() => {
+    if (!isComplete || Array.from(displayed).length < Array.from(text).length || completionFiredRef.current) return;
+    completionFiredRef.current = true;
+    onComplete?.();
+  }, [displayed, text, isComplete, onComplete]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setDisplayed((prev) => {
+        const target = targetRef.current;
+        const targetChars = Array.from(target);
+        const prevChars = Array.from(prev);
+        if (prevChars.length >= targetChars.length) return prev;
+        return targetChars.slice(0, prevChars.length + 4).join("");
+      });
+    }, speed);
+    return () => window.clearInterval(interval);
+  }, [speed]);
+
+  return (
+    <span className="whitespace-pre-line">
+      {formatted ? renderFormattedText(displayed) : displayed}
+    </span>
+  );
+};
+
+type ChatMode = "none" | "assessment" | "vitals" | "chat";
+
+const chatModes = [
+  { id: "assessment" as ChatMode, icon: Stethoscope, title: "Assessment", desc: "Cira adapts — quick triage or deep clinical intake based on your issue.", badge: "Adaptive · AI-Driven", gradient: "from-blue-500 to-purple-400", bgGlow: "bg-blue-100" },
+  { id: "vitals" as ChatMode, icon: ScanFace, title: "Vital Scan + Assessment", desc: "30-second face scan captures real vitals — then AI cross-references with symptoms.", badge: "~4 min · Scan Powered", gradient: "from-emerald-500 to-teal-400", bgGlow: "bg-emerald-100" },
+];
+
+const languages = [
+  { id: "en", label: "English", flag: "🇺🇸", country: "us" },
+  { id: "fr", label: "Français", flag: "🇫🇷", country: "fr" },
+  { id: "de", label: "Deutsch", flag: "🇩🇪", country: "de" },
+  { id: "hi", label: "हिन्दी", flag: "🇮🇳", country: "in" },
+  { id: "id", label: "Indonesia", flag: "🇮🇩", country: "id" },
+  { id: "it", label: "Italiano", flag: "🇮🇹", country: "it" },
+  { id: "ja", label: "日本語", flag: "🇯🇵", country: "jp" },
+  { id: "ko", label: "한국어", flag: "🇰🇷", country: "kr" },
+  { id: "pt-br", label: "P'tuês (BR)", flag: "🇧🇷", country: "br" },
+  { id: "es-la", label: "Español (LA)", flag: "🌎", country: "mx" },
+  { id: "es-es", label: "Español (ES)", flag: "🇪🇸", country: "es" },
+  { id: "ar", label: "العربية", flag: "🇸🇦", country: "sa" },
+  { id: "zh", label: "中文", flag: "🇨🇳", country: "cn" },
+  { id: "ru", label: "Русский", flag: "🇷🇺", country: "ru" },
+  { id: "pl", label: "Polski", flag: "🇵🇱", country: "pl" },
+];
+
+
+const UI_STRINGS: Record<string, Record<string, string>> = {
+  en: {
+    welcome: "How would you like to get started? 💙",
+    just_chat: "💬 Just Chat",
+    just_chat_desc: "Ask anything — symptoms, wellness, or general health",
+    assessment: "🩺 Health Assessment",
+    assessment_desc: "Guided AI triage based on your symptoms",
+    scan: "Face Scan",
+    scan_desc: "30-second scan captures real vitals from your face",
+    book: "🏥 Book a Doctor",
+    book_desc: "Connect with a licensed doctor near you",
+    just_chat_msg: "💬 I just want to chat",
+    assessment_msg: "🩺 I'd like a health assessment",
+    referral: "Referral Letter",
+    referral_desc: "AI-drafted GP-to-specialist referral in minutes",
+    placeholder: "Ask Cira anything...",
+    disclaimer: "Cira can make mistakes. Not a medical service. Verify important info with a clinician.",
+    free_messages_today: "{n}/{m} free messages today",
+    login_for_unlimited: "Login for unlimited"
+  },
+  fr: {
+    welcome: "Comment aimeriez-vous commencer ? 💙",
+    just_chat: "💬 Juste discuter",
+    just_chat_desc: "Demandez n'importe quoi — symptômes, bien-être ou santé générale",
+    assessment: "🩺 Évaluation de santé",
+    assessment_desc: "Triage guidé par IA basé sur vos symptômes",
+    scan: "Scan du visage",
+    scan_desc: "Un scan de 30 secondes capture vos signes vitaux",
+    book: "🏥 Prendre RDV",
+    book_desc: "Connectez-vous avec un médecin près de chez vous",
+    just_chat_msg: "💬 Je veux juste discuter",
+    assessment_msg: "🩺 Je voudrais une évaluation de santé",
+    referral: "📄 Lettre de Référence",
+    referral_desc: "Lettre de référence médecin-spécialiste rédigée par IA",
+    placeholder: "Demandez n'importe quoi à Cira...",
+    disclaimer: "Cira peut faire des erreurs. Ce n'est pas un service médical. Vérifiez les informations importantes auprès d'un clinicien.",
+    free_messages_today: "{n}/{m} messages gratuits aujourd'hui",
+    login_for_unlimited: "Connectez-vous pour un accès illimité"
+  },
+  es: {
+    welcome: "¿Cómo te gustaría empezar? 💙",
+    just_chat: "💬 Solo chatear",
+    just_chat_desc: "Pregunta cualquier cosa: síntomas, bienestar o salud general",
+    assessment: "🩺 Evaluación de salud",
+    assessment_desc: "Triaje guidado por IA basado en tus síntomas",
+    scan: "Escaneo facial",
+    scan_desc: "El escaneo de 30 segundos captura tus signos vitales",
+    book: "🏥 Reservar médico",
+    book_desc: "Conéctate con un médico licenciado cerca de ti",
+    just_chat_msg: "💬 Solo quiero chatear",
+    assessment_msg: "🩺 Me gustaría una evaluación de salud",
+    referral: "📄 Carta de Derivación",
+    referral_desc: "Derivación al especialista redactada por IA",
+    placeholder: "Pregúntale a Cira cualquier cosa...",
+    disclaimer: "Cira puede cometer errores. No es un servicio médico. Verifica la información importante con un profesional clínico.",
+    free_messages_today: "{n}/{m} mensajes gratuitos hoy",
+    login_for_unlimited: "Inicia sesión para ilimitado"
+  },
+  de: {
+    welcome: "Wie möchten Sie beginnen? 💙",
+    just_chat: "💬 Einfach chatten",
+    just_chat_desc: "Fragen Sie alles — Symptome, Wellness oder allgemeine Gesundheit",
+    assessment: "🩺 Gesundheitsbewertung",
+    assessment_desc: "Geführte KI-Triage basierend auf Ihren Symptomen",
+    scan: "Gesichtsscan",
+    scan_desc: "Ein 30-sekündiger Scan erfasst Ihre Vitalwerte",
+    book: "🏥 Arzt buchen",
+    book_desc: "Verbinden Sie sich mit einem Arzt in Ihrer Nähe",
+    just_chat_msg: "💬 Ich möchte nur chatten",
+    assessment_msg: "🩺 Ich hätte gerne eine Gesundheitsbewertung",
+    referral: "📄 Überweisung",
+    referral_desc: "KI-erstellte Überweisung zum Facharzt",
+    placeholder: "Fragen Sie Cira alles...",
+    disclaimer: "Cira kann Fehler machen. Kein medizinischer Dienst. Wichtige Informationen mit einer Fachperson überprüfen.",
+    free_messages_today: "{n}/{m} kostenlose Nachrichten heute",
+    login_for_unlimited: "Anmelden für unbegrenzt"
+  },
+  it: {
+    welcome: "Come vorresti iniziare? 💙",
+    just_chat: "💬 Solo chat",
+    just_chat_desc: "Chiedi qualsiasi cosa: sintomi, benessere o salute generale",
+    assessment: "🩺 Valutazione della salute",
+    assessment_desc: "Triage guidato dall'IA basato sui tuoi sintomi",
+    scan: "Scansione facciale",
+    scan_desc: "Una scansione di 30 secondi cattura i tuoi parametri vitali",
+    book: "🏥 Prenota un medico",
+    book_desc: "Connettiti con un medico autorizzato vicino a te",
+    just_chat_msg: "💬 Voglio solo chiacchierare",
+    assessment_msg: "🩺 Vorrei una valutazione della salute",
+    placeholder: "Chiedi qualsiasi cosa a Cira...",
+    disclaimer: "Cira può commettere errori. Non è un servizio medico. Verifica le informazioni importanti con un medico.",
+    free_messages_today: "{n}/{m} messaggi gratuiti oggi",
+    login_for_unlimited: "Accedi per illimitati"
+  },
+  pt: {
+    welcome: "Como você gostaria de começar? 💙",
+    just_chat: "💬 Apenas conversar",
+    just_chat_desc: "Pergunte qualquer coisa: sintomas, bem-estar ou saúde geral",
+    assessment: "🩺 Avaliação de saúde",
+    assessment_desc: "Triagem guiada por IA baseada em seus sintomas",
+    scan: "Escaneamento facial",
+    scan_desc: "O escaneamento de 30 segundos captura seus sinais vitais",
+    book: "🏥 Agendar médico",
+    book_desc: "Conecte-se com um médico licenciado perto de você",
+    just_chat_msg: "💬 Eu só quero conversar",
+    assessment_msg: "🩺 Eu gostaria de uma avaliação de saúde",
+    placeholder: "Pergunte qualquer coisa à Cira...",
+    disclaimer: "Cira pode cometer erros. Não é um serviço médico. Verifique informações importantes com um clínico.",
+    free_messages_today: "{n}/{m} mensagens gratuitas hoje",
+    login_for_unlimited: "Faça login para ilimitado"
+  },
+  hi: {
+    welcome: "आप कैसे शुरू करना चाहेंगे? 💙",
+    just_chat: "💬 बस चैट करें",
+    just_chat_desc: "कुछ भी पूछें — लक्षण, कल्याण, या सामान्य स्वास्थ्य",
+    assessment: "🩺 स्वास्थ्य मूल्यांकन",
+    assessment_desc: "आपके लक्षणों के आधार पर निर्देशित AI ट्राइएज",
+    scan: "फेस स्कैन",
+    scan_desc: "30-सेकंड का स्कैन आपके चेहरे से महत्वपूर्ण संकेत कैप्चर करता है",
+    book: "🏥 डॉक्टर बुक करें",
+    book_desc: "अपने पास के लाइसेंस प्राप्त डॉक्टर से जुड़ें",
+    just_chat_msg: "💬 मैं बस चैट करना चाहता हूँ",
+    assessment_msg: "🩺 मुझे स्वास्थ्य मूल्यांकन चाहिए",
+    placeholder: "सीरा से कुछ भी पूछें...",
+    disclaimer: "Cira गलतियाँ कर सकती है। यह कोई चिकित्सा सेवा नहीं है। महत्वपूर्ण जानकारी किसी चिकित्सक से सत्यापित करें।",
+    free_messages_today: "{n}/{m} मुफ़्त संदेश आज",
+    login_for_unlimited: "असीमित के लिए लॉगिन करें"
+  },
+  id: {
+    welcome: "Bagaimana Anda ingin memulai? 💙",
+    just_chat: "💬 Langsung Chat",
+    just_chat_desc: "Tanya apa saja — gejala, kebugaran, atau kesehatan umum",
+    assessment: "🩺 Penilaian Kesehatan",
+    assessment_desc: "Triage AI berdasarkan gejala Anda",
+    scan: "Scan Wajah",
+    scan_desc: "Scan 30 detik untuk mengambil tanda vital Anda",
+    book: "🏥 Pesan Dokter",
+    book_desc: "Terhubung dengan dokter berlisensi di dekat Anda",
+    just_chat_msg: "💬 Saya hanya ingin mengobrol",
+    assessment_msg: "🩺 Saya ingin penilaian kesehatan",
+    placeholder: "Tanya Cira apa saja...",
+    disclaimer: "Cira bisa membuat kesalahan. Bukan layanan medis. Verifikasi informasi penting dengan dokter.",
+    free_messages_today: "{n}/{m} pesan gratis hari ini",
+    login_for_unlimited: "Masuk untuk tanpa batas"
+  },
+  ja: {
+    welcome: "どのように始めますか？ 💙",
+    just_chat: "💬 チャットのみ",
+    just_chat_desc: "症状、ウェルネス、または一般的な健康について何でも聞いてください",
+    assessment: "🩺 健康診断",
+    assessment_desc: "症状に基づいたガイド付きAIトリアージ",
+    scan: "フェイススキャン",
+    scan_desc: "30秒のスキャンで顔からバイタルデータを取得します",
+    book: "🏥 医師を予約",
+    book_desc: "お近くの公認医師に相談してください",
+    just_chat_msg: "💬 チャットしたいだけです",
+    assessment_msg: "🩺 健康診断をお願いします",
+    placeholder: "Ciraにお聞きください...",
+    disclaimer: "Ciraは間違えることがあります。医療サービスではありません。重要な情報は臨床医に確認してください。",
+    free_messages_today: "本日{n}/{m}件の無料メッセージ",
+    login_for_unlimited: "ログインして無制限に"
+  },
+  ko: {
+    welcome: "어떻게 시작할까요? 💙",
+    just_chat: "💬 대화하기",
+    just_chat_desc: "증상, 웰니스 또는 일반적인 건강에 대해 무엇이든 물어보세요",
+    assessment: "🩺 건강 평가",
+    assessment_desc: "귀하의 증상에 기반한 가이드형 AI 트리아제",
+    scan: "페이스 스캔",
+    scan_desc: "30초 스캔으로 얼굴에서 생체 신호를 캡처합니다",
+    book: "🏥 의사 예약",
+    book_desc: "가까운 공인 의사와 연결하세요",
+    just_chat_msg: "💬 그냥 대화하고 싶어요",
+    assessment_msg: "🩺 건강 평가를 받고 싶습니다",
+    placeholder: "Cira에게 무엇이든 물어보세요...",
+    disclaimer: "Cira는 실수할 수 있습니다. 의료 서비스가 아닙니다. 중요한 정보는 임상의에게 확인하세요.",
+    free_messages_today: "오늘 {n}/{m}개의 무료 메시지",
+    login_for_unlimited: "무제한 사용하려면 로그인"
+  },
+  ar: {
+    welcome: "كيف تريد أن تبدأ؟ 💙",
+    just_chat: "💬 محادثة فقط",
+    just_chat_desc: "اسأل عن أي شيء — الأعراض أو العافية أو الصحة العامة",
+    assessment: "🩺 تقييم صحي",
+    assessment_desc: "تريتاج موجه بالذكاء الاصطناعي بناءً على أعراضك",
+    scan: "مسح الوجه",
+    scan_desc: "مسح 30 ثانية يلتقط العلامات الحيوية من وجهك",
+    book: "🏥 احجز طبيباً",
+    book_desc: "تواصل مع طبيب مرخص بالقرب منك",
+    just_chat_msg: "💬 أريد فقط الدردشة",
+    assessment_msg: "🩺 أريد تقييماً صحياً",
+    placeholder: "اسأل سيرا أي شيء...",
+    disclaimer: "قد ترتكب سيرا أخطاء. ليست خدمة طبية. تحقق من المعلومات المهمة مع طبيب.",
+    free_messages_today: "{n}/{m} رسائل مجانية اليوم",
+    login_for_unlimited: "سجل الدخول لاستخدام غير محدود"
+  },
+  zh: {
+    welcome: "您想如何开始？💙",
+    just_chat: "💬 直接聊天",
+    just_chat_desc: "询问任何问题 — 症状、健康或一般医疗",
+    assessment: "🩺 健康评估",
+    assessment_desc: "基于您症状的 AI 引导分诊",
+    scan: "面部扫描",
+    scan_desc: "30 秒扫描从面部捕捉生命体征",
+    book: "🏥 预约医生",
+    book_desc: "与您附近的持牌医生联系",
+    just_chat_msg: "💬 我只想聊聊",
+    assessment_msg: "🩺 我想进行健康评估",
+    placeholder: "向 Cira 询问任何问题...",
+    disclaimer: "Cira 可能会出错。非医疗服务。请向临床医生核实重要信息。",
+    free_messages_today: "今日 {n}/{m} 条免费消息",
+    login_for_unlimited: "登录以无限使用"
+  },
+  ru: {
+    welcome: "Как вы хотите начать? 💙",
+    just_chat: "💬 Просто чат",
+    just_chat_desc: "Спросите о чём угодно — симптомы, здоровье или общее самочувствие",
+    assessment: "🩺 Оценка здоровья",
+    assessment_desc: "Управляемый AI-триаж на основе ваших симптомов",
+    scan: "Сканирование лица",
+    scan_desc: "30-секундное сканирование фиксирует показатели жизнедеятельности",
+    book: "🏥 Записаться к врачу",
+    book_desc: "Свяжитесь с лицензированным врачом рядом с вами",
+    just_chat_msg: "💬 Я просто хочу пообщаться",
+    assessment_msg: "🩺 Я хочу пройти оценку здоровья",
+    placeholder: "Спросите Cira о чём угодно...",
+    disclaimer: "Cira может ошибаться. Это не медицинская служба. Проверяйте важную информацию у врача.",
+    free_messages_today: "{n}/{m} бесплатных сообщений сегодня",
+    login_for_unlimited: "Войдите для безлимитного доступа"
+  },
+  pl: {
+    welcome: "Jak chciałbyś zacząć? 💙",
+    just_chat: "💬 Tylko chat",
+    just_chat_desc: "Zapytaj o cokolwiek — objawy, samopoczucie lub ogólne zdrowie",
+    assessment: "🩺 Ocena zdrowia",
+    assessment_desc: "Kierowany triażem AI na podstawie Twoich objawów",
+    scan: "Skan twarzy",
+    scan_desc: "30-sekundowy skan uchwytuje parametry życiowe z Twojej twarzy",
+    book: "🏥 Zarezerwuj lekarza",
+    book_desc: "Połącz się z licencjonowanym lekarzem w pobliżu",
+    just_chat_msg: "💬 Chcę tylko porozmawiać",
+    assessment_msg: "🩺 Chciałbym ocenę zdrowia",
+    placeholder: "Zapytaj Cirę o cokolwiek...",
+    disclaimer: "Cira może popełniać błędy. To nie usługa medyczna. Ważne informacje weryfikuj z klinicystą.",
+    free_messages_today: "{n}/{m} darmowych wiadomości dzisiaj",
+    login_for_unlimited: "Zaloguj się, aby uzyskać nielimitowany dostęp"
+  }
+};
+
+const FREE_CHAT_WELCOME = "WELCOME_WITH_BUTTONS";
+
+const buildFreeChatPrompt = (userText: string) => [
+  userText, "", "Just Chat mode selected.", "Reply conversationally as Cira.",
+  "Do not ask the user to choose Quick Assessment, Detailed Assessment, or Vital Scan.",
+  "Do not call the openModal tool unless the user explicitly asks for an assessment or scan.",
+  "Do not begin a structured intake unless the user asks for one.",
+].join("\n");
+
+const buildAssessmentToolFollowUp = (payload: any, isRetry = false) => {
+  const pathway = payload?.pathway;
+  const payloadJson = JSON.stringify(payload, null, 2);
+  const renderTool = pathway === "detailed" ? "render_detailed_report" : "render_ai_consult_summary";
+  const reportLabel = pathway === "detailed" ? "detailed clinical report" : "quick assessment summary";
+
+  if (isRetry) {
+    return `You already called prepare_consultation_payload. Do NOT call prepare_consultation_payload again.\n\nUsing ONLY the consultation payload below, your next response MUST contain exactly one tool call: ${renderTool}.\nDo not ask more questions.\nDo not output normal text.\n\nConsultation payload:\n${payloadJson}`;
+  }
+
+  return `Tool result for prepare_consultation_payload received successfully. Here is the consultation payload:\n${payloadJson}\n\nYour next response MUST contain exactly one tool call: ${renderTool}.\nGenerate the ${reportLabel} now.\nDo NOT call prepare_consultation_payload again.\nDo not ask more questions.\nDo not output normal text.`;
+};
+
+const FreeChat = () => {
+  const navigate = useNavigate();
+  const { t: tr } = useTranslation();
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<{ role: "user" | "cira" | "vitals" | "summary" | "detailed_report" | "action_buttons"; text: string; vitalsData?: any[]; summaryData?: ConsultSummary; detailedData?: DetailedReport; buttons?: Array<{ id: string; label: string; description?: string }> }[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatMode, setChatMode] = useState<ChatMode>("none");
+  const [pendingLandingMessage, setPendingLandingMessage] = useState<string | null>(null);
+  const [showModeSelection, setShowModeSelection] = useState(false);
+  const [showFloatingModes, setShowFloatingModes] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingMsgIndex, setTypingMsgIndex] = useState<number | null>(null);
+  const [streamingMsgIndex, setStreamingMsgIndex] = useState<number | null>(null);
+  const [completedStreamingMsgIndices, setCompletedStreamingMsgIndices] = useState<Record<number, true>>({});
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getInitialChatLang());
+
+  // Keep chat language synced with global i18n selection
+  useEffect(() => subscribeChatLang(setSelectedLanguage), []);
+
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLangDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const getT = () => {
+    const lang = selectedLanguage.startsWith('es') ? 'es' :
+      selectedLanguage.startsWith('pt') ? 'pt' :
+        selectedLanguage;
+    return UI_STRINGS[lang] || UI_STRINGS.en;
+  };
+  const t = getT();
+
+  const [conversationHistory, setConversationHistory] = useState<ApiMessage[]>([]);
+  const [isApiLoading, setIsApiLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const [chatHistory, setChatHistory] = useState<FreeChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [guestRemaining, setGuestRemaining] = useState<number>(() => getFreeCredits());
+  const [guestDailyLimit, setGuestDailyLimit] = useState<number>(200);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const chatModeRef = useRef<ChatMode>("none");
+  const currentSessionIdRef = useRef<string | null>(null);
+  const prepPayloadSentRef = useRef(false);
+  const reportRecoveryAttemptsRef = useRef(0);
+  const deviceId = useRef(getDeviceId());
+
+  useEffect(() => { chatModeRef.current = chatMode; }, [chatMode]);
+  useEffect(() => { currentSessionIdRef.current = currentSessionId; }, [currentSessionId]);
+  useEffect(() => { if (showTooltip) { const t = setTimeout(() => setShowTooltip(false), 2000); return () => clearTimeout(t); } }, [showTooltip]);
+
+  const syncChatMode = (mode: ChatMode) => { chatModeRef.current = mode; setChatMode(mode); };
+  const syncCurrentSessionId = (id: string | null) => {
+    currentSessionIdRef.current = id; setCurrentSessionId(id);
+    if (!id) {
+      prepPayloadSentRef.current = false;
+      reportRecoveryAttemptsRef.current = 0;
+    }
+  };
+
+  // Load local chat history
+  useEffect(() => { setChatHistory(getFreeChatHistory()); }, []);
+
+  // Auto-start with welcome message in chat mode
+  useEffect(() => {
+    const scanVitals = secureStorage.get("scan_vitals", true);
+    if (scanVitals) {
+      secureStorage.remove("scan_vitals", true);
+      try {
+        const realVitals = scanVitals;
+        syncChatMode("vitals");
+        setMessages([{ role: "vitals", text: "Face Scan Results", vitalsData: realVitals }]);
+        const vitalsText = realVitals.map((v: any) => `- ${v.label}: ${v.value} ${v.unit}`).join("\n");
+        callClaude(`Here are my face scan vitals results:\n${vitalsText}\n\nPlease analyze these vitals. Do NOT call any tools yet — just analyze and respond.`);
+      } catch (e) { console.error("[FreeChat] Error processing scan vitals:", e); }
+      return;
+    }
+    const landingMsg = secureStorage.get("landing_message", true);
+    if (landingMsg) {
+      secureStorage.remove("landing_message", true);
+      setPendingLandingMessage(landingMsg);
+      setMessages([{ role: "user", text: landingMsg }, { role: "cira", text: FREE_CHAT_WELCOME }]);
+      callClaude(landingMsg);
+      return;
+    }
+    // Default: start with welcome message directly
+    setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]);
+  }, []);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (scrollRef.current) setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
+  }, [messages, isTyping]);
+
+  // Save current session to localStorage
+  const persistSession = useCallback((msgs: typeof messages) => {
+    if (!currentSessionIdRef.current) return;
+    const session: FreeChatSession = {
+      id: currentSessionIdRef.current,
+      title: msgs.find(m => m.role === "user")?.text.slice(0, 60) || "Chat",
+      created_at: new Date().toISOString(),
+      messages: msgs.filter(m => m.role === "user" || m.role === "cira").map(m => ({ role: m.role, text: m.text })),
+    };
+    saveFreeChatSession(session);
+    setChatHistory(getFreeChatHistory());
+  }, []);
+
+  const stripPendingProcessingMessage = (prevMessages: typeof messages) => {
+    const lastMessage = prevMessages[prevMessages.length - 1];
+    return lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__"
+      ? prevMessages.slice(0, -1)
+      : prevMessages;
+  };
+
+  const processToolCalls = (toolCalls: ToolUse[], fallbackText = "") => {
+    let shouldShowProcessing = false;
+    const normalizedFallbackText = fallbackText.toLowerCase();
+    const defaultButtons = [
+      { id: "face_scan", label: "Face Scan", description: "Capture your vitals in 30 seconds" },
+      { id: "book_doctor", label: "🏥 Book a Doctor", description: "Connect with a licensed doctor near you" },
+    ];
+    const scanOnlyButtons = [defaultButtons[0]];
+    const doctorOnlyButtons = [defaultButtons[1]];
+    const resolveButtons = (rawButtons: any[]) => {
+      const isDoctorRequest = /\b(doctor|dr\.?|appointment|book|booking|specialist|clinic|physician)\b/i.test(normalizedFallbackText);
+      const isScanRequest = /\b(scan|face\s*scan|vitals?|capture|measure|check\s*(my|your)?\s*(vitals?|health|blood\s*pressure|heart\s*rate))\b/i.test(normalizedFallbackText);
+      if (!rawButtons?.length) {
+        return isDoctorRequest ? doctorOnlyButtons : isScanRequest ? scanOnlyButtons : defaultButtons;
+      }
+      if (rawButtons.length > 1) {
+        if (isDoctorRequest && !isScanRequest) return rawButtons.filter((b: any) => b.id === "book_doctor");
+        if (isScanRequest && !isDoctorRequest) return rawButtons.filter((b: any) => b.id === "face_scan");
+      }
+      return rawButtons;
+    };
+
+    for (const tool of toolCalls) {
+      switch (tool.name) {
+        case "openModal":
+          if (tool.input.select_care_pathway && chatModeRef.current === "none") setShowModeSelection(true);
+          break;
+        case "render_ai_consult_summary": {
+          const summaryData = tool.input as ConsultSummary;
+          reportRecoveryAttemptsRef.current = 0;
+          setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "summary" as const, text: "", summaryData }]);
+          break;
+        }
+        case "render_detailed_report": {
+          const detailedData = tool.input as DetailedReport;
+          reportRecoveryAttemptsRef.current = 0;
+          setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "detailed_report" as const, text: "", detailedData }]);
+          break;
+        }
+        case "disconnectAgent":
+          if (tool.input.disconnect_now) { toast.info("Session ended."); syncChatMode("none"); }
+          break;
+        case "prepare_consultation_payload": {
+          const payload = tool.input?.consultation_payload;
+          const userMsgCount = messages.filter(m => m.role === "user").length;
+          if (payload?.reason && userMsgCount >= 3) {
+            const isRetry = prepPayloadSentRef.current;
+            if (!isRetry || reportRecoveryAttemptsRef.current < 2) {
+              shouldShowProcessing = true;
+              prepPayloadSentRef.current = true;
+              reportRecoveryAttemptsRef.current += 1;
+              setTimeout(() => {
+                callClaude(buildAssessmentToolFollowUp(payload, isRetry), undefined, true);
+              }, isRetry ? 250 : 500);
+            } else {
+              setMessages(prev => [...stripPendingProcessingMessage(prev), { role: "cira" as const, text: "I couldn't finish the assessment report. Please send one more message and I'll retry." }]);
+            }
+          }
+          break;
+        }
+        case "render_action_buttons": {
+          const buttons = resolveButtons(tool.input?.buttons);
+          setMessages(prev => [...prev, { role: "action_buttons" as const, text: "", buttons }]);
+          break;
+        }
+      }
+    }
+
+    return shouldShowProcessing;
+  };
+
+  const callClaude = async (userText: string, image?: string, hidden = false) => {
+    if (guestRemaining <= 0) {
+      toast.error("Daily free limit reached. Login and upgrade for unlimited access.", {
+        action: { label: "Login", onClick: () => navigate("/login") },
+        duration: 8000,
+      });
+      setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Please login and upgrade to continue." }]);
+      return;
+    }
+
+    const newUserMsg: ApiMessage = { role: "user", text: userText, ...(image ? { image, imageType: "image/png" } : {}) };
+    const updatedHistory = [...conversationHistory, newUserMsg];
+    const outboundText = chatModeRef.current === "chat" && !currentSessionIdRef.current ? buildFreeChatPrompt(userText) : userText;
+
+    setConversationHistory(updatedHistory);
+    if (!hidden) {
+      setIsTyping(true);
+      // Deduct one credit locally per outgoing message
+      const remaining = deductFreeCredits(1);
+      setGuestRemaining(remaining);
+    }
+    setIsApiLoading(true);
+
+    // Cancel any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch { }
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    // Ensure a session ID exists
+    if (!currentSessionIdRef.current) {
+      const newId = `free_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      syncCurrentSessionId(newId);
+    }
+
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "X-Device-Id": deviceId.current,
+      };
+      const payloadBody = JSON.stringify({
+        message: outboundText,
+        sessionId: currentSessionIdRef.current || undefined,
+        deviceId: deviceId.current,
+        language: selectedLanguage,
+        guest: true,
+      });
+
+      const res = await fetch(`${API_BASE}/api/anthropic/chat/stream`, {
+        method: "POST",
+        headers: { ...headers, Accept: "text/event-stream" },
+        body: payloadBody,
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMsg = errorData?.error?.message || errorData?.error || `API error (${res.status})`;
+        if (res.status === 429) {
+          setGuestRemaining(0);
+          throw new Error("RATE_LIMITED: " + errorMsg);
+        }
+        if (res.status === 402 || res.status === 403) {
+          throw new Error("CREDITS_EXHAUSTED: " + errorMsg);
+        }
+        if (res.status === 529) throw new Error("OVERLOADED: " + errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      // ——— SSE streaming: show text word-by-word as it arrives ———
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let buffer = "";
+      let toolCalls: ToolUse[] = [];
+      let pendingToolBlock: { type: "tool_use"; id: string; name: string; inputJson: string } | null = null;
+      const msgIdx = { current: -1 };
+
+      // Add empty placeholder message immediately
+      setMessages(prev => {
+        const updated = [...prev, { role: "cira" as const, text: "" }];
+        msgIdx.current = updated.length - 1;
+        setStreamingMsgIndex(updated.length - 1);
+        return updated;
+      });
+      setIsTyping(false);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const event = JSON.parse(data);
+
+            if (event.type === "warning") {
+              toast.warning(event.message, { duration: 6000 });
+              continue;
+            }
+
+            if (event.sessionId && event.sessionId !== currentSessionIdRef.current) {
+              syncCurrentSessionId(event.sessionId);
+            }
+            if (event.guest_remaining !== undefined) setGuestRemaining(event.guest_remaining);
+            if (event.guest_daily_limit !== undefined) setGuestDailyLimit(event.guest_daily_limit);
+
+            // Live text deltas — render as they arrive
+            if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+              fullText += event.delta.text;
+              setMessages(prev => {
+                const updated = [...prev];
+                if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+                  updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+                }
+                return updated;
+              });
+            }
+
+            // Tool use streaming: start accumulating
+            if (event.type === "content_block_start" && event.content_block?.type === "tool_use") {
+              pendingToolBlock = { type: "tool_use", id: event.content_block.id, name: event.content_block.name, inputJson: "" };
+            }
+
+            // Tool use streaming: accumulate input JSON deltas
+            if (event.type === "content_block_delta" && event.delta?.type === "input_json_delta" && pendingToolBlock) {
+              pendingToolBlock.inputJson += event.delta.partial_json || "";
+            }
+
+            // Tool use streaming: finalize on content_block_stop
+            if (event.type === "content_block_stop") {
+              if (event.content_block?.type === "tool_use") {
+                toolCalls.push(event.content_block as ToolUse);
+              } else if (pendingToolBlock) {
+                try {
+                  const input = pendingToolBlock.inputJson ? JSON.parse(pendingToolBlock.inputJson) : {};
+                  toolCalls.push({ type: "tool_use", id: pendingToolBlock.id, name: pendingToolBlock.name, input });
+                } catch (e) {
+                  console.error("[SSE] Failed to parse tool input JSON:", e);
+                }
+              }
+              pendingToolBlock = null;
+            }
+
+            // Backend sends full message/toolCalls in message_stop (fallback if no deltas)
+            if (event.type === "message_stop") {
+              const topLevelTools: any[] = Array.isArray(event.toolCalls) ? event.toolCalls : [];
+              const populatedTopLevel = topLevelTools.filter(
+                (tc) => tc?.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0
+              );
+              if (populatedTopLevel.length > 0 && toolCalls.length === 0) {
+                toolCalls = populatedTopLevel as ToolUse[];
+              }
+              if (event.message) {
+                const msg = event.message as ClaudeResponse;
+                const finalTools = extractToolCalls(msg).filter(
+                  (tc) => tc.input && Object.keys(tc.input).length > 0
+                );
+                if (finalTools.length > 0 && toolCalls.length === 0) {
+                  toolCalls = finalTools;
+                }
+                const responseText = extractText(msg);
+                if (!fullText && responseText) {
+                  fullText = responseText;
+                  setTypingMsgIndex(msgIdx.current);
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    if (msgIdx.current >= 0 && updated[msgIdx.current]) {
+                      updated[msgIdx.current] = { ...updated[msgIdx.current], text: fullText };
+                    }
+                    return updated;
+                  });
+                }
+              }
+            }
+
+            // Catch-all: backend may send tool_use as a standalone event
+            if (event.type === "tool_use" && event.name && event.input && Object.keys(event.input).length > 0) {
+              toolCalls.push(event as ToolUse);
+            }
+            if (event.type !== "message_stop" && Array.isArray(event.toolCalls)) {
+              for (const tc of event.toolCalls) {
+                if (tc.type === "tool_use" && tc.name && tc.input && Object.keys(tc.input).length > 0) {
+                  toolCalls.push(tc);
+                }
+              }
+            }
+          } catch { /* skip malformed SSE */ }
+        }
+      }
+
+      if (msgIdx.current >= 0) {
+        setCompletedStreamingMsgIndices((prev) => ({ ...prev, [msgIdx.current]: true }));
+      }
+      setStreamingMsgIndex(null);
+
+      if (fullText) {
+        setConversationHistory(prev => [...prev, { role: "assistant", text: fullText }]);
+        setMessages(prev => {
+          setTimeout(() => persistSession(prev), 100);
+          return prev;
+        });
+      }
+
+      if (toolCalls.length > 0) {
+        const renderedReport = toolCalls.some(
+          (t) => t.name === "render_ai_consult_summary" || t.name === "render_detailed_report"
+        );
+        if (renderedReport) {
+          if (abortControllerRef.current) {
+            try { abortControllerRef.current.abort(); } catch { }
+            abortControllerRef.current = null;
+          }
+          setMessages(prev =>
+            prev.filter(m => !(m.role === "cira" && m.text === "__GENERATING_REPORT__"))
+          );
+        }
+        const shouldShowProcessing = processToolCalls(toolCalls, fullText);
+        if (!fullText && shouldShowProcessing && !renderedReport) {
+          setMessages(prev => {
+            const lastMessage = prev[prev.length - 1];
+            if (lastMessage?.role === "cira" && lastMessage.text === "__GENERATING_REPORT__") {
+              return prev;
+            }
+            return [...prev, { role: "cira" as const, text: "__GENERATING_REPORT__" }];
+          });
+        }
+      }
+
+    } catch (err: any) {
+      // User-initiated abort — don't show an error toast
+      if (err?.name === "AbortError" || /aborted/i.test(err?.message || "")) {
+        console.log("[FreeChat] Request aborted by user");
+      } else {
+        const msg = err?.message || "Something went wrong";
+        if (msg.startsWith("RATE_LIMITED")) {
+          toast.error("Daily free limit reached. Sign up for unlimited access!", { action: { label: "Sign Up", onClick: () => navigate("/login") }, duration: 8000 });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ You've reached your daily free message limit. Sign up for unlimited access!" }]);
+        } else if (msg.startsWith("CREDITS_EXHAUSTED")) {
+          toast.error("Credits exhausted. Login to continue.", { action: { label: "Login", onClick: () => navigate("/login") } });
+          setMessages(prev => [...prev, { role: "cira", text: "⚠️ Free credits used up. Please login and upgrade to continue." }]);
+        } else if (msg.startsWith("OVERLOADED")) {
+          toast.error("Service busy. Try again shortly.", { action: { label: "Retry", onClick: () => callClaude(userText, image) } });
+        } else {
+          toast.error("Failed: " + msg);
+        }
+        console.error("[FreeChat Claude Error]", err);
+      }
+    } finally {
+      setIsTyping(false);
+      setIsApiLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      try { abortControllerRef.current.abort(); } catch { }
+      abortControllerRef.current = null;
+    }
+    setIsApiLoading(false);
+    setIsTyping(false);
+  };
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || isApiLoading) return;
+    if (chatModeRef.current === "none") syncChatMode("chat");
+    const userText = message.trim();
+    setMessages(prev => [...prev, { role: "user", text: userText }]);
+    setMessage("");
+    callClaude(userText);
+  };
+
+  const getTranslatedUserMsg = (mode: ChatMode) => {
+    if (mode === "chat") return t.just_chat_msg;
+    if (mode === "assessment") return t.assessment_msg;
+    return mode;
+  };
+
+  const selectMode = async (mode: ChatMode) => {
+    // Hide the welcome-with-buttons card once the user picks an option
+    setMessages((prev) => prev.filter((m) => m.text !== "WELCOME_WITH_BUTTONS"));
+    if (mode === "vitals") {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
+        const res = await fetch(`${API_BASE}/api/guest/scan-check`, {
+          headers: { "X-Device-Id": deviceId.current },
+        });
+        const data = await res.json();
+        if (!data.allowed) {
+          toast.error("Free guest scan limit reached. Login to get more scans.");
+          navigate("/login");
+          return;
+        }
+      } catch {
+        toast.error("Could not verify scan eligibility.");
+        return;
+      }
+      syncChatMode(mode);
+      setShowModeSelection(false);
+      sessionStorage.setItem("cira_free_scan_return", "/free-chat");
+      navigate("/vitals-scan?guest=1");
+      return;
+    }
+
+    // Reset for a fresh conversation
+    syncCurrentSessionId(null);
+    setConversationHistory([]);
+
+    prepPayloadSentRef.current = false;
+    syncChatMode(mode);
+    setShowModeSelection(false);
+    setPendingLandingMessage(null);
+
+    const userText = getTranslatedUserMsg(mode);
+
+    // Replace welcome message with user's selection + send to AI
+    setMessages([{ role: "user", text: userText }]);
+    callClaude(userText);
+  };
+
+  const loadSession = (session: FreeChatSession) => {
+    syncCurrentSessionId(session.id);
+    setConversationHistory([]);
+    syncChatMode("chat");
+    const uiMessages = session.messages.map(m => ({
+      role: (m.role === "user" ? "user" : "cira") as "user" | "cira",
+      text: m.text,
+    }));
+    setMessages(uiMessages);
+    setConversationHistory(session.messages.map(m => ({ role: m.role === "user" ? "user" : "assistant" as any, text: m.text })));
+    setShowHistory(false);
+  };
+
+  const handleDeleteChat = (id: string) => {
+    deleteFreeChatSession(id);
+    setChatHistory(getFreeChatHistory());
+    if (currentSessionId === id) {
+      syncCurrentSessionId(null);
+      setMessages([]);
+      setConversationHistory([]);
+      setStreamingMsgIndex(null);
+      setCompletedStreamingMsgIndices({});
+      syncChatMode("none");
+    }
+    toast.success("Chat deleted");
+  };
+
+  return (
+    <>
+      <SEO path="/free-chat" />
+    <h1 className="sr-only">Free AI Health Chat with Cira</h1>
+    <div className="flex bg-background" style={{ height: "100dvh" }}>
+      {/* Chat history drawer */}
+      {showHistory && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/10" onClick={() => setShowHistory(false)} />
+          <div className="fixed top-0 bottom-0 z-50 w-72 bg-card border-r border-border shadow-2xl flex flex-col animate-[slide-in-left_0.2s_ease-out] left-0" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+              <p className="text-sm font-semibold text-foreground font-heading">{tr("components.chatHistory.title")}</p>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { syncCurrentSessionId(null); setMessages([{ role: "cira", text: FREE_CHAT_WELCOME }]); setConversationHistory([]); syncChatMode("none"); setShowHistory(false); }} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" title={tr("components.chatHistory.newChat")} aria-label={tr("components.chatHistory.newChat")}>
+                  <Plus size={16} />
+                </button>
+                <button onClick={() => setShowHistory(false)} className="p-1.5 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground" aria-label="Close chat history">
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Login CTA */}
+            <div className="px-3 pt-3">
+              <button onClick={() => navigate("/login")} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium hover:bg-primary/20 transition-all">
+                <LogIn size={14} />
+                <div className="text-left">
+                  <p className="font-semibold text-[11px]">{tr("components.chatHistory.loginTitle")}</p>
+                  <p className="text-[9px] text-primary/70">{tr("components.chatHistory.loginSubtitle")}</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Daily messages remaining */}
+            <div className="px-3 pt-2 pb-1">
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <Sparkles size={10} />
+                <span>{tr("components.chatHistory.messagesToday", { current: guestRemaining, limit: guestDailyLimit })}</span>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-3 space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body px-2 mb-2">{tr("components.chatHistory.recent")}</p>
+              {chatHistory.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">{tr("components.chatHistory.empty")}</p>
+              ) : chatHistory.map((chat) => (
+                <div key={chat.id} className="group w-full flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-body transition-all cursor-pointer text-muted-foreground hover:bg-accent/50 hover:text-foreground" onClick={() => loadSession(chat)}>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="truncate font-medium">{chat.title || tr("components.chatHistory.untitled")}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(chat.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); handleDeleteChat(chat.id); }} className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all shrink-0" title={tr("components.chatHistory.delete")}>
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
+        {/* Top bar */}
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+          <button onClick={() => setShowHistory(!showHistory)} className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-accent/80 hover:text-foreground transition-all bg-card/60 backdrop-blur-sm border border-border/40 shadow-sm" title={tr("components.chatHistory.title")} aria-label={tr("components.chatHistory.title")}>
+            <Menu size={18} strokeWidth={1.5} />
+          </button>
+        </div>
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          <button onClick={() => navigate("/login")} className="px-3 h-9 rounded-xl flex items-center gap-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-all bg-card/60 backdrop-blur-sm border border-primary/20 shadow-sm">
+            <LogIn size={14} />
+            {tr("components.chatHistory.login")}
+          </button>
+        </div>
+
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pb-4">
+            {/* Chat messages */}
+            <div className="relative min-h-full bg-white">
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-gradient-to-bl from-pink-100/40 via-purple-100/20 to-transparent rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 -left-20 w-[250px] h-[250px] bg-gradient-to-tr from-blue-100/30 via-cyan-50/20 to-transparent rounded-full blur-[80px]" />
+              </div>
+            <div className="relative z-10 max-w-2xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6 pt-16 md:pt-6">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}>
+                  {msg.role === "summary" && msg.summaryData ? (
+                    <ConsultSummaryCard data={msg.summaryData} />
+                  ) : msg.role === "detailed_report" && msg.detailedData ? (
+                    <DetailedReportCard data={msg.detailedData} />
+                  ) : msg.role === "vitals" && msg.vitalsData ? (
+                    <div className="w-full max-w-sm md:max-w-md">
+                      <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+                        <div className="px-4 py-3 border-b border-border/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/60">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center">
+                              <Activity size={12} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold text-foreground font-heading">Your Vitals</p>
+                              <p className="text-[9px] text-muted-foreground">Captured via Face Scan · Just now</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-2">
+                          {msg.vitalsData.map((vital: any) => {
+                            const iconMap: Record<string, any> = { "Heart Rate": Heart, "Blood Pressure": Activity, "Breathing Rate": Wind, "Stress Index": Brain, "HRV": Zap, "BMI": Scale };
+                            const VIcon = vital.icon || iconMap[vital.label] || Activity;
+                            return (
+                              <div key={vital.label} className="flex flex-col items-center p-2.5 rounded-xl">
+                                <div className={`w-7 h-7 rounded-lg ${vital.color || "bg-primary/10 text-primary"} flex items-center justify-center mb-1`}>
+                                  <VIcon size={13} />
+                                </div>
+                                <p className="text-[13px] font-bold text-foreground">{vital.value}</p>
+                                <p className="text-[8px] text-muted-foreground text-center leading-tight">{vital.label}</p>
+                                <p className="text-[7px] text-muted-foreground/60">{vital.unit}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : msg.role === "action_buttons" && msg.buttons ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="flex flex-col gap-2">
+                        {msg.buttons.map((btn) => (
+                          <button
+                            key={btn.id}
+                            onClick={() => {
+                              if (btn.id === "face_scan") selectMode("vitals");
+                              else if (btn.id === "book_doctor") {
+                                const trackingData = { timestamp: new Date().toISOString(), deviceId: deviceId.current, page: window.location.pathname, source: "agent_button", userAgent: navigator.userAgent };
+                                console.log("[AirDoctor] Referral click:", trackingData);
+                                try { const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com"; fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { }); } catch { }
+                                try { const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]"); clicks.push(trackingData); localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100))); } catch { }
+                                window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                              }
+                            }}
+                            className={`flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-colors active:scale-95 ${btn.id === "book_doctor" ? "border-primary/30 bg-primary/5 hover:bg-primary/10" : "border-border/60 hover:bg-accent"}`}
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{btn.label}</span>
+                            {btn.description && <span className="text-[10px] text-muted-foreground">{btn.description}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : msg.role === "cira" && msg.text === "__GENERATING_REPORT__" ? (
+                    <ReportGeneratingIndicator />
+                  ) : msg.role === "user" ? (
+                    <div className="bg-secondary/80 text-foreground rounded-[20px] rounded-tr-md px-4 py-2.5 max-w-[85%] md:max-w-[70%]">
+                      <p className="text-[14px] leading-6 whitespace-pre-line font-body">{renderFormattedText(msg.text)}</p>
+                    </div>
+                  ) : msg.text === "WELCOME_WITH_BUTTONS" ? (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active /></div>
+                      <div className="text-foreground">
+                        <p className="text-[14px] md:text-[15px] leading-7 font-body whitespace-pre-line">
+                          {t.welcome}
+                        </p>
+                        <div className="flex flex-col gap-2 mt-3">
+                          <button
+                            onClick={() => selectMode("vitals")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-emerald-400/40 text-left bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/15 hover:to-teal-500/15 transition-all active:scale-95 animate-gradient-pulse"
+                          >
+                            <span className="text-[12px] font-medium text-foreground flex items-center gap-1.5">
+                              <ScanFace size={14} /> {t.scan}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">{t.scan_desc}</span>
+                          </button>
+                          <button
+                            onClick={() => selectMode("assessment")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.assessment}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.assessment_desc}</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              const trackingData = {
+                                timestamp: new Date().toISOString(),
+                                deviceId: deviceId.current,
+                                page: window.location.pathname,
+                                source: "welcome_button",
+                                userAgent: navigator.userAgent,
+                                screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                              };
+                              console.log("[AirDoctor] Referral click:", trackingData);
+                              try {
+                                const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
+                                fetch(`${API_BASE}/api/tracking/airdoctor-click`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(trackingData) }).catch(() => { });
+                              } catch { }
+                              try {
+                                const clicks = JSON.parse(localStorage.getItem("cira_airdoctor_clicks") || "[]");
+                                clicks.push(trackingData);
+                                localStorage.setItem("cira_airdoctor_clicks", JSON.stringify(clicks.slice(-100)));
+                              } catch { }
+                              window.open("https://airdoctor.biz/Cira", "_blank", "noopener,noreferrer");
+                            }}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-primary/30 bg-primary/5 text-left hover:bg-primary/10 transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.book}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.book_desc}</span>
+                          </button>
+                          
+
+
+                          <button
+                            onClick={() => selectMode("chat")}
+                            className="flex flex-col items-start px-3.5 py-2 rounded-xl border border-border/60 text-left hover:bg-accent transition-colors active:scale-95"
+                          >
+                            <span className="text-[12px] font-medium text-foreground">{t.just_chat}</span>
+                            <span className="text-[10px] text-muted-foreground">{t.just_chat_desc}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="max-w-[95%] md:max-w-[80%]">
+                      <div className="mb-2"><AiSparkleIcon size={20} active thinking={streamingMsgIndex === i && !msg.text} /></div>
+                      <div className="text-foreground">
+                        <p className="text-[14px] md:text-[15px] leading-7 font-body">
+                          {streamingMsgIndex === i || completedStreamingMsgIndices[i] ? (
+                            <LiveTypewriterText
+                              text={msg.text}
+                              speed={4}
+                              formatted
+                              isComplete={streamingMsgIndex !== i}
+                              onComplete={() => {
+                                setCompletedStreamingMsgIndices((prev) => {
+                                  if (!prev[i]) return prev;
+                                  const next = { ...prev };
+                                  delete next[i];
+                                  return next;
+                                });
+                              }}
+                            />
+                          ) : typingMsgIndex === i ? (
+                            <LiveTypewriterText text={msg.text} speed={4} formatted isComplete onComplete={() => setTypingMsgIndex(null)} />
+                          ) : (
+                            <span className="whitespace-pre-line">
+                              {renderFormattedText(msg.text)}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Inline mode selection */}
+              {showModeSelection && (
+                <div className="animate-fade-in space-y-2.5 w-full">
+                  <button onClick={() => selectMode("vitals")} className="group w-full relative overflow-hidden rounded-xl text-left transition-all active:scale-[0.98]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 opacity-95" />
+                    <div className="relative z-10 p-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0 relative">
+                        <ScanFace size={18} className="text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-bold text-white font-heading">{t.scan}</p>
+                        <p className="text-[9px] text-white/70 mt-0.5">{t.scan_desc}</p>
+                      </div>
+                    </div>
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    {chatModes.filter(m => m.id !== "vitals").map((mode) => {
+                      const Icon = mode.icon;
+                      return (
+                        <button key={mode.id} onClick={() => selectMode(mode.id)} className="group bg-card border border-border/50 rounded-xl p-2.5 text-left active:scale-[0.98] transition-all">
+                          <div className={`w-7 h-7 rounded-lg ${mode.bgGlow} flex items-center justify-center mb-1.5`}>
+                            <Icon size={13} style={{ color: mode.gradient.includes("blue") ? "#3b82f6" : "#a855f7" }} />
+                          </div>
+                          <p className="text-[10px] font-semibold text-foreground mb-0.5 font-heading">{mode.id === 'assessment' ? t.assessment : mode.title}</p>
+                          <p className="text-[8px] text-muted-foreground leading-snug line-clamp-2 font-body">{mode.id === 'assessment' ? t.assessment_desc : mode.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button onClick={() => selectMode("chat")} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border/30 active:scale-[0.98] transition-all w-full">
+                    <div className="w-6 h-6 rounded-md bg-muted/50 flex items-center justify-center">
+                      <MessageCircle size={12} className="text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-medium text-foreground">{t.just_chat}</p>
+                      <p className="text-[8px] text-muted-foreground">{t.just_chat_desc}</p>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* Thinking indicator */}
+              {isTyping && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="max-w-[95%] md:max-w-[80%]">
+                    <div className="mb-2"><AiSparkleIcon size={20} active thinking /></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="relative shrink-0 bg-white" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}>
+          <form onSubmit={handleSend} className="relative z-10 max-w-2xl mx-auto px-3 py-2 md:px-4 md:py-3">
+            <div className="bg-secondary/60 rounded-full flex items-center border border-border/30 px-2">
+              <div className="relative shrink-0" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowLangDropdown(!showLangDropdown)}
+                  className="flex items-center gap-1.5 bg-transparent hover:bg-secondary/40 text-foreground text-[12px] font-medium py-2 pl-2 pr-2 rounded-xl cursor-pointer transition-all outline-none h-full"
+                >
+                  {(() => {
+                    const selLang = languages.find(l => l.id === selectedLanguage) || languages[0];
+                    return (
+                      <>
+                        <img src={`https://flagcdn.com/w20/${selLang.country}.png`} srcSet={`https://flagcdn.com/w40/${selLang.country}.png 2x`} width="16" alt={`${selLang.label} flag`} className="rounded-[2px]" />
+                        <span className="hidden sm:inline-block">{selLang.label}</span>
+                        <span className="sm:hidden">{selLang.id.toUpperCase()}</span>
+                      </>
+                    );
+                  })()}
+                  <ChevronDown size={10} className="opacity-50 ml-0.5" />
+                </button>
+
+                {showLangDropdown && (
+                  <div className="absolute bottom-[calc(100%+8px)] left-0 w-max min-w-[120px] max-h-[280px] overflow-y-auto bg-card rounded-xl border border-border shadow-lg py-1.5 z-50 animate-fade-in origin-bottom-left [scrollbar-width:thin] [scrollbar-color:hsl(var(--border))_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border/60 [&::-webkit-scrollbar-thumb]:rounded-full">
+                    {languages.map(lang => (
+                      <button
+                        key={lang.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLanguage(lang.id);
+                          syncGlobalFromChat(lang.id);
+                          setShowLangDropdown(false);
+                        }}
+                        className={`w-full text-left flex items-center gap-2.5 px-3 py-2 text-[12px] hover:bg-accent transition-colors ${selectedLanguage === lang.id ? 'bg-accent/50 font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
+                      >
+                        <img src={`https://flagcdn.com/w20/${lang.country}.png`} srcSet={`https://flagcdn.com/w40/${lang.country}.png 2x`} width="16" alt={`${lang.label} flag`} className="rounded-[2px] shadow-sm drop-shadow-sm" />
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+
+                )}
+              </div>
+
+              <div className="w-px h-4 bg-border/40 mx-1" />
+
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={chatMode === "none" ? "☝️" : t.placeholder}
+                className="flex-1 py-3 px-2 bg-transparent text-foreground text-[15px] outline-none placeholder:text-muted-foreground/50 disabled:opacity-50 font-body"
+                disabled={chatMode === "none"}
+              />
+              {isApiLoading ? (
+                <button
+                  type="button"
+                  onClick={handleStop}
+                  aria-label="Stop generating"
+                  title="Stop generating"
+                  className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded-full shrink-0 mr-1 hover:opacity-80 transition-opacity"
+                >
+                  <Square size={14} strokeWidth={2.5} fill="currentColor" />
+                </button>
+              ) : (
+                <button type="submit" disabled={!message.trim()} aria-label="Send message" className="w-10 h-10 flex items-center justify-center text-muted-foreground shrink-0 mr-1 hover:text-foreground transition-colors disabled:opacity-30">
+                  <Send size={18} strokeWidth={1.5} />
+                </button>
+              )}
+            </div>
+          </form>
+          {/* Disclaimer + Daily limit counter */}
+          <div className="text-center px-3 space-y-0.5">
+            <p className="text-[9px] text-muted-foreground/60">{t.disclaimer || tr("components.chatHistory.disclaimer")}</p>
+            <p className="text-[9px] text-muted-foreground/50">{(t.free_messages_today || "{n}/{m} free messages today").replace("{n}", String(guestRemaining)).replace("{m}", String(guestDailyLimit))} · <button onClick={() => navigate("/login")} className="text-primary hover:underline">{t.login_for_unlimited || tr("components.chatHistory.loginForUnlimited")}</button></p>
+          </div>
+        </div>
+      </div>
+      <ConsentBanner />
+    </div>
+    </>
+  );
+};
+
+export default FreeChat;

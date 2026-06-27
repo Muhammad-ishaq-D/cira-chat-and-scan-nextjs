@@ -56,9 +56,7 @@ const SEO = ({ title, description, path, image, noindex, jsonLd, type = "website
       <meta name="twitter:image" content={ogImage} />
 
       {ldArray.map((obj, i) => (
-        <script key={i} type="application/ld+json">
-          {JSON.stringify(obj)}
-        </script>
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }} />
       ))}
     </Helmet>
   );

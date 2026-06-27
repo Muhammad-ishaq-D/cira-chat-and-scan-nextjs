@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslation } from "react-i18next";
 import { Globe, ChevronDown } from "lucide-react";
 import { SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n";

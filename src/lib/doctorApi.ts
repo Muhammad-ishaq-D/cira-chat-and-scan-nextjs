@@ -3,7 +3,7 @@
  * Token stored under `cira_doctor_token`.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
 
 export interface Doctor {
   id: number;

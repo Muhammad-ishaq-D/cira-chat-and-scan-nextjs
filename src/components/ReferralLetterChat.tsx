@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from '@/lib/react-router-compat';
 import { useTranslation } from "react-i18next";
 import {
   FileText, ChevronRight, SkipForward, Pencil, Download,

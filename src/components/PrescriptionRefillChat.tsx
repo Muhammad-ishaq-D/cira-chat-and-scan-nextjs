@@ -1,6 +1,8 @@
+"use client";
+
 // import { useEffect, useMemo, useRef, useState } from "react";
 // import { useTranslation } from "react-i18next";
-// import { Link, useNavigate } from "react-router-dom";
+// import { Link, useNavigate } from '@/lib/react-router-compat';
 // import {
 //   ArrowLeft,
 //   Lock,
@@ -1639,7 +1641,7 @@
 //     <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-12 text-center w-full overflow-y-auto scrollbar-hide">
 //       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
 //         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
-//           <img src={ciraLogo} alt="Cira" width={40} height={40} />
+//           <img src={ciraLogo.src} alt="Cira" width={40} height={40} />
 //         </div>
 
 //         <h1
@@ -1770,7 +1772,7 @@
 //       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
 //         {/* Cira logo mark */}
 //         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
-//           <img src={ciraLogo} alt="Cira" width={40} height={40} />
+//           <img src={ciraLogo.src} alt="Cira" width={40} height={40} />
 //         </div>
 
 //         {/* Headline */}
@@ -3205,7 +3207,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from '@/lib/react-router-compat';
 import {
   ArrowLeft,
   Lock,
@@ -3286,8 +3288,7 @@ const REFILL_PRICE_DISPLAY = "€10.00";
 const PRESCRIBER_NAME = "Dr. Didier Decamps";
 const PRESCRIBER_CLINIC = "CLINIQUE DE LA BRISEE";
 
-const API_BASE = (import.meta as unknown as { env: { VITE_API_URL?: string } }).env
-  .VITE_API_URL || "https://askainurse.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
 
 const newRefillId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -4911,7 +4912,7 @@ const ModeSelectionScreen = ({
     <div className="flex-1 flex flex-col items-center px-6 pt-10 sm:pt-16 pb-12 text-center w-full overflow-y-auto scrollbar-hide">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
-          <img src={ciraLogo} alt="Cira" width={40} height={40} />
+          <img src={ciraLogo.src} alt="Cira" width={40} height={40} />
         </div>
 
         <h1
@@ -5042,7 +5043,7 @@ const Step1Hero = ({
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl">
         {/* Cira logo mark */}
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-8 shadow-[0_8px_24px_-12px_rgba(15,42,60,0.18)]">
-          <img src={ciraLogo} alt="Cira" width={40} height={40} />
+          <img src={ciraLogo.src} alt="Cira" width={40} height={40} />
         </div>
 
         {/* Headline */}

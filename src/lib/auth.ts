@@ -2,13 +2,15 @@
  * Auth utilities — JWT token management for Cira API
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
 const TOKEN_KEY = "cira_token";
 const REFRESH_KEY = "cira_refresh_token";
 const USER_KEY = "cira_user";
 const POST_AUTH_REDIRECT_KEY = "cira_post_auth_redirect";
 
 function getStoredValue(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  
   const value = localStorage.getItem(key);
 
   if (!value || value === "undefined" || value === "null") {
@@ -105,6 +107,7 @@ export function isAuthenticated(): boolean {
 
 /** Store auth data */
 function saveAuth(data: AuthResponse) {
+  if (typeof window === "undefined") return;
   localStorage.setItem(TOKEN_KEY, data.token);
   if (data.refreshToken) localStorage.setItem(REFRESH_KEY, data.refreshToken);
   else localStorage.removeItem(REFRESH_KEY);
@@ -115,6 +118,7 @@ function saveAuth(data: AuthResponse) {
 
 /** Clear auth data */
 export function logout() {
+  if (typeof window === "undefined") return;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_KEY);
   localStorage.removeItem(USER_KEY);
@@ -123,6 +127,7 @@ export function logout() {
 
 /** Update avatar in stored user data */
 export function updateUserAvatar(avatar: string) {
+  if (typeof window === "undefined") return;
   const user = getUser();
   if (user) {
     localStorage.setItem(USER_KEY, JSON.stringify({ ...user, avatar }));

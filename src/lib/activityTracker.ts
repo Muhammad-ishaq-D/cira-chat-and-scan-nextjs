@@ -5,7 +5,7 @@
  * - Admin users: nothing tracked.
  */
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || "https://askainurse.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
 const ENDPOINT = `${API_BASE}/api/track`;
 const FLUSH_MS = 5000;
 const SCROLL_THROTTLE_MS = 1500;

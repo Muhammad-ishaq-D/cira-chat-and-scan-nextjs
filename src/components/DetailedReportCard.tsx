@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertTriangle, Activity, Heart, Brain, Pill, Stethoscope, ClipboardList, ShieldCheck, TrendingUp, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

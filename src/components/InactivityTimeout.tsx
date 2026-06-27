@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from '@/lib/react-router-compat';
 import { useTranslation } from "react-i18next";
 import { logout, isAuthenticated } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";

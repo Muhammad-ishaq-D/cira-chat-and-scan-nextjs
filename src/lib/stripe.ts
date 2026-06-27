@@ -13,7 +13,7 @@ export const STRIPE_PAYMENT_LINKS: Record<string, string> = {
 export const PENDING_PLAN_STORAGE_KEY = "cira_pending_plan";
 
 /** Your public app URL (no trailing slash). Set VITE_APP_URL in .env for deploy. */
-export const APP_URL = (import.meta.env.VITE_APP_URL || "https://askainurse.com").replace(/\/$/, "");
+export const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://askainurse.com").replace(/\/$/, "");
 
 /**
  * Individual after-payment URLs — paste each into the matching Stripe Payment Link.

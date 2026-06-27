@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Star, X } from "lucide-react";
 import { useTranslation } from "react-i18next";

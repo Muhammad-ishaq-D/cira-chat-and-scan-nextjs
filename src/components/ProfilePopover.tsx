@@ -1,4 +1,6 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useNavigate } from '@/lib/react-router-compat';
 import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CreditCard, Scan, MessageCircle, Crown, ChevronRight, History, Loader2, Settings } from "lucide-react";

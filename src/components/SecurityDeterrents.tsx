@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 /**
@@ -11,7 +13,7 @@ const SecurityDeterrents = () => {
     // Fetch developer key from backend
     const fetchDevKey = async () => {
       try {
-        const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
         const res = await fetch(`${API_BASE}/api/guest/dev-key`);
         const data = await res.json();
         if (data.developerKey) {

@@ -1,9 +1,11 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/react-router-compat";
 import { useTranslation } from "react-i18next";
 import { Menu, X, ChevronRight, Lock, Plus } from "lucide-react";
 import ciraLogo from "@/assets/cira-logo.svg";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { isAuthenticated } from "@/lib/auth";
 import { Globe, Check } from "lucide-react";
 import { SUPPORTED_LANGUAGES, changeLanguage } from "@/i18n";
@@ -73,12 +75,13 @@ const HamburgerMenu = () => {
         side="left"
         className="w-[88vw] sm:w-[380px] p-0 border-r border-border bg-background flex flex-col [&>button]:hidden"
       >
+        <SheetTitle className="sr-only">Menu</SheetTitle>
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <button
             onClick={() => { setOpen(false); navigate("/"); }}
             className="flex items-center gap-2"
           >
-            <img src={ciraLogo} alt="Cira" width={28} height={28} />
+            <img src={ciraLogo.src} alt="Cira" width={28} height={28} />
             <span className="font-heading text-xl font-semibold text-foreground">Cira</span>
           </button>
           <button

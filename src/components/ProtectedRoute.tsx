@@ -1,4 +1,6 @@
-import { Navigate, useLocation } from "react-router-dom";
+"use client";
+
+import { Navigate, useLocation } from '@/lib/react-router-compat';
 import { isAuthenticated } from "@/lib/auth";
 
 interface ProtectedRouteProps {

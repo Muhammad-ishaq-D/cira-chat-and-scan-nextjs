@@ -30,3 +30,6 @@ dist
 
 # Large binary assets
 public/wasm/*.wasm
+
+.next
+

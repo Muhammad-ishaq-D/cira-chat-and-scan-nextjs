@@ -363,7 +363,7 @@ export function useShenAI() {
         // (e.g. CloudFront). Must respond with `Cross-Origin-Resource-Policy: cross-origin`
         // and permissive CORS so it loads under cross-origin isolation.
         const wasmUrl =
-          import.meta.env.VITE_SHENAI_WASM_URL || "/wasm/shenai_sdk.wasm";
+          process.env.NEXT_PUBLIC_SHENAI_WASM_URL || "/wasm/shenai_sdk.wasm";
 
         const sdk: ShenaiSDK = await ShenAI({
           enablePreloadDisplay: false,

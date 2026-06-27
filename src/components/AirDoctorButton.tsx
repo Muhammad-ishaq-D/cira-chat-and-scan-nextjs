@@ -1,3 +1,5 @@
+"use client";
+
 import { Stethoscope } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getDeviceId } from "@/lib/freeCredits";
@@ -47,7 +49,7 @@ const AirDoctorButton = () => {
 
     // Send tracking event to backend (fire-and-forget)
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || "https://askainurse.com";
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://askainurse.com";
       fetch(`${API_BASE}/api/tracking/airdoctor-click`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
