@@ -77,16 +77,18 @@ const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const activeNav: string = "home";
-  const localUser = getUser();
-  const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "U";
 
+  const [localUser, setLocalUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [vitals, setVitals] = useState(defaultVitals);
   const [healthIndices, setHealthIndices] = useState(defaultHealthIndices);
   const [healthRisks, setHealthRisks] = useState(defaultHealthRisks);
   const [loading, setLoading] = useState(true);
 
+  const initials = localUser?.name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase() || "U";
+
   useEffect(() => {
+    setLocalUser(getUser());
     const load = async () => {
       try {
         const [profileData, vitalsData] = await Promise.allSettled([

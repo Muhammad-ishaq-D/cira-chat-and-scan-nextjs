@@ -6,6 +6,7 @@ import { Home, ScanFace, FileText, UserRound, Sparkles, Pill } from "lucide-reac
 import AiSparkleIcon from "@/components/AiSparkleIcon";
 import ProfilePopover from "@/components/ProfilePopover";
 import { isAuthenticated } from "@/lib/auth";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { icon: Home, tKey: "dashboard.nav.home", id: "home", path: "/dashboard" },
@@ -30,8 +31,15 @@ const MobileBottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const loggedIn = isAuthenticated();
   const activeId = routeToId[location.pathname] || "";
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const loggedIn = mounted ? isAuthenticated() : false;
 
   const items = loggedIn
     ? navItems.slice(0, 4).concat({ icon: UserRound, tKey: "nav.profile", id: "profile", path: "/profile" })

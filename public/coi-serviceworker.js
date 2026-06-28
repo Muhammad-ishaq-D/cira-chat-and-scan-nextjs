@@ -149,10 +149,11 @@ if (typeof window === 'undefined') {
             return pathname === "/vitals-scan" || mode === "scan";
         };
 
+        // You can customize the behavior of this script through a global `coi` variable.
         const coi = {
             shouldRegister: () => needsCrossOriginIsolation(),
             shouldDeregister: () => !needsCrossOriginIsolation(),
-            coepCredentialless: () => false,
+            coepCredentialless: () => true,
             doReload: () => window.location.reload(),
             quiet: false,
             ...window.coi

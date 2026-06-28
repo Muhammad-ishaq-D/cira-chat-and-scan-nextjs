@@ -1,19 +1,21 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import { useRouter, usePathname, useParams as useNextParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
 
-export function Link({ to, children, ...props }: { to: string; children?: React.ReactNode; [key: string]: any }) {
-  return <NextLink href={to} {...props}>{children}</NextLink>;
-}
+export const Link = React.forwardRef<HTMLAnchorElement, { to: string; children?: React.ReactNode; [key: string]: any }>(({ to, children, ...props }, ref) => {
+  return <NextLink href={to} ref={ref} {...props}>{children}</NextLink>;
+});
+Link.displayName = "Link";
 
-export function NavLink({ to, children, className, ...props }: { to: string; children?: React.ReactNode; className?: any; [key: string]: any }) {
+export const NavLink = React.forwardRef<HTMLAnchorElement, { to: string; children?: React.ReactNode; className?: any; [key: string]: any }>(({ to, children, className, ...props }, ref) => {
   const pathname = usePathname();
   const isActive = pathname === to;
   const computedClassName = typeof className === 'function' ? className({ isActive }) : className;
-  return <NextLink href={to} className={computedClassName} {...props}>{children}</NextLink>;
-}
+  return <NextLink href={to} ref={ref} className={computedClassName} {...props}>{children}</NextLink>;
+});
+NavLink.displayName = "NavLink";
 
 export function useNavigate() {
   const router = useRouter();

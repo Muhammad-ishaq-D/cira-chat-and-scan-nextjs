@@ -152,7 +152,6 @@ const VitalsScan = () => {
           `/coi-serviceworker.js?v=${COI_SERVICE_WORKER_VERSION}`,
           { scope: "/" }
         );
-        await registration.update();
         await navigator.serviceWorker.ready;
       } catch (serviceWorkerError) {
         console.error("[VitalsScan] Failed to register COI service worker:", serviceWorkerError);
