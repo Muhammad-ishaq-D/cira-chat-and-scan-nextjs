@@ -313,8 +313,14 @@ export function useShenAI() {
   const finishTimerRef = useRef<number | null>(null);
   const finishHandledRef = useRef(false);
   const riskProfileRef = useRef<UserProfileData | undefined>(undefined);
+  const initTokenRef = useRef<{ cancelled: boolean } | null>(null);
 
   const cleanup = useCallback(() => {
+    if (initTokenRef.current) {
+      initTokenRef.current.cancelled = true;
+      initTokenRef.current = null;
+    }
+
     if (pollRef.current) {
       clearInterval(pollRef.current);
       pollRef.current = null;
@@ -356,6 +362,9 @@ export function useShenAI() {
       setProgress(0);
       finishHandledRef.current = false;
 
+      const token = { cancelled: false };
+      initTokenRef.current = token;
+
       try {
         const ShenAI = (await import("@shenai/sdk")).default;
 
@@ -372,9 +381,18 @@ export function useShenAI() {
             return filename;
           },
           onWasmLoadingProgress: (p: number) => {
-            setProgress(Math.round(p * 100));
+            if (!token.cancelled) {
+              setProgress(Math.round(p * 100));
+            }
           },
         } as any);
+
+        if (token.cancelled) {
+          try {
+            sdk.deinitialize();
+          } catch { }
+          return;
+        }
 
         sdkRef.current = sdk;
 
@@ -431,6 +449,9 @@ export function useShenAI() {
         const canvasSelector = `#${canvasId}`;
 
         sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
+          if (token.cancelled) {
+            return;
+          }
           console.log("[ShenAI] init result:", result.value);
 
           if (result.value === 0) {
