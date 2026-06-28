@@ -11,10 +11,6 @@ const SHENAI_API_KEY = "5709b1dea46a4a2ca1ea9c6592c970db";
 
 let ciraCameraStream: MediaStream | null = null;
 
-let __globalShenaiSdk: any = null;
-let __globalShenaiInitialized = false;
-let __globalCanvas: HTMLCanvasElement | null = null;
-
 function stopCiraCameraStream() {
   try {
     ciraCameraStream?.getTracks().forEach((track) => track.stop());
@@ -335,11 +331,8 @@ export function useShenAI() {
 
     if (sdkRef.current) {
       try {
-        sdkRef.current.stopMeasurement();
+        sdkRef.current.deinitialize();
       } catch { }
-      // Intentionally NOT calling deinitialize() here to prevent WebAssembly Out of Memory (OOM)
-      // errors caused by repeated instantiations during Next.js Fast Refresh or client navigation.
-      // The SDK is cached globally instead.
       sdkRef.current = null;
     }
 
@@ -366,47 +359,22 @@ export function useShenAI() {
       try {
         const ShenAI = (await import("@shenai/sdk")).default;
 
-        let sdk: ShenaiSDK;
+        // WASM origin — override with VITE_SHENAI_WASM_URL to point to a CDN
+        // (e.g. CloudFront). Must respond with `Cross-Origin-Resource-Policy: cross-origin`
+        // and permissive CORS so it loads under cross-origin isolation.
+        const wasmUrl =
+          process.env.NEXT_PUBLIC_SHENAI_WASM_URL || "/wasm/shenai_sdk.wasm";
 
-        const containerId = `${canvasId}-container`;
-        const container = document.getElementById(containerId);
-        
-        if (container) {
-          if (!__globalCanvas) {
-            __globalCanvas = document.createElement("canvas");
-            __globalCanvas.id = canvasId;
-            __globalCanvas.className = "absolute inset-0 w-full h-full object-cover";
-            __globalCanvas.style.display = "block";
-          }
-          if (!container.contains(__globalCanvas)) {
-            container.innerHTML = "";
-            container.appendChild(__globalCanvas);
-          }
-        }
-
-        if (__globalShenaiSdk) {
-          sdk = __globalShenaiSdk;
-          setProgress(100);
-        } else {
-          // WASM origin — override with VITE_SHENAI_WASM_URL to point to a CDN
-          // (e.g. CloudFront). Must respond with `Cross-Origin-Resource-Policy: cross-origin`
-          // and permissive CORS so it loads under cross-origin isolation.
-          const wasmUrl =
-            process.env.NEXT_PUBLIC_SHENAI_WASM_URL || "/wasm/shenai_sdk.wasm";
-
-          sdk = await ShenAI({
-            enablePreloadDisplay: false,
-            locateFile: (filename: string) => {
-              if (filename.endsWith(".wasm")) return wasmUrl;
-              return filename;
-            },
-            onWasmLoadingProgress: (p: number) => {
-              setProgress(Math.round(p * 100));
-            },
-          } as any);
-
-          __globalShenaiSdk = sdk;
-        }
+        const sdk: ShenaiSDK = await ShenAI({
+          enablePreloadDisplay: false,
+          locateFile: (filename: string) => {
+            if (filename.endsWith(".wasm")) return wasmUrl;
+            return filename;
+          },
+          onWasmLoadingProgress: (p: number) => {
+            setProgress(Math.round(p * 100));
+          },
+        } as any);
 
         sdkRef.current = sdk;
 
@@ -462,27 +430,10 @@ export function useShenAI() {
 
         const canvasSelector = `#${canvasId}`;
 
-        if (__globalShenaiInitialized) {
-          try {
-            sdk.setOperatingMode((sdk as any).OperatingMode.POSITIONING);
-          } catch { }
-          try {
-            sdk.attachToCanvas(canvasSelector, true);
-          } catch (e) {
-            console.error("[ShenAI] attachToCanvas error:", e);
-            setError("Could not attach scanner to camera canvas.");
-            setStatus("error");
-            return;
-          }
-          setStatus("ready");
-          return;
-        }
-
         sdk.initialize(SHENAI_API_KEY, "cira-user", settings, (result) => {
           console.log("[ShenAI] init result:", result.value);
 
           if (result.value === 0) {
-            __globalShenaiInitialized = true;
             setStatus("ready");
 
             try {
@@ -649,16 +600,15 @@ export function useShenAI() {
           }
 
           finishTimerRef.current = window.setTimeout(() => {
-            // Keep SDK alive to prevent OOM on next scan
-            // try {
-            //   activeSdk.deinitialize();
-            // } catch (e) {
-            //   console.warn("[ShenAI] deinitialize after finish failed:", e);
-            // }
+            try {
+              activeSdk.deinitialize();
+            } catch (e) {
+              console.warn("[ShenAI] deinitialize after finish failed:", e);
+            }
 
-            // if (sdkRef.current === activeSdk) {
-            //   sdkRef.current = null;
-            // }
+            if (sdkRef.current === activeSdk) {
+              sdkRef.current = null;
+            }
 
             finishTimerRef.current = null;
 
@@ -761,7 +711,7 @@ export function useShenAI() {
 
       setStatus("ready");
     } else {
-      // If SDK was lost, go idle so page.tsx can show an error or we can try to reinit
+      // After finished scan we deinitialize SDK, so a clean reload is safer.
       setStatus("idle");
     }
 

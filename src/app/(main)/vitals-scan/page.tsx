@@ -99,12 +99,10 @@ const VitalsScan = () => {
   const initials = localUser?.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "G";
 
   const handleSdkRetry = useCallback(() => {
-    cleanup();
-    hasInitRef.current = false;
-    setContextError(null);
-    clearDocumentReload(VITALS_SCAN_RELOAD_KEY);
-    setInitAttempt((n) => n + 1);
-  }, [cleanup]);
+    // Instead of reinitializing the SDK in place (which leaks WebAssembly memory),
+    // force a hard reload to ensure a clean state and prevent OOM errors.
+    window.location.reload();
+  }, []);
 
   const [userProfile, setUserProfile] = useState<any>(null);
 
@@ -544,9 +542,11 @@ const VitalsScan = () => {
 
           {/* ── Center: Camera ── */}
           <div className="flex-1 relative flex flex-col bg-black overflow-hidden">
-            <div
-              id={`${CANVAS_ID}-container`}
+            <canvas
+              id={CANVAS_ID}
+              ref={canvasRef}
               className="absolute inset-0 w-full h-full object-cover"
+              style={{ display: "block" }}
             />
 
             {/* Idle/Loading/Error overlay */}
