@@ -37,6 +37,25 @@ async function CheckBrowserAndCreateShenaiSDK(...args) {
   await ensureCameraAccess();
   const sdk = await CreateShenaiSDK(...args);
   _initEnums(sdk);
+
+  const originalDeinitialize = sdk.deinitialize;
+  sdk.deinitialize = function () {
+    try {
+      if (typeof originalDeinitialize === "function") {
+        originalDeinitialize.apply(this, arguments);
+      }
+    } catch (e) {
+      console.warn("[ShenAI] C++ deinitialize error:", e);
+    }
+    try {
+      if (typeof sdk.terminateWorkers === "function") {
+        sdk.terminateWorkers();
+      }
+    } catch (e) {
+      console.warn("[ShenAI] terminateWorkers error:", e);
+    }
+  };
+
   return sdk;
 }
 
