@@ -13,6 +13,7 @@ let ciraCameraStream: MediaStream | null = null;
 
 let __globalShenaiSdk: any = null;
 let __globalShenaiInitialized = false;
+let __globalCanvas: HTMLCanvasElement | null = null;
 
 function stopCiraCameraStream() {
   try {
@@ -366,6 +367,22 @@ export function useShenAI() {
         const ShenAI = (await import("@shenai/sdk")).default;
 
         let sdk: ShenaiSDK;
+
+        const containerId = `${canvasId}-container`;
+        const container = document.getElementById(containerId);
+        
+        if (container) {
+          if (!__globalCanvas) {
+            __globalCanvas = document.createElement("canvas");
+            __globalCanvas.id = canvasId;
+            __globalCanvas.className = "absolute inset-0 w-full h-full object-cover";
+            __globalCanvas.style.display = "block";
+          }
+          if (!container.contains(__globalCanvas)) {
+            container.innerHTML = "";
+            container.appendChild(__globalCanvas);
+          }
+        }
 
         if (__globalShenaiSdk) {
           sdk = __globalShenaiSdk;

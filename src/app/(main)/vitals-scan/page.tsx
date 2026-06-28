@@ -544,11 +544,9 @@ const VitalsScan = () => {
 
           {/* ── Center: Camera ── */}
           <div className="flex-1 relative flex flex-col bg-black overflow-hidden">
-            <canvas
-              id={CANVAS_ID}
-              ref={canvasRef}
+            <div
+              id={`${CANVAS_ID}-container`}
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ display: "block" }}
             />
 
             {/* Idle/Loading/Error overlay */}
