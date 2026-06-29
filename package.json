@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-shenai-wasm.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/prepare-shenai-wasm.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
