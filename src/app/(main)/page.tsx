@@ -24,6 +24,11 @@ const Index = () => {
   const [stepIndex, setStepIndex] = useState(0);
   const [scansToday, setScansToday] = useState(1284);
   const [avgFulfillment, setAvgFulfillment] = useState(47);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Live telemetry ticker
   useEffect(() => {
@@ -93,7 +98,7 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
             <LanguageSwitcher variant="header" className="hidden sm:inline-flex" />
-            {isAuthenticated() ? (
+            {mounted && isAuthenticated() ? (
               (() => {
                 const user = getUser();
                 const initials = (user?.name || user?.email || "U").split(" ").map((n) => n[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();

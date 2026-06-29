@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "@/lib/react-router-compat";
 import { useTranslation } from "react-i18next";
 import { Menu, X, ChevronRight, Lock, Plus } from "lucide-react";
@@ -53,7 +53,13 @@ const HamburgerMenu = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
-  const loggedIn = isAuthenticated();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const loggedIn = mounted ? isAuthenticated() : false;
 
   const go = (item: Item) => {
     setOpen(false);
